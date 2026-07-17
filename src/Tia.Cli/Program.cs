@@ -51,6 +51,8 @@ namespace Tia.Cli
                         "replicate-fc --config F [--out DIR] [--apply]",
                         "gen-alarm-fc [--config F] [--out DIR] [--apply]",
                         "replicate-instruments --config F [--out DIR] [--apply]" } },
+                    { "library", new[] { "list-library --file X.al19",
+                        "import-master-copy --file X.al19 --name M [--folder A/B] [--apply]" } },
                     { "batch", new[] { "run --script ops.json  (JSON array de arg-arrays, uma sessão só)" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports; " +
                         "--retry N (busy, default 3) --timeout SEC; exit: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA, 5 timeout" },
@@ -257,6 +259,15 @@ namespace Tia.Cli
                     case "import-tags":
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.ImportTagTable(session.GetPlc(plcName), Require(args, "--file"), apply);
+                        break;
+                    case "list-library":
+                        result = Core.Library.List(session, Require(args, "--file"));
+                        break;
+                    case "import-master-copy":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Library.ImportMasterCopy(session, session.GetPlc(plcName),
+                                Require(args, "--file"), Require(args, "--name"),
+                                OptionValue(args, "--folder"), apply);
                         break;
                     case "add-device":
                         using (WriteLock(session, apply, verb))

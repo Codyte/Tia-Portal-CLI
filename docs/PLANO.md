@@ -140,7 +140,10 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
 7. ~~**Robustez**~~ ✅ feito (exit codes: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA/Openness
    (inclui DLL ausente), 5 timeout; `--retry N` em "busy" com backoff linear, default 3;
    `--timeout SEC` via Task.Wait — abandona a chamada, processo sai). Testado offline: 2/4 ok.
-8. **Libraries**: abrir global library, instanciar master copies/types.
+8. ~~**Libraries**~~ ✅ feito (`list-library --file X.al19` — master copies + types;
+   `import-master-copy --file X.al19 --name M [--folder A/B]` via Blocks.CreateFrom;
+   read-only Open a cada verbo). Fora do V1: instanciar library *types* (workflow de
+   versão/instância bem mais complexo — adicionar se precisar).
 9. **Online (revoga D8 — só com decisão explícita)**: go-online, download, compare online/offline,
    start/stop CPU, watch tables.
 10. **HMI Unified**: export/import de telas e tags HMI.

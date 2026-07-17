@@ -1,0 +1,619 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using Siemens.Engineering;
+using Siemens.Engineering.SW;
+using Siemens.Engineering.SW.Blocks;
+using Siemens.Engineering.SW.Tags;
+
+namespace Tia.Core
+{
+    /// <summary>Config for gen-alarm-fc (port of "Replicador de FC Alarmes" / Arquiteto de Lógica de Alarmes).</summary>
+    public class AlarmFcConfig
+    {
+        public string TargetRootFolder { get; set; } = "3.1 Alarmes Words";
+        public string TemplateFc { get; set; } = "FC_Modelo";
+        public string TemplateFolder { get; set; } = "3.1.0 Modelo";
+        public string ObTemplate { get; set; } = "OB_MOLDE_ALARMES";
+        public string GlobalDb { get; set; } = "DB GLOBAL";
+        public string AlarmTagsFolder { get; set; } = "2. Alarmes";
+        public string StartTagsFolder { get; set; } = "3. Partidas";
+        public string MasterFb { get; set; } = "FB BITS TO WORD";
+        public string CallObName { get; set; } = "CHAMADA_ALARMES";
+        public int CallObNumber { get; set; } = 1;
+        public List<string> IgnoreFolders { get; set; } = new List<string>();
+    }
+
+    /// <summary>
+    /// Per plant area, packs every alarm bit (instrument alarms + equipment _FALHA tags) into
+    /// WORD_ALARMES_n words of the global DB via generated bits-to-word FCs, updates the DB word
+    /// comments, and regenerates the OB that calls all alarm FCs.
+    /// ponytail: no on-disk template cache fallback like the original — template blocks must exist
+    /// in the project; add the cache back if offline runs become a need.
+    /// </summary>
+    public static class AlarmFc
+    {
+        private static int _uid = 10000; // single-shot CLI process (D9)
+
+        private static readonly XNamespace FlgNs =
+            "http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5";
+        private static readonly XNamespace IntfNs =
+            "http://www.siemens.com/automation/Openness/SW/Interface/v5";
+
+        private class TagRef
+        {
+            public string Name;
+            public string SourceArea;
+        }
+
+        public static object Generate(PlcSoftware plc, AlarmFcConfig config, string outDir, bool apply)
+        {
+            var warnings = new List<string>();
+            Directory.CreateDirectory(outDir);
+
+            // templates + global DB exported up-front (read-only operations)
+            var templateFolder = ReplicateFc.FindGroup(plc.BlockGroup, config.TemplateFolder);
+            if (templateFolder == null)
+                throw new InvalidOperationException("Template folder '" + config.TemplateFolder + "' not found.");
+            var templateFc = templateFolder.Blocks.Find(config.TemplateFc);
+            if (templateFc == null)
+                throw new InvalidOperationException("Template FC '" + config.TemplateFc + "' not found in '" + config.TemplateFolder + "'.");
+            var obTemplate = Ops.FindBlock(plc, config.ObTemplate);
+            if (obTemplate == null)
+                throw new InvalidOperationException("OB template '" + config.ObTemplate + "' not found.");
+
+            string fcTemplatePath = ExportTo(templateFc, outDir, "alarm_fc_template.xml");
+            string obTemplatePath = ExportTo(obTemplate, outDir, "alarm_ob_template.xml");
+
+            var globalDbBlock = Ops.FindBlock(plc, config.GlobalDb);
+            if (globalDbBlock == null)
+                throw new InvalidOperationException("Global DB '" + config.GlobalDb + "' not found.");
+            string dbXmlPath = ExportTo(globalDbBlock, outDir, "alarm_globaldb.xml");
+            var dbXml = XDocument.Load(dbXmlPath);
+
+            var alarmsRoot = Profinet.FindTagGroup(plc.TagTableGroup, config.AlarmTagsFolder);
+            if (alarmsRoot == null)
+                throw new InvalidOperationException("Tag folder '" + config.AlarmTagsFolder + "' not found.");
+            var startsRoot = Profinet.FindTagGroup(plc.TagTableGroup, config.StartTagsFolder);
+            if (startsRoot == null)
+                throw new InvalidOperationException("Tag folder '" + config.StartTagsFolder + "' not found.");
+
+            PlcBlockUserGroup targetRoot = ReplicateFc.FindGroup(plc.BlockGroup, config.TargetRootFolder);
+            if (targetRoot == null && apply)
+                targetRoot = plc.BlockGroup.Groups.Create(config.TargetRootFolder);
+
+            var areas = new List<object>();
+            var commentTasks = new List<(string ParentStruct, string Member, string Comment)>();
+            var documentation = new Dictionary<string, List<string>>();
+
+            foreach (PlcTagTableUserGroup alarmGroup in alarmsRoot.Groups)
+            {
+                if (config.IgnoreFolders.Any(f => alarmGroup.Name.Equals(f, StringComparison.OrdinalIgnoreCase)))
+                    continue;
+                string areaBase = GetBaseName(alarmGroup.Name);
+                var startGroup = startsRoot.Groups.Cast<PlcTagTableUserGroup>()
+                    .FirstOrDefault(p => GetBaseName(p.Name).Equals(areaBase, StringComparison.OrdinalIgnoreCase));
+                if (startGroup == null) continue;
+
+                var instrumentTags = CollectTags(alarmGroup)
+                    .Where(t => !t.Name.ToUpper().Contains("RESERVA")).ToList();
+                var equipmentTags = CollectTags(startGroup)
+                    .Where(t => t.Name.EndsWith("_FALHA", StringComparison.OrdinalIgnoreCase)
+                        && !t.Name.ToUpper().Contains("_CMD_") && !t.Name.ToUpper().Contains("_RESET_"))
+                    .ToList();
+                if (!instrumentTags.Any() && !equipmentTags.Any()) continue;
+
+                var allTags = new List<TagRef>();
+                allTags.AddRange(instrumentTags);
+                allTags.AddRange(equipmentTags.OrderBy(t => t.Name));
+                var variables = allTags.Select(t => t.Name).ToList();
+
+                string areaClean = CleanName(areaBase);
+                string fcName = "FC_ALARMES_" + areaClean;
+                string subFolderName = TargetSubFolderName(alarmGroup.Name);
+                string structName = FindParentStruct(dbXml, equipmentTags.Select(t => t.Name).ToList(),
+                    instrumentTags.Select(t => t.Name).ToList(), areaBase);
+                if (string.IsNullOrEmpty(structName))
+                {
+                    structName = areaClean;
+                    warnings.Add("Area '" + areaBase + "': global-DB struct not mapped automatically, using fallback '" + structName + "'.");
+                }
+
+                int wordCount = Math.Max(1, (int)Math.Ceiling(variables.Count / 16.0));
+                var instanceDbs = Enumerable.Range(1, wordCount)
+                    .Select(w => "DB_BITS_TO_WORD_" + areaClean + "_W" + w).ToList();
+
+                string fcXmlPath = BuildFcXml(fcTemplatePath, fcName, structName, areaClean, variables, outDir);
+                string action = "create";
+
+                if (apply)
+                {
+                    var subFolder = targetRoot.Groups.Find(subFolderName)
+                        ?? targetRoot.Groups.Create(subFolderName);
+                    var existing = subFolder.Blocks.Find(fcName);
+                    if (existing != null)
+                    {
+                        if (BlocksIdentical(existing, fcXmlPath))
+                        {
+                            action = "in-sync";
+                        }
+                        else
+                        {
+                            existing.Delete();
+                            subFolder.Blocks.Import(new FileInfo(fcXmlPath), ImportOptions.None);
+                            action = "updated";
+                        }
+                    }
+                    else
+                    {
+                        subFolder.Blocks.Import(new FileInfo(fcXmlPath), ImportOptions.None);
+                    }
+                    foreach (var dbName in instanceDbs)
+                        if (subFolder.Blocks.Find(dbName) == null)
+                            subFolder.Blocks.CreateInstanceDB(dbName, true, 1, config.MasterFb);
+                }
+
+                for (int w = 1; w <= wordCount; w++)
+                {
+                    var wordVars = variables.Skip((w - 1) * 16).Take(16).ToList();
+                    var sources = allTags.Where(t => wordVars.Contains(t.Name))
+                        .Select(t => GetBaseName(t.SourceArea)).Distinct();
+                    string comment = "Compila alarmes de: " + string.Join(", ", sources.Select(s => "\"" + s + "\""));
+                    if (comment.Length > 250) comment = comment.Substring(0, 247) + "...";
+                    commentTasks.Add((structName, "WORD_ALARMES_" + w, comment));
+                }
+
+                documentation[areaBase] = variables;
+                areas.Add(new Dictionary<string, object>
+                {
+                    { "area", areaBase },
+                    { "fc", fcName },
+                    { "folder", config.TargetRootFolder + "/" + subFolderName },
+                    { "struct", structName },
+                    { "variables", variables.Count },
+                    { "words", wordCount },
+                    { "instanceDbs", instanceDbs },
+                    { "action", action },
+                    { "xml", fcXmlPath },
+                });
+            }
+
+            // word comments in the global DB (rewrite + reimport)
+            if (commentTasks.Any())
+            {
+                WriteDbComments(dbXmlPath, commentTasks);
+                if (apply)
+                {
+                    var parent = globalDbBlock.Parent as PlcBlockGroup;
+                    if (parent != null)
+                    {
+                        globalDbBlock.Delete();
+                        parent.Blocks.Import(new FileInfo(dbXmlPath), ImportOptions.None);
+                    }
+                    else
+                    {
+                        warnings.Add("Could not resolve the folder of '" + config.GlobalDb + "'; comment reimport skipped.");
+                    }
+                }
+            }
+
+            // OB that calls every alarm FC under the target root
+            object callOb = null;
+            var fcRoot = targetRoot ?? ReplicateFc.FindGroup(plc.BlockGroup, config.TargetRootFolder);
+            if (fcRoot != null)
+            {
+                var fcs = CollectFcs(fcRoot)
+                    .OrderBy(fc => ((PlcBlockUserGroup)fc.Parent).Name, new NaturalStringComparer()).ToList();
+                // on dry-run the FCs may not exist yet: fall back to the planned FC list
+                var callNames = fcs.Any()
+                    ? fcs.Select(f => new { Name = f.Name, Number = (int?)f.Number, Folder = ((PlcBlockUserGroup)f.Parent).Name }).ToList()
+                    : areas.Cast<Dictionary<string, object>>()
+                        .Select(a => new { Name = (string)a["fc"], Number = (int?)null, Folder = (string)a["folder"] }).ToList();
+                if (callNames.Any())
+                {
+                    string obXmlPath = BuildCallObXml(obTemplatePath, config.CallObName, config.CallObNumber,
+                        callNames.Select(c => (c.Name, c.Number, c.Folder)).ToList(), outDir);
+                    if (apply)
+                    {
+                        var existingOb = plc.BlockGroup.Blocks.Find(config.CallObName)
+                            ?? Ops.FindBlock(plc, config.CallObName);
+                        existingOb?.Delete();
+                        fcRoot.Blocks.Import(new FileInfo(obXmlPath), ImportOptions.None);
+                    }
+                    callOb = new Dictionary<string, object>
+                    {
+                        { "ob", config.CallObName },
+                        { "calls", callNames.Select(c => c.Name).ToList() },
+                        { "xml", obXmlPath },
+                    };
+                }
+            }
+
+            string csvPath = WriteCsv(documentation, outDir);
+
+            return new Dictionary<string, object>
+            {
+                { "applied", apply },
+                { "areas", areas },
+                { "callOb", callOb },
+                { "csv", csvPath },
+                { "warnings", warnings },
+            };
+        }
+
+        // ---------- FC XML ----------
+
+        private static string BuildFcXml(string templatePath, string fcName, string structName,
+            string areaClean, List<string> variables, string outDir)
+        {
+            var doc = XDocument.Load(templatePath);
+            var networkTemplate = doc.Descendants("SW.Blocks.CompileUnit")
+                .FirstOrDefault(cu => cu.Descendants(FlgNs + "FlgNet").Any());
+            if (networkTemplate == null)
+                throw new InvalidOperationException("Template FC contains no valid network.");
+
+            doc.Descendants("AttributeList").Elements("Name").First().Value = fcName;
+            var objectList = doc.Descendants("ObjectList").First();
+            objectList.Elements("SW.Blocks.CompileUnit").Remove();
+            _uid = doc.Descendants().SelectMany(d => d.Attributes())
+                .Where(a => a.Name == "UId" || a.Name == "ID")
+                .Select(a => int.TryParse(a.Value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int v) ? v : 0)
+                .DefaultIfEmpty(0).Max() + 1;
+
+            int wordCount = Math.Max(1, (int)Math.Ceiling(variables.Count / 16.0));
+            for (int i = 0; i < wordCount; i++)
+            {
+                int wordNumber = i + 1;
+                var wordVars = variables.Skip(i * 16).Take(16).ToList();
+                string instanceDb = "DB_BITS_TO_WORD_" + areaClean + "_W" + wordNumber;
+                string outputPath = "\"" + "DB GLOBAL" + "\".\"" + structName + "\".ALARMES.WORD_ALARMES_" + wordNumber;
+                var network = new XElement(networkTemplate);
+                ReassignUids(network);
+                RewireWordNetwork(network, instanceDb, wordVars, outputPath);
+                objectList.Add(network);
+            }
+
+            string path = Path.GetFullPath(Path.Combine(outDir, fcName + ".xml"));
+            if (File.Exists(path)) File.Delete(path);
+            doc.Save(path);
+            return path;
+        }
+
+        /// <summary>Wires up to 16 alarm bits into the FB call, points the output at the DB word.</summary>
+        private static void RewireWordNetwork(XElement network, string instanceName,
+            List<string> variables, string outputPath)
+        {
+            var callInfo = network.Descendants(FlgNs + "CallInfo").FirstOrDefault();
+            if (callInfo == null) return;
+
+            var instanceComponent = callInfo.Element(FlgNs + "Instance")?.Element(FlgNs + "Component");
+            if (instanceComponent != null) instanceComponent.Attribute("Name").Value = instanceName;
+
+            var titleText = network.Descendants("MultilingualTextItem")
+                .FirstOrDefault(m => m.Parent?.Parent?.Attribute("CompositionName")?.Value == "Title")
+                ?.Element("AttributeList")?.Element("Text");
+            if (titleText != null) titleText.Value = "Word de Alarmes: " + instanceName;
+
+            string callUId = callInfo.Parent.Attribute("UId").Value;
+            for (int i = 0; i < 16; i++)
+            {
+                string paramName = "SIGNAL_Bit" + i;
+                var wire = network.Descendants(FlgNs + "Wire").FirstOrDefault(w =>
+                    w.Elements(FlgNs + "NameCon").Any(nc => nc.Attribute("UId")?.Value == callUId
+                        && nc.Attribute("Name")?.Value == paramName));
+                if (wire == null) continue;
+                var identCon = wire.Element(FlgNs + "IdentCon");
+                var accessUId = identCon?.Attribute("UId")?.Value;
+                var access = accessUId != null
+                    ? network.Descendants(FlgNs + "Access").FirstOrDefault(a => a.Attribute("UId").Value == accessUId)
+                    : null;
+                if (i < variables.Count)
+                {
+                    wire.Elements(FlgNs + "OpenCon").Remove();
+                    if (identCon == null)
+                        wire.AddFirst(new XElement(FlgNs + "IdentCon", new XAttribute("UId", (++_uid).ToString())));
+                    var symbol = access?.Element(FlgNs + "Symbol");
+                    if (symbol != null)
+                    {
+                        symbol.RemoveAll();
+                        symbol.Add(new XElement(FlgNs + "Component", new XAttribute("Name", variables[i])));
+                    }
+                }
+                else
+                {
+                    if (identCon != null)
+                    {
+                        access?.Remove();
+                        identCon.Remove();
+                    }
+                    if (wire.Element(FlgNs + "OpenCon") == null)
+                        wire.AddFirst(new XElement(FlgNs + "OpenCon", new XAttribute("UId", (++_uid).ToString())));
+                }
+            }
+
+            var outputWire = network.Descendants(FlgNs + "Wire").FirstOrDefault(w =>
+                w.Descendants(FlgNs + "NameCon").Any(nc => nc.Attribute("Name")?.Value == "BITS_TO_WORD"));
+            if (outputWire != null)
+            {
+                var outputAccess = network.Descendants(FlgNs + "Access").FirstOrDefault(a =>
+                    a.Attribute("UId").Value == outputWire.Element(FlgNs + "IdentCon")?.Attribute("UId").Value);
+                var outputSymbol = outputAccess?.Element(FlgNs + "Symbol");
+                if (outputSymbol != null)
+                {
+                    outputSymbol.RemoveAll();
+                    foreach (var part in outputPath.Replace("\"", "").Split('.'))
+                        outputSymbol.Add(new XElement(FlgNs + "Component", new XAttribute("Name", part)));
+                }
+            }
+
+            // per-network comment mapping every bit to its variable
+            var networkObjectList = network.Element("ObjectList");
+            if (networkObjectList == null) return;
+            var comment = networkObjectList.Elements("MultilingualText")
+                .FirstOrDefault(m => m.Attribute("CompositionName")?.Value == "Comment");
+            if (comment == null)
+            {
+                comment = new XElement("MultilingualText",
+                    new XAttribute("ID", (++_uid).ToString("X")),
+                    new XAttribute("CompositionName", "Comment"),
+                    new XElement("ObjectList"));
+                networkObjectList.Add(comment);
+            }
+            var sb = new StringBuilder();
+            for (int i = 0; i < 16; i++)
+            {
+                sb.Append("Bit " + i.ToString().PadRight(2) + ": \t");
+                sb.AppendLine(i < variables.Count ? variables[i] : "");
+            }
+            foreach (var culture in new[] { "pt-BR", "en-US" })
+            {
+                var item = comment.Descendants("MultilingualTextItem")
+                    .FirstOrDefault(x => x.Element("AttributeList")?.Element("Culture")?.Value == culture);
+                if (item == null)
+                {
+                    item = new XElement("MultilingualTextItem",
+                        new XAttribute("ID", (++_uid).ToString("X")),
+                        new XAttribute("CompositionName", "Items"),
+                        new XElement("AttributeList",
+                            new XElement("Culture", culture),
+                            new XElement("Text", "")));
+                    comment.Element("ObjectList")?.Add(item);
+                }
+                var text = item.Element("AttributeList")?.Element("Text");
+                if (text == null)
+                {
+                    text = new XElement("Text");
+                    item.Element("AttributeList")?.Add(text);
+                }
+                text.Value = sb.ToString();
+            }
+        }
+
+        // ---------- call OB ----------
+
+        private static string BuildCallObXml(string obTemplatePath, string obName, int obNumber,
+            List<(string Name, int? Number, string Folder)> fcs, string outDir)
+        {
+            var doc = XDocument.Load(obTemplatePath);
+            doc.Descendants("AttributeList").Elements("Name").First().Value = obName;
+            doc.Descendants("AttributeList").Elements("Number").First().Value = obNumber.ToString();
+            var objectList = doc.Descendants("ObjectList").First();
+            objectList.Elements("SW.Blocks.CompileUnit").Remove();
+
+            int uid = 100;
+            foreach (var fc in fcs)
+            {
+                string folderTitle = Regex.Replace(fc.Folder, @"^[\d\.]+\s*", "").Trim();
+                var callInfo = new XElement(FlgNs + "CallInfo",
+                    new XAttribute("Name", fc.Name), new XAttribute("BlockType", "FC"));
+                if (fc.Number.HasValue)
+                    callInfo.Add(new XElement("IntegerAttribute",
+                        new XAttribute("Name", "BlockNumber"), new XAttribute("Informative", "true"), fc.Number.Value));
+                var network = new XElement("SW.Blocks.CompileUnit",
+                    new XAttribute("ID", (++uid).ToString("X")),
+                    new XAttribute("CompositionName", "CompileUnits"),
+                    new XElement("AttributeList",
+                        new XElement("NetworkSource",
+                            new XElement(FlgNs + "FlgNet",
+                                new XElement(FlgNs + "Parts",
+                                    new XElement(FlgNs + "Call", new XAttribute("UId", (++uid).ToString()), callInfo)),
+                                new XElement(FlgNs + "Wires",
+                                    new XElement(FlgNs + "Wire", new XAttribute("UId", (++uid).ToString()),
+                                        new XElement("Powerrail"),
+                                        new XElement(FlgNs + "NameCon", new XAttribute("UId", (uid - 1).ToString()),
+                                            new XAttribute("Name", "en")))))),
+                        new XElement("ProgrammingLanguage", "LAD")),
+                    new XElement("ObjectList",
+                        new XElement("MultilingualText", new XAttribute("ID", (++uid).ToString("X")),
+                            new XAttribute("CompositionName", "Title"),
+                            new XElement("ObjectList",
+                                new XElement("MultilingualTextItem", new XAttribute("ID", (++uid).ToString("X")),
+                                    new XAttribute("CompositionName", "Items"),
+                                    new XElement("AttributeList",
+                                        new XElement("Culture", "en-US"),
+                                        new XElement("Text", "FC Alarmes: " + folderTitle)))))));
+                objectList.Add(network);
+            }
+
+            string path = Path.GetFullPath(Path.Combine(outDir, obName + ".xml"));
+            if (File.Exists(path)) File.Delete(path);
+            doc.Save(path);
+            return path;
+        }
+
+        // ---------- global DB comments ----------
+
+        private static void WriteDbComments(string dbXmlPath,
+            List<(string ParentStruct, string Member, string Comment)> tasks)
+        {
+            var doc = XDocument.Load(dbXmlPath);
+            foreach (var task in tasks)
+            {
+                var parentStruct = doc.Descendants(IntfNs + "Member")
+                    .FirstOrDefault(m => m.Attribute("Name")?.Value == task.ParentStruct);
+                var alarms = parentStruct?.Elements(IntfNs + "Member")
+                    .FirstOrDefault(m => m.Attribute("Name")?.Value == "ALARMES");
+                var word = alarms?.Elements(IntfNs + "Member")
+                    .FirstOrDefault(m => m.Attribute("Name")?.Value == task.Member);
+                if (word == null) continue;
+                word.Elements(IntfNs + "Comment").Remove();
+                word.Add(new XElement(IntfNs + "Comment",
+                    new XElement(IntfNs + "MultiLanguageText", new XAttribute("Lang", "pt-BR"), task.Comment),
+                    new XElement(IntfNs + "MultiLanguageText", new XAttribute("Lang", "en-US"), task.Comment)));
+            }
+            doc.Save(dbXmlPath);
+        }
+
+        private static string FindParentStruct(XDocument dbXml, List<string> equipmentTags,
+            List<string> instrumentTags, string areaName)
+        {
+            var allMembers = dbXml.Descendants(IntfNs + "Member").Where(m => m.Attribute("Name") != null).ToList();
+            foreach (var tag in equipmentTags)
+            {
+                string baseTag = tag.Replace("_FALHA", "").Trim();
+                if (string.IsNullOrEmpty(baseTag)) continue;
+                var hit = allMembers.FirstOrDefault(m => m.Attribute("Name").Value.ToUpper().Contains(baseTag.ToUpper()));
+                if (hit != null) return TopStructName(hit);
+            }
+            foreach (var tag in instrumentTags)
+            {
+                var match = Regex.Match(tag, @"\((.*?)\)");
+                if (!match.Success) continue;
+                string baseTag = match.Groups[1].Value.Trim();
+                if (string.IsNullOrEmpty(baseTag)) continue;
+                var hit = allMembers.FirstOrDefault(m => m.Attribute("Name").Value.ToUpper().Contains(baseTag.ToUpper()));
+                if (hit != null) return TopStructName(hit);
+            }
+            if (!string.IsNullOrEmpty(areaName))
+            {
+                string cleanArea = CleanName(areaName);
+                var topStructs = dbXml.Descendants(IntfNs + "Section")
+                    .FirstOrDefault(s => s.Attribute("Name")?.Value == "Static")?.Elements(IntfNs + "Member");
+                if (topStructs != null)
+                    foreach (var m in topStructs)
+                    {
+                        string name = m.Attribute("Name")?.Value;
+                        if (!string.IsNullOrEmpty(name) && cleanArea.Contains(CleanName(name)))
+                            return name;
+                    }
+            }
+            return null;
+        }
+
+        private static string TopStructName(XElement member)
+        {
+            var current = member.Parent;
+            while (current != null)
+            {
+                if (current.Parent?.Name.LocalName == "Section"
+                    && current.Parent?.Attribute("Name")?.Value == "Static")
+                    return current.Attribute("Name")?.Value;
+                current = current.Parent;
+            }
+            return null;
+        }
+
+        // ---------- misc helpers ----------
+
+        private static string ExportTo(PlcBlock block, string outDir, string fileName)
+        {
+            string path = Path.GetFullPath(Path.Combine(outDir, fileName));
+            if (File.Exists(path)) File.Delete(path);
+            block.Export(new FileInfo(path), ExportOptions.None);
+            return path;
+        }
+
+        private static bool BlocksIdentical(PlcBlock existing, string newXmlPath)
+        {
+            string tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".xml");
+            try
+            {
+                existing.Export(new FileInfo(tmp), ExportOptions.None);
+                var generated = XDocument.Load(newXmlPath).Descendants("ObjectList").FirstOrDefault();
+                var current = XDocument.Load(tmp).Descendants("ObjectList").FirstOrDefault();
+                if (generated == null || current == null) return false;
+                var a = new XElement(generated);
+                var b = new XElement(current);
+                foreach (var container in new[] { a, b })
+                {
+                    foreach (var e in container.DescendantsAndSelf())
+                    {
+                        e.Attribute("UId")?.Remove();
+                        e.Attribute("ID")?.Remove();
+                    }
+                    container.Descendants("Address")
+                        .Where(x => x.Attribute("Informative")?.Value == "true").Remove();
+                    container.Descendants("MultilingualText")
+                        .Where(x => x.Attribute("CompositionName")?.Value == "Comment").Remove();
+                }
+                return XNode.DeepEquals(a, b);
+            }
+            catch { return false; }
+            finally { if (File.Exists(tmp)) File.Delete(tmp); }
+        }
+
+        private static void ReassignUids(XElement element)
+        {
+            var idMap = new Dictionary<string, string>();
+            foreach (var d in element.DescendantsAndSelf())
+            {
+                var uid = d.Attribute("UId");
+                if (uid != null && !idMap.ContainsKey(uid.Value)) idMap.Add(uid.Value, (++_uid).ToString());
+                var id = d.Attribute("ID");
+                if (id != null && !idMap.ContainsKey(id.Value)) idMap.Add(id.Value, (++_uid).ToString("X"));
+            }
+            foreach (var d in element.DescendantsAndSelf())
+                foreach (var attr in d.Attributes())
+                    if (idMap.TryGetValue(attr.Value, out string v)) attr.Value = v;
+        }
+
+        private static List<TagRef> CollectTags(PlcTagTableUserGroup group)
+        {
+            var tags = group.TagTables.SelectMany(t => t.Tags)
+                .Select(t => new TagRef { Name = t.Name, SourceArea = group.Name }).ToList();
+            foreach (PlcTagTableUserGroup sub in group.Groups)
+                tags.AddRange(CollectTags(sub));
+            return tags;
+        }
+
+        private static List<FC> CollectFcs(PlcBlockUserGroup group)
+        {
+            var fcs = group.Blocks.OfType<FC>().ToList();
+            foreach (PlcBlockUserGroup sub in group.Groups)
+                fcs.AddRange(CollectFcs(sub));
+            return fcs;
+        }
+
+        /// <summary>"2.3 Captação" -> "Captação" (numeric prefix stripped).</summary>
+        private static string GetBaseName(string folderName)
+        {
+            var match = Regex.Match(folderName, @"^\d+(\.\d+)*\s*(.*)");
+            return match.Success && !string.IsNullOrWhiteSpace(match.Groups[2].Value)
+                ? match.Groups[2].Value.Trim() : folderName.Trim();
+        }
+
+        /// <summary>Uppercase, accents stripped, non [A-Z0-9_] removed — safe for block names.</summary>
+        private static string CleanName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return "";
+            string decomposed = name.Normalize(NormalizationForm.FormD);
+            var filtered = new string(decomposed
+                .Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                .ToArray());
+            string sanitized = Regex.Replace(filtered.Trim().ToUpper(), @"[\s-]+", "_");
+            return Regex.Replace(sanitized, @"[^A-Z0-9_]", "");
+        }
+
+        /// <summary>"2.3 Captação" -> "3.1.3 Captação" (alarm source folder to target folder).</summary>
+        private static string TargetSubFolderName(string sourceFolderName)
+        {
+            var match = Regex.Match(sourceFolderName, @"^2\.(\d+)(.*)");
+            return match.Success ? "3.1." + match.Groups[1].Value + " " + match.Groups[2].Value.Trim() : sourceFolderName;
+        }
+    }
+}

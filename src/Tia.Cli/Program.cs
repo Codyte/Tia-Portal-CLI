@@ -28,7 +28,9 @@ namespace Tia.Cli
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]" } },
                     { "write", new[] { "import-block --file F [--folder A/B] [--apply]",
                         "import-tags --file F [--apply]", "compile [--apply]",
-                        "gen-profinet --config F [--apply]" } },
+                        "gen-profinet --config F [--apply]",
+                        "standardize-tags [--config F] [--apply]",
+                        "gen-fault-ob [--config F] [--out DIR] [--apply]" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports" },
                 });
                 return args.Length == 0 ? 1 : 0;
@@ -103,6 +105,22 @@ namespace Tia.Cli
                             File.ReadAllText(Require(args, "--config")));
                         using (WriteLock(session, apply, verb))
                             result = Core.Profinet.Generate(session, session.GetPlc(plcName), config, apply);
+                        break;
+                    case "standardize-tags":
+                        var stdPath = OptionValue(args, "--config");
+                        var stdConfig = stdPath != null
+                            ? JsonConvert.DeserializeObject<Core.StandardizeConfig>(File.ReadAllText(stdPath))
+                            : new Core.StandardizeConfig();
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Standardize.Run(session.GetPlc(plcName), stdConfig, apply);
+                        break;
+                    case "gen-fault-ob":
+                        var fobPath = OptionValue(args, "--config");
+                        var fobConfig = fobPath != null
+                            ? JsonConvert.DeserializeObject<Core.FaultObConfig>(File.ReadAllText(fobPath))
+                            : new Core.FaultObConfig();
+                        using (WriteLock(session, apply, verb))
+                            result = Core.FaultOb.Generate(session, session.GetPlc(plcName), fobConfig, outDir, apply);
                         break;
                     default:
                         throw new ArgumentException("Unknown verb '" + verb + "'. Run tia --help.");

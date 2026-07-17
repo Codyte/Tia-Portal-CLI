@@ -97,7 +97,7 @@ namespace Tia.Core
             return group.TagTables.Find(config.TagTable) ?? group.TagTables.Create(config.TagTable);
         }
 
-        private static PlcTagTableUserGroup FindTagGroup(PlcTagTableGroup start, string name)
+        internal static PlcTagTableUserGroup FindTagGroup(PlcTagTableGroup start, string name)
         {
             var user = start as PlcTagTableUserGroup;
             if (user != null && user.Name.Equals(name, StringComparison.OrdinalIgnoreCase))

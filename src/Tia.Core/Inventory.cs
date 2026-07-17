@@ -24,14 +24,14 @@ namespace Tia.Core
                 { "project", session.Project.Name },
                 { "path", session.Project.Path != null ? session.Project.Path.FullName : null },
                 { "plcs", plcs },
-                { "devices", session.Project.Devices.Count },
+                { "devices", session.AllDevices().Count },
             };
         }
 
         public static object Devices(TiaSession session)
         {
             var result = new List<object>();
-            foreach (Device device in session.Project.Devices)
+            foreach (Device device in session.AllDevices())
             {
                 var items = new List<object>();
                 CollectDeviceItems(device.DeviceItems, items);

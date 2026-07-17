@@ -27,7 +27,8 @@ namespace Tia.Cli
                     { "read", new[] { "info", "list-devices", "list-blocks", "list-tags",
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]" } },
                     { "write", new[] { "import-block --file F [--folder A/B] [--apply]",
-                        "import-tags --file F [--apply]", "compile [--apply]" } },
+                        "import-tags --file F [--apply]", "compile [--apply]",
+                        "gen-profinet --config F [--apply]" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports" },
                 });
                 return args.Length == 0 ? 1 : 0;
@@ -81,17 +82,27 @@ namespace Tia.Cli
                         result = Core.Ops.ExportTagTable(session.GetPlc(plcName), Require(args, "--table"), outDir);
                         break;
                     case "import-block":
-                        result = Core.Ops.ImportBlock(session.GetPlc(plcName), Require(args, "--file"),
-                            OptionValue(args, "--folder"), apply);
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Ops.ImportBlock(session.GetPlc(plcName), Require(args, "--file"),
+                                OptionValue(args, "--folder"), apply);
                         break;
                     case "import-tags":
-                        result = Core.Ops.ImportTagTable(session.GetPlc(plcName), Require(args, "--file"), apply);
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Ops.ImportTagTable(session.GetPlc(plcName), Require(args, "--file"), apply);
                         break;
                     case "compile":
                         var plc = session.GetPlc(plcName);
-                        result = apply
-                            ? Core.Ops.Compile(plc)
-                            : new Dictionary<string, object> { { "wouldCompile", plc.Name }, { "applied", false } };
+                        if (apply)
+                            using (WriteLock(session, true, verb))
+                                result = Core.Ops.Compile(plc);
+                        else
+                            result = new Dictionary<string, object> { { "wouldCompile", plc.Name }, { "applied", false } };
+                        break;
+                    case "gen-profinet":
+                        var config = JsonConvert.DeserializeObject<Core.ProfinetConfig>(
+                            File.ReadAllText(Require(args, "--config")));
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Profinet.Generate(session, session.GetPlc(plcName), config, apply);
                         break;
                     default:
                         throw new ArgumentException("Unknown verb '" + verb + "'. Run tia --help.");
@@ -105,6 +116,12 @@ namespace Tia.Cli
         {
             int i = Array.IndexOf(args, name);
             return i >= 0 && i + 1 < args.Length ? args[i + 1] : null;
+        }
+
+        /// <summary>Multiuser ExclusiveAccess for applied writes; no-op handle on dry-run.</summary>
+        private static IDisposable WriteLock(Core.TiaSession session, bool apply, string verb)
+        {
+            return apply ? session.ExclusiveAccess("tia " + verb) : null;
         }
 
         private static string Require(string[] args, string name)

@@ -36,10 +36,33 @@ namespace Tia.Core
             return new TiaSession(portal, project);
         }
 
+        /// <summary>Every device in the project, including those nested in device groups.</summary>
+        public List<Device> AllDevices()
+        {
+            var all = new List<Device>();
+            all.AddRange(Project.Devices);
+            foreach (DeviceUserGroup group in Project.DeviceGroups)
+                CollectDevices(group, all);
+            return all;
+        }
+
+        private static void CollectDevices(DeviceUserGroup group, List<Device> into)
+        {
+            into.AddRange(group.Devices);
+            foreach (DeviceUserGroup sub in group.Groups)
+                CollectDevices(sub, into);
+        }
+
+        /// <summary>Multiuser-safe write lock; harmless on single-user projects.</summary>
+        public IDisposable ExclusiveAccess(string message)
+        {
+            return Portal.ExclusiveAccess(message);
+        }
+
         /// <summary>All PLC software targets in the project, with their device name.</summary>
         public IEnumerable<KeyValuePair<string, PlcSoftware>> Plcs()
         {
-            foreach (Device device in Project.Devices)
+            foreach (Device device in AllDevices())
                 foreach (DeviceItem item in device.DeviceItems)
                 {
                     var sw = item.GetService<SoftwareContainer>()?.Software as PlcSoftware;

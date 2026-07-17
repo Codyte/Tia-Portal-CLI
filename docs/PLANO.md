@@ -54,9 +54,9 @@ Verbos por fase (nomes finais definidos na F1):
 | Fase | Entrega | Critério de pronto | Status |
 |------|---------|--------------------|--------|
 | F0 | Este plano + CLAUDE.md do repo | commitado | ✅ |
-| F1 | Solução .NET, Tia.Core mínimo, verbos de leitura | `tia info` e `tia list-blocks` rodando contra TIA real | 🟡 código pronto + build ok; smoke pendente na máquina do TIA |
-| F2 | Export/import XML + compile | roundtrip de 1 FC sem diff + compile ok | ⬜ |
-| F3 | Portar os 4 tools dos FINAIS como verbos | paridade com os scripts originais em projeto de teste | ⬜ |
+| F1 | Solução .NET, Tia.Core mínimo, verbos de leitura | `tia info` e `tia list-blocks` rodando contra TIA real | 🟡 código+build ok; smoke aguarda instalação do TIA V19 aqui |
+| F2 | Export/import XML + compile | roundtrip de 1 FC sem diff + compile ok | 🟡 código+build ok; smoke aguarda TIA |
+| F3 | Portar os 4 tools dos FINAIS como verbos | paridade com os scripts originais em projeto de teste | 🟡 gen-profinet portado; faltam standardize-tags, gen-fault-ob, replicate-fc |
 | F4 | Polimento p/ GitHub (README EN, licença, exemplos) | repo publicável | ⬜ |
 | F5? | MCP server fino sobre Tia.Core | só se D1 cair | ⬜ |
 
@@ -96,9 +96,9 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
 
 ## Ambiente (descoberto na F1)
 
-- **Esta máquina = servidor** (TIA Project Server, TIA Administrator, WinCC Unified RT). TIA
-  Portal V19 engineering **não** está instalado aqui — build acontece aqui, execução do `tia.exe`
-  na workstation com TIA aberto. Usuário planeja instalar TIA aqui futuramente (V20+).
+- **Esta máquina = titanxnexus** (servidor: TIA Project Server, TIA Administrator, WinCC Unified RT).
+  Usuário acessa de pcprojetos5 via VSCode Remote. TIA Portal V19 foi desinstalado daqui;
+  **usuário vai reinstalar nesta máquina** — build e execução serão ambos aqui. Até lá, só código.
 - Build: .NET SDK 8 (instalado 2026-07-17) compilando net48/x64. `lib/Siemens.Engineering.dll`
   (v19.0.0.0, cópia local, gitignored) é referência de compile; em runtime o exe resolve a DLL
   da instalação real (env `TIA_ENGINEERING_DLL` → pasta do exe → Portal V19/V20 padrão).

@@ -1,4 +1,4 @@
-# __navi__ · repo tree — 53 files in 9 folders
+# __navi__ · repo tree — 54 files in 10 folders
 <!-- navindex · 2026-07-17 · DO NOT EDIT BY HAND; regen via navindex skill -->
 
 Universal index: every folder below -> the files it holds (names only). A `→ __navi__.md` marker means that folder has a symbol map — open `<that path>/__navi__.md` for exact line numbers (2 reads total: this tree -> folder map).
@@ -17,6 +17,9 @@ Arquiteto GVL V1.txt(0)  Arquiteto de Automação_2.txt(621)  Gerador Variáveis
 
 ## `docs/` (1 files)
 PLANO.md(112)
+
+## `docs/examples/` (1 files)
+profinet.json(9)
 
 ## `src/Tia.Cli/obj/` (2 files) → __navi__.md
 Tia.Cli.csproj.nuget.dgspec.json(119)  project.assets.json(579)

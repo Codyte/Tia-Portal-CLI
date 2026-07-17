@@ -1,0 +1,9 @@
+{
+  "StartByte": 13000,
+  "TagFolder": "4. Comm",
+  "TagTable": "DISPOSITIVOS_PROFINET",
+  "Devices": [
+    { "Hardware": "INV-BH01A", "EquipmentTag": "BH-01A", "DeviceNumber": 1 },
+    { "Hardware": "INV-BH01B", "EquipmentTag": "BH-01B", "DeviceNumber": 2 }
+  ]
+}

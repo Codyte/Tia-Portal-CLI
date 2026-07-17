@@ -1,0 +1,878 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V18" />
+  <DocumentInfo>
+    <Created>2026-03-12T16:04:35.1863989Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, S210</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Professional</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.FB ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input">
+    <Member Name="INPUT_SENSOR" Datatype="Int" Remanence="Retain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+  <Section Name="Output">
+    <Member Name="OUTPUT_SENSOR" Datatype="Int" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+  <Section Name="InOut" />
+  <Section Name="Static">
+    <Member Name="INDEX_AMOSTRAGEM" Datatype="Int" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="AUX_1" Datatype="Int" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="AUX_2" Datatype="Int" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="AUX_3" Datatype="Int" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="AUX_4" Datatype="Int" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="AUX_5" Datatype="Int" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="AUX_6" Datatype="Int" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="AUX_7" Datatype="Int" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="AUX_8" Datatype="Int" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="AUX_9" Datatype="Int" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="AUX_10" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="AUX_11" Datatype="Int" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+  <Section Name="Temp" />
+  <Section Name="Constant" />
+</Sections></Interface>
+      <IsIECCheckEnabled>false</IsIECCheckEnabled>
+      <IsRetainMemResEnabled>false</IsRetainMemResEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <MemoryReserve>100</MemoryReserve>
+      <Name>FB FILTRO DE AMOSTRAGEM  ANALÍTICA</Name>
+      <Namespace />
+      <Number>24</Number>
+      <ProgrammingLanguage>LAD</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v4">
+  <Parts>
+    <Access Scope="GlobalVariable" UId="21">
+      <Symbol>
+        <Component Name="AlwaysTRUE" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="22">
+      <Symbol>
+        <Component Name="AUX_10" />
+      </Symbol>
+    </Access>
+    <Access Scope="LiteralConstant" UId="23">
+      <Constant>
+        <ConstantType>Int</ConstantType>
+        <ConstantValue>1</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LocalVariable" UId="24">
+      <Symbol>
+        <Component Name="INDEX_AMOSTRAGEM" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="25">
+      <Symbol>
+        <Component Name="INDEX_AMOSTRAGEM" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="26">
+      <Symbol>
+        <Component Name="AUX_10" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="27">
+      <Symbol>
+        <Component Name="INDEX_AMOSTRAGEM" />
+      </Symbol>
+    </Access>
+    <Access Scope="LiteralConstant" UId="28">
+      <Constant>
+        <ConstantType>Int</ConstantType>
+        <ConstantValue>10</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LocalVariable" UId="29">
+      <Symbol>
+        <Component Name="INPUT_SENSOR" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="30">
+      <Symbol>
+        <Component Name="AUX_1" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="31">
+      <Symbol>
+        <Component Name="INDEX_AMOSTRAGEM" />
+      </Symbol>
+    </Access>
+    <Access Scope="LiteralConstant" UId="32">
+      <Constant>
+        <ConstantType>Int</ConstantType>
+        <ConstantValue>20</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LocalVariable" UId="33">
+      <Symbol>
+        <Component Name="INPUT_SENSOR" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="34">
+      <Symbol>
+        <Component Name="AUX_2" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="35">
+      <Symbol>
+        <Component Name="INDEX_AMOSTRAGEM" />
+      </Symbol>
+    </Access>
+    <Access Scope="LiteralConstant" UId="36">
+      <Constant>
+        <ConstantType>Int</ConstantType>
+        <ConstantValue>30</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LocalVariable" UId="37">
+      <Symbol>
+        <Component Name="INPUT_SENSOR" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="38">
+      <Symbol>
+        <Component Name="AUX_3" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="39">
+      <Symbol>
+        <Component Name="INDEX_AMOSTRAGEM" />
+      </Symbol>
+    </Access>
+    <Access Scope="LiteralConstant" UId="40">
+      <Constant>
+        <ConstantType>Int</ConstantType>
+        <ConstantValue>40</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LocalVariable" UId="41">
+      <Symbol>
+        <Component Name="INPUT_SENSOR" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="42">
+      <Symbol>
+        <Component Name="AUX_4" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="43">
+      <Symbol>
+        <Component Name="INDEX_AMOSTRAGEM" />
+      </Symbol>
+    </Access>
+    <Access Scope="LiteralConstant" UId="44">
+      <Constant>
+        <ConstantType>Int</ConstantType>
+        <ConstantValue>50</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LocalVariable" UId="45">
+      <Symbol>
+        <Component Name="INPUT_SENSOR" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="46">
+      <Symbol>
+        <Component Name="AUX_5" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="47">
+      <Symbol>
+        <Component Name="INDEX_AMOSTRAGEM" />
+      </Symbol>
+    </Access>
+    <Access Scope="LiteralConstant" UId="48">
+      <Constant>
+        <ConstantType>Int</ConstantType>
+        <ConstantValue>60</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LocalVariable" UId="49">
+      <Symbol>
+        <Component Name="INPUT_SENSOR" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="50">
+      <Symbol>
+        <Component Name="AUX_6" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="51">
+      <Symbol>
+        <Component Name="INDEX_AMOSTRAGEM" />
+      </Symbol>
+    </Access>
+    <Access Scope="LiteralConstant" UId="52">
+      <Constant>
+        <ConstantType>Int</ConstantType>
+        <ConstantValue>70</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LocalVariable" UId="53">
+      <Symbol>
+        <Component Name="INPUT_SENSOR" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="54">
+      <Symbol>
+        <Component Name="AUX_7" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="55">
+      <Symbol>
+        <Component Name="INDEX_AMOSTRAGEM" />
+      </Symbol>
+    </Access>
+    <Access Scope="LiteralConstant" UId="56">
+      <Constant>
+        <ConstantType>Int</ConstantType>
+        <ConstantValue>80</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LocalVariable" UId="57">
+      <Symbol>
+        <Component Name="INPUT_SENSOR" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="58">
+      <Symbol>
+        <Component Name="AUX_8" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="59">
+      <Symbol>
+        <Component Name="INDEX_AMOSTRAGEM" />
+      </Symbol>
+    </Access>
+    <Access Scope="LiteralConstant" UId="60">
+      <Constant>
+        <ConstantType>Int</ConstantType>
+        <ConstantValue>90</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LocalVariable" UId="61">
+      <Symbol>
+        <Component Name="AUX_1" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="62">
+      <Symbol>
+        <Component Name="AUX_2" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="63">
+      <Symbol>
+        <Component Name="AUX_3" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="64">
+      <Symbol>
+        <Component Name="AUX_4" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="65">
+      <Symbol>
+        <Component Name="AUX_5" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="66">
+      <Symbol>
+        <Component Name="AUX_6" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="67">
+      <Symbol>
+        <Component Name="AUX_7" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="68">
+      <Symbol>
+        <Component Name="AUX_8" />
+      </Symbol>
+    </Access>
+    <Access Scope="LiteralConstant" UId="69">
+      <Constant>
+        <ConstantType>DInt</ConstantType>
+        <ConstantValue>8</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LocalVariable" UId="70">
+      <Symbol>
+        <Component Name="OUTPUT_SENSOR" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="71">
+      <Symbol>
+        <Component Name="INDEX_AMOSTRAGEM" />
+      </Symbol>
+    </Access>
+    <Access Scope="LiteralConstant" UId="72">
+      <Constant>
+        <ConstantType>Int</ConstantType>
+        <ConstantValue>100</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LiteralConstant" UId="73">
+      <Constant>
+        <ConstantType>Int</ConstantType>
+        <ConstantValue>0</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LocalVariable" UId="74">
+      <Symbol>
+        <Component Name="INDEX_AMOSTRAGEM" />
+      </Symbol>
+    </Access>
+    <Part Name="Contact" UId="75" />
+    <Part Name="Contact" UId="76">
+      <Negated Name="operand" />
+    </Part>
+    <Part Name="Add" UId="77" DisabledENO="true">
+      <TemplateValue Name="Card" Type="Cardinality">2</TemplateValue>
+      <AutomaticTyped Name="SrcType" />
+    </Part>
+    <Part Name="Coil" UId="78" />
+    <Part Name="Eq" UId="79">
+      <TemplateValue Name="SrcType" Type="Type">Int</TemplateValue>
+    </Part>
+    <Part Name="Move" UId="80" DisabledENO="true">
+      <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+    </Part>
+    <Part Name="Eq" UId="81">
+      <TemplateValue Name="SrcType" Type="Type">Int</TemplateValue>
+    </Part>
+    <Part Name="Move" UId="82" DisabledENO="true">
+      <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+    </Part>
+    <Part Name="Eq" UId="83">
+      <TemplateValue Name="SrcType" Type="Type">Int</TemplateValue>
+    </Part>
+    <Part Name="Move" UId="84" DisabledENO="true">
+      <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+    </Part>
+    <Part Name="Eq" UId="85">
+      <TemplateValue Name="SrcType" Type="Type">Int</TemplateValue>
+    </Part>
+    <Part Name="Move" UId="86" DisabledENO="true">
+      <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+    </Part>
+    <Part Name="Eq" UId="87">
+      <TemplateValue Name="SrcType" Type="Type">Int</TemplateValue>
+    </Part>
+    <Part Name="Move" UId="88" DisabledENO="true">
+      <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+    </Part>
+    <Part Name="Eq" UId="89">
+      <TemplateValue Name="SrcType" Type="Type">Int</TemplateValue>
+    </Part>
+    <Part Name="Move" UId="90" DisabledENO="true">
+      <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+    </Part>
+    <Part Name="Eq" UId="91">
+      <TemplateValue Name="SrcType" Type="Type">Int</TemplateValue>
+    </Part>
+    <Part Name="Move" UId="92" DisabledENO="true">
+      <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+    </Part>
+    <Part Name="Eq" UId="93">
+      <TemplateValue Name="SrcType" Type="Type">Int</TemplateValue>
+    </Part>
+    <Part Name="Move" UId="94" DisabledENO="true">
+      <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+    </Part>
+    <Part Name="Eq" UId="95">
+      <TemplateValue Name="SrcType" Type="Type">Int</TemplateValue>
+    </Part>
+    <Part Name="Calc" UId="96" DisabledENO="true">
+      <Equation>(IN1+IN2+IN3+IN4+IN5+IN6+IN7+IN8)/IN9</Equation>
+      <TemplateValue Name="Card" Type="Cardinality">9</TemplateValue>
+      <TemplateValue Name="SrcType" Type="Type">DInt</TemplateValue>
+    </Part>
+    <Part Name="Eq" UId="97">
+      <TemplateValue Name="SrcType" Type="Type">Int</TemplateValue>
+    </Part>
+    <Part Name="Move" UId="98" DisabledENO="true">
+      <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+    </Part>
+  </Parts>
+  <Wires>
+    <Wire UId="99">
+      <Powerrail />
+      <NameCon UId="75" Name="in" />
+    </Wire>
+    <Wire UId="100">
+      <IdentCon UId="21" />
+      <NameCon UId="75" Name="operand" />
+    </Wire>
+    <Wire UId="101">
+      <NameCon UId="75" Name="out" />
+      <NameCon UId="76" Name="in" />
+      <NameCon UId="79" Name="pre" />
+      <NameCon UId="81" Name="pre" />
+      <NameCon UId="83" Name="pre" />
+      <NameCon UId="85" Name="pre" />
+      <NameCon UId="87" Name="pre" />
+      <NameCon UId="89" Name="pre" />
+      <NameCon UId="91" Name="pre" />
+      <NameCon UId="93" Name="pre" />
+      <NameCon UId="95" Name="pre" />
+      <NameCon UId="97" Name="pre" />
+    </Wire>
+    <Wire UId="102">
+      <IdentCon UId="22" />
+      <NameCon UId="76" Name="operand" />
+    </Wire>
+    <Wire UId="103">
+      <NameCon UId="76" Name="out" />
+      <NameCon UId="77" Name="en" />
+    </Wire>
+    <Wire UId="104">
+      <IdentCon UId="23" />
+      <NameCon UId="77" Name="in1" />
+    </Wire>
+    <Wire UId="105">
+      <IdentCon UId="24" />
+      <NameCon UId="77" Name="in2" />
+    </Wire>
+    <Wire UId="106">
+      <NameCon UId="77" Name="eno" />
+      <NameCon UId="78" Name="in" />
+    </Wire>
+    <Wire UId="107">
+      <NameCon UId="77" Name="out" />
+      <IdentCon UId="25" />
+    </Wire>
+    <Wire UId="108">
+      <IdentCon UId="26" />
+      <NameCon UId="78" Name="operand" />
+    </Wire>
+    <Wire UId="109">
+      <IdentCon UId="27" />
+      <NameCon UId="79" Name="in1" />
+    </Wire>
+    <Wire UId="110">
+      <IdentCon UId="28" />
+      <NameCon UId="79" Name="in2" />
+    </Wire>
+    <Wire UId="111">
+      <NameCon UId="79" Name="out" />
+      <NameCon UId="80" Name="en" />
+    </Wire>
+    <Wire UId="112">
+      <IdentCon UId="29" />
+      <NameCon UId="80" Name="in" />
+    </Wire>
+    <Wire UId="113">
+      <NameCon UId="80" Name="out1" />
+      <IdentCon UId="30" />
+    </Wire>
+    <Wire UId="114">
+      <IdentCon UId="31" />
+      <NameCon UId="81" Name="in1" />
+    </Wire>
+    <Wire UId="115">
+      <IdentCon UId="32" />
+      <NameCon UId="81" Name="in2" />
+    </Wire>
+    <Wire UId="116">
+      <NameCon UId="81" Name="out" />
+      <NameCon UId="82" Name="en" />
+    </Wire>
+    <Wire UId="117">
+      <IdentCon UId="33" />
+      <NameCon UId="82" Name="in" />
+    </Wire>
+    <Wire UId="118">
+      <NameCon UId="82" Name="out1" />
+      <IdentCon UId="34" />
+    </Wire>
+    <Wire UId="119">
+      <IdentCon UId="35" />
+      <NameCon UId="83" Name="in1" />
+    </Wire>
+    <Wire UId="120">
+      <IdentCon UId="36" />
+      <NameCon UId="83" Name="in2" />
+    </Wire>
+    <Wire UId="121">
+      <NameCon UId="83" Name="out" />
+      <NameCon UId="84" Name="en" />
+    </Wire>
+    <Wire UId="122">
+      <IdentCon UId="37" />
+      <NameCon UId="84" Name="in" />
+    </Wire>
+    <Wire UId="123">
+      <NameCon UId="84" Name="out1" />
+      <IdentCon UId="38" />
+    </Wire>
+    <Wire UId="124">
+      <IdentCon UId="39" />
+      <NameCon UId="85" Name="in1" />
+    </Wire>
+    <Wire UId="125">
+      <IdentCon UId="40" />
+      <NameCon UId="85" Name="in2" />
+    </Wire>
+    <Wire UId="126">
+      <NameCon UId="85" Name="out" />
+      <NameCon UId="86" Name="en" />
+    </Wire>
+    <Wire UId="127">
+      <IdentCon UId="41" />
+      <NameCon UId="86" Name="in" />
+    </Wire>
+    <Wire UId="128">
+      <NameCon UId="86" Name="out1" />
+      <IdentCon UId="42" />
+    </Wire>
+    <Wire UId="129">
+      <IdentCon UId="43" />
+      <NameCon UId="87" Name="in1" />
+    </Wire>
+    <Wire UId="130">
+      <IdentCon UId="44" />
+      <NameCon UId="87" Name="in2" />
+    </Wire>
+    <Wire UId="131">
+      <NameCon UId="87" Name="out" />
+      <NameCon UId="88" Name="en" />
+    </Wire>
+    <Wire UId="132">
+      <IdentCon UId="45" />
+      <NameCon UId="88" Name="in" />
+    </Wire>
+    <Wire UId="133">
+      <NameCon UId="88" Name="out1" />
+      <IdentCon UId="46" />
+    </Wire>
+    <Wire UId="134">
+      <IdentCon UId="47" />
+      <NameCon UId="89" Name="in1" />
+    </Wire>
+    <Wire UId="135">
+      <IdentCon UId="48" />
+      <NameCon UId="89" Name="in2" />
+    </Wire>
+    <Wire UId="136">
+      <NameCon UId="89" Name="out" />
+      <NameCon UId="90" Name="en" />
+    </Wire>
+    <Wire UId="137">
+      <IdentCon UId="49" />
+      <NameCon UId="90" Name="in" />
+    </Wire>
+    <Wire UId="138">
+      <NameCon UId="90" Name="out1" />
+      <IdentCon UId="50" />
+    </Wire>
+    <Wire UId="139">
+      <IdentCon UId="51" />
+      <NameCon UId="91" Name="in1" />
+    </Wire>
+    <Wire UId="140">
+      <IdentCon UId="52" />
+      <NameCon UId="91" Name="in2" />
+    </Wire>
+    <Wire UId="141">
+      <NameCon UId="91" Name="out" />
+      <NameCon UId="92" Name="en" />
+    </Wire>
+    <Wire UId="142">
+      <IdentCon UId="53" />
+      <NameCon UId="92" Name="in" />
+    </Wire>
+    <Wire UId="143">
+      <NameCon UId="92" Name="out1" />
+      <IdentCon UId="54" />
+    </Wire>
+    <Wire UId="144">
+      <IdentCon UId="55" />
+      <NameCon UId="93" Name="in1" />
+    </Wire>
+    <Wire UId="145">
+      <IdentCon UId="56" />
+      <NameCon UId="93" Name="in2" />
+    </Wire>
+    <Wire UId="146">
+      <NameCon UId="93" Name="out" />
+      <NameCon UId="94" Name="en" />
+    </Wire>
+    <Wire UId="147">
+      <IdentCon UId="57" />
+      <NameCon UId="94" Name="in" />
+    </Wire>
+    <Wire UId="148">
+      <NameCon UId="94" Name="out1" />
+      <IdentCon UId="58" />
+    </Wire>
+    <Wire UId="149">
+      <IdentCon UId="59" />
+      <NameCon UId="95" Name="in1" />
+    </Wire>
+    <Wire UId="150">
+      <IdentCon UId="60" />
+      <NameCon UId="95" Name="in2" />
+    </Wire>
+    <Wire UId="151">
+      <NameCon UId="95" Name="out" />
+      <NameCon UId="96" Name="en" />
+    </Wire>
+    <Wire UId="152">
+      <IdentCon UId="61" />
+      <NameCon UId="96" Name="in1" />
+    </Wire>
+    <Wire UId="153">
+      <IdentCon UId="62" />
+      <NameCon UId="96" Name="in2" />
+    </Wire>
+    <Wire UId="154">
+      <IdentCon UId="63" />
+      <NameCon UId="96" Name="in3" />
+    </Wire>
+    <Wire UId="155">
+      <IdentCon UId="64" />
+      <NameCon UId="96" Name="in4" />
+    </Wire>
+    <Wire UId="156">
+      <IdentCon UId="65" />
+      <NameCon UId="96" Name="in5" />
+    </Wire>
+    <Wire UId="157">
+      <IdentCon UId="66" />
+      <NameCon UId="96" Name="in6" />
+    </Wire>
+    <Wire UId="158">
+      <IdentCon UId="67" />
+      <NameCon UId="96" Name="in7" />
+    </Wire>
+    <Wire UId="159">
+      <IdentCon UId="68" />
+      <NameCon UId="96" Name="in8" />
+    </Wire>
+    <Wire UId="160">
+      <IdentCon UId="69" />
+      <NameCon UId="96" Name="in9" />
+    </Wire>
+    <Wire UId="161">
+      <NameCon UId="96" Name="out" />
+      <IdentCon UId="70" />
+    </Wire>
+    <Wire UId="162">
+      <IdentCon UId="71" />
+      <NameCon UId="97" Name="in1" />
+    </Wire>
+    <Wire UId="163">
+      <IdentCon UId="72" />
+      <NameCon UId="97" Name="in2" />
+    </Wire>
+    <Wire UId="164">
+      <NameCon UId="97" Name="out" />
+      <NameCon UId="98" Name="en" />
+    </Wire>
+    <Wire UId="165">
+      <IdentCon UId="73" />
+      <NameCon UId="98" Name="in" />
+    </Wire>
+    <Wire UId="166">
+      <NameCon UId="98" Name="out1" />
+      <IdentCon UId="74" />
+    </Wire>
+  </Wires>
+</FlgNet></NetworkSource>
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>O sistema irá realizar 4 amostra no periodo de 2s e realizar um filtro, contra interferências externas no sistema.</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Sistema de Amostragem </Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FB>
+</Document>

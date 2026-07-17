@@ -1,0 +1,3853 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V18" />
+  <DocumentInfo>
+    <Created>2026-03-12T16:03:53.211165Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, S210</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Professional</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <Hmi.Tag.TagTable ID="0">
+    <AttributeList>
+      <Name>TAG_ELE_GORDURA</Name>
+    </AttributeList>
+    <ObjectList>
+      <Hmi.Tag.Tag ID="1" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_COMANDO_BOMBA_SDG_RESET_HORIMETRO</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.BOMBA_SDG.RESET_HORIMETRO</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="7" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="8" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="9" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="B" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="D" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_BOMBA_SDG_HORIMETRO</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_SDG.HORIMETRO</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>UInt</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>UInt</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="11" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="12" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="13" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="14" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="15" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="16" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="17" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>IEEE754Float</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>4</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01A_REF_TORQUE</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01A.REF_TORQUE</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="1B" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="1C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="1D" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="1E" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="1F" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="20" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="21" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_COMANDO_CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B_MANUTENCAO_PRINCIPAL</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B.MANUTENCAO_PRINCIPAL</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="23" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="24" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="25" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="26" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="27" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="28" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="29" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>IEEE754Float</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>4</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01B_REF_POTENCIA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01B.REF_POTENCIA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="2B" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="2C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="2D" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="2E" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="2F" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="30" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="31" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01A_CADASTRO_MAX_LEITURA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01A.CADASTRO_MAX_LEITURA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="35" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="36" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="37" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="38" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="39" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="3A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="3B" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>IEEE754Float</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>4</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01A_REF_VELOCIDADE</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01A.REF_VELOCIDADE</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="3D" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="3E" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="3F" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="40" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="41" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="42" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="43" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_COMANDO_CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B_RESET_HORIMETRO_PRINCIPAL</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B.RESET_HORIMETRO_PRINCIPAL</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="45" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="46" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="47" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="48" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="49" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="4A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="4B" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_COMANDO_BOMBA_SDG_LIGA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.BOMBA_SDG.LIGA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="4D" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="4E" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="4F" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="50" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="51" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="52" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="53" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_SENSORES_SENSOR_HIDROSTÁTICO_LT-04_CADASTRO_MAX</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.SENSORES.SENSOR_HIDROSTÁTICO_LT-04.CADASTRO_MAX</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="55" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="56" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="57" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="58" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="59" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="5A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="5B" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>IEEE754Float</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>4</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_SENSORES_SENSOR_HIDROSTÁTICO_LT-04_CADASTRO_LEITURA_MUITO_BAIXA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.SENSORES.SENSOR_HIDROSTÁTICO_LT-04.CADASTRO_LEITURA_MUITO_BAIXA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="5D" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5E" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="5F" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="60" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="61" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="62" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="63" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_COMANDO_CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B_MANUTENCAO_RESERVA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B.MANUTENCAO_RESERVA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="65" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="66" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="67" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="68" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="69" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="6A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="6B" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>IEEE754Float</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>4</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_SENSORES_SENSOR_HIDROSTÁTICO_LT-04_CADASTRO_LEITURA_MUITO_ALTA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.SENSORES.SENSOR_HIDROSTÁTICO_LT-04.CADASTRO_LEITURA_MUITO_ALTA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="6D" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="6E" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6F" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="70" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="71" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="72" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="73" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_BOMBA_SDG_STATUS_MOTOR</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_SDG.STATUS_MOTOR</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Byte</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>USInt</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="77" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="78" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="79" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="7A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="7B" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="7C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="7D" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01A_VELOCIDADE</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01A.VELOCIDADE</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="7F" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="80" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="81" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="82" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="83" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="84" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="85" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01B_OPERACAO_MOTOR</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01B.OPERACAO_MOTOR</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Byte</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>USInt</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="87" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="88" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="89" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="8A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="8B" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="8C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="8D" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_COMANDO_BOMBA_SDG_RESET_FALHA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.BOMBA_SDG.RESET_FALHA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="8F" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="90" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="91" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="92" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="93" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="94" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="95" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>IEEE754Float</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>4</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01A_REF_POTENCIA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01A.REF_POTENCIA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="97" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="98" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="99" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="9A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="9B" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="9C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="9D" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_BOMBA_SDG_OPERACAO_MOTOR</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_SDG.OPERACAO_MOTOR</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Byte</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>USInt</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="9F" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="A0" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="A1" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="A2" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="A3" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="A4" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="A5" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>IEEE754Float</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>4</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_SENSORES_SENSOR_HIDROSTÁTICO_LT-04_CADASTRO_LEITURA_BAIXA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.SENSORES.SENSOR_HIDROSTÁTICO_LT-04.CADASTRO_LEITURA_BAIXA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="A7" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="A8" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="A9" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="AA" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="AB" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="AC" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="AD" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_COMANDO_BOMBA_SDG_MANUTENCAO</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.BOMBA_SDG.MANUTENCAO</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="AF" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="B0" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="B1" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="B2" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="B3" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="B4" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="B5" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>IEEE754Float</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>4</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01A_REF_CORRENTE</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01A.REF_CORRENTE</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="B7" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="B8" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="B9" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="BA" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="BB" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="BC" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="BD" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_BOMBA_BH-01B_STATUS_MOTOR</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01B.STATUS_MOTOR</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Byte</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>USInt</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="BF" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="C0" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="C1" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="C2" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="C3" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="C4" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="C5" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01B_CADASTRO_MAX_LEITURA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01B.CADASTRO_MAX_LEITURA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="C7" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="C8" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="C9" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="CA" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="CB" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="CC" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="CD" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_BOMBA_BH-01A_HORIMETRO</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01A.HORIMETRO</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>UInt</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>UInt</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="CF" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="D0" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="D1" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="D2" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="D3" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="D4" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="D5" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_COMANDO_CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B_HABILITA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B.HABILITA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="D7" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="D8" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="D9" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="DA" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="DB" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="DC" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="DD" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_BOMBA_BH-01A_OPERACAO_MOTOR</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01A.OPERACAO_MOTOR</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Byte</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>USInt</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="DF" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="E0" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="E1" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="E2" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="E3" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="E4" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="E5" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_COMANDO_CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B_MODO_OPERACAO</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B.MODO_OPERACAO</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="E7" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="E8" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="E9" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="EA" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="EB" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="EC" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="ED" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01B_CADASTRO_MIN_LEITURA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01B.CADASTRO_MIN_LEITURA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="EF" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="F0" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="F1" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="F2" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="F3" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="F4" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="F5" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_COMANDO_CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B_RESET_FALHA_RESERVA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B.RESET_FALHA_RESERVA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="F7" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="F8" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="F9" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="FA" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="FB" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="FC" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="FD" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>IEEE754Float</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>4</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01B_REF_CORRENTE</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01B.REF_CORRENTE</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="FF" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="100" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="101" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="102" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="103" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="104" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="105" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01A_SETPOINT_MANUAL</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01A.SETPOINT_MANUAL</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="107" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="108" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="109" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="10A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="10B" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="10C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="10D" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01B_VELOCIDADE</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01B.VELOCIDADE</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="10F" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="110" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="111" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="112" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="113" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="114" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="115" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_BOMBA_BH-01B_HORIMETRO</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01B.HORIMETRO</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>UInt</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>UInt</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="117" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="118" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="119" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="11A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="11B" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="11C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="11D" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_COMANDO_CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B_LIGA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B.LIGA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="11F" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="120" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="121" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="122" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="123" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="124" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="125" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01A_CADASTRO_MIN_LEITURA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01A.CADASTRO_MIN_LEITURA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="127" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="128" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="129" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="12A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="12B" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="12C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="12D" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>IEEE754Float</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>4</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01B_REF_TORQUE</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01B.REF_TORQUE</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="12F" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="130" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="131" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="132" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="133" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="134" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="135" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>IEEE754Float</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>4</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_SENSORES_SENSOR_HIDROSTÁTICO_LT-04_CADASTRO_LEITURA_ALTA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.SENSORES.SENSOR_HIDROSTÁTICO_LT-04.CADASTRO_LEITURA_ALTA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="137" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="138" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="139" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="13A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="13B" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="13C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="13D" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_COMANDO_CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B_RESET_FALHA_PRINCIPAL</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B.RESET_FALHA_PRINCIPAL</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="13F" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="140" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="141" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="142" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="143" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="144" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="145" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_COMANDO_CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B_INTERTRAVAMENTO_LIGA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B.INTERTRAVAMENTO_LIGA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="147" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="148" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="149" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="14A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="14B" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="14C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="14D" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01B_SETPOINT_MANUAL</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01B.SETPOINT_MANUAL</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="14F" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="150" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="151" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="152" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="153" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="154" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="155" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_COMANDO_BOMBA_SDG_INTERTRAVAMENTO_LIGA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.BOMBA_SDG.INTERTRAVAMENTO_LIGA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="157" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="158" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="159" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="15A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="15B" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="15C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="15D" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_BOMBA_BH-01A_STATUS_MOTOR</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01A.STATUS_MOTOR</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Byte</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>USInt</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="15F" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="160" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="161" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="162" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="163" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="164" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="165" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>IEEE754Float</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>4</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_SENSORES_SENSOR_HIDROSTÁTICO_LT-04_STATUS_SENSOR</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.SENSORES.SENSOR_HIDROSTÁTICO_LT-04.STATUS_SENSOR</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="167" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="168" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="169" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="16A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="16B" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="16C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="16D" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_SENSORES_SENSOR_HIDROSTÁTICO_LT-04_MANUTENÇÃO</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.SENSORES.SENSOR_HIDROSTÁTICO_LT-04.MANUTENCAO</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="16F" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="170" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="171" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="172" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="173" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="174" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="175" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_COMANDO_BOMBA_SDG_MODO_OPERACAO</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.BOMBA_SDG.MODO_OPERACAO</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="177" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="178" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="179" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="17A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="17B" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="17C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="17D" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_SENSORES_SENSOR_HIDROSTÁTICO_LT-04_CADASTRO_MIN</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.SENSORES.SENSOR_HIDROSTÁTICO_LT-04.CADASTRO_MIN</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="17F" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="180" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="181" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="182" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="183" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="184" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="185" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>IEEE754Float</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>4</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATORIA_DE_GORDURA_BOMBA_BH-01B_REF_VELOCIDADE</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.BOMBA_BH-01B.REF_VELOCIDADE</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Real</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="187" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="188" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="189" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="18A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="18B" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="18C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="18D" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>1</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_COMANDO_CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B_RESET_HORIMETRO_RESERVA</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.COMANDO.CONJUNTO_BOMBA_BH-01A_&amp;_BH-01B.RESET_HORIMETRO_RESERVA</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Bool</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="18F" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="190" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="191" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="192" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="193" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="194" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+      <Hmi.Tag.Tag ID="195" CompositionName="Tags">
+        <AttributeList>
+          <AcquisitionTriggerMode>Visible</AcquisitionTriggerMode>
+          <AddressAccessMode>Symbolic</AddressAccessMode>
+          <Coding>Binary</Coding>
+          <ConfirmationType>None</ConfirmationType>
+          <GmpRelevant>false</GmpRelevant>
+          <JobNumber>0</JobNumber>
+          <Length>2</Length>
+          <LinearScaling>false</LinearScaling>
+          <LogicalAddress />
+          <MandatoryCommenting>false</MandatoryCommenting>
+          <Name>DB GLOBAL_ELEVATÓRIA_DE_GORDURA_SENSORES_SENSOR_HIDROSTÁTICO_LT-04_AMOSTRA_SENSOR</Name>
+          <Persistency>false</Persistency>
+          <QualityCode>false</QualityCode>
+          <ScalingHmiHigh>100</ScalingHmiHigh>
+          <ScalingHmiLow>0</ScalingHmiLow>
+          <ScalingPlcHigh>10</ScalingPlcHigh>
+          <ScalingPlcLow>0</ScalingPlcLow>
+          <StartValue />
+          <SubstituteValue />
+          <SubstituteValueUsage>None</SubstituteValueUsage>
+          <Synchronization>false</Synchronization>
+          <UpdateMode>ProjectWide</UpdateMode>
+          <UseMultiplexing>false</UseMultiplexing>
+        </AttributeList>
+        <LinkList>
+          <AcquisitionCycle TargetID="@OpenLink">
+            <Name>1 s</Name>
+          </AcquisitionCycle>
+          <Connection TargetID="@OpenLink">
+            <Name>HMI_Connection_6</Name>
+          </Connection>
+          <ControllerTag TargetID="@OpenLink">
+            <Name>"DB GLOBAL".ELEVATORIA_DE_GORDURA.SENSORES.SENSOR_HIDROSTÁTICO_LT-04.AMOSTRA_SENSOR</Name>
+          </ControllerTag>
+          <DataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </DataType>
+          <HmiDataType TargetID="@OpenLink">
+            <Name>Int</Name>
+          </HmiDataType>
+        </LinkList>
+        <ObjectList>
+          <MultilingualText ID="197" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="198" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="199" CompositionName="DisplayName">
+            <ObjectList>
+              <MultilingualTextItem ID="19A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="19B" CompositionName="TagValue">
+            <ObjectList>
+              <MultilingualTextItem ID="19C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </Hmi.Tag.Tag>
+    </ObjectList>
+  </Hmi.Tag.TagTable>
+</Document>

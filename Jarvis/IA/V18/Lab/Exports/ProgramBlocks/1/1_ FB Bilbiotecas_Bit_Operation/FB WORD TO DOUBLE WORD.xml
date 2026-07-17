@@ -1,0 +1,776 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V18" />
+  <DocumentInfo>
+    <Created>2026-03-12T16:04:34.171403Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, S210</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Professional</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.FB ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input">
+    <Member Name="SIGNAL_Word0" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Sinal de entrada 1</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="SIGNAL_Word1" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Sinal de entrada 2</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="SIGNAL_Word2" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="SIGNAL_Word3" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="SIGNAL_Word4" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="SIGNAL_Word5" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="SIGNAL_Word6" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="SIGNAL_Word7" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="SIGNAL_Word8" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="SIGNAL_Word9" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="SIGNAL_Word10" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="SIGNAL_Word11" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="SIGNAL_Word12" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="SIGNAL_Word13" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="SIGNAL_Word14" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="SIGNAL_Word15" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+  <Section Name="Output">
+    <Member Name="BITS_TO_DWORD_0" Datatype="DWord" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Word de saída com os sinais montados</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="BITS_TO_DWORD_1" Datatype="DWord" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="BITS_TO_DWORD_2" Datatype="DWord" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="BITS_TO_DWORD_3" Datatype="DWord" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="BITS_TO_DWORD_4" Datatype="DWord" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="BITS_TO_DWORD_5" Datatype="DWord" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="BITS_TO_DWORD_6" Datatype="DWord" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="BITS_TO_DWORD_7" Datatype="DWord" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+  <Section Name="InOut" />
+  <Section Name="Static" />
+  <Section Name="Temp" />
+  <Section Name="Constant" />
+</Sections></Interface>
+      <IsIECCheckEnabled>false</IsIECCheckEnabled>
+      <IsRetainMemResEnabled>false</IsRetainMemResEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <MemoryReserve>100</MemoryReserve>
+      <Name>FB WORD TO DOUBLE WORD</Name>
+      <Namespace />
+      <Number>26</Number>
+      <ProgrammingLanguage>SCL</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><StructuredText xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/StructuredText/v3">
+  <LineComment Inserted="false" NoClosingBracket="false" UId="21">
+    <Text UId="22"> Word Alarmes - Montando WORD'S em uma double word</Text>
+  </LineComment>
+  <NewLine Num="2" UId="23" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="24">
+    <Text UId="25"> Bits recebidos de campo</Text>
+  </LineComment>
+  <NewLine Num="1" UId="26" />
+  <Access Scope="LocalVariable" UId="27">
+    <Symbol UId="28">
+      <Component Name="BITS_TO_DWORD_0" UId="29" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="30" />
+  <Token Text=":=" UId="31" />
+  <Blank Num="1" UId="32" />
+  <Token Text="(" UId="33" />
+  <Access Scope="Call" UId="34">
+    <Instruction Name="SHL" UId="35">
+      <Token Text="(" UId="36" />
+      <Parameter Name="IN" UId="37">
+        <Blank Num="1" UId="38" />
+        <Token Text=":=" UId="39" />
+        <Blank Num="1" UId="40" />
+        <Access Scope="Call" UId="41">
+          <Instruction Name="WORD_TO_DWORD" UId="42">
+            <Token Text="(" UId="43" />
+            <NamelessParameter UId="44">
+              <Access Scope="LocalVariable" UId="45">
+                <Symbol UId="46">
+                  <Component Name="SIGNAL_Word1" UId="47" />
+                </Symbol>
+              </Access>
+            </NamelessParameter>
+            <Token Text=")" UId="49" />
+          </Instruction>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="50" />
+      <Blank Num="1" UId="51" />
+      <Parameter Name="N" UId="52">
+        <Blank Num="1" UId="53" />
+        <Token Text=":=" UId="54" />
+        <Blank Num="1" UId="55" />
+        <Access Scope="LiteralConstant" UId="56">
+          <Constant UId="57">
+            <ConstantValue UId="59">16</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="61" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="62" />
+  <Token Text="OR" UId="63" />
+  <Blank Num="1" UId="64" />
+  <Token Text="(" UId="65" />
+  <Access Scope="LocalVariable" UId="66">
+    <Symbol UId="67">
+      <Component Name="SIGNAL_Word0" UId="68" />
+    </Symbol>
+  </Access>
+  <Token Text=")" UId="69" />
+  <Token Text=")" UId="70" />
+  <Token Text=";" UId="71" />
+  <NewLine Num="1" UId="72" />
+  <Access Scope="LocalVariable" UId="73">
+    <Symbol UId="74">
+      <Component Name="BITS_TO_DWORD_1" UId="75" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="76" />
+  <Token Text=":=" UId="77" />
+  <Blank Num="1" UId="78" />
+  <Token Text="(" UId="79" />
+  <Access Scope="Call" UId="80">
+    <Instruction Name="SHL" UId="81">
+      <Token Text="(" UId="82" />
+      <Parameter Name="IN" UId="83">
+        <Blank Num="1" UId="84" />
+        <Token Text=":=" UId="85" />
+        <Blank Num="1" UId="86" />
+        <Access Scope="Call" UId="87">
+          <Instruction Name="WORD_TO_DWORD" UId="88">
+            <Token Text="(" UId="89" />
+            <NamelessParameter UId="90">
+              <Access Scope="LocalVariable" UId="91">
+                <Symbol UId="92">
+                  <Component Name="SIGNAL_Word3" UId="93" />
+                </Symbol>
+              </Access>
+            </NamelessParameter>
+            <Token Text=")" UId="95" />
+          </Instruction>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="96" />
+      <Blank Num="1" UId="97" />
+      <Parameter Name="N" UId="98">
+        <Blank Num="1" UId="99" />
+        <Token Text=":=" UId="100" />
+        <Blank Num="1" UId="101" />
+        <Access Scope="LiteralConstant" UId="102">
+          <Constant UId="103">
+            <ConstantValue UId="105">16</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="107" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="108" />
+  <Token Text="OR" UId="109" />
+  <Blank Num="1" UId="110" />
+  <Token Text="(" UId="111" />
+  <Access Scope="LocalVariable" UId="112">
+    <Symbol UId="113">
+      <Component Name="SIGNAL_Word2" UId="114" />
+    </Symbol>
+  </Access>
+  <Token Text=")" UId="115" />
+  <Token Text=")" UId="116" />
+  <Token Text=";" UId="117" />
+  <NewLine Num="1" UId="118" />
+  <Access Scope="LocalVariable" UId="119">
+    <Symbol UId="120">
+      <Component Name="BITS_TO_DWORD_2" UId="121" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="122" />
+  <Token Text=":=" UId="123" />
+  <Blank Num="1" UId="124" />
+  <Token Text="(" UId="125" />
+  <Access Scope="Call" UId="126">
+    <Instruction Name="SHL" UId="127">
+      <Token Text="(" UId="128" />
+      <Parameter Name="IN" UId="129">
+        <Blank Num="1" UId="130" />
+        <Token Text=":=" UId="131" />
+        <Blank Num="1" UId="132" />
+        <Access Scope="Call" UId="133">
+          <Instruction Name="WORD_TO_DWORD" UId="134">
+            <Token Text="(" UId="135" />
+            <NamelessParameter UId="136">
+              <Access Scope="LocalVariable" UId="137">
+                <Symbol UId="138">
+                  <Component Name="SIGNAL_Word5" UId="139" />
+                </Symbol>
+              </Access>
+            </NamelessParameter>
+            <Token Text=")" UId="141" />
+          </Instruction>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="142" />
+      <Blank Num="1" UId="143" />
+      <Parameter Name="N" UId="144">
+        <Blank Num="1" UId="145" />
+        <Token Text=":=" UId="146" />
+        <Blank Num="1" UId="147" />
+        <Access Scope="LiteralConstant" UId="148">
+          <Constant UId="149">
+            <ConstantValue UId="151">16</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="153" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="154" />
+  <Token Text="OR" UId="155" />
+  <Blank Num="1" UId="156" />
+  <Token Text="(" UId="157" />
+  <Access Scope="LocalVariable" UId="158">
+    <Symbol UId="159">
+      <Component Name="SIGNAL_Word4" UId="160" />
+    </Symbol>
+  </Access>
+  <Token Text=")" UId="161" />
+  <Token Text=")" UId="162" />
+  <Token Text=";" UId="163" />
+  <NewLine Num="1" UId="164" />
+  <Access Scope="LocalVariable" UId="165">
+    <Symbol UId="166">
+      <Component Name="BITS_TO_DWORD_3" UId="167" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="168" />
+  <Token Text=":=" UId="169" />
+  <Blank Num="1" UId="170" />
+  <Token Text="(" UId="171" />
+  <Access Scope="Call" UId="172">
+    <Instruction Name="SHL" UId="173">
+      <Token Text="(" UId="174" />
+      <Parameter Name="IN" UId="175">
+        <Blank Num="1" UId="176" />
+        <Token Text=":=" UId="177" />
+        <Blank Num="1" UId="178" />
+        <Access Scope="Call" UId="179">
+          <Instruction Name="WORD_TO_DWORD" UId="180">
+            <Token Text="(" UId="181" />
+            <NamelessParameter UId="182">
+              <Access Scope="LocalVariable" UId="183">
+                <Symbol UId="184">
+                  <Component Name="SIGNAL_Word7" UId="185" />
+                </Symbol>
+              </Access>
+            </NamelessParameter>
+            <Token Text=")" UId="187" />
+          </Instruction>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="188" />
+      <Blank Num="1" UId="189" />
+      <Parameter Name="N" UId="190">
+        <Blank Num="1" UId="191" />
+        <Token Text=":=" UId="192" />
+        <Blank Num="1" UId="193" />
+        <Access Scope="LiteralConstant" UId="194">
+          <Constant UId="195">
+            <ConstantValue UId="197">16</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="199" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="200" />
+  <Token Text="OR" UId="201" />
+  <Blank Num="1" UId="202" />
+  <Token Text="(" UId="203" />
+  <Access Scope="LocalVariable" UId="204">
+    <Symbol UId="205">
+      <Component Name="SIGNAL_Word6" UId="206" />
+    </Symbol>
+  </Access>
+  <Token Text=")" UId="207" />
+  <Token Text=")" UId="208" />
+  <Token Text=";" UId="209" />
+  <NewLine Num="1" UId="210" />
+  <Access Scope="LocalVariable" UId="211">
+    <Symbol UId="212">
+      <Component Name="BITS_TO_DWORD_4" UId="213" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="214" />
+  <Token Text=":=" UId="215" />
+  <Blank Num="1" UId="216" />
+  <Token Text="(" UId="217" />
+  <Access Scope="Call" UId="218">
+    <Instruction Name="SHL" UId="219">
+      <Token Text="(" UId="220" />
+      <Parameter Name="IN" UId="221">
+        <Blank Num="1" UId="222" />
+        <Token Text=":=" UId="223" />
+        <Blank Num="1" UId="224" />
+        <Access Scope="Call" UId="225">
+          <Instruction Name="WORD_TO_DWORD" UId="226">
+            <Token Text="(" UId="227" />
+            <NamelessParameter UId="228">
+              <Access Scope="LocalVariable" UId="229">
+                <Symbol UId="230">
+                  <Component Name="SIGNAL_Word9" UId="231" />
+                </Symbol>
+              </Access>
+            </NamelessParameter>
+            <Token Text=")" UId="233" />
+          </Instruction>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="234" />
+      <Blank Num="1" UId="235" />
+      <Parameter Name="N" UId="236">
+        <Blank Num="1" UId="237" />
+        <Token Text=":=" UId="238" />
+        <Blank Num="1" UId="239" />
+        <Access Scope="LiteralConstant" UId="240">
+          <Constant UId="241">
+            <ConstantValue UId="243">16</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="245" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="246" />
+  <Token Text="OR" UId="247" />
+  <Blank Num="1" UId="248" />
+  <Token Text="(" UId="249" />
+  <Access Scope="LocalVariable" UId="250">
+    <Symbol UId="251">
+      <Component Name="SIGNAL_Word8" UId="252" />
+    </Symbol>
+  </Access>
+  <Token Text=")" UId="253" />
+  <Token Text=")" UId="254" />
+  <Token Text=";" UId="255" />
+  <NewLine Num="1" UId="256" />
+  <Access Scope="LocalVariable" UId="257">
+    <Symbol UId="258">
+      <Component Name="BITS_TO_DWORD_5" UId="259" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="260" />
+  <Token Text=":=" UId="261" />
+  <Blank Num="1" UId="262" />
+  <Token Text="(" UId="263" />
+  <Access Scope="Call" UId="264">
+    <Instruction Name="SHL" UId="265">
+      <Token Text="(" UId="266" />
+      <Parameter Name="IN" UId="267">
+        <Blank Num="1" UId="268" />
+        <Token Text=":=" UId="269" />
+        <Blank Num="1" UId="270" />
+        <Access Scope="Call" UId="271">
+          <Instruction Name="WORD_TO_DWORD" UId="272">
+            <Token Text="(" UId="273" />
+            <NamelessParameter UId="274">
+              <Access Scope="LocalVariable" UId="275">
+                <Symbol UId="276">
+                  <Component Name="SIGNAL_Word11" UId="277" />
+                </Symbol>
+              </Access>
+            </NamelessParameter>
+            <Token Text=")" UId="279" />
+          </Instruction>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="280" />
+      <Blank Num="1" UId="281" />
+      <Parameter Name="N" UId="282">
+        <Blank Num="1" UId="283" />
+        <Token Text=":=" UId="284" />
+        <Blank Num="1" UId="285" />
+        <Access Scope="LiteralConstant" UId="286">
+          <Constant UId="287">
+            <ConstantValue UId="289">16</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="291" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="292" />
+  <Token Text="OR" UId="293" />
+  <Blank Num="1" UId="294" />
+  <Token Text="(" UId="295" />
+  <Access Scope="LocalVariable" UId="296">
+    <Symbol UId="297">
+      <Component Name="SIGNAL_Word10" UId="298" />
+    </Symbol>
+  </Access>
+  <Token Text=")" UId="299" />
+  <Token Text=")" UId="300" />
+  <Token Text=";" UId="301" />
+  <NewLine Num="1" UId="302" />
+  <Access Scope="LocalVariable" UId="303">
+    <Symbol UId="304">
+      <Component Name="BITS_TO_DWORD_6" UId="305" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="306" />
+  <Token Text=":=" UId="307" />
+  <Blank Num="1" UId="308" />
+  <Token Text="(" UId="309" />
+  <Access Scope="Call" UId="310">
+    <Instruction Name="SHL" UId="311">
+      <Token Text="(" UId="312" />
+      <Parameter Name="IN" UId="313">
+        <Blank Num="1" UId="314" />
+        <Token Text=":=" UId="315" />
+        <Blank Num="1" UId="316" />
+        <Access Scope="Call" UId="317">
+          <Instruction Name="WORD_TO_DWORD" UId="318">
+            <Token Text="(" UId="319" />
+            <NamelessParameter UId="320">
+              <Access Scope="LocalVariable" UId="321">
+                <Symbol UId="322">
+                  <Component Name="SIGNAL_Word13" UId="323" />
+                </Symbol>
+              </Access>
+            </NamelessParameter>
+            <Token Text=")" UId="325" />
+          </Instruction>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="326" />
+      <Blank Num="1" UId="327" />
+      <Parameter Name="N" UId="328">
+        <Blank Num="1" UId="329" />
+        <Token Text=":=" UId="330" />
+        <Blank Num="1" UId="331" />
+        <Access Scope="LiteralConstant" UId="332">
+          <Constant UId="333">
+            <ConstantValue UId="335">16</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="337" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="338" />
+  <Token Text="OR" UId="339" />
+  <Blank Num="1" UId="340" />
+  <Token Text="(" UId="341" />
+  <Access Scope="LocalVariable" UId="342">
+    <Symbol UId="343">
+      <Component Name="SIGNAL_Word12" UId="344" />
+    </Symbol>
+  </Access>
+  <Token Text=")" UId="345" />
+  <Token Text=")" UId="346" />
+  <Token Text=";" UId="347" />
+  <NewLine Num="1" UId="348" />
+  <Access Scope="LocalVariable" UId="349">
+    <Symbol UId="350">
+      <Component Name="BITS_TO_DWORD_7" UId="351" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="352" />
+  <Token Text=":=" UId="353" />
+  <Blank Num="1" UId="354" />
+  <Token Text="(" UId="355" />
+  <Access Scope="Call" UId="356">
+    <Instruction Name="SHL" UId="357">
+      <Token Text="(" UId="358" />
+      <Parameter Name="IN" UId="359">
+        <Blank Num="1" UId="360" />
+        <Token Text=":=" UId="361" />
+        <Blank Num="1" UId="362" />
+        <Access Scope="Call" UId="363">
+          <Instruction Name="WORD_TO_DWORD" UId="364">
+            <Token Text="(" UId="365" />
+            <NamelessParameter UId="366">
+              <Access Scope="LocalVariable" UId="367">
+                <Symbol UId="368">
+                  <Component Name="SIGNAL_Word15" UId="369" />
+                </Symbol>
+              </Access>
+            </NamelessParameter>
+            <Token Text=")" UId="371" />
+          </Instruction>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="372" />
+      <Blank Num="1" UId="373" />
+      <Parameter Name="N" UId="374">
+        <Blank Num="1" UId="375" />
+        <Token Text=":=" UId="376" />
+        <Blank Num="1" UId="377" />
+        <Access Scope="LiteralConstant" UId="378">
+          <Constant UId="379">
+            <ConstantValue UId="381">16</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="383" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="384" />
+  <Token Text="OR" UId="385" />
+  <Blank Num="1" UId="386" />
+  <Token Text="(" UId="387" />
+  <Access Scope="LocalVariable" UId="388">
+    <Symbol UId="389">
+      <Component Name="SIGNAL_Word14" UId="390" />
+    </Symbol>
+  </Access>
+  <Token Text=")" UId="391" />
+  <Token Text=")" UId="392" />
+  <Token Text=";" UId="393" />
+  <NewLine Num="1" UId="394" />
+</StructuredText></NetworkSource>
+          <ProgrammingLanguage>SCL</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FB>
+</Document>

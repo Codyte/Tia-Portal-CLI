@@ -1,0 +1,719 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V18" />
+  <DocumentInfo>
+    <Created>2026-03-12T16:04:35.0974227Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, S210</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V18</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Professional</DisplayName>
+        <DisplayVersion>V18 Update 5</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.FB ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input">
+    <Member Name="INPUT_FALHA" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Entrada do sinal de falha instanciado na Network 1</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="INPUT_TEMPO_RESET" Datatype="Time" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Tempo em segundos que a bomba irá resetar após identificar sem falha</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="INPUT_TEMPO_NÃO_LIGOU" Datatype="Time" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Se após ligar a bomba não retornar o sinal de LIGADO pelo tempo configurado, aciona falha</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="INPUT_LIGADO" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Entrada do sinal de Motor/Bomba ligado</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="INPUT_RESET_FALHA" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Resetar a falha manualmente caso o sinal de INPUT_FALHA esteja FALSE</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="INPUT_SAIDA_LIGA_BOMBA" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Saída para ligar a bomba acionada</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="INPUT_HABILITA_CONJUNTO" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Identificação do conjunto de bombas (principal e reserva)</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="INPUT_MANUTENCAO" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Entrada responsavel por mudar o estado do equipamento em manut, sendo sem falha ativa.</MultiLanguageText>
+      </Comment>
+    </Member>
+  </Section>
+  <Section Name="Output">
+    <Member Name="FALHA" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Saída do sinal de falha da instância do FB para o FC</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="RESET_FALHA_INVERSOR" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Reset sinal de falha do inversor de frequência</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="FALHA_NÃO_LIGOU" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+  <Section Name="InOut" />
+  <Section Name="Static">
+    <Member Name="NÃO_LIGOU" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Sinal indicando que a bomba não ligou após comando, entrando em falha</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="SET_FALHA" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Memória auxiliar para o recebimento da falha</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="TIMER_1" Datatype="IEC_TIMER" Version="1.0" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Temporizador para resetar a Falha</MultiLanguageText>
+      </Comment>
+      <Sections>
+        <Section Name="None">
+          <Member Name="PT" Datatype="Time" />
+          <Member Name="ET" Datatype="Time" />
+          <Member Name="IN" Datatype="Bool" />
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="TIMER_2" Datatype="IEC_TIMER" Version="1.0" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Temporizador para entrar em Falha</MultiLanguageText>
+      </Comment>
+      <Sections>
+        <Section Name="None">
+          <Member Name="PT" Datatype="Time" />
+          <Member Name="ET" Datatype="Time" />
+          <Member Name="IN" Datatype="Bool" />
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="LIGA_BOMBA_AUX" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Memória auxiliar para disparo do final de falha</MultiLanguageText>
+      </Comment>
+    </Member>
+  </Section>
+  <Section Name="Temp" />
+  <Section Name="Constant" />
+</Sections></Interface>
+      <IsIECCheckEnabled>false</IsIECCheckEnabled>
+      <IsRetainMemResEnabled>false</IsRetainMemResEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <MemoryReserve>100</MemoryReserve>
+      <Name>FB FALHA</Name>
+      <Namespace />
+      <Number>9</Number>
+      <ProgrammingLanguage>LAD</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text>Network 1: Condição SET-RESET da Falha da bomba</Text>
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v4">
+  <Parts>
+    <Access Scope="LocalVariable" UId="21">
+      <Symbol>
+        <Component Name="INPUT_MANUTENCAO" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="22">
+      <Symbol>
+        <Component Name="INPUT_FALHA" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="23">
+      <Symbol>
+        <Component Name="NÃO_LIGOU" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="24">
+      <Symbol>
+        <Component Name="FALHA" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="25">
+      <Symbol>
+        <Component Name="SET_FALHA" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="26">
+      <Symbol>
+        <Component Name="SET_FALHA" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="27">
+      <Symbol>
+        <Component Name="FALHA" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="28">
+      <Symbol>
+        <Component Name="INPUT_TEMPO_RESET" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="29">
+      <Symbol>
+        <Component Name="FALHA" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="30">
+      <Symbol>
+        <Component Name="INPUT_SAIDA_LIGA_BOMBA" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="31">
+      <Symbol>
+        <Component Name="INPUT_HABILITA_CONJUNTO" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="32">
+      <Symbol>
+        <Component Name="LIGA_BOMBA_AUX" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="33">
+      <Symbol>
+        <Component Name="LIGA_BOMBA_AUX" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="34">
+      <Symbol>
+        <Component Name="INPUT_LIGADO" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="35">
+      <Symbol>
+        <Component Name="INPUT_TEMPO_NÃO_LIGOU" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="36">
+      <Symbol>
+        <Component Name="NÃO_LIGOU" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="37">
+      <Symbol>
+        <Component Name="NÃO_LIGOU" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="38">
+      <Symbol>
+        <Component Name="FALHA_NÃO_LIGOU" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="39">
+      <Symbol>
+        <Component Name="NÃO_LIGOU" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="40">
+      <Symbol>
+        <Component Name="INPUT_LIGADO" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="41">
+      <Symbol>
+        <Component Name="LIGA_BOMBA_AUX" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="42">
+      <Symbol>
+        <Component Name="INPUT_RESET_FALHA" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="43">
+      <Symbol>
+        <Component Name="INPUT_MANUTENCAO" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="44">
+      <Symbol>
+        <Component Name="RESET_FALHA_INVERSOR" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="45">
+      <Symbol>
+        <Component Name="SET_FALHA" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="46">
+      <Symbol>
+        <Component Name="FALHA" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="47">
+      <Symbol>
+        <Component Name="NÃO_LIGOU" />
+      </Symbol>
+    </Access>
+    <Part Name="Contact" UId="48">
+      <Negated Name="operand" />
+    </Part>
+    <Part Name="Contact" UId="49">
+      <Negated Name="operand" />
+    </Part>
+    <Part Name="Contact" UId="50" />
+    <Part Name="O" UId="51">
+      <TemplateValue Name="Card" Type="Cardinality">2</TemplateValue>
+    </Part>
+    <Part Name="SCoil" UId="52" />
+    <Part Name="Coil" UId="53" />
+    <Part Name="Contact" UId="54">
+      <Negated Name="operand" />
+    </Part>
+    <Part Name="Contact" UId="55" />
+    <Part Name="TON" Version="1.0" UId="56">
+      <Instance Scope="LocalVariable" UId="57">
+        <Component Name="TIMER_1" />
+      </Instance>
+      <TemplateValue Name="time_type" Type="Type">Time</TemplateValue>
+    </Part>
+    <Part Name="RCoil" UId="58" />
+    <Part Name="Contact" UId="59" />
+    <Part Name="Contact" UId="60" />
+    <Part Name="SCoil" UId="61" />
+    <Part Name="Contact" UId="62" />
+    <Part Name="Contact" UId="63">
+      <Negated Name="operand" />
+    </Part>
+    <Part Name="TON" Version="1.0" UId="64">
+      <Instance Scope="LocalVariable" UId="65">
+        <Component Name="TIMER_2" />
+      </Instance>
+      <TemplateValue Name="time_type" Type="Type">Time</TemplateValue>
+    </Part>
+    <Part Name="SCoil" UId="66" />
+    <Part Name="Contact" UId="67" />
+    <Part Name="Coil" UId="68" />
+    <Part Name="Contact" UId="69" />
+    <Part Name="Contact" UId="70" />
+    <Part Name="O" UId="71">
+      <TemplateValue Name="Card" Type="Cardinality">2</TemplateValue>
+    </Part>
+    <Part Name="RCoil" UId="72" />
+    <Part Name="Contact" UId="73" />
+    <Part Name="Contact" UId="74" />
+    <Part Name="O" UId="75">
+      <TemplateValue Name="Card" Type="Cardinality">2</TemplateValue>
+    </Part>
+    <Part Name="Coil" UId="76" />
+    <Part Name="Contact" UId="77">
+      <Negated Name="operand" />
+    </Part>
+    <Part Name="RCoil" UId="78" />
+    <Part Name="RCoil" UId="79" />
+  </Parts>
+  <Wires>
+    <Wire UId="82">
+      <Powerrail />
+      <NameCon UId="48" Name="in" />
+      <NameCon UId="54" Name="in" />
+      <NameCon UId="59" Name="in" />
+      <NameCon UId="62" Name="in" />
+      <NameCon UId="67" Name="in" />
+      <NameCon UId="69" Name="in" />
+      <NameCon UId="70" Name="in" />
+      <NameCon UId="73" Name="in" />
+      <NameCon UId="74" Name="in" />
+    </Wire>
+    <Wire UId="83">
+      <IdentCon UId="21" />
+      <NameCon UId="48" Name="operand" />
+    </Wire>
+    <Wire UId="84">
+      <NameCon UId="48" Name="out" />
+      <NameCon UId="49" Name="in" />
+      <NameCon UId="50" Name="in" />
+    </Wire>
+    <Wire UId="85">
+      <IdentCon UId="22" />
+      <NameCon UId="49" Name="operand" />
+    </Wire>
+    <Wire UId="86">
+      <NameCon UId="49" Name="out" />
+      <NameCon UId="51" Name="in1" />
+    </Wire>
+    <Wire UId="87">
+      <IdentCon UId="23" />
+      <NameCon UId="50" Name="operand" />
+    </Wire>
+    <Wire UId="88">
+      <NameCon UId="50" Name="out" />
+      <NameCon UId="51" Name="in2" />
+    </Wire>
+    <Wire UId="89">
+      <NameCon UId="51" Name="out" />
+      <NameCon UId="52" Name="in" />
+      <NameCon UId="53" Name="in" />
+    </Wire>
+    <Wire UId="90">
+      <IdentCon UId="24" />
+      <NameCon UId="52" Name="operand" />
+    </Wire>
+    <Wire UId="91">
+      <IdentCon UId="25" />
+      <NameCon UId="53" Name="operand" />
+    </Wire>
+    <Wire UId="92">
+      <IdentCon UId="26" />
+      <NameCon UId="54" Name="operand" />
+    </Wire>
+    <Wire UId="93">
+      <NameCon UId="54" Name="out" />
+      <NameCon UId="55" Name="in" />
+    </Wire>
+    <Wire UId="94">
+      <IdentCon UId="27" />
+      <NameCon UId="55" Name="operand" />
+    </Wire>
+    <Wire UId="95">
+      <NameCon UId="55" Name="out" />
+      <NameCon UId="56" Name="IN" />
+    </Wire>
+    <Wire UId="96">
+      <IdentCon UId="28" />
+      <NameCon UId="56" Name="PT" />
+    </Wire>
+    <Wire UId="97">
+      <NameCon UId="56" Name="Q" />
+      <NameCon UId="58" Name="in" />
+    </Wire>
+    <Wire UId="98">
+      <NameCon UId="56" Name="ET" />
+      <OpenCon UId="80" />
+    </Wire>
+    <Wire UId="99">
+      <IdentCon UId="29" />
+      <NameCon UId="58" Name="operand" />
+    </Wire>
+    <Wire UId="100">
+      <IdentCon UId="30" />
+      <NameCon UId="59" Name="operand" />
+    </Wire>
+    <Wire UId="101">
+      <NameCon UId="59" Name="out" />
+      <NameCon UId="60" Name="in" />
+    </Wire>
+    <Wire UId="102">
+      <IdentCon UId="31" />
+      <NameCon UId="60" Name="operand" />
+    </Wire>
+    <Wire UId="103">
+      <NameCon UId="60" Name="out" />
+      <NameCon UId="61" Name="in" />
+    </Wire>
+    <Wire UId="104">
+      <IdentCon UId="32" />
+      <NameCon UId="61" Name="operand" />
+    </Wire>
+    <Wire UId="105">
+      <IdentCon UId="33" />
+      <NameCon UId="62" Name="operand" />
+    </Wire>
+    <Wire UId="106">
+      <NameCon UId="62" Name="out" />
+      <NameCon UId="63" Name="in" />
+    </Wire>
+    <Wire UId="107">
+      <IdentCon UId="34" />
+      <NameCon UId="63" Name="operand" />
+    </Wire>
+    <Wire UId="108">
+      <NameCon UId="63" Name="out" />
+      <NameCon UId="64" Name="IN" />
+    </Wire>
+    <Wire UId="109">
+      <IdentCon UId="35" />
+      <NameCon UId="64" Name="PT" />
+    </Wire>
+    <Wire UId="110">
+      <NameCon UId="64" Name="Q" />
+      <NameCon UId="66" Name="in" />
+    </Wire>
+    <Wire UId="111">
+      <NameCon UId="64" Name="ET" />
+      <OpenCon UId="81" />
+    </Wire>
+    <Wire UId="112">
+      <IdentCon UId="36" />
+      <NameCon UId="66" Name="operand" />
+    </Wire>
+    <Wire UId="113">
+      <IdentCon UId="37" />
+      <NameCon UId="67" Name="operand" />
+    </Wire>
+    <Wire UId="114">
+      <NameCon UId="67" Name="out" />
+      <NameCon UId="68" Name="in" />
+    </Wire>
+    <Wire UId="115">
+      <IdentCon UId="38" />
+      <NameCon UId="68" Name="operand" />
+    </Wire>
+    <Wire UId="116">
+      <IdentCon UId="39" />
+      <NameCon UId="69" Name="operand" />
+    </Wire>
+    <Wire UId="117">
+      <NameCon UId="69" Name="out" />
+      <NameCon UId="71" Name="in1" />
+    </Wire>
+    <Wire UId="118">
+      <IdentCon UId="40" />
+      <NameCon UId="70" Name="operand" />
+    </Wire>
+    <Wire UId="119">
+      <NameCon UId="70" Name="out" />
+      <NameCon UId="71" Name="in2" />
+    </Wire>
+    <Wire UId="120">
+      <NameCon UId="71" Name="out" />
+      <NameCon UId="72" Name="in" />
+    </Wire>
+    <Wire UId="121">
+      <IdentCon UId="41" />
+      <NameCon UId="72" Name="operand" />
+    </Wire>
+    <Wire UId="122">
+      <IdentCon UId="42" />
+      <NameCon UId="73" Name="operand" />
+    </Wire>
+    <Wire UId="123">
+      <NameCon UId="73" Name="out" />
+      <NameCon UId="75" Name="in1" />
+    </Wire>
+    <Wire UId="124">
+      <IdentCon UId="43" />
+      <NameCon UId="74" Name="operand" />
+    </Wire>
+    <Wire UId="125">
+      <NameCon UId="74" Name="out" />
+      <NameCon UId="75" Name="in2" />
+    </Wire>
+    <Wire UId="126">
+      <NameCon UId="75" Name="out" />
+      <NameCon UId="76" Name="in" />
+      <NameCon UId="77" Name="in" />
+      <NameCon UId="79" Name="in" />
+    </Wire>
+    <Wire UId="127">
+      <IdentCon UId="44" />
+      <NameCon UId="76" Name="operand" />
+    </Wire>
+    <Wire UId="128">
+      <IdentCon UId="45" />
+      <NameCon UId="77" Name="operand" />
+    </Wire>
+    <Wire UId="129">
+      <NameCon UId="77" Name="out" />
+      <NameCon UId="78" Name="in" />
+    </Wire>
+    <Wire UId="130">
+      <IdentCon UId="46" />
+      <NameCon UId="78" Name="operand" />
+    </Wire>
+    <Wire UId="131">
+      <IdentCon UId="47" />
+      <NameCon UId="79" Name="operand" />
+    </Wire>
+  </Wires>
+</FlgNet></NetworkSource>
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Tratamento de falha da bomba
+INPUT_FALHA: Entrada do sinal de falha instanciado na Network 1.
+INPUT_TEMPO_RESET: Tempo em segundos que a bomba irá resetar após identificar sem falha.
+INPUT_TEMPO_NÃO_LIGOU: Se após ligar a bomba não retornar o sinal de LIGADO pelo tempo configurado, aciona falha.
+INPUT_LIGADO: Entrada do sinal de Motor/Bomba ligado
+INPUT_RESET_FALHA: Resetar a falha manualmente caso o sinal de INPUT_FALHA esteja FALSE
+NÃO_LIGOU: Memória auxiliar para acionar falha caso a bomba não retorno seu status de ligada.</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Saída do sinal de falha da instância do FB para o FC</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text>Function Block FALHA - Falha dos motores/bombas</Text>
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FB>
+</Document>

@@ -52,7 +52,8 @@ namespace Tia.Cli
                         "gen-alarm-fc [--config F] [--out DIR] [--apply]",
                         "replicate-instruments --config F [--out DIR] [--apply]" } },
                     { "batch", new[] { "run --script ops.json  (JSON array de arg-arrays, uma sessão só)" } },
-                    { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports" },
+                    { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports; " +
+                        "--retry N (busy, default 3) --timeout SEC; exit: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA, 5 timeout" },
                 });
                 return args.Length == 0 ? 1 : 0;
             }
@@ -61,18 +62,43 @@ namespace Tia.Cli
                 // pure XML generation, no Siemens types — must not enter Run() or its JIT pulls the DLL
                 if (args[0] == "import-ladder" && !args.Contains("--apply"))
                     return RunLadderDryRun(args);
-                return Run(args);
+
+                var timeout = OptionValue(args, "--timeout");
+                if (timeout == null) return Run(args);
+                var task = System.Threading.Tasks.Task.Run(() => Run(args));
+                if (!task.Wait(TimeSpan.FromSeconds(int.Parse(timeout))))
+                {
+                    Print(new Dictionary<string, object>
+                        { { "error", "Timeout after " + timeout + "s." }, { "exitCode", 5 } });
+                    return 5; // portal call may still be blocked; process exit abandons it
+                }
+                return task.Result;
             }
             catch (Exception ex)
             {
                 var inner = ex.InnerException ?? ex;
+                while (inner is AggregateException agg && agg.InnerException != null)
+                    inner = agg.InnerException;
+                int code = ExitCodeFor(inner);
                 Print(new Dictionary<string, object>
                 {
                     { "error", inner.Message },
                     { "type", inner.GetType().Name },
+                    { "exitCode", code },
                 });
-                return 1;
+                return code;
             }
+        }
+
+        /// <summary>1 general · 2 usage · 3 file missing · 4 TIA/Openness. Type-name match: no Siemens JIT load.</summary>
+        private static int ExitCodeFor(Exception ex)
+        {
+            if (ex is ArgumentException) return 2;
+            if (ex.Message.Contains("Siemens.Engineering")) return 4; // DLL missing = TIA env, not user file
+            if (ex is FileNotFoundException) return 3;
+            var t = ex.GetType().FullName;
+            if (t != null && t.StartsWith("Siemens.Engineering")) return 4;
+            return 1;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -112,14 +138,35 @@ namespace Tia.Cli
                         if (step == null || step.Length == 0 || step[0] == "run" || step[0] == "open-project")
                             throw new ArgumentException("Each step must be a verb (not 'run'/'open-project').");
                         results.Add(new Dictionary<string, object>
-                            { { "verb", step[0] }, { "result", Dispatch(session, step) } });
+                            { { "verb", step[0] }, { "result", DispatchWithRetry(session, step, args) } });
                     }
                     Print(new Dictionary<string, object> { { "steps", results.Count }, { "results", results } });
                     return 0;
                 }
-                Print(Dispatch(session, args));
+                Print(DispatchWithRetry(session, args, args));
                 return 0;
             }
+        }
+
+        /// <summary>Retries on "portal busy" errors: --retry N (default 3, 0 disables), linear backoff.</summary>
+        private static object DispatchWithRetry(Core.TiaSession session, string[] args, string[] rootArgs)
+        {
+            int retries = int.Parse(OptionValue(rootArgs, "--retry") ?? "3");
+            for (int attempt = 0; ; attempt++)
+            {
+                try { return Dispatch(session, args); }
+                catch (Exception ex) when (attempt < retries && IsBusy(ex))
+                {
+                    Console.Error.WriteLine("portal busy, retry " + (attempt + 1) + "/" + retries);
+                    System.Threading.Thread.Sleep(2000 * (attempt + 1));
+                }
+            }
+        }
+
+        private static bool IsBusy(Exception ex)
+        {
+            var inner = ex.InnerException ?? ex;
+            return inner.Message.IndexOf("busy", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         private static object Dispatch(Core.TiaSession session, string[] args)

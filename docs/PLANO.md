@@ -137,7 +137,9 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
 6. ~~**Batch**~~ ✅ feito (`tia run --script ops.json` — JSON array de arg-arrays, attach 1x;
    falha para no passo com erro; `run`/`open-project` proibidos como step.
    Exemplo: `docs/examples/batch.json`).
-7. **Robustez**: retry em portal ocupado, exit codes por categoria, timeout configurável.
+7. ~~**Robustez**~~ ✅ feito (exit codes: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA/Openness
+   (inclui DLL ausente), 5 timeout; `--retry N` em "busy" com backoff linear, default 3;
+   `--timeout SEC` via Task.Wait — abandona a chamada, processo sai). Testado offline: 2/4 ok.
 8. **Libraries**: abrir global library, instanciar master copies/types.
 9. **Online (revoga D8 — só com decisão explícita)**: go-online, download, compare online/offline,
    start/stop CPU, watch tables.

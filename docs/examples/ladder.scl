@@ -1,0 +1,22 @@
+FUNCTION "FC_LadderDemo" : Void
+// Subset aceito por: tia import-ladder --file ladder.scl
+// Só tags globais (com ou sem aspas). Sem #locais, FOR/WHILE/CASE, aritmética.
+BEGIN
+    // Rede 1 — selo com série/paralelo
+    "Cmd_Motor1" := ("Start" OR "Cmd_Motor1") AND NOT "Stop" AND NOT "Falha_M1";
+
+    // Rede 2 — Set
+    IF "Nivel_Alto" AND "Auto" THEN "Alarme" := TRUE; END_IF;
+
+    // Rede 3 — Reset
+    IF "Reset" THEN "Alarme" := FALSE; END_IF;
+
+    // Rede 4 — coil simples via IF/ELSE
+    IF "Auto" AND NOT "Manutencao" THEN "Pronto" := TRUE; ELSE "Pronto" := FALSE; END_IF;
+
+    // Rede 5 — comparador como contato
+    "Temp_OK" := "Temperatura" > 50 AND NOT "Sensor_Falha";
+
+    // Rede 6 — MOVE condicional de literal
+    IF "Auto" THEN "Setpoint" := 75; END_IF;
+END_FUNCTION

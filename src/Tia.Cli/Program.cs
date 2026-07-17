@@ -30,6 +30,7 @@ namespace Tia.Cli
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]" } },
                     { "write", new[] { "import-block --file F [--folder A/B] [--apply]",
                         "import-source --file F.scl [--apply]",
+                        "import-ladder --file F.scl [--name N] [--folder A/B] [--apply]  (SCL subset → LAD; dry-run works without TIA)",
                         "import-tags --file F [--apply]", "compile [--apply]",
                         "gen-profinet --config F [--apply]",
                         "standardize-tags [--config F] [--apply]",
@@ -43,6 +44,9 @@ namespace Tia.Cli
             }
             try
             {
+                // pure XML generation, no Siemens types — must not enter Run() or its JIT pulls the DLL
+                if (args[0] == "import-ladder" && !args.Contains("--apply"))
+                    return RunLadderDryRun(args);
                 return Run(args);
             }
             catch (Exception ex)
@@ -55,6 +59,16 @@ namespace Tia.Cli
                 });
                 return 1;
             }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static int RunLadderDryRun(string[] args)
+        {
+            var outDir = OptionValue(args, "--out") ?? Path.Combine("workspace", "exports");
+            var dry = Core.LadConverter.Convert(Require(args, "--file"), OptionValue(args, "--name"), outDir);
+            dry["applied"] = false;
+            Print(dry);
+            return 0;
         }
 
         // Must not be inlined into Main: Siemens types may only be JITted after AssemblyResolve is hooked.
@@ -106,6 +120,14 @@ namespace Tia.Cli
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.ImportBlock(session.GetPlc(plcName), Require(args, "--file"),
                                 OptionValue(args, "--folder"), apply);
+                        break;
+                    case "import-ladder":
+                        var lad = Core.LadConverter.Convert(Require(args, "--file"), OptionValue(args, "--name"), outDir);
+                        using (WriteLock(session, true, verb))
+                            Core.Ops.ImportBlock(session.GetPlc(plcName), (string)lad["xmlFile"],
+                                OptionValue(args, "--folder"), true);
+                        lad["applied"] = true;
+                        result = lad;
                         break;
                     case "import-source":
                         using (WriteLock(session, apply, verb))

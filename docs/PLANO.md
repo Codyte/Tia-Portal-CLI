@@ -113,6 +113,12 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
 
 1. ~~**Fontes externas**: `import-source`~~ ✅ feito (`tia import-source --file X.scl [--apply]`;
    ext .scl/.awl/.st/.db/.udt; exemplo em `docs/examples/example.scl`). Smoke pendente.
+1b. ~~**Conversor SCL→LAD**: `import-ladder`~~ ✅ feito (`tia import-ladder --file X.scl [--name N]
+   [--folder A/B] [--apply]`). Subset: bool AND/OR/NOT/parênteses, comparadores, IF→Set/Reset/Coil,
+   MOVE de literal. Rejeita FOR/WHILE/CASE/aritmética/#locais com erro claro. Dry-run gera XML
+   **sem TIA** (testado offline ✅); import real smoke pendente — risco: detalhes FlgNet (nomes de
+   porta de comparador/MOVE, SrcType DInt default) escritos de memória, validar no primeiro smoke.
+   Exemplo: `docs/examples/ladder.scl`. Fora do V1: FB calls (TON/CTU), edge, copy tag→tag.
 2. **Estrutura**: create/delete de pastas de blocos e tag tables, `delete-block`, UDT export/import.
 3. **Hardware**: `add-device` (CreateWithItem por MLFB), `set-address` (IP/Profinet name),
    conectar subnet/IO-system. Alternativa em massa: export/import **AML (CAx)**.

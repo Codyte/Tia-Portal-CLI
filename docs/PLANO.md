@@ -54,7 +54,7 @@ Verbos por fase (nomes finais definidos na F1):
 | Fase | Entrega | Critério de pronto | Status |
 |------|---------|--------------------|--------|
 | F0 | Este plano + CLAUDE.md do repo | commitado | ✅ |
-| F1 | Solução .NET, Tia.Core mínimo, verbos de leitura | `tia info` e `tia list-blocks` rodando contra TIA real | ⬜ |
+| F1 | Solução .NET, Tia.Core mínimo, verbos de leitura | `tia info` e `tia list-blocks` rodando contra TIA real | 🟡 código pronto + build ok; smoke pendente na máquina do TIA |
 | F2 | Export/import XML + compile | roundtrip de 1 FC sem diff + compile ok | ⬜ |
 | F3 | Portar os 4 tools dos FINAIS como verbos | paridade com os scripts originais em projeto de teste | ⬜ |
 | F4 | Polimento p/ GitHub (README EN, licença, exemplos) | repo publicável | ⬜ |
@@ -94,8 +94,19 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
 | code-review | fim de F2 e F3 (pontos de maior risco) — não a cada diff |
 | ponytail/caveman | ativos, permanentes |
 
+## Ambiente (descoberto na F1)
+
+- **Esta máquina = servidor** (TIA Project Server, TIA Administrator, WinCC Unified RT). TIA
+  Portal V19 engineering **não** está instalado aqui — build acontece aqui, execução do `tia.exe`
+  na workstation com TIA aberto. Usuário planeja instalar TIA aqui futuramente (V20+).
+- Build: .NET SDK 8 (instalado 2026-07-17) compilando net48/x64. `lib/Siemens.Engineering.dll`
+  (v19.0.0.0, cópia local, gitignored) é referência de compile; em runtime o exe resolve a DLL
+  da instalação real (env `TIA_ENGINEERING_DLL` → pasta do exe → Portal V19/V20 padrão).
+- Deploy do smoke: copiar `src\Tia.Cli\bin\Release\net48\` (tia.exe + Newtonsoft.Json.dll +
+  Tia.Core.dll) pra máquina do TIA e rodar lá.
+
 ## Pendências / decisões futuras
 
 - Licença (MIT provável) — decidir na F4.
 - Nome público do repo — F4.
-- Caminho exato da `Siemens.Engineering.dll` V19 desta máquina — confirmar na F1.
+- Smoke F1 na máquina do TIA (user leva o exe; primeira execução dispara popup Openness — permitir).

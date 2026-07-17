@@ -9,5 +9,9 @@ obj/
 .vs/
 packages/
 
+# DLL Siemens (licença — nunca commitar; copiar da instalação TIA p/ lib/)
+lib/
+
 # TIA exports / temporários
+workspace/
 *.tmp

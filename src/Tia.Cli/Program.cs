@@ -23,8 +23,12 @@ namespace Tia.Cli
             {
                 Print(new Dictionary<string, object>
                 {
-                    { "usage", "tia <verb> [--plc NAME]" },
-                    { "verbs", new[] { "info", "list-devices", "list-blocks", "list-tags" } },
+                    { "usage", "tia <verb> [--plc NAME] [--apply]" },
+                    { "read", new[] { "info", "list-devices", "list-blocks", "list-tags",
+                        "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]" } },
+                    { "write", new[] { "import-block --file F [--folder A/B] [--apply]",
+                        "import-tags --file F [--apply]", "compile [--apply]" } },
+                    { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports" },
                 });
                 return args.Length == 0 ? 1 : 0;
             }
@@ -50,6 +54,8 @@ namespace Tia.Cli
         {
             string verb = args[0];
             string plcName = OptionValue(args, "--plc");
+            string outDir = OptionValue(args, "--out") ?? Path.Combine("workspace", "exports");
+            bool apply = args.Contains("--apply");
 
             using (var session = Core.TiaSession.Attach())
             {
@@ -68,6 +74,25 @@ namespace Tia.Cli
                     case "list-tags":
                         result = Core.Inventory.TagTables(session.GetPlc(plcName));
                         break;
+                    case "export-block":
+                        result = Core.Ops.ExportBlock(session.GetPlc(plcName), Require(args, "--name"), outDir);
+                        break;
+                    case "export-tags":
+                        result = Core.Ops.ExportTagTable(session.GetPlc(plcName), Require(args, "--table"), outDir);
+                        break;
+                    case "import-block":
+                        result = Core.Ops.ImportBlock(session.GetPlc(plcName), Require(args, "--file"),
+                            OptionValue(args, "--folder"), apply);
+                        break;
+                    case "import-tags":
+                        result = Core.Ops.ImportTagTable(session.GetPlc(plcName), Require(args, "--file"), apply);
+                        break;
+                    case "compile":
+                        var plc = session.GetPlc(plcName);
+                        result = apply
+                            ? Core.Ops.Compile(plc)
+                            : new Dictionary<string, object> { { "wouldCompile", plc.Name }, { "applied", false } };
+                        break;
                     default:
                         throw new ArgumentException("Unknown verb '" + verb + "'. Run tia --help.");
                 }
@@ -80,6 +105,13 @@ namespace Tia.Cli
         {
             int i = Array.IndexOf(args, name);
             return i >= 0 && i + 1 < args.Length ? args[i + 1] : null;
+        }
+
+        private static string Require(string[] args, string name)
+        {
+            var v = OptionValue(args, name);
+            if (v == null) throw new ArgumentException("Missing required option " + name + ".");
+            return v;
         }
 
         private static void Print(object value)

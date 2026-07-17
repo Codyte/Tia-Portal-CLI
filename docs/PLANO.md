@@ -61,6 +61,7 @@ Verbos por fase (nomes finais definidos na F1):
 | F1 | Solução .NET, Tia.Core mínimo, verbos de leitura | `tia info` e `tia list-blocks` rodando contra TIA real | 🟡 código+build ok; smoke aguarda instalação do TIA V19 aqui |
 | F2 | Export/import XML + compile | roundtrip de 1 FC sem diff + compile ok | 🟡 código+build ok; smoke aguarda TIA |
 | F3 | Portar os 4 tools dos FINAIS como verbos | paridade com os scripts originais em projeto de teste | 🟡 código 100% (6 verbos: gen-profinet, standardize-tags, gen-fault-ob, replicate-fc, gen-alarm-fc, replicate-instruments); falta code-review + smoke (aguarda TIA V19) |
+| v2 | Backlog de cobertura Openness (itens 1-10 abaixo) | verbos compilando 0 erros | 🟡 código 100% offline (2026-07-17): itens 1-8 e 10 feitos; 9 (online) bloqueado por D8; smokes aguardam TIA |
 | F4 | Polimento p/ GitHub (README EN, licença, exemplos) | repo publicável | ⬜ |
 | F5? | MCP server fino sobre Tia.Core | só se D1 cair | ⬜ |
 

@@ -1,0 +1,13 @@
+# navindex
+.navindex-cache.json
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+packages/
+
+# TIA exports / temporários
+*.tmp

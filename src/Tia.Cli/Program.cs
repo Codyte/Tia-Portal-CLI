@@ -27,7 +27,12 @@ namespace Tia.Cli
                     { "session", new[] { "open-project --file X.ap19 [--no-ui]",
                         "save-project", "close-project [--save]" } },
                     { "read", new[] { "info", "list-devices", "list-blocks", "list-tags",
-                        "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]" } },
+                        "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]",
+                        "export-type --name X [--out DIR]" } },
+                    { "structure", new[] { "create-folder --path A/B [--tags] [--apply]",
+                        "delete-folder --path A/B [--tags] [--apply]",
+                        "delete-block --name X [--apply]",
+                        "import-type --file F.xml [--apply]" } },
                     { "write", new[] { "import-block --file F [--folder A/B] [--apply]",
                         "import-source --file F.scl [--apply]",
                         "import-ladder --file F.scl [--name N] [--folder A/B] [--apply]  (SCL subset → LAD; dry-run works without TIA)",
@@ -132,6 +137,27 @@ namespace Tia.Cli
                     case "import-source":
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.ImportSource(session.GetPlc(plcName), Require(args, "--file"), apply);
+                        break;
+                    case "create-folder":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Ops.CreateFolder(session.GetPlc(plcName), Require(args, "--path"),
+                                args.Contains("--tags"), apply);
+                        break;
+                    case "delete-folder":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Ops.DeleteFolder(session.GetPlc(plcName), Require(args, "--path"),
+                                args.Contains("--tags"), apply);
+                        break;
+                    case "delete-block":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Ops.DeleteBlock(session.GetPlc(plcName), Require(args, "--name"), apply);
+                        break;
+                    case "export-type":
+                        result = Core.Ops.ExportType(session.GetPlc(plcName), Require(args, "--name"), outDir);
+                        break;
+                    case "import-type":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Ops.ImportType(session.GetPlc(plcName), Require(args, "--file"), apply);
                         break;
                     case "import-tags":
                         using (WriteLock(session, apply, verb))

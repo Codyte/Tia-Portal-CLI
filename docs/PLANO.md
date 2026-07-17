@@ -119,7 +119,10 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
    **sem TIA** (testado offline ✅); import real smoke pendente — risco: detalhes FlgNet (nomes de
    porta de comparador/MOVE, SrcType DInt default) escritos de memória, validar no primeiro smoke.
    Exemplo: `docs/examples/ladder.scl`. Fora do V1: FB calls (TON/CTU), edge, copy tag→tag.
-2. **Estrutura**: create/delete de pastas de blocos e tag tables, `delete-block`, UDT export/import.
+2. ~~**Estrutura**~~ ✅ feito (`create-folder`/`delete-folder --path A/B [--tags]`,
+   `delete-block --name X`, `export-type`/`import-type` p/ UDT). Dry-run conta conteúdo antes
+   de deletar. Smoke pendente — risco: `PlcBlockUserGroup.Delete()`/`PlcTagTableUserGroup.Delete()`
+   e `plc.TypeGroup.Types.Import` de memória, validar no primeiro smoke.
 3. **Hardware**: `add-device` (CreateWithItem por MLFB), `set-address` (IP/Profinet name),
    conectar subnet/IO-system. Alternativa em massa: export/import **AML (CAx)**.
 4. **Compile granular** (`--block`/`--folder`) + `diff-block` (XML normalizado, já temos comparador).

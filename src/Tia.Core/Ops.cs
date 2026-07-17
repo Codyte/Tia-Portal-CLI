@@ -9,6 +9,7 @@ using Siemens.Engineering.Compiler;
 using Siemens.Engineering.SW;
 using Siemens.Engineering.SW.Blocks;
 using Siemens.Engineering.SW.Tags;
+using Siemens.Engineering.SW.Types;
 
 namespace Tia.Core
 {
@@ -65,6 +66,114 @@ namespace Tia.Core
             return null;
         }
 
+        /// <summary>Tag table folder path "A/B" under PLC tags. create=false throws if missing.</summary>
+        public static PlcTagTableGroup ResolveTagFolder(PlcSoftware plc, string path, bool create)
+        {
+            PlcTagTableGroup current = plc.TagTableGroup;
+            if (string.IsNullOrEmpty(path)) return current;
+            foreach (var part in path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var next = current.Groups.Find(part);
+                if (next == null)
+                {
+                    if (!create)
+                        throw new InvalidOperationException("Tag folder not found: '" + part + "' (in '" + path + "').");
+                    next = current.Groups.Create(part);
+                }
+                current = next;
+            }
+            return current;
+        }
+
+        private static PlcType FindType(PlcTypeGroup group, string name)
+        {
+            var hit = group.Types.Find(name);
+            if (hit != null) return hit;
+            foreach (PlcTypeUserGroup sub in group.Groups)
+            {
+                hit = FindType(sub, name);
+                if (hit != null) return hit;
+            }
+            return null;
+        }
+
+        // ---------- structure ----------
+
+        public static object CreateFolder(PlcSoftware plc, string path, bool tags, bool apply)
+        {
+            if (string.IsNullOrEmpty(path))
+                throw new InvalidOperationException("--path required.");
+            bool exists;
+            try
+            {
+                if (tags) ResolveTagFolder(plc, path, false); else ResolveFolder(plc, path, false);
+                exists = true;
+            }
+            catch (InvalidOperationException) { exists = false; }
+            var result = new Dictionary<string, object>
+            {
+                { "path", path },
+                { "kind", tags ? "tag-folder" : "block-folder" },
+                { "action", exists ? "none (exists)" : "create" },
+                { "applied", apply },
+            };
+            if (apply && !exists)
+            {
+                if (tags) ResolveTagFolder(plc, path, true); else ResolveFolder(plc, path, true);
+            }
+            return result;
+        }
+
+        public static object DeleteFolder(PlcSoftware plc, string path, bool tags, bool apply)
+        {
+            if (string.IsNullOrEmpty(path))
+                throw new InvalidOperationException("--path required (refusing to delete root).");
+            var result = new Dictionary<string, object>
+            {
+                { "path", path },
+                { "kind", tags ? "tag-folder" : "block-folder" },
+                { "applied", apply },
+            };
+            if (tags)
+            {
+                var group = (PlcTagTableUserGroup)ResolveTagFolder(plc, path, false);
+                result["tables"] = CountTables(group);
+                if (apply) group.Delete();
+            }
+            else
+            {
+                var group = (PlcBlockUserGroup)ResolveFolder(plc, path, false);
+                result["blocks"] = CountBlocks(group);
+                if (apply) group.Delete();
+            }
+            return result;
+        }
+
+        private static int CountBlocks(PlcBlockGroup group)
+        {
+            return group.Blocks.Count + group.Groups.Cast<PlcBlockUserGroup>().Sum(g => CountBlocks(g));
+        }
+
+        private static int CountTables(PlcTagTableGroup group)
+        {
+            return group.TagTables.Count + group.Groups.Cast<PlcTagTableUserGroup>().Sum(g => CountTables(g));
+        }
+
+        public static object DeleteBlock(PlcSoftware plc, string name, bool apply)
+        {
+            var block = FindBlock(plc, name);
+            if (block == null)
+                throw new InvalidOperationException("Block '" + name + "' not found.");
+            var result = new Dictionary<string, object>
+            {
+                { "block", name },
+                { "type", block.GetType().Name },
+                { "applied", apply },
+            };
+            if (apply) block.Delete();
+            return result;
+        }
+
         // ---------- export ----------
 
         public static object ExportBlock(PlcSoftware plc, string name, string outDir)
@@ -85,6 +194,16 @@ namespace Tia.Core
             var file = ExportPath(outDir, tableName);
             table.Export(new FileInfo(file), ExportOptions.WithDefaults);
             return new Dictionary<string, object> { { "exported", tableName }, { "file", file } };
+        }
+
+        public static object ExportType(PlcSoftware plc, string name, string outDir)
+        {
+            var type = FindType(plc.TypeGroup, name);
+            if (type == null)
+                throw new InvalidOperationException("UDT '" + name + "' not found.");
+            var file = ExportPath(outDir, name);
+            type.Export(new FileInfo(file), ExportOptions.WithDefaults);
+            return new Dictionary<string, object> { { "exported", name }, { "file", file } };
         }
 
         private static string ExportPath(string outDir, string name)
@@ -132,6 +251,22 @@ namespace Tia.Core
             };
             if (apply)
                 plc.TagTableGroup.TagTables.Import(new FileInfo(full), ImportOptions.Override);
+            return result;
+        }
+
+        public static object ImportType(PlcSoftware plc, string file, bool apply)
+        {
+            var full = RequireFile(file);
+            var name = XmlObjectName(full);
+            var result = new Dictionary<string, object>
+            {
+                { "file", full },
+                { "type", name },
+                { "action", name != null && FindType(plc.TypeGroup, name) != null ? "override" : "create" },
+                { "applied", apply },
+            };
+            if (apply)
+                plc.TypeGroup.Types.Import(new FileInfo(full), ImportOptions.Override);
             return result;
         }
 

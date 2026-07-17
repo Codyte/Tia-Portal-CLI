@@ -29,6 +29,7 @@ namespace Tia.Cli
                     { "read", new[] { "info", "list-devices", "list-blocks", "list-tags", "list-types",
                         "find --pattern P* [--kind block|table|tag|type]",
                         "snapshot  (inventário completo)", "xref --name BLOCK",
+                        "list-hmi [--device X]  (WinCC Unified: telas + tag tables)",
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]",
                         "export-type --name X [--out DIR]" } },
                     { "structure", new[] { "create-folder --path A/B [--tags] [--apply]",
@@ -211,6 +212,9 @@ namespace Tia.Cli
                         break;
                     case "xref":
                         result = Core.Inventory.Xref(session.GetPlc(plcName), Require(args, "--name"));
+                        break;
+                    case "list-hmi":
+                        result = Core.Hmi.List(session, OptionValue(args, "--device"));
                         break;
                     case "export-block":
                         result = Core.Ops.ExportBlock(session.GetPlc(plcName), Require(args, "--name"), outDir);

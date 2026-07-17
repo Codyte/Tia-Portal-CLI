@@ -146,7 +146,10 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
    versão/instância bem mais complexo — adicionar se precisar).
 9. **Online (revoga D8 — só com decisão explícita)**: go-online, download, compare online/offline,
    start/stop CPU, watch tables.
-10. **HMI Unified**: export/import de telas e tags HMI.
+10. ~~**HMI Unified**~~ ✅ parcial (`list-hmi [--device X]` — telas + tag tables; API HmiUnified
+    compilou contra DLL real). **Limite de plataforma**: Openness V19 não exporta/importa telas
+    Unified como XML (sem SimaticML pra Unified) — export/import de telas fica fora até a Siemens
+    expor; tags HMI editáveis via objetos dinâmicos, adicionar verbo se precisar.
 
 ## Pendências / decisões futuras
 

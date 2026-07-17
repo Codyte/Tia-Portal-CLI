@@ -29,6 +29,7 @@ namespace Tia.Cli
                     { "read", new[] { "info", "list-devices", "list-blocks", "list-tags",
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]" } },
                     { "write", new[] { "import-block --file F [--folder A/B] [--apply]",
+                        "import-source --file F.scl [--apply]",
                         "import-tags --file F [--apply]", "compile [--apply]",
                         "gen-profinet --config F [--apply]",
                         "standardize-tags [--config F] [--apply]",
@@ -105,6 +106,10 @@ namespace Tia.Cli
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.ImportBlock(session.GetPlc(plcName), Require(args, "--file"),
                                 OptionValue(args, "--folder"), apply);
+                        break;
+                    case "import-source":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Ops.ImportSource(session.GetPlc(plcName), Require(args, "--file"), apply);
                         break;
                     case "import-tags":
                         using (WriteLock(session, apply, verb))

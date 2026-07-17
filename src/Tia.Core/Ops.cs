@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Siemens.Engineering;
 using Siemens.Engineering.Compiler;
@@ -132,6 +133,53 @@ namespace Tia.Core
             if (apply)
                 plc.TagTableGroup.TagTables.Import(new FileInfo(full), ImportOptions.Override);
             return result;
+        }
+
+        /// <summary>SCL/AWL/DB/UDT source → blocks via ExternalSourceGroup + GenerateBlocksFromSource.</summary>
+        public static object ImportSource(PlcSoftware plc, string file, bool apply)
+        {
+            var full = RequireFile(file);
+            var ext = Path.GetExtension(full).ToLowerInvariant();
+            var known = new[] { ".scl", ".awl", ".st", ".db", ".udt" };
+            if (!known.Contains(ext))
+                throw new InvalidOperationException(
+                    "Unsupported source extension '" + ext + "'. Use: " + string.Join(", ", known));
+
+            var declared = SourceBlockNames(full);
+            var result = new Dictionary<string, object>
+            {
+                { "file", full },
+                { "blocks", declared },
+                { "applied", apply },
+            };
+            if (apply)
+            {
+                var sources = plc.ExternalSourceGroup.ExternalSources;
+                var sourceName = Path.GetFileName(full); // extension on the name tells Openness the source type
+                sources.Find(sourceName)?.Delete();
+                var source = sources.CreateFromFile(sourceName, full);
+                try
+                {
+                    source.GenerateBlocksFromSource();
+                }
+                finally
+                {
+                    source.Delete(); // source is scaffolding; generated blocks stay
+                }
+                result["generated"] = declared.Where(n => FindBlock(plc, n) != null).ToList();
+            }
+            return result;
+        }
+
+        /// <summary>Block/type names declared in a source file (dry-run report; not a full parser).</summary>
+        private static List<string> SourceBlockNames(string file)
+        {
+            var rx = new Regex(
+                @"^\s*(?:FUNCTION_BLOCK|ORGANIZATION_BLOCK|DATA_BLOCK|FUNCTION|TYPE)\s+(?:""([^""]+)""|([^\s:]+))",
+                RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            return rx.Matches(File.ReadAllText(file)).Cast<Match>()
+                .Select(m => m.Groups[1].Success ? m.Groups[1].Value : m.Groups[2].Value)
+                .Distinct().ToList();
         }
 
         private static string RequireFile(string file)

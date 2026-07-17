@@ -111,8 +111,8 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
 
 ## Backlog v2 (cobertura Openness — priorizado)
 
-1. **Fontes externas**: `import-source` (SCL/AWL/DB via `GenerateBlocksFromSource`) — IA escreve
-   SCL texto puro em vez de XML LAD. Maior alavanca de "fazer tudo".
+1. ~~**Fontes externas**: `import-source`~~ ✅ feito (`tia import-source --file X.scl [--apply]`;
+   ext .scl/.awl/.st/.db/.udt; exemplo em `docs/examples/example.scl`). Smoke pendente.
 2. **Estrutura**: create/delete de pastas de blocos e tag tables, `delete-block`, UDT export/import.
 3. **Hardware**: `add-device` (CreateWithItem por MLFB), `set-address` (IP/Profinet name),
    conectar subnet/IO-system. Alternativa em massa: export/import **AML (CAx)**.

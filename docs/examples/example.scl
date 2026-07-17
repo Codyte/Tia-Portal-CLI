@@ -1,0 +1,13 @@
+FUNCTION "FC_Example" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT
+      iEnable : Bool;
+   END_VAR
+   VAR_OUTPUT
+      qActive : Bool;
+   END_VAR
+
+BEGIN
+    #qActive := #iEnable;
+END_FUNCTION

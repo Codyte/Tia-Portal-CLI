@@ -24,6 +24,8 @@ namespace Tia.Cli
                 Print(new Dictionary<string, object>
                 {
                     { "usage", "tia <verb> [--plc NAME] [--apply]" },
+                    { "session", new[] { "open-project --file X.ap19 [--no-ui]",
+                        "save-project", "close-project [--save]" } },
                     { "read", new[] { "info", "list-devices", "list-blocks", "list-tags",
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]" } },
                     { "write", new[] { "import-block --file F [--folder A/B] [--apply]",
@@ -63,11 +65,24 @@ namespace Tia.Cli
             string outDir = OptionValue(args, "--out") ?? Path.Combine("workspace", "exports");
             bool apply = args.Contains("--apply");
 
+            // runs before Attach: may start the portal itself
+            if (verb == "open-project")
+            {
+                Print(Core.TiaSession.OpenProject(Require(args, "--file"), !args.Contains("--no-ui")));
+                return 0;
+            }
+
             using (var session = Core.TiaSession.Attach())
             {
                 object result;
                 switch (verb)
                 {
+                    case "save-project":
+                        result = session.Save();
+                        break;
+                    case "close-project":
+                        result = session.CloseProject(args.Contains("--save"));
+                        break;
                     case "info":
                         result = Core.Inventory.Info(session);
                         break;

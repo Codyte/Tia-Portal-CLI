@@ -16,7 +16,7 @@ Extraído dos scripts provados em `Scripts_Siemens/FINAIS/`.
 | D1 | **CLI primeiro, MCP depois (talvez nunca)** | Claude Code roda shell local — CLI JSON já é consumível. MCP só se surgir uso remoto/claude.ai. |
 | D2 | **1 exe único, multi-verbo** (`tia <verbo>`) | Whitelist do firewall Openness é por exe — 1 exe = 1 autorização. |
 | D3 | **net48 / x64** | Openness V19 = .NET Framework 4.8. `Siemens.Engineering.dll` resolvida do diretório de instalação via `AssemblyResolve` — DLL da Siemens **nunca commitada** (licença). |
-| D4 | **Attach em instância aberta** (`TiaPortal.GetProcesses().First().Attach()`) | Padrão já provado nos FINAIS. CLI não abre TIA sozinho. |
+| D4 | **Attach preferido; abrir também suportado** (revisado a pedido do user) | Attach = padrão provado. `open-project --file X [--no-ui]` inicia portal (headless opcional) e abre projeto; `save-project`/`close-project [--save]` fecham o ciclo. Só single-user (Multiuser: check-in via TIA). |
 | D5 | **Código e CLI em inglês; docs em PT** | Publicação GitHub futura. Decidido agora pra evitar rework. |
 | D6 | **XML roundtrip = primitiva central** | Export → transformar → import. Todo verbo de alto nível constrói sobre isso. |
 | D7 | **Read/write separados; write com `--apply`** | Verbos de leitura livres. Verbos de escrita rodam dry-run por padrão e só executam com `--apply`. Agente não estraga projeto por ruído. |
@@ -108,6 +108,22 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
   da instalação real (env `TIA_ENGINEERING_DLL` → pasta do exe → Portal V19/V20 padrão).
 - Deploy do smoke: copiar `src\Tia.Cli\bin\Release\net48\` (tia.exe + Newtonsoft.Json.dll +
   Tia.Core.dll) pra máquina do TIA e rodar lá.
+
+## Backlog v2 (cobertura Openness — priorizado)
+
+1. **Fontes externas**: `import-source` (SCL/AWL/DB via `GenerateBlocksFromSource`) — IA escreve
+   SCL texto puro em vez de XML LAD. Maior alavanca de "fazer tudo".
+2. **Estrutura**: create/delete de pastas de blocos e tag tables, `delete-block`, UDT export/import.
+3. **Hardware**: `add-device` (CreateWithItem por MLFB), `set-address` (IP/Profinet name),
+   conectar subnet/IO-system. Alternativa em massa: export/import **AML (CAx)**.
+4. **Compile granular** (`--block`/`--folder`) + `diff-block` (XML normalizado, já temos comparador).
+5. **Inspeção**: `find` (busca bloco/tag por padrão), cross-references, `snapshot` (inventário completo).
+6. **Batch**: `tia run --script ops.json` — lista de verbos numa sessão só (attach 1x, mais rápido).
+7. **Robustez**: retry em portal ocupado, exit codes por categoria, timeout configurável.
+8. **Libraries**: abrir global library, instanciar master copies/types.
+9. **Online (revoga D8 — só com decisão explícita)**: go-online, download, compare online/offline,
+   start/stop CPU, watch tables.
+10. **HMI Unified**: export/import de telas e tags HMI.
 
 ## Pendências / decisões futuras
 

@@ -24,16 +24,77 @@ namespace Tia.Core
         {
             var proc = TiaPortal.GetProcesses().FirstOrDefault();
             if (proc == null)
-                throw new InvalidOperationException("No running TIA Portal instance found.");
+                throw new InvalidOperationException(
+                    "No running TIA Portal instance found. Start one with: tia open-project --file <path>.");
             var portal = proc.Attach();
 
             ProjectBase project = portal.Projects.FirstOrDefault();
             if (project == null)
                 project = portal.LocalSessions.FirstOrDefault()?.Project;
             if (project == null)
-                throw new InvalidOperationException("TIA Portal is running but no project/session is open.");
+                throw new InvalidOperationException(
+                    "TIA Portal is running but no project/session is open. Use: tia open-project --file <path>.");
 
             return new TiaSession(portal, project);
+        }
+
+        // ---------- lifecycle (open/save/close) ----------
+
+        /// <summary>
+        /// Opens a project: attaches to a running portal, or starts a new one
+        /// (--no-ui → headless TiaPortalMode.WithoutUserInterface). The portal process
+        /// outlives this call; later verbs attach to it.
+        /// </summary>
+        public static object OpenProject(string path, bool ui)
+        {
+            var file = new System.IO.FileInfo(System.IO.Path.GetFullPath(path));
+            if (!file.Exists)
+                throw new System.IO.FileNotFoundException("Project file not found: " + file.FullName);
+
+            var proc = TiaPortal.GetProcesses().FirstOrDefault();
+            var portal = proc != null
+                ? proc.Attach()
+                : new TiaPortal(ui ? TiaPortalMode.WithUserInterface : TiaPortalMode.WithoutUserInterface);
+            bool started = proc == null;
+
+            var open = portal.Projects.FirstOrDefault();
+            if (open != null)
+                throw new InvalidOperationException(
+                    "A project is already open: '" + open.Name + "'. Run 'tia close-project' first.");
+
+            var project = portal.Projects.Open(file);
+            return new Dictionary<string, object>
+            {
+                { "opened", project.Name },
+                { "path", file.FullName },
+                { "portal", started ? (ui ? "started-with-ui" : "started-headless") : "attached" },
+            };
+        }
+
+        /// <summary>Single-user Project, or throws for Multiuser sessions (save/close go via TIA there).</summary>
+        private Project LocalProject()
+        {
+            var p = Project as Project;
+            if (p == null)
+                throw new InvalidOperationException(
+                    "Only supported for single-user projects. Multiuser: save/check-in via TIA Portal.");
+            return p;
+        }
+
+        public object Save()
+        {
+            var p = LocalProject();
+            p.Save();
+            return new Dictionary<string, object> { { "saved", p.Name } };
+        }
+
+        public object CloseProject(bool save)
+        {
+            var p = LocalProject();
+            string name = p.Name;
+            if (save) p.Save();
+            p.Close();
+            return new Dictionary<string, object> { { "closed", name }, { "saved", save } };
         }
 
         /// <summary>Every device in the project, including those nested in device groups.</summary>

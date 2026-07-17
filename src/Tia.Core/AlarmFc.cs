@@ -589,6 +589,52 @@ namespace Tia.Core
             return fcs;
         }
 
+        /// <summary>Consolidated word/bit -> description CSV for field documentation.</summary>
+        private static string WriteCsv(Dictionary<string, List<string>> documentation, string outDir)
+        {
+            var sb = new StringBuilder();
+            foreach (var area in documentation)
+            {
+                sb.AppendLine("\"-- " + area.Key.ToUpper() + " --\";\"\";\"\"");
+                sb.AppendLine("\"Word\";\"Bit\";\"Descrição\"");
+                int count = area.Value.Any() ? area.Value.Count : 16;
+                for (int i = 0; i < count; i++)
+                {
+                    string word = i % 16 == 0 ? "WORD " + (i / 16 + 1) : "";
+                    string description = i < area.Value.Count ? Describe(area.Value[i]) : "";
+                    sb.AppendLine("\"" + word + "\";\"Bit " + i % 16 + " :\";\"" + description + "\"");
+                }
+                sb.AppendLine();
+            }
+            string path = Path.GetFullPath(Path.Combine(outDir, "alarm-words.csv"));
+            if (File.Exists(path)) File.Delete(path);
+            File.WriteAllText(path, sb.ToString(), Encoding.UTF8);
+            return path;
+        }
+
+        private static string Describe(string variableName)
+        {
+            if (variableName.EndsWith("_FALHA", StringComparison.OrdinalIgnoreCase))
+                return "Status: Falha geral do equipamento " +
+                    variableName.Substring(0, variableName.Length - 6);
+            if (variableName.Contains("_STS_"))
+            {
+                var parts = variableName.Split(new[] { "_STS_" }, StringSplitOptions.None);
+                string text;
+                switch (parts[1].ToUpper())
+                {
+                    case "LEITURA_MUITO_ALTA": text = "Alarme: Leitura Muito Alta"; break;
+                    case "LEITURA_ALTA": text = "Aviso: Leitura Alta"; break;
+                    case "LEITURA_BAIXA": text = "Aviso: Leitura Baixa"; break;
+                    case "LEITURA_MUITO_BAIXA": text = "Alarme: Leitura Muito Baixa"; break;
+                    case "SEM_4MA": text = "Alarme: Sem Comunicação com Equipamento"; break;
+                    default: text = parts[1].Replace("_", " "); break;
+                }
+                return text + " " + parts[0];
+            }
+            return variableName;
+        }
+
         /// <summary>"2.3 Captação" -> "Captação" (numeric prefix stripped).</summary>
         private static string GetBaseName(string folderName)
         {

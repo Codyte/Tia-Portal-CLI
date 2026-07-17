@@ -30,7 +30,10 @@ namespace Tia.Cli
                         "import-tags --file F [--apply]", "compile [--apply]",
                         "gen-profinet --config F [--apply]",
                         "standardize-tags [--config F] [--apply]",
-                        "gen-fault-ob [--config F] [--out DIR] [--apply]" } },
+                        "gen-fault-ob [--config F] [--out DIR] [--apply]",
+                        "replicate-fc --config F [--out DIR] [--apply]",
+                        "gen-alarm-fc [--config F] [--out DIR] [--apply]",
+                        "replicate-instruments --config F [--out DIR] [--apply]" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports" },
                 });
                 return args.Length == 0 ? 1 : 0;
@@ -121,6 +124,26 @@ namespace Tia.Cli
                             : new Core.FaultObConfig();
                         using (WriteLock(session, apply, verb))
                             result = Core.FaultOb.Generate(session, session.GetPlc(plcName), fobConfig, outDir, apply);
+                        break;
+                    case "replicate-fc":
+                        var repConfig = JsonConvert.DeserializeObject<Core.ReplicateFcConfig>(
+                            File.ReadAllText(Require(args, "--config")));
+                        using (WriteLock(session, apply, verb))
+                            result = Core.ReplicateFc.Run(session.GetPlc(plcName), repConfig, outDir, apply);
+                        break;
+                    case "gen-alarm-fc":
+                        var almPath = OptionValue(args, "--config");
+                        var almConfig = almPath != null
+                            ? JsonConvert.DeserializeObject<Core.AlarmFcConfig>(File.ReadAllText(almPath))
+                            : new Core.AlarmFcConfig();
+                        using (WriteLock(session, apply, verb))
+                            result = Core.AlarmFc.Generate(session.GetPlc(plcName), almConfig, outDir, apply);
+                        break;
+                    case "replicate-instruments":
+                        var insConfig = JsonConvert.DeserializeObject<Core.InstrumentFcConfig>(
+                            File.ReadAllText(Require(args, "--config")));
+                        using (WriteLock(session, apply, verb))
+                            result = Core.InstrumentFc.Run(session.GetPlc(plcName), insConfig, outDir, apply);
                         break;
                     default:
                         throw new ArgumentException("Unknown verb '" + verb + "'. Run tia --help.");

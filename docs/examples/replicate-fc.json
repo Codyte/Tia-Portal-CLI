@@ -1,0 +1,8 @@
+{
+  "BlocksFolder": "4. Motores/Bombas",
+  "EquipmentTypes": ["Soprador", "Bomba", "Agitador", "Misturador"],
+  "UdtNames": ["MotorDados", "MotorPrincipal", "ValvDados"],
+  "SourceNumbersToReplace": ["100", "300", "303"],
+  "GlobalDb": "DB GLOBAL",
+  "StartNumber": 300
+}

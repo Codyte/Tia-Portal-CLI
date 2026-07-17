@@ -47,7 +47,11 @@ Contrato CLI:
 Verbos por fase (nomes finais definidos na F1):
 - **Leitura:** `info`, `list-devices`, `list-blocks`, `list-tags`, `export-block`, `export-tagtable`, `export-screen`
 - **Escrita:** `import-block`, `import-tagtable`, `compile`, `create-tags`
-- **Portados dos FINAIS:** `gen-profinet`, `standardize-tags`, `replicate-fc`, `gen-fault-ob`
+- **Portados dos FINAIS:** `gen-profinet`, `standardize-tags`, `replicate-fc`, `gen-fault-ob`,
+  `gen-alarm-fc`, `replicate-instruments` — as 3 variantes "Replicador de FC" NÃO foram unificadas:
+  algoritmos distintos (replicação por pasta / bits-to-word / replicação por instrumento) → 3 verbos.
+  Desvios deliberados dos originais: sem compile automático (verbo `compile` separado), sem menu
+  interativo (dry-run + `--apply`), sem cache de template em disco (template deve existir no projeto).
 
 ## Fases
 
@@ -56,7 +60,7 @@ Verbos por fase (nomes finais definidos na F1):
 | F0 | Este plano + CLAUDE.md do repo | commitado | ✅ |
 | F1 | Solução .NET, Tia.Core mínimo, verbos de leitura | `tia info` e `tia list-blocks` rodando contra TIA real | 🟡 código+build ok; smoke aguarda instalação do TIA V19 aqui |
 | F2 | Export/import XML + compile | roundtrip de 1 FC sem diff + compile ok | 🟡 código+build ok; smoke aguarda TIA |
-| F3 | Portar os 4 tools dos FINAIS como verbos | paridade com os scripts originais em projeto de teste | 🟡 gen-profinet portado; faltam standardize-tags, gen-fault-ob, replicate-fc |
+| F3 | Portar os 4 tools dos FINAIS como verbos | paridade com os scripts originais em projeto de teste | 🟡 código 100% (6 verbos: gen-profinet, standardize-tags, gen-fault-ob, replicate-fc, gen-alarm-fc, replicate-instruments); falta code-review + smoke (aguarda TIA V19) |
 | F4 | Polimento p/ GitHub (README EN, licença, exemplos) | repo publicável | ⬜ |
 | F5? | MCP server fino sobre Tia.Core | só se D1 cair | ⬜ |
 

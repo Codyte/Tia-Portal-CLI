@@ -131,7 +131,9 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
 4. ~~**Compile granular + diff-block**~~ ✅ feito (`compile [--block X | --folder A/B]`,
    `diff-block --file F.xml [--name X]` read-only). `BlocksIdentical` movido pra `Ops`
    (param ignoreComments; AlarmFc=true, InstrumentFc=false — comportamento preservado).
-5. **Inspeção**: `find` (busca bloco/tag por padrão), cross-references, `snapshot` (inventário completo).
+5. ~~**Inspeção**~~ ✅ feito (`find --pattern P* [--kind block|table|tag|type]` wildcard,
+   `list-types`, `snapshot` inventário completo, `xref --name BLOCK` via CrossReferenceService —
+   API compilou contra DLL real; formato do resultado validar no smoke).
 6. **Batch**: `tia run --script ops.json` — lista de verbos numa sessão só (attach 1x, mais rápido).
 7. **Robustez**: retry em portal ocupado, exit codes por categoria, timeout configurável.
 8. **Libraries**: abrir global library, instanciar master copies/types.

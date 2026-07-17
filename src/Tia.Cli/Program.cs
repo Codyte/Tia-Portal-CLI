@@ -26,7 +26,9 @@ namespace Tia.Cli
                     { "usage", "tia <verb> [--plc NAME] [--apply]" },
                     { "session", new[] { "open-project --file X.ap19 [--no-ui]",
                         "save-project", "close-project [--save]" } },
-                    { "read", new[] { "info", "list-devices", "list-blocks", "list-tags",
+                    { "read", new[] { "info", "list-devices", "list-blocks", "list-tags", "list-types",
+                        "find --pattern P* [--kind block|table|tag|type]",
+                        "snapshot  (inventário completo)", "xref --name BLOCK",
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]",
                         "export-type --name X [--out DIR]" } },
                     { "structure", new[] { "create-folder --path A/B [--tags] [--apply]",
@@ -120,6 +122,19 @@ namespace Tia.Cli
                         break;
                     case "list-tags":
                         result = Core.Inventory.TagTables(session.GetPlc(plcName));
+                        break;
+                    case "list-types":
+                        result = Core.Inventory.Types(session.GetPlc(plcName));
+                        break;
+                    case "find":
+                        result = Core.Inventory.Find(session.GetPlc(plcName),
+                            Require(args, "--pattern"), OptionValue(args, "--kind"));
+                        break;
+                    case "snapshot":
+                        result = Core.Inventory.Snapshot(session);
+                        break;
+                    case "xref":
+                        result = Core.Inventory.Xref(session.GetPlc(plcName), Require(args, "--name"));
                         break;
                     case "export-block":
                         result = Core.Ops.ExportBlock(session.GetPlc(plcName), Require(args, "--name"), outDir);

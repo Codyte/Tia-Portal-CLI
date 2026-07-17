@@ -130,7 +130,7 @@ namespace Tia.Core
             return names;
         }
 
-        private static DeviceItem FindNetworkItem(DeviceItemComposition items)
+        internal static DeviceItem FindNetworkItem(DeviceItemComposition items)
         {
             foreach (DeviceItem item in items)
             {

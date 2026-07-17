@@ -123,8 +123,11 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
    `delete-block --name X`, `export-type`/`import-type` p/ UDT). Dry-run conta conteúdo antes
    de deletar. Smoke pendente — risco: `PlcBlockUserGroup.Delete()`/`PlcTagTableUserGroup.Delete()`
    e `plc.TypeGroup.Types.Import` de memória, validar no primeiro smoke.
-3. **Hardware**: `add-device` (CreateWithItem por MLFB), `set-address` (IP/Profinet name),
-   conectar subnet/IO-system. Alternativa em massa: export/import **AML (CAx)**.
+3. ~~**Hardware**~~ ✅ feito (`add-device --mlfb X --name N [--station S]`,
+   `set-address --device X [--ip] [--mask] [--pn-name]`, `connect-subnet --device X --subnet S
+   [--io-system IO]` — controller cria IO-system, IO device entra num existente;
+   `export-cax`/`import-cax` AML). Smoke pendente — risco: atributos Node ("Address",
+   "PnDeviceName", "PnDeviceNameAutoGeneration") e CreateIoSystem de memória.
 4. **Compile granular** (`--block`/`--folder`) + `diff-block` (XML normalizado, já temos comparador).
 5. **Inspeção**: `find` (busca bloco/tag por padrão), cross-references, `snapshot` (inventário completo).
 6. **Batch**: `tia run --script ops.json` — lista de verbos numa sessão só (attach 1x, mais rápido).

@@ -33,6 +33,10 @@ namespace Tia.Cli
                         "delete-folder --path A/B [--tags] [--apply]",
                         "delete-block --name X [--apply]",
                         "import-type --file F.xml [--apply]" } },
+                    { "hardware", new[] { "add-device --mlfb \"6ES7 ...\" --name X [--station S] [--apply]",
+                        "set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]",
+                        "connect-subnet --device X --subnet S [--io-system IO] [--apply]",
+                        "export-cax [--out DIR]", "import-cax --file F.aml [--apply]" } },
                     { "write", new[] { "import-block --file F [--folder A/B] [--apply]",
                         "import-source --file F.scl [--apply]",
                         "import-ladder --file F.scl [--name N] [--folder A/B] [--apply]  (SCL subset → LAD; dry-run works without TIA)",
@@ -162,6 +166,29 @@ namespace Tia.Cli
                     case "import-tags":
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.ImportTagTable(session.GetPlc(plcName), Require(args, "--file"), apply);
+                        break;
+                    case "add-device":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Hardware.AddDevice(session, Require(args, "--mlfb"),
+                                Require(args, "--name"), OptionValue(args, "--station"), apply);
+                        break;
+                    case "set-address":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Hardware.SetAddress(session, Require(args, "--device"),
+                                OptionValue(args, "--ip"), OptionValue(args, "--mask"),
+                                OptionValue(args, "--pn-name"), apply);
+                        break;
+                    case "connect-subnet":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Hardware.ConnectSubnet(session, Require(args, "--device"),
+                                Require(args, "--subnet"), OptionValue(args, "--io-system"), apply);
+                        break;
+                    case "export-cax":
+                        result = Core.Hardware.CaxExport(session, outDir);
+                        break;
+                    case "import-cax":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Hardware.CaxImport(session, Require(args, "--file"), apply);
                         break;
                     case "compile":
                         var plc = session.GetPlc(plcName);

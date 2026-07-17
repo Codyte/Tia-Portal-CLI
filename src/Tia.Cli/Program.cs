@@ -51,6 +51,7 @@ namespace Tia.Cli
                         "replicate-fc --config F [--out DIR] [--apply]",
                         "gen-alarm-fc [--config F] [--out DIR] [--apply]",
                         "replicate-instruments --config F [--out DIR] [--apply]" } },
+                    { "batch", new[] { "run --script ops.json  (JSON array de arg-arrays, uma sessão só)" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports" },
                 });
                 return args.Length == 0 ? 1 : 0;
@@ -88,19 +89,45 @@ namespace Tia.Cli
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static int Run(string[] args)
         {
-            string verb = args[0];
-            string plcName = OptionValue(args, "--plc");
-            string outDir = OptionValue(args, "--out") ?? Path.Combine("workspace", "exports");
-            bool apply = args.Contains("--apply");
-
             // runs before Attach: may start the portal itself
-            if (verb == "open-project")
+            if (args[0] == "open-project")
             {
                 Print(Core.TiaSession.OpenProject(Require(args, "--file"), !args.Contains("--no-ui")));
                 return 0;
             }
 
             using (var session = Core.TiaSession.Attach())
+            {
+                // batch: list of verbs in one attach — [["list-blocks"],["compile","--apply"]]
+                if (args[0] == "run")
+                {
+                    var steps = JsonConvert.DeserializeObject<List<string[]>>(
+                        File.ReadAllText(Require(args, "--script")));
+                    if (steps == null || steps.Count == 0)
+                        throw new ArgumentException(
+                            "Script must be a JSON array of arg arrays, e.g. [[\"list-blocks\"],[\"compile\",\"--apply\"]].");
+                    var results = new List<object>();
+                    foreach (var step in steps)
+                    {
+                        if (step == null || step.Length == 0 || step[0] == "run" || step[0] == "open-project")
+                            throw new ArgumentException("Each step must be a verb (not 'run'/'open-project').");
+                        results.Add(new Dictionary<string, object>
+                            { { "verb", step[0] }, { "result", Dispatch(session, step) } });
+                    }
+                    Print(new Dictionary<string, object> { { "steps", results.Count }, { "results", results } });
+                    return 0;
+                }
+                Print(Dispatch(session, args));
+                return 0;
+            }
+        }
+
+        private static object Dispatch(Core.TiaSession session, string[] args)
+        {
+            string verb = args[0];
+            string plcName = OptionValue(args, "--plc");
+            string outDir = OptionValue(args, "--out") ?? Path.Combine("workspace", "exports");
+            bool apply = args.Contains("--apply");
             {
                 object result;
                 switch (verb)
@@ -270,8 +297,7 @@ namespace Tia.Cli
                     default:
                         throw new ArgumentException("Unknown verb '" + verb + "'. Run tia --help.");
                 }
-                Print(result);
-                return 0;
+                return result;
             }
         }
 

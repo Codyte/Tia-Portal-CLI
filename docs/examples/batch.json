@@ -1,0 +1,6 @@
+[
+  ["list-blocks"],
+  ["import-source", "--file", "docs/examples/example.scl", "--apply"],
+  ["compile", "--apply"],
+  ["save-project"]
+]

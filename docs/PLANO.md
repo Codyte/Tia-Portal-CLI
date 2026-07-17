@@ -134,7 +134,9 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
 5. ~~**Inspeção**~~ ✅ feito (`find --pattern P* [--kind block|table|tag|type]` wildcard,
    `list-types`, `snapshot` inventário completo, `xref --name BLOCK` via CrossReferenceService —
    API compilou contra DLL real; formato do resultado validar no smoke).
-6. **Batch**: `tia run --script ops.json` — lista de verbos numa sessão só (attach 1x, mais rápido).
+6. ~~**Batch**~~ ✅ feito (`tia run --script ops.json` — JSON array de arg-arrays, attach 1x;
+   falha para no passo com erro; `run`/`open-project` proibidos como step.
+   Exemplo: `docs/examples/batch.json`).
 7. **Robustez**: retry em portal ocupado, exit codes por categoria, timeout configurável.
 8. **Libraries**: abrir global library, instanciar master copies/types.
 9. **Online (revoga D8 — só com decisão explícita)**: go-online, download, compare online/offline,

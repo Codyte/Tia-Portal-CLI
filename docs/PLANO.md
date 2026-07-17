@@ -128,7 +128,9 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
    [--io-system IO]` — controller cria IO-system, IO device entra num existente;
    `export-cax`/`import-cax` AML). Smoke pendente — risco: atributos Node ("Address",
    "PnDeviceName", "PnDeviceNameAutoGeneration") e CreateIoSystem de memória.
-4. **Compile granular** (`--block`/`--folder`) + `diff-block` (XML normalizado, já temos comparador).
+4. ~~**Compile granular + diff-block**~~ ✅ feito (`compile [--block X | --folder A/B]`,
+   `diff-block --file F.xml [--name X]` read-only). `BlocksIdentical` movido pra `Ops`
+   (param ignoreComments; AlarmFc=true, InstrumentFc=false — comportamento preservado).
 5. **Inspeção**: `find` (busca bloco/tag por padrão), cross-references, `snapshot` (inventário completo).
 6. **Batch**: `tia run --script ops.json` — lista de verbos numa sessão só (attach 1x, mais rápido).
 7. **Robustez**: retry em portal ocupado, exit codes por categoria, timeout configurável.

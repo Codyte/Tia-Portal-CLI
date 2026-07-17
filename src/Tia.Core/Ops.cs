@@ -334,13 +334,84 @@ namespace Tia.Core
                 .FirstOrDefault(e => e.Name.LocalName == "Name")?.Value;
         }
 
-        // ---------- compile ----------
+        // ---------- diff ----------
 
-        public static object Compile(PlcSoftware plc)
+        /// <summary>Compares an export XML against the project block, normalized (UIds/IDs, informative addresses).</summary>
+        public static object DiffBlock(PlcSoftware plc, string name, string file)
         {
-            var result = plc.GetService<ICompilable>().Compile();
+            var full = RequireFile(file);
+            name = name ?? XmlObjectName(full);
+            if (name == null)
+                throw new InvalidOperationException("Could not read block name from XML; pass --name.");
+            var block = FindBlock(plc, name);
+            if (block == null)
+                throw new InvalidOperationException("Block '" + name + "' not found.");
             return new Dictionary<string, object>
             {
+                { "block", name },
+                { "file", full },
+                { "identical", BlocksIdentical(block, full, false) },
+            };
+        }
+
+        /// <summary>Normalized XML compare: strips UId/ID, informative addresses, optionally comments.</summary>
+        public static bool BlocksIdentical(PlcBlock existing, string newXmlPath, bool ignoreComments)
+        {
+            string tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".xml");
+            try
+            {
+                existing.Export(new FileInfo(tmp), ExportOptions.None);
+                var generated = XDocument.Load(newXmlPath).Descendants("ObjectList").FirstOrDefault();
+                var current = XDocument.Load(tmp).Descendants("ObjectList").FirstOrDefault();
+                if (generated == null || current == null) return false;
+                var a = new XElement(generated);
+                var b = new XElement(current);
+                foreach (var container in new[] { a, b })
+                {
+                    foreach (var e in container.DescendantsAndSelf())
+                    {
+                        e.Attribute("UId")?.Remove();
+                        e.Attribute("ID")?.Remove();
+                    }
+                    container.Descendants("Address")
+                        .Where(x => x.Attribute("Informative")?.Value == "true").Remove();
+                    if (ignoreComments)
+                        container.Descendants("MultilingualText")
+                            .Where(x => x.Attribute("CompositionName")?.Value == "Comment").Remove();
+                }
+                return XNode.DeepEquals(a, b);
+            }
+            catch { return false; }
+            finally { if (File.Exists(tmp)) File.Delete(tmp); }
+        }
+
+        // ---------- compile ----------
+
+        /// <summary>Compile whole PLC, one block (--block) or a folder (--folder).</summary>
+        public static object Compile(PlcSoftware plc, string blockName, string folderPath)
+        {
+            IEngineeringServiceProvider target = plc;
+            string scope = "plc " + plc.Name;
+            if (blockName != null)
+            {
+                var block = FindBlock(plc, blockName);
+                if (block == null)
+                    throw new InvalidOperationException("Block '" + blockName + "' not found.");
+                target = block;
+                scope = "block " + blockName;
+            }
+            else if (folderPath != null)
+            {
+                target = ResolveFolder(plc, folderPath, false);
+                scope = "folder " + folderPath;
+            }
+            var compiler = target.GetService<ICompilable>();
+            if (compiler == null)
+                throw new InvalidOperationException(scope + " is not compilable.");
+            var result = compiler.Compile();
+            return new Dictionary<string, object>
+            {
+                { "scope", scope },
                 { "state", result.State.ToString() },
                 { "errors", result.ErrorCount },
                 { "warnings", result.WarningCount },

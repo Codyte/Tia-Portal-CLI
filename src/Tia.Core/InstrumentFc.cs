@@ -517,29 +517,7 @@ namespace Tia.Core
 
         private static bool BlocksIdentical(PlcBlock existing, string newXmlPath)
         {
-            string tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".xml");
-            try
-            {
-                existing.Export(new FileInfo(tmp), ExportOptions.None);
-                var generated = XDocument.Load(newXmlPath).Descendants("ObjectList").FirstOrDefault();
-                var current = XDocument.Load(tmp).Descendants("ObjectList").FirstOrDefault();
-                if (generated == null || current == null) return false;
-                var a = new XElement(generated);
-                var b = new XElement(current);
-                foreach (var container in new[] { a, b })
-                {
-                    foreach (var e in container.DescendantsAndSelf())
-                    {
-                        e.Attribute("UId")?.Remove();
-                        e.Attribute("ID")?.Remove();
-                    }
-                    container.Descendants("Address")
-                        .Where(x => x.Attribute("Informative")?.Value == "true").Remove();
-                }
-                return XNode.DeepEquals(a, b);
-            }
-            catch { return false; }
-            finally { if (File.Exists(tmp)) File.Delete(tmp); }
+            return Ops.BlocksIdentical(existing, newXmlPath, false);
         }
 
         private static void ReassignUids(XElement element)

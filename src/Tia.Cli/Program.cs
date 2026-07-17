@@ -40,7 +40,9 @@ namespace Tia.Cli
                     { "write", new[] { "import-block --file F [--folder A/B] [--apply]",
                         "import-source --file F.scl [--apply]",
                         "import-ladder --file F.scl [--name N] [--folder A/B] [--apply]  (SCL subset → LAD; dry-run works without TIA)",
-                        "import-tags --file F [--apply]", "compile [--apply]",
+                        "import-tags --file F [--apply]",
+                        "compile [--block X | --folder A/B] [--apply]",
+                        "diff-block --file F.xml [--name X]  (read-only, normalized compare)",
                         "gen-profinet --config F [--apply]",
                         "standardize-tags [--config F] [--apply]",
                         "gen-fault-ob [--config F] [--out DIR] [--apply]",
@@ -192,11 +194,21 @@ namespace Tia.Cli
                         break;
                     case "compile":
                         var plc = session.GetPlc(plcName);
+                        var scopeBlock = OptionValue(args, "--block");
+                        var scopeFolder = OptionValue(args, "--folder");
                         if (apply)
                             using (WriteLock(session, true, verb))
-                                result = Core.Ops.Compile(plc);
+                                result = Core.Ops.Compile(plc, scopeBlock, scopeFolder);
                         else
-                            result = new Dictionary<string, object> { { "wouldCompile", plc.Name }, { "applied", false } };
+                            result = new Dictionary<string, object>
+                            {
+                                { "wouldCompile", scopeBlock ?? scopeFolder ?? plc.Name },
+                                { "applied", false },
+                            };
+                        break;
+                    case "diff-block":
+                        result = Core.Ops.DiffBlock(session.GetPlc(plcName),
+                            OptionValue(args, "--name"), Require(args, "--file"));
                         break;
                     case "gen-profinet":
                         var config = JsonConvert.DeserializeObject<Core.ProfinetConfig>(

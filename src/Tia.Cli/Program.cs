@@ -362,7 +362,7 @@ namespace Tia.Cli
                         var insConfig = JsonConvert.DeserializeObject<Core.InstrumentFcConfig>(
                             File.ReadAllText(Require(args, "--config")));
                         using (WriteLock(session, apply, verb))
-                            result = Core.InstrumentFc.Run(session.GetPlc(plcName), insConfig, outDir, apply);
+                            result = Core.InstrumentFc.Run(session, session.GetPlc(plcName), insConfig, outDir, apply);
                         break;
                     default:
                         throw new ArgumentException("Unknown verb '" + verb + "'. Run tia --help.");

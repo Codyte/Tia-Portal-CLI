@@ -42,6 +42,7 @@ namespace Tia.Core
     public static class InstrumentFc
     {
         private static int _uid = 20000; // single-shot CLI process (D9)
+        private static string[] _cultures = { "en-US" }; // set per-run in Run
 
         private static readonly XNamespace FlgNs =
             "http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5";
@@ -66,8 +67,13 @@ namespace Tia.Core
             public List<Instrument> Instruments = new List<Instrument>();
         }
 
-        public static object Run(PlcSoftware plc, InstrumentFcConfig config, string outDir, bool apply)
+        public static object Run(TiaSession session, PlcSoftware plc, InstrumentFcConfig config, string outDir, bool apply)
         {
+            // an XML MultilingualTextItem whose culture the project doesn't have fails the whole import
+            _cultures = session.Project.LanguageSettings.ActiveLanguages
+                .Select(l => l.Culture.Name).ToArray();
+            if (_cultures.Length == 0) _cultures = new[] { "en-US" };
+
             if (string.IsNullOrEmpty(config?.SourceTagsFolder))
                 throw new ArgumentException("Config must set 'SourceTagsFolder'.");
             if (string.IsNullOrEmpty(config.TargetBlocksFolder))
@@ -90,10 +96,12 @@ namespace Tia.Core
             var destRoot = ReplicateFc.FindGroup(plc.BlockGroup, config.TargetBlocksFolder);
             if (destRoot == null)
                 throw new InvalidOperationException("Target folder '" + config.TargetBlocksFolder + "' not found.");
-            var searchFolders = ReplicateFc.DescendantGroups(destRoot);
+            // root first — sorting it with descendants let generated area folders win on re-runs
+            var searchFolders = ReplicateFc.DescendantGroups(destRoot)
+                .OrderBy(f => f.Name, natural).ToList();
             searchFolders.Insert(0, destRoot);
             FC templateFc = null;
-            foreach (var folder in searchFolders.OrderBy(f => f.Name, natural))
+            foreach (var folder in searchFolders)
             {
                 templateFc = folder.Blocks.OfType<FC>().FirstOrDefault();
                 if (templateFc != null) break;
@@ -178,12 +186,12 @@ namespace Tia.Core
                     "at least one instrument that exists in the source tag folders and the global DB.");
 
             // instance DB names each instrument will need
-            var fbCalls = templateXml.Descendants("CallInfo")
+            var fbCalls = templateXml.Descendants(FlgNs + "CallInfo")
                 .Where(ci => ci.Attribute("BlockType")?.Value == "FB").ToList();
             foreach (var instrument in tasks.SelectMany(t => t.Instruments))
                 foreach (var call in fbCalls)
                 {
-                    string instanceName = call.Element("Instance")?.Element("Component")?.Attribute("Name")?.Value;
+                    string instanceName = call.Element(FlgNs + "Instance")?.Element(FlgNs + "Component")?.Attribute("Name")?.Value;
                     if (!string.IsNullOrEmpty(instanceName) && instanceName.Contains(source.Id))
                         instrument.InstanceDbs.Add(instanceName.Replace(source.Id, instrument.Id));
                 }
@@ -461,14 +469,11 @@ namespace Tia.Core
                     new XElement("MultilingualText", new XAttribute("ID", (++_uid).ToString("X")),
                         new XAttribute("CompositionName", "Title"),
                         new XElement("ObjectList",
-                            new XElement("MultilingualTextItem", new XAttribute("ID", (++_uid).ToString("X")),
+                            _cultures.Select(c => new XElement("MultilingualTextItem",
+                                new XAttribute("ID", (++_uid).ToString("X")),
                                 new XAttribute("CompositionName", "Items"),
                                 new XElement("AttributeList",
-                                    new XElement("Culture", "en-US"), new XElement("Text", title))),
-                            new XElement("MultilingualTextItem", new XAttribute("ID", (++_uid).ToString("X")),
-                                new XAttribute("CompositionName", "Items"),
-                                new XElement("AttributeList",
-                                    new XElement("Culture", "pt-BR"), new XElement("Text", title)))))));
+                                    new XElement("Culture", c), new XElement("Text", title))))))));
         }
 
         private static string EmptyObXml(string obName)
@@ -509,9 +514,10 @@ namespace Tia.Core
             var folder = ReplicateFc.FindGroup(plc.BlockGroup, task.TargetFolderName);
             if (folder == null) return false;
             if (!(folder.Blocks.Find(task.TargetFcName) is FC)) return false;
+            // global lookup — ImportAreaFc also skips creation when the DB exists anywhere
             foreach (var instrument in task.Instruments)
                 foreach (var dbName in instrument.InstanceDbs)
-                    if (folder.Blocks.Find(dbName) == null) return false;
+                    if (Ops.FindBlock(plc, dbName) == null) return false;
             return true;
         }
 

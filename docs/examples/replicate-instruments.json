@@ -1,9 +1,6 @@
 {
-  "SourceTagsFolder": "2. Alarmes",
-  "TargetBlocksFolder": "5.2 Totalizadores",
-  "TargetOb": "Chamada Aferição Instrumentos",
-  "GlobalDb": "DB GLOBAL",
-  "IgnoreFolders": ["2.0 Paineis", "5.1.0 Molde"],
-  "TagFilters": ["FQIT", "FIT"],
-  "NextCommandIds": { "Afericao": 100, "Limites": 200 }
+  "SourceTagsFolder": "5. Instrumentos",
+  "TargetBlocksFolder": "5.2 Instrumentos",
+  "GlobalDb": "DB INSTRUMENTOS",
+  "TargetOb": "OB_INSTRUMENTOS"
 }

@@ -1,0 +1,28 @@
+DATA_BLOCK "DB INSTRUMENTOS"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   STRUCT
+      ETA : STRUCT
+         "FIT-01" : STRUCT
+            WORD_STS : Word;
+            CMD_AF : Int;
+            CMD_LIM : Int;
+         END_STRUCT;
+         "LIT-01" : STRUCT
+            WORD_STS : Word;
+            CMD_AF : Int;
+            CMD_LIM : Int;
+         END_STRUCT;
+      END_STRUCT;
+   END_STRUCT;
+
+BEGIN
+END_DATA_BLOCK
+
+DATA_BLOCK "DB_BITS_TO_WORD_FIT-01"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+"FB BITS TO WORD"
+
+BEGIN
+END_DATA_BLOCK

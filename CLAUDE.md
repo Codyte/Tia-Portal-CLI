@@ -13,13 +13,15 @@
 
 ## Build / run (a partir da F1)
 
-- Solução em `src/`, target net48 x64.
-- **Binário oficial = Debug** (`src\Tia.Cli\bin\Debug\net48\tia.exe`): a whitelist do Openness
-  registra esse caminho/hash. Release compila, mas exige rodar `scripts/whitelist.ps1` de novo
-  se for usado — na prática, usar sempre Debug. Pós-rebuild: whitelist elevada (UAC).
-- Testes offline (sem TIA): `src\Tia.Tests\bin\Debug\net48\Tia.Tests.exe` — assert-based,
-  cobre os geradores XML puros contra `docs/examples/`.
-- Smoke test exige TIA Portal V19 aberto com projeto de teste — confirmar com o usuário antes.
+- Solução em `src/`, target net48 x64. Binário oficial = Debug (`src\Tia.Cli\bin\Debug\net48\tia.exe`).
+- **Macro-verbos — usar SEMPRE em vez da coreografia manual:**
+  - `pwsh scripts/rebuild.ps1` = build + testes offline + whitelist (UAC só se tia.exe mudou).
+    Nunca rodar dotnet build/whitelist/testes soltos.
+  - `pwsh scripts/use-project.ps1 <Nome|caminho.ap21> [-Save]` = garante projeto aberto
+    (no-op se já aberto; fecha o atual sem save por padrão; open leva 2-4 min → background).
+  - `tia run --script ops.json` = batch de verbos, attach 1x.
+  - `tia doctor` = preflight dos 6 verbos antes de qualquer smoke.
+- Smoke test exige TIA Portal aberto com projeto de teste — confirmar com o usuário antes.
 
 ## Economia de tokens
 

@@ -19,7 +19,13 @@
     Nunca rodar dotnet build/whitelist/testes soltos.
   - `pwsh scripts/use-project.ps1 <Nome|caminho.ap21> [-Save]` = garante projeto aberto
     (no-op se já aberto; fecha o atual sem save por padrão; open leva 2-4 min → background).
-  - `tia run --script ops.json` = batch de verbos, attach 1x.
+  - `pwsh scripts/prep-project.ps1 <Nome>` = use-project + doctor + compile --apply + save
+    (projeto real chega sem compilar — rodar antes de qualquer export).
+  - `pwsh scripts/raio-x.ps1 <Nome>` = banho read-only → `workspace/<proj>/` (doctor, snapshot,
+    devices, tags, types, plc-navi.md, AML, xref dos OBs).
+  - `pwsh scripts/clone-hw.ps1 <Origem> <Destino> [-Apply]` = copia hardware via CAx/AML.
+  - `tia run --script ops.json` = batch de verbos, attach 1x. Fluxo FINAIS completo em dry:
+    `tia run --script docs/examples/gen-all.json`.
   - `tia doctor` = preflight dos 6 verbos antes de qualquer smoke.
 - Smoke test exige TIA Portal aberto com projeto de teste — confirmar com o usuário antes.
 

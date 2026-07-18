@@ -71,6 +71,35 @@ namespace Tia.Core
             };
         }
 
+        /// <summary>
+        /// Creates a new single-user project: attaches to a running portal (must have no
+        /// open project) or starts a new one (--no-ui → headless).
+        /// </summary>
+        public static object CreateProject(string dir, string name, bool ui)
+        {
+            var target = new System.IO.DirectoryInfo(System.IO.Path.GetFullPath(dir));
+            if (!target.Exists) target.Create();
+
+            var proc = TiaPortal.GetProcesses().FirstOrDefault();
+            var portal = proc != null
+                ? proc.Attach()
+                : new TiaPortal(ui ? TiaPortalMode.WithUserInterface : TiaPortalMode.WithoutUserInterface);
+            bool started = proc == null;
+
+            var open = portal.Projects.FirstOrDefault();
+            if (open != null)
+                throw new InvalidOperationException(
+                    "A project is already open: '" + open.Name + "'. Run 'tia close-project' first.");
+
+            var project = portal.Projects.Create(target, name);
+            return new Dictionary<string, object>
+            {
+                { "created", project.Name },
+                { "path", project.Path.FullName },
+                { "portal", started ? (ui ? "started-with-ui" : "started-headless") : "attached" },
+            };
+        }
+
         /// <summary>Single-user Project, or throws for Multiuser sessions (save/close go via TIA there).</summary>
         private Project LocalProject()
         {

@@ -24,7 +24,8 @@ namespace Tia.Cli
                 Print(new Dictionary<string, object>
                 {
                     { "usage", "tia <verb> [--plc NAME] [--apply]" },
-                    { "session", new[] { "open-project --file X.ap19 [--no-ui]",
+                    { "session", new[] { "open-project --file X.ap21 [--no-ui]",
+                        "create-project --dir D --name N [--no-ui]",
                         "save-project", "close-project [--save]" } },
                     { "read", new[] { "info", "list-devices", "list-blocks", "list-tags", "list-types",
                         "find --pattern P* [--kind block|table|tag|type]",
@@ -118,10 +119,16 @@ namespace Tia.Cli
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static int Run(string[] args)
         {
-            // runs before Attach: may start the portal itself
+            // run before Attach: may start the portal themselves
             if (args[0] == "open-project")
             {
                 Print(Core.TiaSession.OpenProject(Require(args, "--file"), !args.Contains("--no-ui")));
+                return 0;
+            }
+            if (args[0] == "create-project")
+            {
+                Print(Core.TiaSession.CreateProject(Require(args, "--dir"), Require(args, "--name"),
+                    !args.Contains("--no-ui")));
                 return 0;
             }
 
@@ -138,8 +145,9 @@ namespace Tia.Cli
                     var results = new List<object>();
                     foreach (var step in steps)
                     {
-                        if (step == null || step.Length == 0 || step[0] == "run" || step[0] == "open-project")
-                            throw new ArgumentException("Each step must be a verb (not 'run'/'open-project').");
+                        if (step == null || step.Length == 0 || step[0] == "run"
+                            || step[0] == "open-project" || step[0] == "create-project")
+                            throw new ArgumentException("Each step must be a verb (not 'run'/'open-project'/'create-project').");
                         results.Add(new Dictionary<string, object>
                             { { "verb", step[0] }, { "result", DispatchWithRetry(session, step, args) } });
                     }

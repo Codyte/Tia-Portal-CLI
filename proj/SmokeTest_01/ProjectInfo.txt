@@ -1,0 +1,12 @@
+TiaPortal:
+  MinimumRequired:
+  - Version: V21.0
+  - TechnicalVersion: 21.00.00.00
+  LastUsed:
+  - Version: V21
+  - TechnicalVersion: 21.00.00.00
+
+UsedProducts:
+- Name: Totally Integrated Automation Portal
+  Version: V21
+  TechnicalVersion: 21.00.00.00

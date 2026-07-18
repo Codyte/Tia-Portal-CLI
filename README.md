@@ -1,22 +1,51 @@
-# tia-cli
+<div align="center">
 
-**JSON-in / JSON-out CLI for the Siemens TIA Portal Openness API (V19+).**
-Every operation is a verb: `tia list-blocks`, `tia export-block --name FC_Pumps`,
-`tia compile --apply`. stdout is always JSON, stderr is human log, exit codes are stable —
-built to be driven by AI agents (Claude Code and friends) and by engineers who prefer a shell
-over ClickOps.
+# ⚡ tia-cli
+
+**Drive Siemens TIA Portal from the command line — JSON in, JSON out.**
+
+*Every Openness operation as a shell verb. Built for AI agents and for engineers
+who prefer a terminal over ClickOps.*
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![.NET Framework 4.8](https://img.shields.io/badge/.NET-Framework%204.8-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
+[![TIA Portal V19+](https://img.shields.io/badge/TIA%20Portal-V19%20%7C%20V20%20%7C%20V21-009999)](https://www.siemens.com/tia-portal)
+[![Platform](https://img.shields.io/badge/platform-Windows%20x64-0078D6?logo=windows)](#requirements)
+[![Dry--run first](https://img.shields.io/badge/writes-dry--run%20by%20default-orange)](#design-contract)
+
+```
+> tia info                          > tia find --pattern "FC_Pump*"
+{                                   [
+  "project": "SmokeTest_01",          { "kind": "block", "name": "FC_Pump_01",
+  "plcs": [ { "plc": "PLC_1" } ],       "folder": "4. Motores", "type": "FC" }
+  "devices": 21                     ]
+}
+```
+
+**40+ verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML ·
+SCL→LAD converter · 6 field-proven code generators · batch mode · one attach
+
+</div>
+
+---
+
+## Why
+
+TIA Portal automation today means clicking, or writing a one-off C# Openness app per task.
+`tia-cli` collapses that into a single whitelisted exe: stdout is always JSON, stderr is human
+log, exit codes are stable, and **every write is a dry-run unless you pass `--apply`** — safe
+enough to hand to an AI agent, fast enough for a human in a hurry.
+
+```mermaid
+flowchart LR
+    A["🤖 AI agent / engineer<br/>(shell)"] -->|"tia &lt;verb&gt; --json args"| B["tia.exe<br/>(net48 x64, whitelisted)"]
+    B -->|Openness API| C["TIA Portal V19+<br/>(running instance)"]
+    B -->|SimaticML / AML / CSV| D[("workspace/<br/>exports")]
+    C --> E["PLC project<br/>(offline)"]
+```
 
 Extracted from field-proven automation scripts for water-treatment PLC projects
 (`Scripts_Siemens/FINAIS/`, kept as read-only reference).
-
-```
-> tia info
-{
-  "project": "SmokeTest_01",
-  "plcs": [ { "device": "PLC_1", "plc": "PLC_1" } ],
-  "devices": 21
-}
-```
 
 ## Design contract
 
@@ -31,7 +60,44 @@ Extracted from field-proven automation scripts for water-treatment PLC projects
 - **XML roundtrip as the core primitive.** Export SimaticML → transform → import. High-level
   verbs are built on top of it.
 
-## Requirements
+## Verbs
+
+Run `tia --help` for the full, always-current list.
+
+| Group | Verbs |
+|-------|-------|
+| 🔌 Session | `open-project` · `create-project` · `save-project` · `close-project` |
+| 🔍 Read | `info` · `list-devices` · `list-blocks` · `list-tags` · `list-types` · `list-hmi` · `find` · `snapshot` · `xref` · `tree` · `export-block` · `export-tags` · `export-type` |
+| 🗂️ Structure | `create-folder` · `delete-folder` · `delete-block` · `import-type` |
+| 🛠️ Hardware | `add-device` · `set-address` · `connect-subnet` · `export-cax` · `import-cax` (AML) |
+| ✍️ Write | `import-block` · `import-source` · `import-ladder` (SCL subset → LAD) · `import-tags` · `compile` · `diff-block` |
+| ⚙️ Generators | `gen-profinet` · `standardize-tags` · `gen-fault-ob` · `replicate-fc` · `gen-alarm-fc` · `replicate-instruments` — plus `doctor`, a read-only preflight that checks every template/folder they need |
+| 📚 Library | `list-library` · `import-master-copy` |
+| 📦 Batch | `run --script ops.json` — array of verb calls, one attach for all |
+
+Global options: `--plc NAME` (multi-PLC projects), `--out DIR` (default `workspace\exports`),
+`--apply`, `--retry N` (busy retry, default 3), `--timeout SEC`.
+Exit codes: `0` ok · `1` error · `2` usage · `3` file · `4` TIA/Openness · `5` timeout.
+
+Generator configs are plain JSON — see [`docs/examples/`](docs/examples/), including
+[`gen-all.json`](docs/examples/gen-all.json), a batch that dry-runs all six generators in one attach:
+
+```powershell
+tia run --script docs/examples/gen-all.json
+```
+
+## Quick start
+
+```powershell
+pwsh scripts/rebuild.ps1      # build + offline tests + Openness whitelist (UAC only if exe changed)
+tia doctor                    # preflight: is the open project ready for the generators?
+tia snapshot                  # full inventory of the open project, as JSON
+tia standardize-tags          # dry-run: what would change
+tia standardize-tags --apply  # do it
+```
+
+<details>
+<summary><b>Requirements</b></summary>
 
 - Windows, TIA Portal **V19 or newer** with Openness installed (V21 tested).
 - .NET Framework 4.8 (runtime) / .NET SDK 8 (build). Target is `net48` x64.
@@ -39,7 +105,10 @@ Extracted from field-proven automation scripts for water-treatment PLC projects
   copy under `lib/` (gitignored) is used; at runtime the exe resolves the DLL from the installed
   Portal (`TIA_ENGINEERING_DIR` env var → exe folder → default V21/V20/V19 install paths).
 
-## Setup (the three Openness gates)
+</details>
+
+<details>
+<summary><b>Setup — the three Openness gates</b></summary>
 
 1. Your Windows user must be in the **`Siemens TIA Openness`** group — and you need a fresh
    logon after being added (an old token doesn't carry the group).
@@ -52,39 +121,10 @@ Extracted from field-proven automation scripts for water-treatment PLC projects
 
 First run against a Portal without whitelist entry triggers the Openness consent popup — allow it.
 
-## Build & smoke
+</details>
 
-```powershell
-pwsh scripts/rebuild.ps1          # dotnet build + offline tests + whitelist (UAC only if exe changed)
-tia doctor                        # read-only preflight: checks templates/folders each generator needs
-```
-
-Binary: `src\Tia.Cli\bin\Debug\net48\tia.exe`. Offline tests (`Tia.Tests`, plain asserts, no
-TIA required) cover the pure XML generators.
-
-## Verbs
-
-Run `tia --help` for the full, always-current list. Summary:
-
-| Group | Verbs |
-|-------|-------|
-| Session | `open-project`, `create-project`, `save-project`, `close-project` |
-| Read | `info`, `list-devices`, `list-blocks`, `list-tags`, `list-types`, `list-hmi`, `find`, `snapshot`, `xref`, `tree`, `export-block`, `export-tags`, `export-type` |
-| Structure | `create-folder`, `delete-folder`, `delete-block`, `import-type` |
-| Hardware | `add-device`, `set-address`, `connect-subnet`, `export-cax`, `import-cax` (AML) |
-| Write | `import-block`, `import-source`, `import-ladder` (SCL subset → LAD), `import-tags`, `compile`, `diff-block` |
-| Generators | `gen-profinet`, `standardize-tags`, `gen-fault-ob`, `replicate-fc`, `gen-alarm-fc`, `replicate-instruments` — ports of the field-proven scripts; `doctor` preflights them |
-| Library | `list-library`, `import-master-copy` |
-| Batch | `run --script ops.json` — array of verb calls, one attach for all |
-
-Global options: `--plc NAME` (multi-PLC projects), `--out DIR` (default `workspace\exports`),
-`--apply`, `--retry N` (busy retry, default 3), `--timeout SEC`.
-Exit codes: `0` ok · `1` error · `2` usage · `3` file · `4` TIA/Openness · `5` timeout.
-
-Generator configs are plain JSON files — see `docs/examples/` (`profinet.json`,
-`replicate-fc.json`, `gen-all.json` batch that dry-runs all six generators in one attach).
-
-## Workflow macros (PowerShell)
+<details>
+<summary><b>Workflow macros (PowerShell)</b></summary>
 
 | Macro | Does |
 |-------|------|
@@ -94,7 +134,10 @@ Generator configs are plain JSON files — see `docs/examples/` (`profinet.json`
 | `scripts/raio-x.ps1 <Name>` | read-only X-ray → `workspace/<project>/`: doctor, snapshot, devices, tags, types, block outline, CAx AML, xref of every OB |
 | `scripts/clone-hw.ps1 <From> <To> [-Apply]` | copy hardware between projects via CAx export/import |
 
-## Limitations
+</details>
+
+<details>
+<summary><b>Limitations</b></summary>
 
 - No online operations (by design, v1).
 - WinCC Unified screens can't be exported/imported as XML — Openness doesn't expose SimaticML
@@ -103,12 +146,14 @@ Generator configs are plain JSON files — see `docs/examples/` (`profinet.json`
 - `import-ladder` converts a deliberate SCL subset (bool logic, comparators, Set/Reset/MOVE);
   it rejects anything else with a clear error.
 
+</details>
+
 ## Docs
 
-Project docs under `docs/` are in Portuguese (plan, real-project findings). Code and CLI are
-English.
+Project docs under [`docs/`](docs/) are in Portuguese (plan, real-project findings). Code and
+CLI are English.
 
 ## License
 
-[MIT](LICENSE). `Siemens.Engineering.dll` and TIA Portal are Siemens products and are not
-covered or distributed by this repo.
+[MIT](LICENSE). *TIA Portal*, *Openness* and `Siemens.Engineering.dll` are Siemens products —
+not affiliated with, endorsed by, or distributed by this project.

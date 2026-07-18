@@ -296,24 +296,33 @@ namespace Tia.Core
                     continue;
                 }
 
-                if (golden.ContainsKey(subtype))
+                try
                 {
-                    if (!table.Tags.Any())
-                        actions.Add(GenerateFromTemplate(table, subtype, golden[subtype], tables, config, mem, alarmComparer, warnings, apply));
+                    if (golden.ContainsKey(subtype))
+                    {
+                        if (!table.Tags.Any())
+                            actions.Add(GenerateFromTemplate(table, subtype, golden[subtype], tables, config, mem, alarmComparer, warnings, apply));
+                        else
+                            actions.Add(AuditTable(table, subtype, config, mem, alarmComparer, warnings, apply));
+                    }
+                    else if (!table.Tags.Any())
+                    {
+                        // first exemplar of the subtype and it is empty: memorize an empty mold
+                        golden[subtype] = new List<TagTemplate>();
+                        actions.Add(TableAction(table.Name, subtype, "memorize-empty-mold"));
+                    }
                     else
+                    {
+                        // first exemplar with content: audit it, then memorize it as the golden mold
                         actions.Add(AuditTable(table, subtype, config, mem, alarmComparer, warnings, apply));
+                        golden[subtype] = TemplatesOf(table, alarmComparer);
+                    }
                 }
-                else if (!table.Tags.Any())
+                catch (Exception ex)
                 {
-                    // first exemplar of the subtype and it is empty: memorize an empty mold
-                    golden[subtype] = new List<TagTemplate>();
-                    actions.Add(TableAction(table.Name, subtype, "memorize-empty-mold"));
-                }
-                else
-                {
-                    // first exemplar with content: audit it, then memorize it as the golden mold
-                    actions.Add(AuditTable(table, subtype, config, mem, alarmComparer, warnings, apply));
-                    golden[subtype] = TemplatesOf(table, alarmComparer);
+                    // a failed table must not abort the run mid-way (may already be half-rebuilt)
+                    warnings.Add("Table '" + table.Name + "': " + ex.Message + ". Continuing with next table.");
+                    actions.Add(TableAction(table.Name, subtype, "error"));
                 }
             }
 

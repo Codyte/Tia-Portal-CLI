@@ -182,11 +182,15 @@ namespace Tia.Core
                 });
             }
 
-            // word comments in the global DB (rewrite + reimport)
+            // word comments in the global DB (rewrite + reimport only when comments changed —
+            // delete/reimport of the central DB is the riskiest step of the run)
+            object globalDbAction = null;
             if (commentTasks.Any())
             {
                 WriteDbComments(dbXmlPath, commentTasks);
-                if (apply)
+                bool dbInSync = Ops.BlocksIdentical(globalDbBlock, dbXmlPath, false);
+                globalDbAction = dbInSync ? "in-sync" : (apply ? "updated" : "update");
+                if (apply && !dbInSync)
                 {
                     var parent = globalDbBlock.Parent as PlcBlockGroup;
                     if (parent != null)
@@ -217,10 +221,11 @@ namespace Tia.Core
                 {
                     string obXmlPath = BuildCallObXml(obTemplatePath, config.CallObName, config.CallObNumber,
                         callNames.Select(c => (c.Name, c.Number, c.Folder)).ToList(), outDir);
-                    if (apply)
+                    var existingOb = plc.BlockGroup.Blocks.Find(config.CallObName)
+                        ?? Ops.FindBlock(plc, config.CallObName);
+                    bool obInSync = existingOb != null && BlocksIdentical(existingOb, obXmlPath);
+                    if (apply && !obInSync)
                     {
-                        var existingOb = plc.BlockGroup.Blocks.Find(config.CallObName)
-                            ?? Ops.FindBlock(plc, config.CallObName);
                         existingOb?.Delete();
                         fcRoot.Blocks.Import(new FileInfo(obXmlPath), ImportOptions.None);
                     }
@@ -229,6 +234,9 @@ namespace Tia.Core
                         { "ob", config.CallObName },
                         { "calls", callNames.Select(c => c.Name).ToList() },
                         { "xml", obXmlPath },
+                        { "action", obInSync ? "in-sync"
+                            : existingOb == null ? (apply ? "created" : "create")
+                            : (apply ? "updated" : "update") },
                     };
                 }
             }
@@ -239,6 +247,7 @@ namespace Tia.Core
             {
                 { "applied", apply },
                 { "areas", areas },
+                { "globalDb", globalDbAction },
                 { "callOb", callOb },
                 { "csv", csvPath },
                 { "warnings", warnings },

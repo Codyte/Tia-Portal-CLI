@@ -111,7 +111,7 @@ namespace Tia.Core
         }
 
         /// <summary>Names of devices whose network interface operates as Profinet IO-Device.</summary>
-        private static List<string> FindIoDeviceNames(TiaSession session)
+        internal static List<string> FindIoDeviceNames(TiaSession session)
         {
             var names = new List<string>();
             foreach (var device in session.AllDevices())

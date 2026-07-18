@@ -47,6 +47,7 @@ namespace Tia.Cli
                         "import-tags --file F [--folder A/B] [--apply]",
                         "compile [--block X | --folder A/B] [--apply]",
                         "diff-block --file F.xml [--name X]  (read-only, normalized compare)",
+                        "doctor [--verb V] [--config F]  (read-only preflight dos verbos geradores)",
                         "gen-profinet --config F [--apply]",
                         "standardize-tags [--config F] [--apply]",
                         "gen-fault-ob [--config F] [--out DIR] [--apply]",
@@ -321,6 +322,14 @@ namespace Tia.Cli
                     case "diff-block":
                         result = Core.Ops.DiffBlock(session.GetPlc(plcName),
                             OptionValue(args, "--name"), Require(args, "--file"));
+                        break;
+                    case "doctor":
+                        var docVerb = OptionValue(args, "--verb");
+                        var docConfig = OptionValue(args, "--config");
+                        if (docConfig != null && docVerb == null)
+                            throw new ArgumentException("doctor --config requires --verb (configs are per-verb).");
+                        result = Core.Doctor.Run(session, session.GetPlc(plcName), docVerb, docConfig,
+                            (path, type) => JsonConvert.DeserializeObject(File.ReadAllText(path), type));
                         break;
                     case "gen-profinet":
                         var config = JsonConvert.DeserializeObject<Core.ProfinetConfig>(

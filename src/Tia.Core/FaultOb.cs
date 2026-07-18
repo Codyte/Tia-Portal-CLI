@@ -35,7 +35,7 @@ namespace Tia.Core
         private static readonly XNamespace FlgNetNs =
             "http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5";
 
-        private class Module
+        internal class Module
         {
             public string Name;
             public uint HardwareId;
@@ -72,6 +72,7 @@ namespace Tia.Core
             template.Export(new FileInfo(templatePath), ExportOptions.None);
             var templateXml = XDocument.Load(templatePath);
 
+            var warnings = new List<string>();
             var obs = new List<object>();
             foreach (var task in tasks.OrderBy(t => t.Key))
             {
@@ -80,11 +81,21 @@ namespace Tia.Core
                 BuildObXml(templateXml, obName, task.Value, config).Save(xmlPath);
 
                 bool exists = targetGroup.Blocks.Find(obName) != null;
+                string action = exists ? "override" : "create";
                 if (apply)
                 {
-                    var old = targetGroup.Blocks.Find(obName);
-                    old?.Delete();
-                    targetGroup.Blocks.Import(new FileInfo(xmlPath), ImportOptions.None);
+                    try
+                    {
+                        var old = targetGroup.Blocks.Find(obName);
+                        old?.Delete();
+                        targetGroup.Blocks.Import(new FileInfo(xmlPath), ImportOptions.None);
+                    }
+                    catch (Exception ex)
+                    {
+                        // a failed OB must not abort the remaining OBs; XML stays on disk for retry
+                        action = "error";
+                        warnings.Add("OB '" + obName + "': import failed — " + ex.Message);
+                    }
                 }
 
                 obs.Add(new Dictionary<string, object>
@@ -93,7 +104,7 @@ namespace Tia.Core
                     { "qa", task.Key },
                     { "modules", task.Value.Count },
                     { "xml", xmlPath },
-                    { "action", exists ? "override" : "create" },
+                    { "action", action },
                 });
             }
 
@@ -106,11 +117,12 @@ namespace Tia.Core
                 { "applied", apply },
                 { "obs", obs },
                 { "csv", csvPath },
+                { "warnings", warnings },
             };
         }
 
         /// <summary>QA name -> its modules (every DeviceItem with a HwIdentifier, recursively).</summary>
-        private static Dictionary<string, List<Module>> DiscoverTasks(TiaSession session, FaultObConfig config)
+        internal static Dictionary<string, List<Module>> DiscoverTasks(TiaSession session, FaultObConfig config)
         {
             var tasks = new Dictionary<string, List<Module>>();
             foreach (var group in AllDeviceGroups(session))

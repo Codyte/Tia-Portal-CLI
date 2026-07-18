@@ -1,5 +1,5 @@
 # __navi__ · repo tree — 75 files in 17 folders
-<!-- navindex · 2026-07-17 · DO NOT EDIT BY HAND; regen via navindex skill -->
+<!-- navindex · 2026-07-18 · DO NOT EDIT BY HAND; regen via navindex skill -->
 
 Universal index: every folder below -> the files it holds (names only). A `→ __navi__.md` marker means that folder has a symbol map — open `<that path>/__navi__.md` for exact line numbers (2 reads total: this tree -> folder map).
 
@@ -19,7 +19,7 @@ Arquiteto GVL V1.txt(0)  Arquiteto de Automação_2.txt(621)  Gerador Variáveis
 PLANO.md(167)
 
 ## `docs/examples/` (4 files)
-batch.json(6)  profinet.json(9)  replicate-fc.json(8)  replicate-instruments.json(9)
+batch.json(6)  profinet.json(9)  replicate-fc.json(8)  replicate-instruments.json(6)
 
 ## `proj/SmokeTest_01/` (1 files)
 ProjectInfo.txt(15)

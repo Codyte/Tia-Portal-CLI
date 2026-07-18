@@ -14,6 +14,11 @@
 ## Build / run (a partir da F1)
 
 - Solução em `src/`, target net48 x64.
+- **Binário oficial = Debug** (`src\Tia.Cli\bin\Debug\net48\tia.exe`): a whitelist do Openness
+  registra esse caminho/hash. Release compila, mas exige rodar `scripts/whitelist.ps1` de novo
+  se for usado — na prática, usar sempre Debug. Pós-rebuild: whitelist elevada (UAC).
+- Testes offline (sem TIA): `src\Tia.Tests\bin\Debug\net48\Tia.Tests.exe` — assert-based,
+  cobre os geradores XML puros contra `docs/examples/`.
 - Smoke test exige TIA Portal V19 aberto com projeto de teste — confirmar com o usuário antes.
 
 ## Economia de tokens

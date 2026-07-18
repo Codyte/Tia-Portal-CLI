@@ -86,28 +86,15 @@ namespace Tia.Core
 
         private static PlcTagTable FindTable(PlcSoftware plc, ProfinetConfig config)
         {
-            var group = FindTagGroup(plc.TagTableGroup, config.TagFolder);
+            var group = Ops.FindTagGroup(plc.TagTableGroup, config.TagFolder);
             return group?.TagTables.Find(config.TagTable);
         }
 
         private static PlcTagTable ResolveTable(PlcSoftware plc, ProfinetConfig config)
         {
-            var group = FindTagGroup(plc.TagTableGroup, config.TagFolder)
+            var group = Ops.FindTagGroup(plc.TagTableGroup, config.TagFolder)
                 ?? plc.TagTableGroup.Groups.Create(config.TagFolder);
             return group.TagTables.Find(config.TagTable) ?? group.TagTables.Create(config.TagTable);
-        }
-
-        internal static PlcTagTableUserGroup FindTagGroup(PlcTagTableGroup start, string name)
-        {
-            var user = start as PlcTagTableUserGroup;
-            if (user != null && user.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-                return user;
-            foreach (PlcTagTableUserGroup sub in start.Groups)
-            {
-                var found = FindTagGroup(sub, name);
-                if (found != null) return found;
-            }
-            return null;
         }
 
         /// <summary>Names of devices whose network interface operates as Profinet IO-Device.</summary>

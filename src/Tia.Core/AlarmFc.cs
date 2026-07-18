@@ -63,7 +63,7 @@ namespace Tia.Core
             Directory.CreateDirectory(outDir);
 
             // templates + global DB exported up-front (read-only operations)
-            var templateFolder = ReplicateFc.FindGroup(plc.BlockGroup, config.TemplateFolder);
+            var templateFolder = Ops.FindGroup(plc.BlockGroup, config.TemplateFolder);
             if (templateFolder == null)
                 throw new InvalidOperationException("Template folder '" + config.TemplateFolder + "' not found.");
             var templateFc = templateFolder.Blocks.Find(config.TemplateFc);
@@ -82,14 +82,14 @@ namespace Tia.Core
             string dbXmlPath = ExportTo(globalDbBlock, outDir, "alarm_globaldb.xml");
             var dbXml = XDocument.Load(dbXmlPath);
 
-            var alarmsRoot = Profinet.FindTagGroup(plc.TagTableGroup, config.AlarmTagsFolder);
+            var alarmsRoot = Ops.FindTagGroup(plc.TagTableGroup, config.AlarmTagsFolder);
             if (alarmsRoot == null)
                 throw new InvalidOperationException("Tag folder '" + config.AlarmTagsFolder + "' not found.");
-            var startsRoot = Profinet.FindTagGroup(plc.TagTableGroup, config.StartTagsFolder);
+            var startsRoot = Ops.FindTagGroup(plc.TagTableGroup, config.StartTagsFolder);
             if (startsRoot == null)
                 throw new InvalidOperationException("Tag folder '" + config.StartTagsFolder + "' not found.");
 
-            PlcBlockUserGroup targetRoot = ReplicateFc.FindGroup(plc.BlockGroup, config.TargetRootFolder);
+            PlcBlockUserGroup targetRoot = Ops.FindGroup(plc.BlockGroup, config.TargetRootFolder);
             if (targetRoot == null && apply)
                 targetRoot = plc.BlockGroup.Groups.Create(config.TargetRootFolder);
 
@@ -207,7 +207,7 @@ namespace Tia.Core
 
             // OB that calls every alarm FC under the target root
             object callOb = null;
-            var fcRoot = targetRoot ?? ReplicateFc.FindGroup(plc.BlockGroup, config.TargetRootFolder);
+            var fcRoot = targetRoot ?? Ops.FindGroup(plc.BlockGroup, config.TargetRootFolder);
             if (fcRoot != null)
             {
                 var fcs = CollectFcs(fcRoot)

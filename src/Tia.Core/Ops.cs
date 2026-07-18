@@ -23,6 +23,33 @@ namespace Tia.Core
             return FindBlockIn(plc.BlockGroup, name);
         }
 
+        /// <summary>Busca recursiva de pasta de blocos por nome (case-insensitive).</summary>
+        internal static PlcBlockUserGroup FindGroup(PlcBlockGroup start, string name)
+        {
+            if (start is PlcBlockUserGroup user && user.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                return user;
+            foreach (PlcBlockUserGroup sub in start.Groups)
+            {
+                var found = FindGroup(sub, name);
+                if (found != null) return found;
+            }
+            return null;
+        }
+
+        /// <summary>Busca recursiva de pasta de tag tables por nome (case-insensitive).</summary>
+        internal static PlcTagTableUserGroup FindTagGroup(PlcTagTableGroup start, string name)
+        {
+            var user = start as PlcTagTableUserGroup;
+            if (user != null && user.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                return user;
+            foreach (PlcTagTableUserGroup sub in start.Groups)
+            {
+                var found = FindTagGroup(sub, name);
+                if (found != null) return found;
+            }
+            return null;
+        }
+
         private static PlcBlock FindBlockIn(PlcBlockGroup group, string name)
         {
             var hit = group.Blocks.Find(name);

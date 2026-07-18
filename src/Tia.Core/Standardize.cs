@@ -278,7 +278,7 @@ namespace Tia.Core
             var golden = new Dictionary<string, List<TagTemplate>>();
             var alarmComparer = new AlarmTagComparer(config.AlarmOrder);
 
-            var root = Profinet.FindTagGroup(plc.TagTableGroup, config.RootFolder);
+            var root = Ops.FindTagGroup(plc.TagTableGroup, config.RootFolder);
             if (root == null)
                 throw new ArgumentException("Root tag folder '" + config.RootFolder + "' not found.");
 
@@ -371,7 +371,7 @@ namespace Tia.Core
             var tags = new List<object>();
             foreach (var t in mold)
             {
-                string name = StandardizeName(t.Name, id, config);
+                string name = t.Name; // já padronizado no Select acima
                 string address = allocator.Next(t.DataTypeName);
                 tags.Add(new Dictionary<string, object> { { "tag", name }, { "type", t.DataTypeName }, { "address", address } });
                 if (apply) CreateTag(emptyTable, name, t.DataTypeName, address, GenerateComment(name, id, config), warnings);
@@ -412,7 +412,7 @@ namespace Tia.Core
             bool rebuild = false;
             foreach (var t in ideal)
             {
-                string name = StandardizeName(t.Name, masterId, config);
+                string name = t.Name; // já padronizado no Select acima
                 string address = probe.Next(t.DataTypeName);
                 if (!current.ContainsKey(name) || current[name].LogicalAddress?.ToString() != address)
                 {
@@ -435,7 +435,7 @@ namespace Tia.Core
                 var allocator = new AddressAllocator(startByte);
                 foreach (var t in ideal)
                 {
-                    string name = StandardizeName(t.Name, masterId, config);
+                    string name = t.Name; // já padronizado no Select acima
                     string address = allocator.Next(t.DataTypeName);
                     tags.Add(new Dictionary<string, object> { { "tag", name }, { "type", t.DataTypeName }, { "address", address } });
                     if (apply) CreateTag(table, name, t.DataTypeName, address, GenerateComment(name, masterId, config), warnings);

@@ -93,7 +93,7 @@ namespace Tia.Core
             var dbXml = XDocument.Load(dbXmlPath);
 
             // template = first FC found under the destination tree
-            var destRoot = ReplicateFc.FindGroup(plc.BlockGroup, config.TargetBlocksFolder);
+            var destRoot = Ops.FindGroup(plc.BlockGroup, config.TargetBlocksFolder);
             if (destRoot == null)
                 throw new InvalidOperationException("Target folder '" + config.TargetBlocksFolder + "' not found.");
             // root first — sorting it with descendants let generated area folders win on re-runs
@@ -115,7 +115,7 @@ namespace Tia.Core
             var templateXml = XDocument.Load(templatePath);
 
             // discovery: areas -> instruments (+ command numbering)
-            var sourceRoot = Profinet.FindTagGroup(plc.TagTableGroup, config.SourceTagsFolder);
+            var sourceRoot = Ops.FindTagGroup(plc.TagTableGroup, config.SourceTagsFolder);
             if (sourceRoot == null)
                 throw new InvalidOperationException("Tag folder '" + config.SourceTagsFolder + "' not found.");
             var nextCmd = new Dictionary<string, int>(config.NextCommandIds);
@@ -511,7 +511,7 @@ namespace Tia.Core
         /// <summary>Area complete when its FC exists and every required instance DB already exists.</summary>
         private static bool IsTaskComplete(PlcSoftware plc, AreaTask task)
         {
-            var folder = ReplicateFc.FindGroup(plc.BlockGroup, task.TargetFolderName);
+            var folder = Ops.FindGroup(plc.BlockGroup, task.TargetFolderName);
             if (folder == null) return false;
             if (!(folder.Blocks.Find(task.TargetFcName) is FC)) return false;
             // global lookup — ImportAreaFc also skips creation when the DB exists anywhere

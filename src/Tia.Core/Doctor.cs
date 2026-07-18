@@ -76,7 +76,7 @@ namespace Tia.Core
                             : new List<string>();
                         check("IO devices resolve", missing.Count == 0,
                             missing.Count == 0 ? io.Count + " IO device(s) in project" : "not found: " + string.Join(", ", missing));
-                        var folder = Profinet.FindTagGroup(plc.TagTableGroup, c.TagFolder);
+                        var folder = Ops.FindTagGroup(plc.TagTableGroup, c.TagFolder);
                         check("tag folder '" + c.TagFolder + "'", folder != null,
                             folder == null ? "missing — table '" + c.TagTable + "' cannot be created" : null);
                         break;
@@ -85,7 +85,7 @@ namespace Tia.Core
                     {
                         var c = Load<StandardizeConfig>();
                         check("root tag folder '" + c.RootFolder + "'",
-                            Profinet.FindTagGroup(plc.TagTableGroup, c.RootFolder) != null, null);
+                            Ops.FindTagGroup(plc.TagTableGroup, c.RootFolder) != null, null);
                         check("memory sets", c.MemorySets != null && c.MemorySets.Count > 0,
                             (c.MemorySets?.Count ?? 0) + " set(s)");
                         break;
@@ -110,7 +110,7 @@ namespace Tia.Core
                         var c = Load<ReplicateFcConfig>();
                         // mirrors Run: exact name first (TIA names may contain '/'), then as path
                         var wf = string.IsNullOrEmpty(c.BlocksFolder) ? null
-                            : ReplicateFc.FindGroup(plc.BlockGroup, c.BlocksFolder);
+                            : Ops.FindGroup(plc.BlockGroup, c.BlocksFolder);
                         if (wf == null && !string.IsNullOrEmpty(c.BlocksFolder) && c.BlocksFolder.Contains("/"))
                             try { wf = Ops.ResolveFolder(plc, c.BlocksFolder, false) as PlcBlockUserGroup; }
                             catch (InvalidOperationException) { }
@@ -125,17 +125,17 @@ namespace Tia.Core
                     case "gen-alarm-fc":
                     {
                         var c = Load<AlarmFcConfig>();
-                        var tf = ReplicateFc.FindGroup(plc.BlockGroup, c.TemplateFolder);
+                        var tf = Ops.FindGroup(plc.BlockGroup, c.TemplateFolder);
                         check("template folder '" + c.TemplateFolder + "'", tf != null, null);
                         check("template FC '" + c.TemplateFc + "'", tf?.Blocks.Find(c.TemplateFc) != null, null);
                         check("OB template '" + c.ObTemplate + "'", Ops.FindBlock(plc, c.ObTemplate) != null, null);
                         check("global DB '" + c.GlobalDb + "'", Ops.FindBlock(plc, c.GlobalDb) != null, null);
                         check("alarm tags folder '" + c.AlarmTagsFolder + "'",
-                            Profinet.FindTagGroup(plc.TagTableGroup, c.AlarmTagsFolder) != null, null);
+                            Ops.FindTagGroup(plc.TagTableGroup, c.AlarmTagsFolder) != null, null);
                         check("start tags folder '" + c.StartTagsFolder + "'",
-                            Profinet.FindTagGroup(plc.TagTableGroup, c.StartTagsFolder) != null, null);
+                            Ops.FindTagGroup(plc.TagTableGroup, c.StartTagsFolder) != null, null);
                         check("master FB '" + c.MasterFb + "'", Ops.FindBlock(plc, c.MasterFb) != null, null);
-                        bool targetExists = ReplicateFc.FindGroup(plc.BlockGroup, c.TargetRootFolder) != null;
+                        bool targetExists = Ops.FindGroup(plc.BlockGroup, c.TargetRootFolder) != null;
                         check("target root '" + c.TargetRootFolder + "'", true,
                             targetExists ? null : "missing — created on apply");
                         break;
@@ -144,9 +144,9 @@ namespace Tia.Core
                     {
                         var c = Load<InstrumentFcConfig>();
                         check("source tags folder '" + c.SourceTagsFolder + "'",
-                            !string.IsNullOrEmpty(c.SourceTagsFolder) && Profinet.FindTagGroup(plc.TagTableGroup, c.SourceTagsFolder) != null, null);
+                            !string.IsNullOrEmpty(c.SourceTagsFolder) && Ops.FindTagGroup(plc.TagTableGroup, c.SourceTagsFolder) != null, null);
                         var target = string.IsNullOrEmpty(c.TargetBlocksFolder)
-                            ? null : ReplicateFc.FindGroup(plc.BlockGroup, c.TargetBlocksFolder);
+                            ? null : Ops.FindGroup(plc.BlockGroup, c.TargetBlocksFolder);
                         check("target blocks folder '" + c.TargetBlocksFolder + "'", target != null, null);
                         check("template FC under target", target != null && AnyFc(target),
                             target == null ? null : "first FC in natural order is the template");

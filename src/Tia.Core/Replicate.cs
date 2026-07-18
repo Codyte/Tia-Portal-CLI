@@ -56,7 +56,7 @@ namespace Tia.Core
 
             // TIA folder names may contain a literal '/' — exact-name match anywhere in the tree
             // first, then "A/B" as a path under Program blocks
-            var workingFolder = FindGroup(plc.BlockGroup, config.BlocksFolder);
+            var workingFolder = Ops.FindGroup(plc.BlockGroup, config.BlocksFolder);
             if (workingFolder == null && config.BlocksFolder.Contains("/"))
                 try { workingFolder = Ops.ResolveFolder(plc, config.BlocksFolder, false) as PlcBlockUserGroup; }
                 catch (InvalidOperationException) { }
@@ -120,6 +120,8 @@ namespace Tia.Core
                         .Select(t => ProposedBlockName(t.Key, templateFolder.Name, folder.Name, sourceId, targetId))
                         .ToList();
 
+                    // templateFolder nunca é reescrito: é o molde golden — replicar sobre ele
+                    // mesmo com id igual destruiria a fonte das próximas réplicas
                     if (apply && folder != templateFolder)
                         ReplicateInto(plc, config, templateFolder, folder, sourceId, targetId,
                             sourceDbPath, targetDbPath, assignedNumber, ccm, warnings);
@@ -241,7 +243,7 @@ namespace Tia.Core
 
             // MODO_LOCAL / MODO_REMOTO IO tags: point at the target's real tag in its QA folder
             var qaTagFolder = ccm.QaFolderName != "QA_INDEFINIDO"
-                ? Profinet.FindTagGroup(plc.TagTableGroup, ccm.QaFolderName) : null;
+                ? Ops.FindTagGroup(plc.TagTableGroup, ccm.QaFolderName) : null;
             if (qaTagFolder == null)
             {
                 warnings.Add("Tag folder '" + ccm.QaFolderName + "' not found; IO tag fix skipped for '" + targetId + "'.");
@@ -378,18 +380,6 @@ namespace Tia.Core
         }
 
         // ---------- lookups ----------
-
-        internal static PlcBlockUserGroup FindGroup(PlcBlockGroup start, string name)
-        {
-            if (start is PlcBlockUserGroup user && user.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-                return user;
-            foreach (PlcBlockUserGroup sub in start.Groups)
-            {
-                var found = FindGroup(sub, name);
-                if (found != null) return found;
-            }
-            return null;
-        }
 
         internal static List<PlcBlockUserGroup> DescendantGroups(PlcBlockUserGroup root)
         {

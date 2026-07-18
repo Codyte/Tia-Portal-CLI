@@ -106,7 +106,8 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
   **usuário vai reinstalar nesta máquina** — build e execução serão ambos aqui. Até lá, só código.
 - Build: .NET SDK 8 (instalado 2026-07-17) compilando net48/x64. `lib/Siemens.Engineering.dll`
   (v19.0.0.0, cópia local, gitignored) é referência de compile; em runtime o exe resolve a DLL
-  da instalação real (env `TIA_ENGINEERING_DLL` → pasta do exe → Portal V19/V20 padrão).
+  da instalação real (env `TIA_ENGINEERING_DIR` → pasta do exe → Portal V21/V20/V19 padrão;
+  V21+ = assemblies separadas Base/Step7/WinCCUnified em `PublicAPI\V21\net48`).
 - Deploy do smoke: copiar `src\Tia.Cli\bin\Release\net48\` (tia.exe + Newtonsoft.Json.dll +
   Tia.Core.dll) pra máquina do TIA e rodar lá.
 

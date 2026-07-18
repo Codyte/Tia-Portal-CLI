@@ -13,8 +13,16 @@
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <ProjectReference Include="..\Tia.Core\Tia.Core.csproj" />
-    <Reference Include="Siemens.Engineering">
-      <HintPath>..\..\lib\Siemens.Engineering.dll</HintPath>
+    <Reference Include="Siemens.Engineering.Base">
+      <HintPath>..\..\lib\Siemens.Engineering.Base.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Siemens.Engineering.Step7">
+      <HintPath>..\..\lib\Siemens.Engineering.Step7.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Siemens.Engineering.WinCCUnified">
+      <HintPath>..\..\lib\Siemens.Engineering.WinCCUnified.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

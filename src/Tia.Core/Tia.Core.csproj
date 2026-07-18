@@ -8,9 +8,18 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
-    <!-- Siemens DLL is compile-time only; at runtime it resolves from the TIA install (see Program.cs) -->
-    <Reference Include="Siemens.Engineering">
-      <HintPath>..\..\lib\Siemens.Engineering.dll</HintPath>
+    <!-- Siemens DLLs are compile-time only; at runtime they resolve from the TIA install (see Program.cs).
+         V21+ split the monolithic Siemens.Engineering.dll into Base/Step7/WinCCUnified. -->
+    <Reference Include="Siemens.Engineering.Base">
+      <HintPath>..\..\lib\Siemens.Engineering.Base.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Siemens.Engineering.Step7">
+      <HintPath>..\..\lib\Siemens.Engineering.Step7.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Siemens.Engineering.WinCCUnified">
+      <HintPath>..\..\lib\Siemens.Engineering.WinCCUnified.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

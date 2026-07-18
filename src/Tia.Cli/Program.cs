@@ -388,24 +388,31 @@ namespace Tia.Cli
         }
 
         /// <summary>
-        /// Locates Siemens.Engineering.dll on the machine that runs the CLI:
-        /// TIA_ENGINEERING_DLL env var → exe folder → standard V19/V20 install paths.
+        /// Locates the Siemens Openness assemblies on the machine that runs the CLI.
+        /// V21+ ships split assemblies (Siemens.Engineering.Base/Step7/WinCCUnified) under
+        /// PublicAPI\V21\net48; V19/V20 shipped the monolithic Siemens.Engineering.dll.
+        /// Order: TIA_ENGINEERING_DIR env var → exe folder → standard install paths.
         /// </summary>
         private static Assembly ResolveSiemensAssembly(object sender, ResolveEventArgs e)
         {
-            if (!e.Name.StartsWith("Siemens.Engineering,", StringComparison.OrdinalIgnoreCase))
+            if (!e.Name.StartsWith("Siemens.Engineering", StringComparison.OrdinalIgnoreCase))
                 return null;
 
-            var candidates = new List<string>();
-            var env = Environment.GetEnvironmentVariable("TIA_ENGINEERING_DLL");
-            if (!string.IsNullOrEmpty(env)) candidates.Add(env);
-            candidates.Add(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Siemens.Engineering.dll"));
-            foreach (var version in new[] { "V20", "V19" })
-                candidates.Add(Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-                    "Siemens", "Automation", "Portal " + version, "PublicAPI", version, "Siemens.Engineering.dll"));
+            var dllName = new AssemblyName(e.Name).Name + ".dll";
+            var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 
-            var found = candidates.FirstOrDefault(File.Exists);
+            var dirs = new List<string>();
+            var env = Environment.GetEnvironmentVariable("TIA_ENGINEERING_DIR");
+            if (!string.IsNullOrEmpty(env)) dirs.Add(env);
+            dirs.Add(AppDomain.CurrentDomain.BaseDirectory);
+            foreach (var version in new[] { "V21", "V20", "V19" })
+            {
+                var publicApi = Path.Combine(programFiles, "Siemens", "Automation", "Portal " + version, "PublicAPI", version);
+                dirs.Add(Path.Combine(publicApi, "net48")); // V21+ layout
+                dirs.Add(publicApi);                        // V19/V20 layout
+            }
+
+            var found = dirs.Select(d => Path.Combine(d, dllName)).FirstOrDefault(File.Exists);
             return found != null ? Assembly.LoadFrom(found) : null;
         }
     }

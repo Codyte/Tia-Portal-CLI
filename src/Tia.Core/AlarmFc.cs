@@ -39,6 +39,7 @@ namespace Tia.Core
     public static class AlarmFc
     {
         private static int _uid = 10000; // single-shot CLI process (D9)
+        private static string[] _cultures = { "en-US" }; // set per-run in Generate
 
         private static readonly XNamespace FlgNs =
             "http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5";
@@ -51,8 +52,13 @@ namespace Tia.Core
             public string SourceArea;
         }
 
-        public static object Generate(PlcSoftware plc, AlarmFcConfig config, string outDir, bool apply)
+        public static object Generate(TiaSession session, PlcSoftware plc, AlarmFcConfig config, string outDir, bool apply)
         {
+            // an XML MultilingualTextItem whose culture the project doesn't have fails the whole import
+            _cultures = session.Project.LanguageSettings.ActiveLanguages
+                .Select(l => l.Culture.Name).ToArray();
+            if (_cultures.Length == 0) _cultures = new[] { "en-US" };
+
             var warnings = new List<string>();
             Directory.CreateDirectory(outDir);
 
@@ -129,27 +135,20 @@ namespace Tia.Core
                     .Select(w => "DB_BITS_TO_WORD_" + areaClean + "_W" + w).ToList();
 
                 string fcXmlPath = BuildFcXml(fcTemplatePath, fcName, structName, areaClean, variables, outDir);
-                string action = "create";
+                var subFolder = targetRoot?.Groups.Find(subFolderName);
+                var existing = subFolder?.Blocks.Find(fcName);
+                string action = existing == null ? "create"
+                    : BlocksIdentical(existing, fcXmlPath) ? "in-sync" : "update";
 
                 if (apply)
                 {
-                    var subFolder = targetRoot.Groups.Find(subFolderName)
-                        ?? targetRoot.Groups.Create(subFolderName);
-                    var existing = subFolder.Blocks.Find(fcName);
-                    if (existing != null)
+                    subFolder = subFolder ?? targetRoot.Groups.Create(subFolderName);
+                    if (action == "update")
                     {
-                        if (BlocksIdentical(existing, fcXmlPath))
-                        {
-                            action = "in-sync";
-                        }
-                        else
-                        {
-                            existing.Delete();
-                            subFolder.Blocks.Import(new FileInfo(fcXmlPath), ImportOptions.None);
-                            action = "updated";
-                        }
+                        existing.Delete();
+                        subFolder.Blocks.Import(new FileInfo(fcXmlPath), ImportOptions.None);
                     }
-                    else
+                    else if (action == "create")
                     {
                         subFolder.Blocks.Import(new FileInfo(fcXmlPath), ImportOptions.None);
                     }
@@ -370,7 +369,7 @@ namespace Tia.Core
                 sb.Append("Bit " + i.ToString().PadRight(2) + ": \t");
                 sb.AppendLine(i < variables.Count ? variables[i] : "");
             }
-            foreach (var culture in new[] { "pt-BR", "en-US" })
+            foreach (var culture in _cultures)
             {
                 var item = comment.Descendants("MultilingualTextItem")
                     .FirstOrDefault(x => x.Element("AttributeList")?.Element("Culture")?.Value == culture);
@@ -435,7 +434,7 @@ namespace Tia.Core
                                 new XElement("MultilingualTextItem", new XAttribute("ID", (++uid).ToString("X")),
                                     new XAttribute("CompositionName", "Items"),
                                     new XElement("AttributeList",
-                                        new XElement("Culture", "en-US"),
+                                        new XElement("Culture", _cultures[0]),
                                         new XElement("Text", "FC Alarmes: " + folderTitle)))))));
                 objectList.Add(network);
             }
@@ -463,8 +462,8 @@ namespace Tia.Core
                 if (word == null) continue;
                 word.Elements(IntfNs + "Comment").Remove();
                 word.Add(new XElement(IntfNs + "Comment",
-                    new XElement(IntfNs + "MultiLanguageText", new XAttribute("Lang", "pt-BR"), task.Comment),
-                    new XElement(IntfNs + "MultiLanguageText", new XAttribute("Lang", "en-US"), task.Comment)));
+                    _cultures.Select(c => new XElement(IntfNs + "MultiLanguageText",
+                        new XAttribute("Lang", c), task.Comment))));
             }
             doc.Save(dbXmlPath);
         }

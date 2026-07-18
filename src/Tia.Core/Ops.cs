@@ -379,6 +379,12 @@ namespace Tia.Core
                     if (ignoreComments)
                         container.Descendants("MultilingualText")
                             .Where(x => x.Attribute("CompositionName")?.Value == "Comment").Remove();
+                    // TIA exports reorder ObjectList children (Title first vs last);
+                    // stable sort by element name — same-name siblings (CompileUnits) keep order
+                    foreach (var ol in container.DescendantsAndSelf()
+                        .Where(x => x.Name.LocalName == "ObjectList"))
+                        ol.ReplaceNodes(ol.Elements()
+                            .OrderBy(x => x.Name.LocalName, StringComparer.Ordinal).ToList());
                 }
                 return XNode.DeepEquals(a, b);
             }

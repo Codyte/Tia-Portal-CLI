@@ -356,7 +356,7 @@ namespace Tia.Cli
                             ? JsonConvert.DeserializeObject<Core.AlarmFcConfig>(File.ReadAllText(almPath))
                             : new Core.AlarmFcConfig();
                         using (WriteLock(session, apply, verb))
-                            result = Core.AlarmFc.Generate(session.GetPlc(plcName), almConfig, outDir, apply);
+                            result = Core.AlarmFc.Generate(session, session.GetPlc(plcName), almConfig, outDir, apply);
                         break;
                     case "replicate-instruments":
                         var insConfig = JsonConvert.DeserializeObject<Core.InstrumentFcConfig>(

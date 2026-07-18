@@ -1,60 +1,53 @@
-# Handoff · TIA Portal Openness API · 2026-07-18 (F3.5 completa + banho projeto real)
+# Handoff · TIA Portal Openness API · 2026-07-18 (pós-F3.5 · plano de macros aprovado p/ execução)
 
 ## Modo de trabalho
 - `/ponytail full` + `/caveman` + navindex (ler `__navi__.md` antes de busca ampla).
-- Binário: `src\Tia.Cli\bin\Debug\net48\tia.exe` (Debug only; Release stale). D9: nunca 2 tia em paralelo.
-- Rebuild: `dotnet build src -c Debug`. **Pós-rebuild whitelist**: `schtasks /Run /TN TiaWhitelist`
-  FALHA sem elevação → usar `Start-Process pwsh -Verb RunAs ... scripts/whitelist.ps1` (UAC 1 clique).
-- tia direto do shell funciona (token tem grupo Openness); protocolo TiaSmokeRun só como fallback.
-- Se TIA fechar: `tia open-project --file <caminho .ap21>` (background, ~2-4 min). S4U não abre UI.
-- Projeto reaberto volta ao ÚLTIMO SAVE — rodar `save-project` após applies que importam.
+- **Macros novos — usar SEMPRE** (nunca coreografia manual):
+  - `pwsh scripts/rebuild.ps1` = build + 31 testes offline + whitelist UAC só se tia.exe mudou.
+  - `pwsh scripts/use-project.ps1 <Nome|.ap21> [-Save]` = no-op se aberto; senão close+open (2-4 min, background).
+- Binário: `src\Tia.Cli\bin\Debug\net48\tia.exe` (Debug only). D9: nunca 2 tia em paralelo.
+- Projeto reaberto volta ao ÚLTIMO SAVE — `save-project` após applies que importam.
 
 ## Goal
-F3.5 ✅ (melhorias 1+2+3 + doctor + tree + banho de projeto real). Próximo: fechar pendências
-de smoke, depois decidir F4 (GitHub) vs backlog 4-7.
+Executar a lista de macros aprovada (abaixo). Depois F4 GitHub (aguarda decisões do user:
+licença MIT?, nome do repo, escopo README).
 
 ## State
-- HEAD: 2d8f96d (tree limpo). PLANO atualizado (linha F3.5 + smokes v2).
-- Feito hoje: robustez por-item (Standardize/FaultOb), gen-alarm-fc idempotente (globalDb/callOb
-  in-sync via BlocksIdentical), BlocksIdentical normaliza namespace+Informative (validado:
-  diff-block roundtrip identical no projeto real), verbo `doctor` (preflight 6 verbos), verbo
-  `tree` (outline navindex do PLC), fix pastas TIA com '/' literal, warning pastas sem '(ID)'.
-- Banho projeto real (ETE SG AsBuilt, 1011 blocos): 8 achados em docs/projeto-real-fase-A.md.
-  Smokes v2 read-only ok: export-tags/list-types/export-type/xref/export-cax; list-hmi erro
-  claro (projeto sem Unified).
-- TIA atual: aberto com projeto REAL (Automação ETE SG AsBuilt_1_V21, PLC "CPU CCO").
+- HEAD: 148f1bb (tree limpo). Handoff anterior arquivado em .handoff/archive/.
+- Sessão de hoje: callOb=in-sync validado ✅; smokes mutação import-type/import-cax ✅ (achado 9:
+  CAx import não pode ExclusiveAccess — fix commitado); Tia.Tests offline 31 asserts ALL PASS ✅;
+  cosméticos backlog 7 ✅; FindGroup/FindTagGroup→Ops ✅; macros rebuild/use-project criados ✅.
+- TIA: aberto com SmokeTest_01 (mutações de smoke NÃO salvas — de propósito, reopen limpa).
 
 ## Decisions (and why)
-- D1–D9 valem. ETE SG NÃO segue padronização dos scripts → achados 3-5 (regex ID, tabela-por-área,
-  template externo) são adaptação de convenção: YAGNI até projeto-alvo padronizado pedir.
-- Hardening genuíno (vale sempre): compile antes de export; nomes de pasta com '/' literal;
-  warnings em vez de no-op silencioso.
-- Commit a1bc882 "update" (user) já continha versão anterior dos itens 1-3 de sessão perdida —
-  507ada8+2d8f96d são o delta validado. Não investigar mais.
+- D1–D9 valem. ETE SG fora da padronização → adaptações (achados 3-5/7) só se projeto-alvo pedir.
+- Macro-verbos > prosa de ritual (pedido explícito do user; memória salva: coreografia 3+ passos vira script).
+- Lista de macros apresentada; user: "executar tudo isso na próxima execução".
 
-## Next steps (ordered) — BEM CLARO
-1. **Validar callOb=in-sync no SmokeTest_01** (única validação pendente da idempotência):
-   fechar projeto real no TIA → `tia open-project --file "C:\Scripts\TIA Portal\proj\SmokeTest_01\SmokeTest_01.ap21"`
-   → `tia gen-alarm-fc --apply` → `tia gen-alarm-fc` (dry) → esperar `callOb=in-sync`
-   (globalDb já validou). Depois `save-project`.
-2. **Smokes v2 com mutação no SmokeTest_01** (nunca no real): `import-type` (usar
-   workspace\real-A\MotorDados.xml) e `import-cax` (dry primeiro; AML do real é grande — se
-   falhar, gerar cax do próprio SmokeTest e reimportar).
-3. **Backlog 6 — testes offline dos rewires** (maior alavanca): runner net48 console assert-based
-   contra fixtures docs/examples/, cobrindo Rewire*/Build*Xml (XDocument puro, sem TIA).
-4. **Backlog 7 cosmético** (15 min): Standardize.cs StandardizeName 2x; comentar por quê template
-   não é reescrito em Replicate.cs:115; documentar build Debug-only (ou corrigir Release).
-5. **Refactor barato (da revisão de estrutura)**: mover FindTagGroup (Profinet) e FindGroup
-   (ReplicateFc) pra Ops — mecânico, 3+ consumidores cada.
-6. **F4 GitHub** (README EN, licença MIT?, exemplos) — só quando 1-3 fecharem.
-7. Itens 4-5 do backlog antigo (in-sync no replicate-fc, heurísticas→config) e achados 3-5 do
-   projeto real: SÓ se projeto-alvo padronizado pedir.
+## Next steps (ordered) — EXECUTAR NESTA ORDEM
+1. **`scripts/prep-project.ps1 <nome>`**: use-project → doctor → `tia compile --apply` → save-project.
+   Mata achado 1 (projeto real chega sem compilar, exports morrem).
+2. **`scripts/raio-x.ps1 <nome>`**: doctor + snapshot + export-tags + list-types + xref (OBs principais)
+   + export-cax → `workspace/<proj>/`. Banho de projeto read-only em 1 comando (replica o que foi
+   feito manual no ETE SG).
+3. **`docs/examples/gen-all.json`** (batch pro `tia run --script`): fluxo FINAIS canônico —
+   gen-profinet → standardize-tags → gen-fault-ob → replicate-fc → gen-alarm-fc →
+   replicate-instruments, dry por padrão. Zero código novo. Smoke no SmokeTest_01.
+4. **`scripts/clone-hw.ps1 <origem> <destino>`**: export-cax de A + import-cax em B (fluxo validado
+   hoje com AML 1.7MB). Atenção: trocar projeto entre export e import (use-project 2x).
+5. Testar 1-4 contra SmokeTest_01 (raio-x também contra ETE SG se couber), commitar, atualizar
+   CLAUDE.md (seção macros) e PLANO.
+6. **Só se user pedir**: macros 5-7 da lista (new-area — precisa `--template-file` achado 5;
+   sync-check — precisa in-sync nos outros geradores; adopt-project — relatório de aderência).
+7. F4 GitHub quando user responder: licença, nome do repo, escopo README.
 
 ## Key files
-- src/Tia.Core/Doctor.cs — preflight; Inventory.cs:Tree — outline navindex
-- src/Tia.Core/Ops.cs:~359 BlocksIdentical — normalização nova (ns + Informative)
-- docs/projeto-real-fase-A.md — 8 achados + tabela smokes v2
-- docs/PLANO.md — fases (F3.5 fechada); workspace/real-A/ — inventários do projeto real (gitignored)
+- scripts/rebuild.ps1, scripts/use-project.ps1 — macros existentes (padrão a seguir nos novos)
+- docs/projeto-real-fase-A.md — 9 achados + tabelas de smoke (base da lista de macros)
+- docs/PLANO.md — fases; docs/examples/batch.json — formato do `tia run --script`
+- src/Tia.Core/Doctor.cs — preflight (componente dos macros 1-2)
+- proj/SmokeTest_01/SmokeTest_01.ap21; proj/Automação ETE SG AsBuilt_1_V21 (cópia offline)
 
 ## Open / blockers
-- Nenhum blocker. TIA está com projeto real aberto — passo 1 exige trocar pro SmokeTest.
+- Nenhum blocker. Smoke dos macros exige TIA aberto (confirmar com user antes).
+- gen-all.json no SmokeTest: gen-profinet precisa config (docs/examples/profinet.json existe).

@@ -39,6 +39,18 @@ só entram se um projeto-alvo real precisar (YAGNI).
    não roda como está.
 8. `doctor` pagou o investimento no primeiro uso: diagnosticou tudo acima sem mutar nada.
 
+## Smokes v2 read-only (contra o projeto real, 2026-07-18)
+
+| verbo | resultado |
+|---|---|
+| export-tags | ok (`--table` obrigatório; 55 tags) |
+| list-types / export-type | ok — 25 UDTs; `MotorDados.xml` exportado |
+| xref | ok — 313 linhas p/ `CHAMADA_ALARMES` |
+| export-cax | ok — AML dos 21 devices + log |
+| list-hmi | erro claro: projeto sem HMI Unified (Comfort fora da API — limitação Siemens) |
+
+Faltam com mutação (fazer no SmokeTest): import-type, import-cax.
+
 ## Status dry-runs
 
 | verbo | resultado |

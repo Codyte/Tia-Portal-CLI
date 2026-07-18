@@ -30,6 +30,7 @@ namespace Tia.Cli
                     { "read", new[] { "info", "list-devices", "list-blocks", "list-tags", "list-types",
                         "find --pattern P* [--kind block|table|tag|type]",
                         "snapshot  (inventário completo)", "xref --name BLOCK",
+                        "tree [--out DIR]  (outline navindex dos Program blocks → plc-navi.md)",
                         "list-hmi [--device X]  (WinCC Unified: telas + tag tables)",
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]",
                         "export-type --name X [--out DIR]" } },
@@ -208,6 +209,10 @@ namespace Tia.Cli
                         break;
                     case "list-tags":
                         result = Core.Inventory.TagTables(session.GetPlc(plcName));
+                        break;
+                    case "tree":
+                        result = Core.Inventory.Tree(session.GetPlc(plcName),
+                            Path.Combine(outDir, "plc-navi.md"));
                         break;
                     case "list-types":
                         result = Core.Inventory.Types(session.GetPlc(plcName));

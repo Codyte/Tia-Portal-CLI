@@ -369,12 +369,18 @@ namespace Tia.Core
                 var b = new XElement(current);
                 foreach (var container in new[] { a, b })
                 {
+                    // DeepEquals is namespace-sensitive and TIA re-serializes FlgNet children with
+                    // shifting xmlns="" declarations — compare by local name only
                     foreach (var e in container.DescendantsAndSelf())
                     {
+                        e.Name = e.Name.LocalName;
+                        e.Attributes().Where(x => x.IsNamespaceDeclaration).Remove();
                         e.Attribute("UId")?.Remove();
                         e.Attribute("ID")?.Remove();
                     }
-                    container.Descendants("Address")
+                    // informative elements (addresses, BlockNumber on CallInfo, …) are ignored on
+                    // import and TIA exports omit some of them — never a real difference
+                    container.DescendantsAndSelf()
                         .Where(x => x.Attribute("Informative")?.Value == "true").Remove();
                     if (ignoreComments)
                         container.Descendants("MultilingualText")

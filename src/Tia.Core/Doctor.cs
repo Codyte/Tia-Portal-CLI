@@ -108,11 +108,12 @@ namespace Tia.Core
                     case "replicate-fc":
                     {
                         var c = Load<ReplicateFcConfig>();
-                        // mirrors Run: "A/B" is a path under Program blocks, bare name searched anywhere
+                        // mirrors Run: exact name first (TIA names may contain '/'), then as path
                         var wf = string.IsNullOrEmpty(c.BlocksFolder) ? null
-                            : c.BlocksFolder.Contains("/")
-                                ? Ops.ResolveFolder(plc, c.BlocksFolder, false) as PlcBlockUserGroup
-                                : ReplicateFc.FindGroup(plc.BlockGroup, c.BlocksFolder);
+                            : ReplicateFc.FindGroup(plc.BlockGroup, c.BlocksFolder);
+                        if (wf == null && !string.IsNullOrEmpty(c.BlocksFolder) && c.BlocksFolder.Contains("/"))
+                            try { wf = Ops.ResolveFolder(plc, c.BlocksFolder, false) as PlcBlockUserGroup; }
+                            catch (InvalidOperationException) { }
                         check("blocks folder '" + c.BlocksFolder + "'", wf != null, null);
                         check("equipment types", c.EquipmentTypes != null && c.EquipmentTypes.Count > 0,
                             (c.EquipmentTypes?.Count ?? 0) + " type(s)");

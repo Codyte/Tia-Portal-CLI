@@ -49,7 +49,20 @@ só entram se um projeto-alvo real precisar (YAGNI).
 | export-cax | ok — AML dos 21 devices + log |
 | list-hmi | erro claro: projeto sem HMI Unified (Comfort fora da API — limitação Siemens) |
 
-Faltam com mutação (fazer no SmokeTest): import-type, import-cax.
+## Smokes v2 com mutação (no SmokeTest_01, 2026-07-18)
+
+| verbo | resultado |
+|---|---|
+| import-type | ok — `MotorDados.xml` do real; dry detectou `override`, apply ok |
+| import-cax | ok — AML 1.7MB do real (21 devices) importado; dry + apply |
+| gen-alarm-fc | idempotência total validada: apply e dry retornam `in-sync` (áreas, globalDb, **callOb**) |
+
+Achado 9 (fix aplicado): `CaxProvider.Import` falha com "Action is not supported within
+ExclusiveAccess" — Openness proíbe CAx import dentro de ExclusiveAccess. Removido o
+WriteLock do verbo `import-cax` em Program.cs. Hardening genuíno.
+
+Projeto SmokeTest NÃO foi salvo após os imports — mutações eram só validação; reopen volta
+ao estado limpo.
 
 ## Status dry-runs
 

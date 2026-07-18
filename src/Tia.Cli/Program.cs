@@ -307,8 +307,8 @@ namespace Tia.Cli
                         result = Core.Hardware.CaxExport(session, outDir);
                         break;
                     case "import-cax":
-                        using (WriteLock(session, apply, verb))
-                            result = Core.Hardware.CaxImport(session, Require(args, "--file"), apply);
+                        // Openness: CaxProvider.Import não é suportado dentro de ExclusiveAccess
+                        result = Core.Hardware.CaxImport(session, Require(args, "--file"), apply);
                         break;
                     case "compile":
                         var plc = session.GetPlc(plcName);

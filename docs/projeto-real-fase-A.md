@@ -3,6 +3,12 @@
 Projeto: `Automação ETE SG AsBuilt_1_V21` (cópia offline em `proj/`). PLC `CPU CCO`, 21 devices,
 1011 blocos, 102 tabelas de tags. Inventários completos em `workspace/real-A/*.json`.
 
+**Contexto (user, 2026-07-18):** este projeto NÃO foi criado com a padronização dos scripts
+originais — por padrão os verbos geradores não servem nele; vale como experiência/estresse.
+Logo: achados 1-2 e o warning do 3 são hardening genuíno (valem pra qualquer projeto);
+adaptações às convenções do ETE (regex de ID, tabela-por-área, template externo — achados 3-5)
+só entram se um projeto-alvo real precisar (YAGNI).
+
 ## Achados (viram backlog)
 
 1. **Projeto chega sem compilar** (todos os blocos `isConsistent: false`) e qualquer verbo que

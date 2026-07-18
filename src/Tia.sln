@@ -1,8 +1,10 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tia.Core", "Tia.Core\Tia.Core.csproj", "{1A66A9A0-0000-0000-0000-000000000001}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tia.Cli", "Tia.Cli\Tia.Cli.csproj", "{1A66A9A0-0000-0000-0000-000000000002}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tia.Tests", "Tia.Tests\Tia.Tests.csproj", "{4772F648-8551-4ED9-A439-8815D3996C33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +20,9 @@ Global
 		{1A66A9A0-0000-0000-0000-000000000002}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A66A9A0-0000-0000-0000-000000000002}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A66A9A0-0000-0000-0000-000000000002}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4772F648-8551-4ED9-A439-8815D3996C33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4772F648-8551-4ED9-A439-8815D3996C33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4772F648-8551-4ED9-A439-8815D3996C33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4772F648-8551-4ED9-A439-8815D3996C33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

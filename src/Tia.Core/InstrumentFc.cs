@@ -49,7 +49,7 @@ namespace Tia.Core
         private static readonly XNamespace IntfNs =
             "http://www.siemens.com/automation/Openness/SW/Interface/v5";
 
-        private class Instrument
+        internal class Instrument
         {
             public string Id;
             public string GlobalDbPath;
@@ -59,7 +59,7 @@ namespace Tia.Core
             public List<string> InstanceDbs = new List<string>();
         }
 
-        private class AreaTask
+        internal class AreaTask
         {
             public string AreaName;
             public string TargetFolderName;
@@ -261,7 +261,7 @@ namespace Tia.Core
 
         // ---------- generation ----------
 
-        private static string BuildAreaFcXml(XDocument templateXml, AreaTask task, Instrument source,
+        internal static string BuildAreaFcXml(XDocument templateXml, AreaTask task, Instrument source,
             InstrumentFcConfig config, string outDir)
         {
             var doc = new XDocument(templateXml);

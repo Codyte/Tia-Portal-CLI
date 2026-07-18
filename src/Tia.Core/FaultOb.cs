@@ -168,7 +168,7 @@ namespace Tia.Core
 
         // ---------- XML generation ----------
 
-        private static XDocument BuildObXml(XDocument templateXml, string obName,
+        internal static XDocument BuildObXml(XDocument templateXml, string obName,
             List<Module> modules, FaultObConfig config)
         {
             var doc = new XDocument(templateXml);

@@ -256,7 +256,7 @@ namespace Tia.Core
 
         // ---------- FC XML ----------
 
-        private static string BuildFcXml(string templatePath, string fcName, string structName,
+        internal static string BuildFcXml(string templatePath, string fcName, string structName,
             string areaClean, List<string> variables, string outDir)
         {
             var doc = XDocument.Load(templatePath);
@@ -404,7 +404,7 @@ namespace Tia.Core
 
         // ---------- call OB ----------
 
-        private static string BuildCallObXml(string obTemplatePath, string obName, int obNumber,
+        internal static string BuildCallObXml(string obTemplatePath, string obName, int obNumber,
             List<(string Name, int? Number, string Folder)> fcs, string outDir)
         {
             var doc = XDocument.Load(obTemplatePath);

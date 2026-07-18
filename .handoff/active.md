@@ -1,52 +1,70 @@
-# Handoff · TIA Portal Openness API · 2026-07-18
+# Handoff · TIA Portal Openness API · 2026-07-18 (pós code-review F3)
 
 ## Modo de trabalho
 - `/ponytail full` + `/caveman` + navindex (ler `__navi__.md` antes de busca ampla).
 - Binário: `src\Tia.Cli\bin\Debug\net48\tia.exe` (Release stale — NÃO usar). D9: nunca 2 tia em paralelo.
-- Rebuild: `dotnet build src -c Debug`. TIA V21 aberto com SmokeTest_01 (manter com UI; --no-ui morre com o CLI).
+- Rebuild: `dotnet build src -c Debug`. TIA V21 com UI + SmokeTest_01 (--no-ui morre com o CLI).
+- Se TIA fechar: `tia open-project --file "C:\Scripts\TIA Portal\proj\SmokeTest_01\SmokeTest_01.ap21"`.
+  Whitelist pós-rebuild: `schtasks /Run /TN TiaWhitelist`.
 
 ## Goal
-**F3 ✅ COMPLETO — 6/6 smokes ok** contra SmokeTest_01 (gen-profinet, standardize-tags,
-gen-fault-ob, replicate-fc, gen-alarm-fc, replicate-instruments). Todos: dry→apply→compile 0
-err→re-run idempotente ("in-sync"). Projeto salvo. PLANO atualizado. Navi regen.
+F3 ✅ COMPLETA (6 smokes + code-review vs FINAIS: 0 bugs de paridade, commit f7f653b).
+Próxima etapa: **melhorias pré-projeto-real** (backlog abaixo), depois validar contra CÓPIA de
+projeto real (nunca produção — regra dura).
 
 ## State
-- HEAD: 1c085a0 (tree limpo, tudo commitado).
-- Sessão de hoje: gen-alarm-fc ✅ (fix cultures AlarmFc + idempotência dry + normalização ordem
-  ObjectList em Ops.BlocksIdentical) e replicate-instruments ✅ (4 fixes, ver abaixo).
+- HEAD: f7f653b (tree limpo). PLANO tabela F3 fechada.
+- Code-review 2026-07-18: 6 ports paridade ok; divergências deliberadas todas documentadas.
+
+## Backlog de melhorias (ordenado valor/custo) — decidir com usuário quais aplicar
+1. **Robustez por-item (do review):** Standardize.cs:419-437 rebuild sem try/catch por tabela
+   (1 falha aborta run com tabela meio deletada; original avisava e continuava). Idem
+   FaultOb.cs:83-88 import por OB. ~10 linhas; exige re-smoke.
+2. **Idempotência apply do gen-alarm-fc:** AlarmFc.cs:186 reimporta DB GLOBAL e AlarmFc.cs:224
+   deleta/reimporta call OB TODO apply, mesmo sem mudança. Comparar antes (Ops.BlocksIdentical /
+   diff dos comments no XML) → re-apply vira no-op de verdade. Reduz risco no DB central.
+3. **`tia doctor` (novo verbo):** valida pré-requisitos de cada verbo F3 sem mutar nada
+   (templates existem? pastas? DB GLOBAL? cultures? UDTs?). Barato e é o primeiro comando a
+   rodar num projeto novo — transforma erro no meio do run em checklist upfront.
+4. **in-sync no replicate-fc:** único verbo sem detecção — dry re-run sempre diz "overwrite".
+   Ops.BlocksIdentical já existe; comparar bloco principal por target (molde do dead-code
+   GetFolderStatus do original V3).
+5. **Heurísticas hardcoded → config (expor no *Config, defaults atuais):**
+   - InstrumentFc: `"FQIT-01"` primeiro (l.150), `"Preliminar"` primeiro (l.129)
+   - Replicate: `CCM(\d+)` → `QA-0n` (FindCcmInfo l.360), prefixo `PARTIDA_` (l.344),
+     length-checks mágicos +15/+16 (l.254-257)
+   - FaultOb: prefixo componente `QA-`/`WORD_` (l.210-214)
+   - AlarmFc: sufixo `_FALHA`, filtros `_CMD_`/`_RESET_` (l.112-113), struct `ALARMES`/
+     `WORD_ALARMES_` (l.459-461)
+   Não fazer big-bang: expor só o que o projeto real quebrar (YAGNI).
+6. **Testes offline dos rewires:** Rewire*/Build*Xml operam em XDocument puro — testável sem TIA.
+   1 runner assert-based (net48 console) contra fixtures docs/examples/ → valida refactors sem
+   TIA aberto. Maior alavanca de velocidade p/ iterações futuras.
+7. Cosmético: Standardize.cs:365 StandardizeName aplicado 2x (idempotente, remover 2ª);
+   Replicate.cs:115 comentar por quê template não é reescrito (preserva placeholders);
+   build Release stale (corrigir ou documentar Debug-only).
 
 ## Decisions (and why)
-- D1–D9 valem. Fixtures de smoke em docs/examples/ (commitadas).
-- Padrão consolidado: verbos que importam XML multilingual FILTRAM cultures pelas
-  LanguageSettings.ActiveLanguages do projeto (FaultOb, AlarmFc, InstrumentFc — todos com
-  `_cultures` + session param).
-- Ops.BlocksIdentical agora ordena filhos de ObjectList (sort estável por nome) — export TIA põe
-  Title no fim, XML gerado no início; sem isso re-run nunca dava "in-sync".
-- InstrumentFc: template = raiz PRIMEIRO (Insert pós-OrderBy) — senão pasta de área gerada vence
-  no re-run e o molde vira FC já rewired (gerava networks duplicadas).
-- IsTaskComplete (InstrumentFc): lookup GLOBAL de instance DB (Ops.FindBlock), mesmo critério do
-  ImportAreaFc.
+- D1–D9 valem. Fixtures smoke em docs/examples/ (commitadas).
+- Cultures XML sempre filtradas por LanguageSettings.ActiveLanguages (senão import falha).
+- Ops.BlocksIdentical ordena filhos de ObjectList (export TIA reordena Title).
+- InstrumentFc: template = raiz PRIMEIRO; IsTaskComplete com lookup global.
+- Ressalvas 1-2 do review NÃO aplicadas ainda — mudam comportamento pós-smoke, exigem re-smoke.
 
 ## Next steps (ordered)
-1. **code-review dos 6 ports vs Scripts_Siemens/FINAIS/** (última pendência F3; PLANO diz "fim de
-   F3, pontos de maior risco"). Ports: src/Tia.Core/{Profinet,Standardize,FaultOb,Replicate,
-   AlarmFc,InstrumentFc}.cs vs os .txt de FINAIS. Foco: paridade de lógica, edge cases dos
-   originais não portados.
-2. Smokes faltantes v2 (menor prioridade): list-hmi, export-cax/import-cax, export-type/
-   import-type, export-tags.
-3. Item 9 (online) segue bloqueado por D8.
+1. Usuário escolhe itens do backlog (recomendação: 1+2+3 antes do projeto real; 4-7 conforme dor).
+2. Aplicar escolhidos + rebuild + re-smoke rápido contra SmokeTest_01 (dry→apply→re-run).
+3. Projeto real (CÓPIA offline, nunca produção): Fase A read-only (info/snapshot/list-blocks/
+   xref/export) → Fase B dry-run dos 6 verbos F3 → relatório do que quebrou/pulou vira backlog.
+4. Smokes v2 faltantes: export-tags, export-type/import-type, export-cax/import-cax, list-hmi.
+5. F4 GitHub (README EN, licença, exemplos) — só depois do banho de projeto real.
+6. Item 9 (online) segue bloqueado por D8.
 
 ## Key files
-- src/Tia.Core/AlarmFc.cs — _cultures (~l.42, Generate início), idempotência dry (~l.137)
-- src/Tia.Core/InstrumentFc.cs — _cultures, template raiz-primeiro (~l.99), FlgNs em CallInfo
-  (~l.186), IsTaskComplete global (~l.515)
-- src/Tia.Core/Ops.cs — BlocksIdentical sort ObjectList (~l.380)
-- docs/examples/ — fixtures replicate-instruments: InstrumentDb.scl, InstrTagsEta.xml,
-  InstrumentTemplateFc.xml, ObInstrumentos.xml, replicate-instruments.json
-- docs/PLANO.md — tabela de fases (F3 ✅)
+- src/Tia.Core/{Profinet,Standardize,FaultOb,Replicate,AlarmFc,InstrumentFc}.cs — os 6 ports
+- src/Tia.Core/Ops.cs:359 — BlocksIdentical (base p/ itens 2 e 4)
+- Scripts_Siemens/FINAIS/ — referência read-only
+- docs/PLANO.md — tabela de fases; docs/examples/ — fixtures
 
 ## Open / blockers
-- Nenhum blocker. Estado do projeto TIA: SmokeTest_01 salvo com todas as fixtures (devices
-  INV-BH01A/B + RIO-QA01, área ETA alarmes + instrumentos, FCs gerados).
-- Se TIA fechar: `tia open-project --file "C:\Scripts\TIA Portal\proj\SmokeTest_01\SmokeTest_01.ap21"`
-  (com UI). Whitelist pode pedir de novo após rebuild+novo TIA (elevação: `schtasks /Run /TN TiaWhitelist`).
+- Nenhum blocker. Aguardando: (a) escolha dos itens do backlog, (b) cópia de projeto real.

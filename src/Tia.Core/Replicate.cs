@@ -54,7 +54,10 @@ namespace Tia.Core
             globalDb.Export(new FileInfo(dbXmlPath), ExportOptions.None);
             var dbXml = XDocument.Load(dbXmlPath);
 
-            var workingFolder = FindGroup(plc.BlockGroup, config.BlocksFolder);
+            // "A/B" is a path under Program blocks; a bare name is searched anywhere in the tree
+            var workingFolder = config.BlocksFolder.Contains("/")
+                ? Ops.ResolveFolder(plc, config.BlocksFolder, false) as PlcBlockUserGroup
+                : FindGroup(plc.BlockGroup, config.BlocksFolder);
             if (workingFolder == null)
                 throw new InvalidOperationException("Blocks folder '" + config.BlocksFolder + "' not found.");
             var allSubFolders = DescendantGroups(workingFolder);

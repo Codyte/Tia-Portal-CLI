@@ -37,14 +37,14 @@ namespace Tia.Cli
                         "delete-folder --path A/B [--tags] [--apply]",
                         "delete-block --name X [--apply]",
                         "import-type --file F.xml [--apply]" } },
-                    { "hardware", new[] { "add-device --mlfb \"6ES7 ...\" --name X [--station S] [--apply]",
+                    { "hardware", new[] { "add-device --mlfb \"6ES7 ...\" --name X [--station S] [--group G] [--apply]",
                         "set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]",
                         "connect-subnet --device X --subnet S [--io-system IO] [--apply]",
                         "export-cax [--out DIR]", "import-cax --file F.aml [--apply]" } },
                     { "write", new[] { "import-block --file F [--folder A/B] [--apply]",
                         "import-source --file F.scl [--apply]",
                         "import-ladder --file F.scl [--name N] [--folder A/B] [--apply]  (SCL subset → LAD; dry-run works without TIA)",
-                        "import-tags --file F [--apply]",
+                        "import-tags --file F [--folder A/B] [--apply]",
                         "compile [--block X | --folder A/B] [--apply]",
                         "diff-block --file F.xml [--name X]  (read-only, normalized compare)",
                         "gen-profinet --config F [--apply]",
@@ -270,7 +270,7 @@ namespace Tia.Cli
                         break;
                     case "import-tags":
                         using (WriteLock(session, apply, verb))
-                            result = Core.Ops.ImportTagTable(session.GetPlc(plcName), Require(args, "--file"), apply);
+                            result = Core.Ops.ImportTagTable(session.GetPlc(plcName), Require(args, "--file"), OptionValue(args, "--folder"), apply);
                         break;
                     case "list-library":
                         result = Core.Library.List(session, Require(args, "--file"));
@@ -284,7 +284,7 @@ namespace Tia.Cli
                     case "add-device":
                         using (WriteLock(session, apply, verb))
                             result = Core.Hardware.AddDevice(session, Require(args, "--mlfb"),
-                                Require(args, "--name"), OptionValue(args, "--station"), apply);
+                                Require(args, "--name"), OptionValue(args, "--station"), OptionValue(args, "--group"), apply);
                         break;
                     case "set-address":
                         using (WriteLock(session, apply, verb))

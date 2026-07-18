@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V21" />
+  <SW.Tags.PlcTagTable ID="0">
+    <AttributeList>
+      <Name>BOMBA (BH-01B)</Name>
+    </AttributeList>
+    <ObjectList />
+  </SW.Tags.PlcTagTable>
+</Document>

@@ -238,7 +238,7 @@ namespace Tia.Core
             return result;
         }
 
-        public static object ImportTagTable(PlcSoftware plc, string file, bool apply)
+        public static object ImportTagTable(PlcSoftware plc, string file, string folderPath, bool apply)
         {
             var full = RequireFile(file);
             var name = XmlObjectName(full);
@@ -246,11 +246,12 @@ namespace Tia.Core
             {
                 { "file", full },
                 { "table", name },
+                { "folder", folderPath ?? "" },
                 { "action", name != null && FindTagTable(plc.TagTableGroup, name) != null ? "override" : "create" },
                 { "applied", apply },
             };
             if (apply)
-                plc.TagTableGroup.TagTables.Import(new FileInfo(full), ImportOptions.Override);
+                ResolveTagFolder(plc, folderPath, true).TagTables.Import(new FileInfo(full), ImportOptions.Override);
             return result;
         }
 

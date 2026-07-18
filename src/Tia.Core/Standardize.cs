@@ -349,6 +349,13 @@ namespace Tia.Core
                 return TableAction(emptyTable.Name, subtype, "skip-no-id");
             }
 
+            // copy + rename with the target id, then re-sort: mold is shared (golden) and the
+            // generated table must come out already in its own audited order
+            mold = mold
+                .Select(t => new TagTemplate { Name = StandardizeName(t.Name, id, config), DataTypeName = t.DataTypeName })
+                .OrderBy(t => t.Name, alarmComparer)
+                .ToList();
+
             string set = IdentifySet(emptyTable.Name, config);
             int startByte = mem.AllocateBlock(set, mold);
             var allocator = new AddressAllocator(startByte);
@@ -381,7 +388,12 @@ namespace Tia.Core
                 return TableAction(table.Name, subtype, "skip-no-id");
             }
 
-            var ideal = TemplatesOf(table, alarmComparer);
+            // standardize names BEFORE ordering: the next audit sorts the renamed tags, so the
+            // layout must be allocated in renamed order or apply never converges
+            var ideal = TemplatesOf(table, alarmComparer)
+                .Select(t => new TagTemplate { Name = StandardizeName(t.Name, masterId, config), DataTypeName = t.DataTypeName })
+                .OrderBy(t => t.Name, alarmComparer)
+                .ToList();
             string set = IdentifySet(table.Name, config);
             int startByte = mem.AllocateBlock(set, ideal);
 

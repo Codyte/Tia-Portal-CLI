@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V21" />
+  <SW.Blocks.FC ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface>
+        <Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+          <Section Name="Input" />
+          <Section Name="Output" />
+          <Section Name="InOut" />
+          <Section Name="Temp" />
+          <Section Name="Constant" />
+          <Section Name="Return">
+            <Member Name="Ret_Val" Datatype="Void" Accessibility="Public" />
+          </Section>
+        </Sections>
+      </Interface>
+      <IsIECCheckEnabled>false</IsIECCheckEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <Name>FC_Modelo</Name>
+      <Namespace />
+      <Number>210</Number>
+      <ProgrammingLanguage>LAD</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource>
+            <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+              <Parts>
+                <Access Scope="GlobalVariable" UId="21">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="22">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="23">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="24">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="25">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="26">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="27">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="28">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="29">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="30">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="31">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="32">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="33">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="34">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="35">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="36">
+                  <Symbol>
+                    <Component Name="Smoke_Bit" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="37">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="ETA" />
+                    <Component Name="ALARMES" />
+                    <Component Name="WORD_ALARMES_1" />
+                  </Symbol>
+                </Access>
+                <Call UId="38">
+                  <CallInfo Name="FB BITS TO WORD" BlockType="FB">
+                    <Instance Scope="GlobalVariable" UId="39">
+                      <Component Name="DB_BITS_TO_WORD_MODELO" />
+                    </Instance>
+                    <Parameter Name="SIGNAL_Bit0" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit1" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit2" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit3" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit4" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit5" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit6" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit7" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit8" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit9" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit10" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit11" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit12" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit13" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit14" Section="Input" Type="Bool" />
+                    <Parameter Name="SIGNAL_Bit15" Section="Input" Type="Bool" />
+                    <Parameter Name="BITS_TO_WORD" Section="Output" Type="Word" />
+                  </CallInfo>
+                </Call>
+              </Parts>
+              <Wires>
+                <Wire UId="40">
+                  <Powerrail />
+                  <NameCon UId="38" Name="en" />
+                </Wire>
+                <Wire UId="41">
+                  <IdentCon UId="21" />
+                  <NameCon UId="38" Name="SIGNAL_Bit0" />
+                </Wire>
+                <Wire UId="42">
+                  <IdentCon UId="22" />
+                  <NameCon UId="38" Name="SIGNAL_Bit1" />
+                </Wire>
+                <Wire UId="43">
+                  <IdentCon UId="23" />
+                  <NameCon UId="38" Name="SIGNAL_Bit2" />
+                </Wire>
+                <Wire UId="44">
+                  <IdentCon UId="24" />
+                  <NameCon UId="38" Name="SIGNAL_Bit3" />
+                </Wire>
+                <Wire UId="45">
+                  <IdentCon UId="25" />
+                  <NameCon UId="38" Name="SIGNAL_Bit4" />
+                </Wire>
+                <Wire UId="46">
+                  <IdentCon UId="26" />
+                  <NameCon UId="38" Name="SIGNAL_Bit5" />
+                </Wire>
+                <Wire UId="47">
+                  <IdentCon UId="27" />
+                  <NameCon UId="38" Name="SIGNAL_Bit6" />
+                </Wire>
+                <Wire UId="48">
+                  <IdentCon UId="28" />
+                  <NameCon UId="38" Name="SIGNAL_Bit7" />
+                </Wire>
+                <Wire UId="49">
+                  <IdentCon UId="29" />
+                  <NameCon UId="38" Name="SIGNAL_Bit8" />
+                </Wire>
+                <Wire UId="50">
+                  <IdentCon UId="30" />
+                  <NameCon UId="38" Name="SIGNAL_Bit9" />
+                </Wire>
+                <Wire UId="51">
+                  <IdentCon UId="31" />
+                  <NameCon UId="38" Name="SIGNAL_Bit10" />
+                </Wire>
+                <Wire UId="52">
+                  <IdentCon UId="32" />
+                  <NameCon UId="38" Name="SIGNAL_Bit11" />
+                </Wire>
+                <Wire UId="53">
+                  <IdentCon UId="33" />
+                  <NameCon UId="38" Name="SIGNAL_Bit12" />
+                </Wire>
+                <Wire UId="54">
+                  <IdentCon UId="34" />
+                  <NameCon UId="38" Name="SIGNAL_Bit13" />
+                </Wire>
+                <Wire UId="55">
+                  <IdentCon UId="35" />
+                  <NameCon UId="38" Name="SIGNAL_Bit14" />
+                </Wire>
+                <Wire UId="56">
+                  <IdentCon UId="36" />
+                  <NameCon UId="38" Name="SIGNAL_Bit15" />
+                </Wire>
+                <Wire UId="57">
+                  <IdentCon UId="37" />
+                  <NameCon UId="38" Name="BITS_TO_WORD" />
+                </Wire>
+              </Wires>
+            </FlgNet>
+          </NetworkSource>
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Word de Alarmes: MODELO</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FC>
+</Document>

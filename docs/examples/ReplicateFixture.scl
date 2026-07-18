@@ -1,0 +1,19 @@
+TYPE "MotorDados"
+VERSION : 0.1
+   STRUCT
+      Liga : Bool;
+      Ligado : Bool;
+      Numero : Int;
+   END_STRUCT;
+END_TYPE
+
+DATA_BLOCK "DB GLOBAL"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   STRUCT
+      "Motor_BH-01A" : "MotorDados";
+      "Motor_BH-01B" : "MotorDados";
+   END_STRUCT;
+
+BEGIN
+END_DATA_BLOCK

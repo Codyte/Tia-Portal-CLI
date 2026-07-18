@@ -32,7 +32,7 @@ namespace Tia.Core
         // ---------- add-device ----------
 
         /// <summary>MLFB "6ES7 512-1DK01-0AB0/V2.8" → "OrderNumber:..." (or pass a full TypeIdentifier with ':').</summary>
-        public static object AddDevice(TiaSession session, string mlfb, string name, string station, bool apply)
+        public static object AddDevice(TiaSession session, string mlfb, string name, string station, string group, bool apply)
         {
             var typeId = mlfb.Contains(":") ? mlfb : "OrderNumber:" + mlfb;
             if (session.AllDevices().Any(d => d.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
@@ -42,11 +42,16 @@ namespace Tia.Core
                 { "typeIdentifier", typeId },
                 { "device", name },
                 { "station", station ?? name },
+                { "group", group ?? "" },
                 { "applied", apply },
             };
             if (apply)
             {
-                var device = session.Project.Devices.CreateWithItem(typeId, name, station ?? name);
+                var devices = group == null
+                    ? session.Project.Devices
+                    : (session.Project.DeviceGroups.Find(group)
+                        ?? session.Project.DeviceGroups.Create(group)).Devices;
+                var device = devices.CreateWithItem(typeId, name, station ?? name);
                 result["created"] = device.Name;
             }
             return result;

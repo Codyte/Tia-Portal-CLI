@@ -45,6 +45,14 @@ namespace Tia.Core
         public static object Generate(TiaSession session, PlcSoftware plc, FaultObConfig config,
             string outDir, bool apply)
         {
+            // an XML MultilingualTextItem whose culture the project doesn't have fails the whole import
+            var projectCultures = session.Project.LanguageSettings.ActiveLanguages
+                .Select(l => l.Culture.Name).ToList();
+            config.CommentCultures = config.CommentCultures
+                .Where(c => projectCultures.Contains(c, StringComparer.OrdinalIgnoreCase)).ToList();
+            if (config.CommentCultures.Count == 0)
+                config.CommentCultures = projectCultures.Take(1).ToList();
+
             var tasks = DiscoverTasks(session, config);
             if (tasks.Count == 0)
                 throw new InvalidOperationException(

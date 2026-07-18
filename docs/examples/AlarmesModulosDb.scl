@@ -1,0 +1,12 @@
+DATA_BLOCK "ALARMES_MODULOS"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   STRUCT
+      "QA-01" : STRUCT
+         WORD_1 : Word;
+         WORD_2 : Word;
+      END_STRUCT;
+   END_STRUCT;
+
+BEGIN
+END_DATA_BLOCK

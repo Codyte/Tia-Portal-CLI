@@ -58,10 +58,10 @@ Verbos por fase (nomes finais definidos na F1):
 | Fase | Entrega | Critério de pronto | Status |
 |------|---------|--------------------|--------|
 | F0 | Este plano + CLAUDE.md do repo | commitado | ✅ |
-| F1 | Solução .NET, Tia.Core mínimo, verbos de leitura | `tia info` e `tia list-blocks` rodando contra TIA real | 🟡 código+build ok; smoke aguarda instalação do TIA V19 aqui |
-| F2 | Export/import XML + compile | roundtrip de 1 FC sem diff + compile ok | 🟡 código+build ok; smoke aguarda TIA |
-| F3 | Portar os 4 tools dos FINAIS como verbos | paridade com os scripts originais em projeto de teste | 🟡 código 100% (6 verbos: gen-profinet, standardize-tags, gen-fault-ob, replicate-fc, gen-alarm-fc, replicate-instruments); falta code-review + smoke (aguarda TIA V19) |
-| v2 | Backlog de cobertura Openness (itens 1-10 abaixo) | verbos compilando 0 erros | 🟡 código 100% offline (2026-07-17): itens 1-8 e 10 feitos; 9 (online) bloqueado por D8; smokes aguardam TIA |
+| F1 | Solução .NET, Tia.Core mínimo, verbos de leitura | `tia info` e `tia list-blocks` rodando contra TIA real | ✅ smoke V21 2026-07-17 (info/list-devices/find/snapshot/xref ok) |
+| F2 | Export/import XML + compile | roundtrip de 1 FC sem diff + compile ok | ✅ smoke V21 2026-07-17: round-trip FC_SmokeLad identical, compile 0 erros |
+| F3 | Portar os 4 tools dos FINAIS como verbos | paridade com os scripts originais em projeto de teste | 🟡 código 100% (6 verbos: gen-profinet, standardize-tags, gen-fault-ob, replicate-fc, gen-alarm-fc, replicate-instruments); falta code-review + smoke dos ports |
+| v2 | Backlog de cobertura Openness (itens 1-10 abaixo) | verbos compilando 0 erros | 🟡 código 100% offline; smoke V21 core ok (add-device/set-address/connect-subnet/create-folder/import-tags/import-source/import-ladder/compile/export/diff/delete/save); 9 (online) bloqueado por D8; falta smoke: cax, types, hmi, ports F3 |
 | F4 | Polimento p/ GitHub (README EN, licença, exemplos) | repo publicável | ⬜ |
 | F5? | MCP server fino sobre Tia.Core | só se D1 cair | ⬜ |
 
@@ -110,6 +110,13 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
   V21+ = assemblies separadas Base/Step7/WinCCUnified em `PublicAPI\V21\net48`).
 - Deploy do smoke: copiar `src\Tia.Cli\bin\Release\net48\` (tia.exe + Newtonsoft.Json.dll +
   Tia.Core.dll) pra máquina do TIA e rodar lá.
+- **Gates Openness V21 (resolvidos 2026-07-17):** (1) user no grupo Windows "Siemens TIA
+  Openness" + **logon novo** (token velho não pega o grupo — logoff/logon do RDP); (2) whitelist
+  registro `HKLM/HKCU\...\Openness\21.0\Whitelist\tia.exe\Entry` (Path + DateModified
+  `yyyy/MM/dd HH:mm:ss.fff` do LastWriteTime + FileHash SHA256-Base64) — `scripts/whitelist.ps1`
+  gera certo; re-rodar após rebuild (hash muda); (3) client Openness precisa rodar na **mesma
+  sessão interativa** do TIA UI (task S4U/sessão 0 não attacha); (4) TIA e client ambos com
+  token fresco. Licença STEP 7 necessária pra add-device (LicenseNotFoundException sem ela).
 
 ## Backlog v2 (cobertura Openness — priorizado)
 

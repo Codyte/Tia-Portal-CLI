@@ -1,0 +1,3 @@
+IF "Smoke_Bit" THEN
+    "Smoke_Out" := TRUE;
+END_IF;

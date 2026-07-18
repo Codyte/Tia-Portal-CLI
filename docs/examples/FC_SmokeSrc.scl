@@ -1,0 +1,8 @@
+FUNCTION "FC_SmokeSrc" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+BEGIN
+    IF "Smoke_Bit" THEN
+        "Smoke_Int" := 42;
+    END_IF;
+END_FUNCTION

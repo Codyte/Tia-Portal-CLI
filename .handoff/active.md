@@ -1,53 +1,71 @@
-# Handoff · TIA Portal Openness API · 2026-07-18 (pós-F3.5 · plano de macros aprovado p/ execução)
-
-## Modo de trabalho
-- `/ponytail full` + `/caveman` + navindex (ler `__navi__.md` antes de busca ampla).
-- **Macros novos — usar SEMPRE** (nunca coreografia manual):
-  - `pwsh scripts/rebuild.ps1` = build + 31 testes offline + whitelist UAC só se tia.exe mudou.
-  - `pwsh scripts/use-project.ps1 <Nome|.ap21> [-Save]` = no-op se aberto; senão close+open (2-4 min, background).
-- Binário: `src\Tia.Cli\bin\Debug\net48\tia.exe` (Debug only). D9: nunca 2 tia em paralelo.
-- Projeto reaberto volta ao ÚLTIMO SAVE — `save-project` após applies que importam.
+# Handoff · TIA Portal Openness API · 2026-07-20 (publicação GitHub em andamento)
 
 ## Goal
-Executar a lista de macros aprovada (abaixo). Depois F4 GitHub (aguarda decisões do user:
-licença MIT?, nome do repo, escopo README).
+Publicar `tia-cli` no GitHub como repo público, **sem expor** `Scripts_Siemens/`
+(autoria/segredo do user) nem no working tree nem no histórico git.
 
 ## State
-- HEAD: 148f1bb (tree limpo). Handoff anterior arquivado em .handoff/archive/.
-- Sessão de hoje: callOb=in-sync validado ✅; smokes mutação import-type/import-cax ✅ (achado 9:
-  CAx import não pode ExclusiveAccess — fix commitado); Tia.Tests offline 31 asserts ALL PASS ✅;
-  cosméticos backlog 7 ✅; FindGroup/FindTagGroup→Ops ✅; macros rebuild/use-project criados ✅.
-- TIA: aberto com SmokeTest_01 (mutações de smoke NÃO salvas — de propósito, reopen limpa).
+- HEAD: b905ed5 (tree limpo, tudo commitado).
+- Done:
+  - F3.6 (macros prep-project/raio-x/clone-hw + gen-all.json) ✅ commitado e smoked.
+  - F4 (LICENSE MIT + README EN completo, chamativo com badges/mermaid/details) ✅ commitado.
+  - `gh auth login` feito nesta sessão (conta Codyte, escopo repo/gist/read:org).
+  - `Scripts_Siemens/` removido do tracking (`git rm --cached`) + adicionado ao `.gitignore`,
+    commitado em b905ed5. **Working tree local ainda tem os arquivos** (rm --cached não apaga
+    disco) — só saiu do git.
+- In progress: **histórico git ainda contém `Scripts_Siemens/` em ~20 commits antigos**
+  (132 arquivos). `git rm --cached` só afeta daqui pra frente — precisa `git filter-repo`
+  pra escrubar de verdade antes de tornar o repo público. `git-filter-repo` **não estava
+  instalado** (`pip show` não achou); último passo antes da interrupção foi checar isso.
 
 ## Decisions (and why)
-- D1–D9 valem. ETE SG fora da padronização → adaptações (achados 3-5/7) só se projeto-alvo pedir.
-- Macro-verbos > prosa de ritual (pedido explícito do user; memória salva: coreografia 3+ passos vira script).
-- Lista de macros apresentada; user: "executar tudo isso na próxima execução".
+- Repo remoto já existe: `github.com/Codyte/TIA-Portal` (privado, histórico compatível —
+  fast-forward puro, sem divergência). Decisão do user: **renomear pra `tia-cli` e tornar
+  público** (não criar repo novo).
+- `Scripts_Siemens/` (scripts originais FINAIS/OLD, em PT, citam cliente ETE SG) — decisão
+  explícita do user: **excluir do público, é segredo/autoria dele**. Isso implica rewrite de
+  histórico, não só gitignore (achado desta sessão, comunicado ao user antes de agir).
+- README "chamativo": badges shields.io + hero centrado + diagrama mermaid + tabela de verbos
+  + `<details>` colapsáveis pra seções longas (requirements/gates/macros/limitações).
 
-## Next steps (ordered) — EXECUTAR NESTA ORDEM
-1. **`scripts/prep-project.ps1 <nome>`**: use-project → doctor → `tia compile --apply` → save-project.
-   Mata achado 1 (projeto real chega sem compilar, exports morrem).
-2. **`scripts/raio-x.ps1 <nome>`**: doctor + snapshot + export-tags + list-types + xref (OBs principais)
-   + export-cax → `workspace/<proj>/`. Banho de projeto read-only em 1 comando (replica o que foi
-   feito manual no ETE SG).
-3. **`docs/examples/gen-all.json`** (batch pro `tia run --script`): fluxo FINAIS canônico —
-   gen-profinet → standardize-tags → gen-fault-ob → replicate-fc → gen-alarm-fc →
-   replicate-instruments, dry por padrão. Zero código novo. Smoke no SmokeTest_01.
-4. **`scripts/clone-hw.ps1 <origem> <destino>`**: export-cax de A + import-cax em B (fluxo validado
-   hoje com AML 1.7MB). Atenção: trocar projeto entre export e import (use-project 2x).
-5. Testar 1-4 contra SmokeTest_01 (raio-x também contra ETE SG se couber), commitar, atualizar
-   CLAUDE.md (seção macros) e PLANO.
-6. **Só se user pedir**: macros 5-7 da lista (new-area — precisa `--template-file` achado 5;
-   sync-check — precisa in-sync nos outros geradores; adopt-project — relatório de aderência).
-7. F4 GitHub quando user responder: licença, nome do repo, escopo README.
+## Next steps (ordered) — RETOMAR AQUI
+1. **Instalar `git-filter-repo`**: `pip install git-filter-repo` (ou `pipx install`).
+2. **Rewrite de histórico** (remove `Scripts_Siemens/` de TODOS os commits, não só do HEAD):
+   ```
+   git filter-repo --path Scripts_Siemens --invert-paths --force
+   ```
+   Roda no repo local `c:\Scripts\TIA Portal`. **Atenção**: `filter-repo` reescreve remotes
+   (remove `origin` por segurança, padrão da ferramenta) — precisa re-adicionar
+   `git remote add origin https://github.com/Codyte/TIA-Portal.git` depois.
+   Verificar depois: `git log --all --oneline -- Scripts_Siemens` deve vir vazio.
+3. **Renomear repo remoto**: `gh repo rename tia-cli --repo Codyte/TIA-Portal` (ou via
+   `gh api -X PATCH repos/Codyte/TIA-Portal -f name=tia-cli`).
+4. **Tornar público**: `gh repo edit Codyte/tia-cli --visibility public --accept-visibility-change-consequences`.
+5. **Push** (histórico reescrito = hashes mudaram, mas remoto ainda não tem o rewrite):
+   `git push origin main --force` (force justificado: history rewrite deliberado, decidido
+   com o user; repo sem outros colaboradores/clones conhecidos).
+6. **Descrição + topics** (pedido do user, turno anterior):
+   ```
+   gh repo edit Codyte/tia-cli --description "JSON-in/JSON-out CLI for Siemens TIA Portal Openness API" \
+     --add-topic tia-portal --add-topic siemens --add-topic openness --add-topic plc --add-topic cli
+   ```
+7. Confirmar pro user: URL final do repo, e que `Scripts_Siemens/` não está nem no working
+   tree do repo público nem no histórico (rodar `git clone` fresco em pasta temp e conferir
+   se quiser prova).
+8. Atualizar PLANO.md: F4 nota final (repo publicado, URL) — linha de pendências já cobre
+   isso, só trocar "pendente de ordem" por "publicado" + link.
 
 ## Key files
-- scripts/rebuild.ps1, scripts/use-project.ps1 — macros existentes (padrão a seguir nos novos)
-- docs/projeto-real-fase-A.md — 9 achados + tabelas de smoke (base da lista de macros)
-- docs/PLANO.md — fases; docs/examples/batch.json — formato do `tia run --script`
-- src/Tia.Core/Doctor.cs — preflight (componente dos macros 1-2)
-- proj/SmokeTest_01/SmokeTest_01.ap21; proj/Automação ETE SG AsBuilt_1_V21 (cópia offline)
+- `.gitignore:22` — `Scripts_Siemens/` adicionado.
+- `README.md` — versão "chamativa" já commitada (6b03332 antes desta sessão, sem mudança
+  de conteúdo nesta sessão, só o scrub de histórico pendente).
+- `docs/PLANO.md` — seção "Pendências / decisões futuras": ainda diz "revisar se
+  Scripts_Siemens vai junto" — atualizar depois do push (passo 8 acima).
 
 ## Open / blockers
-- Nenhum blocker. Smoke dos macros exige TIA aberto (confirmar com user antes).
-- gen-all.json no SmokeTest: gen-profinet precisa config (docs/examples/profinet.json existe).
+- Nenhum blocker de decisão — todas as 4 perguntas (licença, nome, README, Scripts_Siemens)
+  já foram respondidas pelo user nesta sessão. Só falta executar passos 1-8 acima.
+- `git filter-repo` precisa estar instalável via pip nesta máquina (Python 3.12 em
+  `AppData\Local\Programs\Python\Python312` — havia um shim em `Scripts\git-filter-repo` mas
+  `pip show` não achou o pacote → possível instalação quebrada ou script solto sem registro
+  pip; investigar antes de rodar, ou reinstalar via pip limpo).

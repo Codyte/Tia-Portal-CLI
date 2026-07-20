@@ -165,7 +165,7 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
 ## Pendências / decisões futuras
 
 - ~~Licença~~ ✅ MIT (F4, 2026-07-18). ~~Nome público~~ ✅ `tia-cli`.
-- Publicar no GitHub (`gh repo create tia-cli`) — só com ordem explícita do user.
-  Antes de publicar: `proj/`/`workspace/`/`lib/` já são gitignored; revisar se
-  `Scripts_Siemens/` (tracked, scripts de campo em PT) vai junto ou sai do público.
+- ~~Publicar no GitHub~~ ✅ publicado 2026-07-20: https://github.com/Codyte/tia-cli (público).
+  `Scripts_Siemens/` excluído do público — removido do tracking + scrubado do histórico
+  via `git-filter-repo` (verificado: clone fresh sem o diretório em working tree ou histórico).
 - Smoke F1 na máquina do TIA (user leva o exe; primeira execução dispara popup Openness — permitir).

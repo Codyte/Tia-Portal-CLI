@@ -57,6 +57,8 @@ namespace Tia.Tests
                 { "LadConverter.Convert", LadConverter_Convert },
                 { "Ops.RequireRootType", Ops_RequireRootType },
                 { "DbMember.AddToXml", DbMember_AddToXml },
+                { "Memory.Occupied", Memory_Occupied },
+                { "Clone.Rewrite", Clone_Rewrite },
             };
             foreach (var t in tests)
             {
@@ -234,6 +236,58 @@ namespace Tia.Tests
             Check(Throws(() => DbMember.AddToXml(db(), "NAO_EXISTE", "X", "Bool", null)), "--path inexistente falha");
             Check(Throws(() => DbMember.AddToXml(db(), "AREA.BOMBA_A", "X", "Bool", null)),
                 "path através de membro não-struct falha");
+        }
+
+        private static void Memory_Occupied()
+        {
+            Func<string, string, KeyValuePair<string, string>> t =
+                (addr, type) => new KeyValuePair<string, string>(addr, type);
+
+            var used = Memory.Occupied(new[]
+            {
+                t("%M430.0", "Bool"), t("%M431.4", "Bool"),   // bits → 1 byte cada
+                t("%MW10", "Word"),                           // 10-11
+                t("%MD100", "Real"),                          // 100-103
+                t("%I0.0", "Bool"), t("%Q5.1", "Bool"),       // outras áreas: ignoradas
+                t("DB1.DBX0.0", "Bool"), t(null, "Bool"),
+            });
+
+            Check(used.SequenceEqual(new[] { 10, 11, 100, 101, 102, 103, 430, 431 }),
+                "bytes ocupados: bits, word e dword; outras áreas fora (" + string.Join(",", used) + ")");
+        }
+
+        private static void Clone_Rewrite()
+        {
+            const string ns = "http://www.siemens.com/automation/Openness/SW/Interface/v5";
+            Func<XDocument> table = () => XDocument.Parse(
+                "<Document xmlns='" + ns + "'><SW.Tags.PlcTagTable><AttributeList>" +
+                "<Name>BOMBA (BH-01B)</Name></AttributeList>" +
+                "<SW.Tags.PlcTag><AttributeList><Name>MODO_LOCAL_BH-01B</Name>" +
+                "<LogicalAddress>%M430.6</LogicalAddress></AttributeList></SW.Tags.PlcTag>" +
+                "<SW.Tags.PlcTag><AttributeList><Name>LIGADO_BH-01B</Name>" +
+                "<LogicalAddress>%M430.7</LogicalAddress></AttributeList></SW.Tags.PlcTag>" +
+                "<SW.Tags.PlcTag><AttributeList><Name>FALHA_BH-01B</Name>" +
+                "<LogicalAddress>%M431.0</LogicalAddress></AttributeList></SW.Tags.PlcTag>" +
+                "</SW.Tags.PlcTagTable></Document>");
+            XNamespace n = ns;
+
+            var d = table();
+            var hits = Clone.Rewrite(d, Clone.ParseReplaces(new[] { "BH-01B=BH-01C" }));
+            var names = d.Descendants(n + "Name").Select(e => e.Value).ToList();
+            Check(hits == 4, "4 ocorrências trocadas (tabela + 3 tags), era " + hits);
+            Check(names.All(x => x.Contains("BH-01C")) && !names.Any(x => x.Contains("BH-01B")),
+                "nenhum BH-01B sobrando");
+
+            var addrs = Clone.Readdress(d, "%M432.6");
+            Check(addrs.SequenceEqual(new[] { "%M432.6", "%M432.7", "%M433.0" }),
+                "bits sequenciais com carry de byte (" + string.Join(",", addrs) + ")");
+
+            Check(Throws(() => Clone.ParseReplaces(new[] { "SEM_IGUAL" }).ToList()), "--replace sem '=' falha");
+            Check(Throws(() => Clone.Readdress(table(), "M432")), "--at fora do formato %M<b>.<bit> falha");
+
+            var word = XDocument.Parse("<Document xmlns='" + ns + "'><SW.Tags.PlcTag><AttributeList>" +
+                "<LogicalAddress>%MW20</LogicalAddress></AttributeList></SW.Tags.PlcTag></Document>");
+            Check(Throws(() => Clone.Readdress(word, "%M432.0")), "tag não-bit aborta o --at (sem sobreposição)");
         }
 
         private static bool Throws(Action a)

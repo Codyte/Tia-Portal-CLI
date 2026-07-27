@@ -33,7 +33,8 @@ namespace Tia.Cli
                         "tree [--out DIR]  (outline navindex dos Program blocks → plc-navi.md)",
                         "list-hmi [--device X]  (WinCC Unified: telas + tag tables)",
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]",
-                        "export-type --name X [--out DIR]" } },
+                        "export-type --name X [--out DIR]",
+                        "free-memory [--bytes N] [--from B] [--count K]  (buracos livres na área %M; length -1 = até o fim)" } },
                     { "structure", new[] { "create-folder --path A/B [--tags] [--apply]",
                         "delete-folder --path A/B [--tags] [--apply]",
                         "delete-block --name X [--apply]",
@@ -46,6 +47,7 @@ namespace Tia.Cli
                         "import-source --file F.scl [--apply]",
                         "import-ladder --file F.scl [--name N] [--folder A/B] [--apply]  (SCL subset → LAD; dry-run works without TIA)",
                         "import-tags --file F [--folder A/B] [--apply]",
+                        "clone --block N | --table T --replace OLD=NEW [--replace ...] [--at %M432.0] [--folder A/B] [--apply]",
                         "add-db-member --db X --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]",
                         "compile [--block X | --folder A/B] [--apply]",
                         "diff-block --file F.xml [--name X]  (read-only, normalized compare)",
@@ -231,6 +233,12 @@ namespace Tia.Cli
                     case "list-hmi":
                         result = Core.Hmi.List(session, OptionValue(args, "--device"));
                         break;
+                    case "free-memory":
+                        result = Core.Memory.FreeM(session.GetPlc(plcName),
+                            int.Parse(OptionValue(args, "--bytes") ?? "1"),
+                            int.Parse(OptionValue(args, "--from") ?? "0"),
+                            int.Parse(OptionValue(args, "--count") ?? "5"));
+                        break;
                     case "export-block":
                         result = Core.Ops.ExportBlock(session.GetPlc(plcName), Require(args, "--name"), outDir);
                         break;
@@ -274,6 +282,12 @@ namespace Tia.Cli
                     case "import-type":
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.ImportType(session.GetPlc(plcName), Require(args, "--file"), apply);
+                        break;
+                    case "clone":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Clone.Run(session.GetPlc(plcName), OptionValue(args, "--block"),
+                                OptionValue(args, "--table"), OptionValues(args, "--replace"),
+                                OptionValue(args, "--at"), OptionValue(args, "--folder"), outDir, apply);
                         break;
                     case "add-db-member":
                         using (WriteLock(session, apply, verb))
@@ -396,6 +410,15 @@ namespace Tia.Cli
         {
             int i = Array.IndexOf(args, name);
             return i >= 0 && i + 1 < args.Length ? args[i + 1] : null;
+        }
+
+        /// <summary>Todas as ocorrências de uma opção repetível (ex.: --replace A=B --replace C=D).</summary>
+        private static List<string> OptionValues(string[] args, string name)
+        {
+            var values = new List<string>();
+            for (int i = 0; i < args.Length - 1; i++)
+                if (args[i] == name) values.Add(args[i + 1]);
+            return values;
         }
 
         /// <summary>Multiuser ExclusiveAccess for applied writes; no-op handle on dry-run.</summary>

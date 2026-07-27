@@ -14,6 +14,10 @@
 ## Build / run (a partir da F1)
 
 - Solução em `src/`, target net48 x64. Binário oficial = Debug (`src\Tia.Cli\bin\Debug\net48\tia.exe`).
+- **Máquina nova: `pwsh scripts/init.ps1`** = gates (grupo `Siemens TIA Openness`, .NET SDK,
+  `lib/*.dll` copiadas da instalação local do Portal) + tasks (1 UAC) + rebuild. Idempotente.
+  Scripts não têm caminho nem usuário fixo — tudo sai de `$PSScriptRoot`/`$env:USERNAME`, e a versão
+  do Portal (V19–V21) é descoberta em runtime.
 - **Macro-verbos — usar SEMPRE em vez da coreografia manual:**
   - `pwsh scripts/rebuild.ps1` = build + testes offline + whitelist (UAC só se tia.exe mudou).
     Nunca rodar dotnet build/whitelist/testes soltos.

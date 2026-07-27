@@ -6,10 +6,12 @@
 # 38-42  confere e roda o whitelist
 # Run elevated, once. Idempotent.
 
-Start-Transcript 'c:\Scripts\TIA Portal\workspace\setup-log.txt' -Force
+$repo = Split-Path $PSScriptRoot
+New-Item -ItemType Directory -Force (Join-Path $repo 'workspace') | Out-Null
+Start-Transcript (Join-Path $repo 'workspace\setup-log.txt') -Force
 $pwsh = (Get-Command pwsh).Source
-$wl = 'c:\Scripts\TIA Portal\scripts\whitelist.ps1'
-$tr = 'c:\Scripts\TIA Portal\scripts\taskrun.ps1'
+$wl = Join-Path $PSScriptRoot 'whitelist.ps1'
+$tr = Join-Path $PSScriptRoot 'taskrun.ps1'
 
 # sem trigger: /SC ONCE com hora passada some sozinho depois de rodar (o Windows apaga tarefa
 # ONCE expirada) e o rebuild caia no fallback RunAs, que da sessao 0 nao mostra UAC nenhum.
@@ -36,7 +38,7 @@ $principal = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" 
 $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit (New-TimeSpan -Hours 2) -AllowStartIfOnBatteries
 Register-ScheduledTask -TaskName TiaSmokeRun -Action $action -Principal $principal -Settings $settings -Force
 
-schtasks /Query /TN TiaSmokeRun /FO LIST | Out-File 'c:\Scripts\TIA Portal\workspace\tasks-check.txt'
+schtasks /Query /TN TiaSmokeRun /FO LIST | Out-File (Join-Path $repo 'workspace\tasks-check.txt')
 
 # ja estamos elevados: roda o whitelist agora, senao o proximo tia morre com EngineeringSecurityException
 & $wl

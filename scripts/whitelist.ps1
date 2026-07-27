@@ -3,7 +3,7 @@
 # 11-30  whitelist registry entry (HKLM Openness <ver>) for tia.exe — run elevated/SYSTEM
 # Re-run after every rebuild (FileHash changes). Invoked via scheduled task "TiaWhitelist".
 
-$exe = "c:\Scripts\TIA Portal\src\Tia.Cli\bin\Debug\net48\tia.exe"
+$exe = Join-Path (Split-Path $PSScriptRoot) 'src\Tia.Cli\bin\Debug\net48\tia.exe'
 $f = Get-Item $exe
 $hash = [Convert]::ToBase64String(
     [System.Security.Cryptography.SHA256]::Create().ComputeHash([IO.File]::ReadAllBytes($f.FullName)))

@@ -5,8 +5,9 @@
 # Roda NA SESSAO 1: pwsh scripts/tia-task.ps1 --script-ps1 scripts\export-fixtures.ps1
 # Saida: workspace/padrao/. Sao as fixtures reais que substituem as sinteticas de docs/examples.
 $ErrorActionPreference = 'Continue'
-$tia = 'c:\Scripts\TIA Portal\src\Tia.Cli\bin\Debug\net48\tia.exe'
-$out = 'c:\Scripts\TIA Portal\workspace\padrao'
+$repo = Split-Path $PSScriptRoot
+$tia = Join-Path $repo 'src\Tia.Cli\bin\Debug\net48\tia.exe'
+$out = Join-Path $repo 'workspace\padrao'
 
 $blocks = @(
     'MODULE_ERROR_MOLDE'

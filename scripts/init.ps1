@@ -3,8 +3,9 @@
 # 11-20  gate 1: grupo Windows Siemens TIA Openness (nao automatizavel — precisa admin + logoff/logon)
 # 21-28  gate 2: .NET SDK presente
 # 29-50  gate 3: lib/*.dll (build-time) — copia da instalacao local do TIA Portal se existir
-# 52-58  gates falharam -> para com instrucoes
-# 59-64  gates ok -> rebuild.ps1 (build+test+whitelist) + instrucao final
+# 56-59  gates falharam -> para com instrucoes
+# 61-74  gate 4: tasks TiaWhitelist/TiaSmokeRun (setup-tasks elevado, 1 UAC) — idempotente
+# 76-80  rebuild.ps1 (build+test+whitelist) + instrucao final
 #
 # Macro "init": bootstrap de 1a vez numa maquina nova. Verifica os 2 gates que so um humano
 # resolve (grupo + logon, TIA Portal instalado) e automatiza o resto (lib/, build, whitelist).
@@ -57,6 +58,21 @@ if (-not $ok) {
     Write-Host "init incompleto -- resolva os gates acima e rode 'pwsh scripts/init.ps1' de novo." -ForegroundColor Yellow
     exit 1
 }
+
+# tasks TiaWhitelist/TiaSmokeRun: unico passo que exige elevacao (HKLM + registro de task).
+# rebuild.ps1 depende da TiaWhitelist; sem ela cai no fallback RunAs, que da sessao 0 nao mostra UAC.
+$tasks = @('TiaWhitelist', 'TiaSmokeRun') | Where-Object {
+    -not (Get-ScheduledTask -TaskName $_ -ErrorAction SilentlyContinue) }
+if ($tasks) {
+    Write-Host "registrando tasks ($($tasks -join ', ')) — vai pedir UAC uma vez"
+    Start-Process pwsh -Verb RunAs -Wait -ArgumentList `
+        '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $PSScriptRoot 'setup-tasks.ps1')
+    if (-not (Get-ScheduledTask -TaskName TiaWhitelist -ErrorAction SilentlyContinue)) {
+        Write-Warning "setup-tasks nao registrou TiaWhitelist — ver workspace\setup-log.txt"
+        exit 1
+    }
+}
+Write-Host "gate 4 ok: tasks TiaWhitelist/TiaSmokeRun registradas"
 
 & (Join-Path $repo 'scripts\rebuild.ps1')
 if ($LASTEXITCODE -ne 0) { exit 1 }

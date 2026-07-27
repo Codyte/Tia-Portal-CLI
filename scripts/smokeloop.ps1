@@ -6,8 +6,9 @@
 # = attach no TIA UI + popup whitelist visivel). Mesmo protocolo taskio do taskrun.ps1.
 # Parar: fechar a janela ou criar workspace\taskio\stop.txt.
 
-$dir = "c:\Scripts\TIA Portal\workspace\taskio"
-$tia = "c:\Scripts\TIA Portal\src\Tia.Cli\bin\Debug\net48\tia.exe"
+$repo = Split-Path $PSScriptRoot
+$dir = Join-Path $repo 'workspace\taskio'
+$tia = Join-Path $repo 'src\Tia.Cli\bin\Debug\net48\tia.exe'
 New-Item -ItemType Directory -Force $dir | Out-Null
 Write-Host "=== smokeloop ativo. Token:" -ForegroundColor Green
 whoami /groups | Select-String Openness
@@ -25,7 +26,7 @@ while ($true) {
         $quoted = $cmdArgs | ForEach-Object { '"' + $_ + '"' }
         try {
             $p = Start-Process -FilePath $tia -ArgumentList $quoted `
-                -WorkingDirectory "c:\Scripts\TIA Portal" -NoNewWindow -Wait -PassThru `
+                -WorkingDirectory $repo -NoNewWindow -Wait -PassThru `
                 -RedirectStandardOutput "$dir\result.txt" -RedirectStandardError "$dir\result-err.txt" `
                 -ErrorAction Stop
             $p.ExitCode | Out-File "$dir\exit.txt" -Encoding ascii

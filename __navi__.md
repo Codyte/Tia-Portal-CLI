@@ -30,8 +30,8 @@ ProjectInfo.txt(15)
 ## `proj/SmokeTest_01/IM/SPL/` (1 files)
 options.json(1)
 
-## `scripts/` (11 files)
-clone-hw.ps1(25)  grant-whitelist-acl.ps1(12)  init.ps1(65)  prep-project.ps1(16)  raio-x.ps1(29)  rebuild.ps1(23)  setup-tasks.ps1(20)  smokeloop.ps1(40)  taskrun.ps1(14)  use-project.ps1(21)  whitelist.ps1(25)
+## `scripts/` (10 files)
+clone-hw.ps1(25)  init.ps1(80)  prep-project.ps1(16)  raio-x.ps1(29)  rebuild.ps1(23)  setup-tasks.ps1(22)  smokeloop.ps1(41)  taskrun.ps1(15)  use-project.ps1(21)  whitelist.ps1(25)
 
 ## `src/Tia.Cli/obj/` (2 files) → __navi__.md
 Tia.Cli.csproj.nuget.dgspec.json(119)  project.assets.json(579)

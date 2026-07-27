@@ -103,6 +103,21 @@ Correções que este projeto provocou:
   projeto 100% conforme, porque o alvo é membro de DB.
 - `FaultOb.cs` — `RewireNetwork` agora **lança** quando o template não tem acesso ao `AlarmDb`;
   antes seguia em silêncio e todo OB gerado ficava com o bit de alarme do molde.
+- `docs/examples/ModuleErrorMolde.xml` — fixture sintética (4.8K) trocada pelo export real do
+  `MODULE_ERROR_MOLDE` (14K). Suíte offline segue `ALL PASS`: o `999` que o real usa também como
+  índice de `HW_DIAG_STATE[999]` é trocado de propósito (o FINAL faz o mesmo, linha 398-407).
+
+Configs de exemplo acertados contra este projeto:
+- `replicate-instruments.json` — era `5. Instrumentos`/`5.2 Instrumentos`/`DB INSTRUMENTOS`/
+  `OB_INSTRUMENTOS`, nada disso existe. Real: tags em `2. Alarmes`, blocos em `5.2 Totalizadores`,
+  `DB GLOBAL`, OB `Chamada Totalizadores Instrumentos` (OB130). `IgnoreFolders`/`TagFilters` vêm
+  do config FINAL (`2.0 Paineis`, molde da pasta, `FQIT`/`FIT`).
+- `profinet.json` — `TagFolder` era `4. Comm`; a tabela `DISPOSITIVOS_PROFINET` vive em
+  `4. Comm/4.1 Profinet`. **O script FINAL diverge do projeto aqui**: hardcoda `4. Comm` e
+  *cria* a tabela lá se não achar (linhas 78-81) — rodá-lo neste projeto duplicaria a tabela.
+  `ProfinetConfig.TagFolder` mantém o default `4. Comm` do FINAL; o exemplo aponta o certo.
+  `Hardware` = nome da station (`SINAMICS G_24`), `EquipmentTag` = nome do device
+  (`INVERSOR_AG-04 CCM1`) — pares tirados do config FINAL.
 
 Pendências abertas contra este projeto:
 - `replicate-fc` dry (pastas `(TAG)` existem aqui) e `replicate-instruments` dry.

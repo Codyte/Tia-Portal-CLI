@@ -1,6 +1,8 @@
 {
-  "SourceTagsFolder": "5. Instrumentos",
-  "TargetBlocksFolder": "5.2 Instrumentos",
-  "GlobalDb": "DB INSTRUMENTOS",
-  "TargetOb": "OB_INSTRUMENTOS"
+  "SourceTagsFolder": "2. Alarmes",
+  "TargetBlocksFolder": "5.2 Totalizadores",
+  "GlobalDb": "DB GLOBAL",
+  "TargetOb": "Chamada Totalizadores Instrumentos",
+  "IgnoreFolders": ["2.0 Paineis", "5.2.0 Molde"],
+  "TagFilters": ["FQIT", "FIT"]
 }

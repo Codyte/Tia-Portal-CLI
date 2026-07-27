@@ -1,6 +1,52 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Document>
   <Engineering version="V21" />
+  <DocumentInfo>
+    <Created>2026-07-27T21:34:45.201597Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, G200, G220, S200, S210, S220, Innomotics MVD</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>Tech WebApplication</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Professional</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
   <SW.Blocks.OB ID="0">
     <AttributeList>
       <AutoNumber>true</AutoNumber>
@@ -11,8 +57,16 @@
       <Interface>
         <Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
           <Section Name="Input">
-            <Member Name="Initial_Call" Datatype="Bool" Accessibility="Public" Informative="true" />
-            <Member Name="Remanence" Datatype="Bool" Accessibility="Public" Informative="true" />
+            <Member Name="Initial_Call" Datatype="Bool" Accessibility="Public" Informative="true">
+              <Comment>
+                <MultiLanguageText Lang="en-US">Initial call of this OB</MultiLanguageText>
+              </Comment>
+            </Member>
+            <Member Name="Remanence" Datatype="Bool" Accessibility="Public" Informative="true">
+              <Comment>
+                <MultiLanguageText Lang="en-US">=True, if remanent data are available</MultiLanguageText>
+              </Comment>
+            </Member>
           </Section>
           <Section Name="Temp" />
           <Section Name="Constant" />
@@ -22,7 +76,7 @@
       <MemoryLayout>Optimized</MemoryLayout>
       <Name>MODULE_ERROR_MOLDE</Name>
       <Namespace />
-      <Number>123</Number>
+      <Number>135</Number>
       <ProgrammingLanguage>LAD</ProgrammingLanguage>
       <SecondaryType>ProgramCycle</SecondaryType>
       <SetENOAutomatically>false</SetENOAutomatically>
@@ -33,59 +87,189 @@
           <MultilingualTextItem ID="2" CompositionName="Items">
             <AttributeList>
               <Culture>en-US</Culture>
+              <Text>Error.LADDR = Representa o código identificador do hardware
+Error.IO_STATE = 1 (Módulo OK)
+Error.IO_STATE &lt;&gt; 1 (Erro no módulo)
+
+ A1 QA-00 = ALARMES_MODULOS_WORD_1 Bit 0
+</Text>
+            </AttributeList>
+          </MultilingualTextItem>
+          <MultilingualTextItem ID="3" CompositionName="Items">
+            <AttributeList>
+              <Culture>pt-BR</Culture>
               <Text />
             </AttributeList>
           </MultilingualTextItem>
         </ObjectList>
       </MultilingualText>
-      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+      <SW.Blocks.CompileUnit ID="4" CompositionName="CompileUnits">
         <AttributeList>
           <NetworkSource>
             <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
               <Parts>
-                <Access Scope="GlobalVariable" UId="21">
-                  <Symbol>
-                    <Component Name="ALARMES_MODULOS" />
-                    <Component Name="QA-01" />
-                    <Component Name="WORD_1" SliceAccessModifier="x0" />
-                  </Symbol>
+                <Access Scope="LiteralConstant" UId="21">
+                  <Constant>
+                    <ConstantType>UInt</ConstantType>
+                    <ConstantValue>1</ConstantValue>
+                  </Constant>
                 </Access>
                 <Access Scope="LiteralConstant" UId="22">
                   <Constant>
-                    <ConstantType>Int</ConstantType>
+                    <ConstantType>HW_ANY</ConstantType>
                     <ConstantValue>999</ConstantValue>
                   </Constant>
                 </Access>
                 <Access Scope="GlobalVariable" UId="23">
                   <Symbol>
-                    <Component Name="Smoke_Int" />
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="HARDWARE_INTERRUPT" />
+                    <Component Name="ALARMES_MODULOS" />
+                    <Component Name="QA-00" />
+                    <Component Name="WORD_1" SliceAccessModifier="x0" />
                   </Symbol>
                 </Access>
-                <Part Name="Contact" UId="24" />
-                <Part Name="Move" UId="25">
-                  <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
-                </Part>
+                <Access Scope="GlobalVariable" UId="24">
+                  <Symbol>
+                    <Component Name="DB DIAGNOSTICO DISPOSITIVOS" />
+                    <Component Name="HW_DIAG_STATE" AccessModifier="Array">
+                      <Access Scope="LiteralConstant">
+                        <Constant>
+                          <ConstantType>DInt</ConstantType>
+                          <ConstantValue>999</ConstantValue>
+                        </Constant>
+                      </Access>
+                    </Component>
+                    <Component Name="MaintenceState" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="25">
+                  <Symbol>
+                    <Component Name="DB DIAGNOSTICO DISPOSITIVOS" />
+                    <Component Name="HW_DIAG_STATE" AccessModifier="Array">
+                      <Access Scope="LiteralConstant">
+                        <Constant>
+                          <ConstantType>DInt</ConstantType>
+                          <ConstantValue>999</ConstantValue>
+                        </Constant>
+                      </Access>
+                    </Component>
+                    <Component Name="ComponentStateDetail" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="26">
+                  <Symbol>
+                    <Component Name="DB DIAGNOSTICO DISPOSITIVOS" />
+                    <Component Name="HW_DIAG_STATE" AccessModifier="Array">
+                      <Access Scope="LiteralConstant">
+                        <Constant>
+                          <ConstantType>DInt</ConstantType>
+                          <ConstantValue>999</ConstantValue>
+                        </Constant>
+                      </Access>
+                    </Component>
+                    <Component Name="OwnState" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="27">
+                  <Symbol>
+                    <Component Name="DB DIAGNOSTICO DISPOSITIVOS" />
+                    <Component Name="HW_DIAG_STATE" AccessModifier="Array">
+                      <Access Scope="LiteralConstant">
+                        <Constant>
+                          <ConstantType>DInt</ConstantType>
+                          <ConstantValue>999</ConstantValue>
+                        </Constant>
+                      </Access>
+                    </Component>
+                    <Component Name="IOState" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="28">
+                  <Symbol>
+                    <Component Name="DB DIAGNOSTICO DISPOSITIVOS" />
+                    <Component Name="HW_DIAG_STATE" AccessModifier="Array">
+                      <Access Scope="LiteralConstant">
+                        <Constant>
+                          <ConstantType>DInt</ConstantType>
+                          <ConstantValue>999</ConstantValue>
+                        </Constant>
+                      </Access>
+                    </Component>
+                    <Component Name="OperatingState" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="29">
+                  <Symbol>
+                    <Component Name="DB DIAGNOSTICO DISPOSITIVOS" />
+                    <Component Name="HW_DIAG_STATE" AccessModifier="Array">
+                      <Access Scope="LiteralConstant">
+                        <Constant>
+                          <ConstantType>DInt</ConstantType>
+                          <ConstantValue>999</ConstantValue>
+                        </Constant>
+                      </Access>
+                    </Component>
+                    <Component Name="Ret_Val" />
+                  </Symbol>
+                </Access>
+                <Call UId="30">
+                  <CallInfo Name="FB DIAG MODULES" BlockType="FB">
+                    <Instance Scope="GlobalVariable" UId="31">
+                      <Component Name="FB DIAG MODULES_DB" />
+                    </Instance>
+                    <Parameter Name="LADDR" Section="Input" Type="HW_ANY" />
+                    <Parameter Name="MODE" Section="Input" Type="UInt" />
+                    <Parameter Name="OUT_WORD[bit]" Section="Output" Type="Bool" />
+                    <Parameter Name="Maintence_State" Section="Output" Type="String" />
+                    <Parameter Name="Component_StateDetail" Section="Output" Type="String" />
+                    <Parameter Name="Own_State" Section="Output" Type="String" />
+                    <Parameter Name="IO_State" Section="Output" Type="String" />
+                    <Parameter Name="Operating_State" Section="Output" Type="String" />
+                    <Parameter Name="Ret_Val" Section="Output" Type="String" />
+                  </CallInfo>
+                </Call>
               </Parts>
               <Wires>
-                <Wire UId="26">
-                  <IdentCon UId="21" />
-                  <NameCon UId="24" Name="operand" />
-                </Wire>
-                <Wire UId="27">
+                <Wire UId="32">
                   <Powerrail />
-                  <NameCon UId="24" Name="in" />
+                  <NameCon UId="30" Name="en" />
                 </Wire>
-                <Wire UId="28">
-                  <NameCon UId="24" Name="out" />
-                  <NameCon UId="25" Name="en" />
+                <Wire UId="33">
+                  <IdentCon UId="21" />
+                  <NameCon UId="30" Name="MODE" />
                 </Wire>
-                <Wire UId="29">
+                <Wire UId="34">
                   <IdentCon UId="22" />
-                  <NameCon UId="25" Name="in" />
+                  <NameCon UId="30" Name="LADDR" />
                 </Wire>
-                <Wire UId="30">
+                <Wire UId="35">
+                  <NameCon UId="30" Name="OUT_WORD[bit]" />
                   <IdentCon UId="23" />
-                  <NameCon UId="25" Name="out1" />
+                </Wire>
+                <Wire UId="36">
+                  <NameCon UId="30" Name="Maintence_State" />
+                  <IdentCon UId="24" />
+                </Wire>
+                <Wire UId="37">
+                  <NameCon UId="30" Name="Component_StateDetail" />
+                  <IdentCon UId="25" />
+                </Wire>
+                <Wire UId="38">
+                  <NameCon UId="30" Name="Own_State" />
+                  <IdentCon UId="26" />
+                </Wire>
+                <Wire UId="39">
+                  <NameCon UId="30" Name="IO_State" />
+                  <IdentCon UId="27" />
+                </Wire>
+                <Wire UId="40">
+                  <NameCon UId="30" Name="Operating_State" />
+                  <IdentCon UId="28" />
+                </Wire>
+                <Wire UId="41">
+                  <NameCon UId="30" Name="Ret_Val" />
+                  <IdentCon UId="29" />
                 </Wire>
               </Wires>
             </FlgNet>
@@ -93,34 +277,52 @@
           <ProgrammingLanguage>LAD</ProgrammingLanguage>
         </AttributeList>
         <ObjectList>
-          <MultilingualText ID="4" CompositionName="Comment">
+          <MultilingualText ID="5" CompositionName="Comment">
             <ObjectList>
-              <MultilingualTextItem ID="5" CompositionName="Items">
+              <MultilingualTextItem ID="6" CompositionName="Items">
                 <AttributeList>
                   <Culture>en-US</Culture>
                   <Text />
                 </AttributeList>
               </MultilingualTextItem>
-            </ObjectList>
-          </MultilingualText>
-          <MultilingualText ID="6" CompositionName="Title">
-            <ObjectList>
               <MultilingualTextItem ID="7" CompositionName="Items">
                 <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="8" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="9" CompositionName="Items">
+                <AttributeList>
                   <Culture>en-US</Culture>
-                  <Text>Molde: falha modulo HW 999</Text>
+                  <Text>A1 QA-00 (Módulo de Entradas Digitais)</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text />
                 </AttributeList>
               </MultilingualTextItem>
             </ObjectList>
           </MultilingualText>
         </ObjectList>
       </SW.Blocks.CompileUnit>
-      <MultilingualText ID="8" CompositionName="Title">
+      <MultilingualText ID="B" CompositionName="Title">
         <ObjectList>
-          <MultilingualTextItem ID="9" CompositionName="Items">
+          <MultilingualTextItem ID="C" CompositionName="Items">
             <AttributeList>
               <Culture>en-US</Culture>
-              <Text>MODULE_ERROR_MOLDE</Text>
+              <Text>"Main Program Sweep (Cycle)"</Text>
+            </AttributeList>
+          </MultilingualTextItem>
+          <MultilingualTextItem ID="D" CompositionName="Items">
+            <AttributeList>
+              <Culture>pt-BR</Culture>
+              <Text>"Main Program Sweep (Cycle)"</Text>
             </AttributeList>
           </MultilingualTextItem>
         </ObjectList>

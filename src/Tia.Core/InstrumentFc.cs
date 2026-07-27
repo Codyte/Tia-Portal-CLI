@@ -22,6 +22,13 @@ namespace Tia.Core
         public string GlobalDb { get; set; } = "DB GLOBAL";
         /// <summary>OB that calls every generated FC; skipped when empty.</summary>
         public string TargetOb { get; set; }
+        /// <summary>
+        /// Sufixo do FC gerado por área. O projeto de referência tem duas famílias:
+        /// "5.1 Aferição Analógica" → PRELIMINAR_ANALOGS, "5.2 Totalizadores" →
+        /// PRELIMINAR_TOTALIZADOR. O script FINAL hardcoda "_ANALOGS" (linha 961) e geraria
+        /// o nome errado — e uma chamada duplicada no OB — ao rodar sobre os totalizadores.
+        /// </summary>
+        public string FcSuffix { get; set; } = "_ANALOGS";
         public List<string> IgnoreFolders { get; set; } = new List<string>();
         /// <summary>Only tags whose name contains one of these substrings; empty = all.</summary>
         public List<string> TagFilters { get; set; } = new List<string>();
@@ -136,7 +143,7 @@ namespace Tia.Core
                     AreaName = GetBaseName(areaFolder.Name),
                     TargetFolderName = TargetFolderName(areaFolder.Name, config.TargetBlocksFolder),
                 };
-                task.TargetFcName = FcName(task.AreaName);
+                task.TargetFcName = FcName(task.AreaName, config.FcSuffix);
 
                 var tags = CollectTags(areaFolder);
                 if (config.TagFilters.Any())
@@ -602,10 +609,10 @@ namespace Tia.Core
             return Regex.Replace(name, @"\s*\([^)]*\)", "").Trim();
         }
 
-        private static string FcName(string areaName)
+        internal static string FcName(string areaName, string suffix)
         {
             string sanitized = Regex.Replace(areaName.Trim().ToUpper(), @"[\s-]+", "_");
-            return Regex.Replace(sanitized, @"[^A-Z0-9_]", "") + "_ANALOGS";
+            return Regex.Replace(sanitized, @"[^A-Z0-9_]", "") + suffix;
         }
 
         /// <summary>"1.3 Captação" under dest "5.2 Instrumentos" -> "5.2.3 Captação".</summary>

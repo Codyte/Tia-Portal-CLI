@@ -3,6 +3,7 @@
   "TargetBlocksFolder": "5.2 Totalizadores",
   "GlobalDb": "DB GLOBAL",
   "TargetOb": "Chamada Totalizadores Instrumentos",
+  "FcSuffix": "_TOTALIZADOR",
   "IgnoreFolders": ["2.0 Paineis", "5.2.0 Molde"],
   "TagFilters": ["FQIT", "FIT"]
 }

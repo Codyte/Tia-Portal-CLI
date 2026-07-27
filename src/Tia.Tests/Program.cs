@@ -60,6 +60,7 @@ namespace Tia.Tests
                 { "Memory.Occupied", Memory_Occupied },
                 { "Clone.Rewrite", Clone_Rewrite },
                 { "Profinet.TagName", Profinet_TagName },
+                { "InstrumentFc.FcName", InstrumentFc_FcName },
             };
             foreach (var t in tests)
             {
@@ -193,6 +194,17 @@ namespace Tia.Tests
             Check(Throws(() => Ops.RequireRootType(Fixture("StdBombaA.xml"), "SW.Blocks.")),
                 "tag table recusada como bloco (era falso positivo no dry-run)");
             Check(!Throws(() => Ops.RequireRootType(Fixture("BombaTemplateFc.xml"), "SW.Blocks.")), "FC aceito como bloco");
+        }
+
+        /// <summary>Nomes de FC conferidos contra 5.1 Aferição Analógica e 5.2 Totalizadores.</summary>
+        private static void InstrumentFc_FcName()
+        {
+            Check(InstrumentFc.FcName("Elevatória de Purga de Lodo", "_ANALOGS")
+                == "ELEVATRIA_DE_PURGA_DE_LODO_ANALOGS", "acento cai, espaço vira _");
+            Check(InstrumentFc.FcName("Elevatória de Purga de Lodo", "_TOTALIZADOR")
+                == "ELEVATRIA_DE_PURGA_DE_LODO_TOTALIZADOR", "sufixo da família de totalizadores");
+            Check(InstrumentFc.FcName("Tanque de Aeração 01", "_ANALOGS")
+                == "TANQUE_DE_AERAO_01_ANALOGS", "número mantido");
         }
 
         /// <summary>Nomes conferidos contra as tags reais de DISPOSITIVOS_PROFINET (projeto de referência).</summary>

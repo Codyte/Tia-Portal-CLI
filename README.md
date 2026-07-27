@@ -88,14 +88,18 @@ tia run --script docs/examples/gen-all.json
 
 ## Quick start
 
-0. **One-time**: your Windows user is in the `Siemens TIA Openness` group (fresh logon after
-   being added — see "Setup — the three Openness gates" below).
-1. `git clone https://github.com/Codyte/tia-cli.git && cd tia-cli`
-2. Open TIA Portal manually with a test project — `tia` attaches to a running instance, it
-   doesn't launch one.
+```powershell
+git clone https://github.com/Codyte/tia-cli.git && cd tia-cli
+pwsh scripts/init.ps1    # checks the 3 gates below, copies lib/ DLLs from your TIA install,
+                          # builds, runs offline tests, whitelists — one shot for a new machine
+```
+
+`init.ps1` reports and stops if a gate needs a human (Windows group membership, .NET SDK, or a
+TIA Portal V21+ install to source the Openness DLLs from) — fix what it flags and re-run. Once it
+prints `init ok`, open TIA Portal manually with a test project (`tia` attaches to a running
+instance, it doesn't launch one) and:
 
 ```powershell
-pwsh scripts/rebuild.ps1      # build + offline tests + Openness whitelist (UAC only if exe changed)
 tia doctor                    # preflight: is the open project ready for the generators?
 tia snapshot                  # full inventory of the open project, as JSON
 tia standardize-tags          # dry-run: what would change
@@ -103,7 +107,9 @@ tia standardize-tags --apply  # do it
 ```
 
 First attach without a whitelist entry triggers an Openness consent popup in the Portal UI —
-click allow, it won't ask again for that exe hash.
+click allow, it won't ask again for that exe hash. After this first-time setup, use
+`pwsh scripts/rebuild.ps1` for subsequent rebuilds (same build+test+whitelist, skips the gate
+checks and lib/ copy).
 
 <details>
 <summary><b>Requirements</b></summary>
@@ -137,6 +143,7 @@ First run against a Portal without whitelist entry triggers the Openness consent
 
 | Macro | Does |
 |-------|------|
+| `scripts/init.ps1` | first-time bootstrap: checks the 3 gates, copies `lib/` DLLs from the local TIA install, then rebuild |
 | `scripts/rebuild.ps1` | build + offline tests + whitelist refresh |
 | `scripts/use-project.ps1 <Name>` | ensure a project is open (no-op if already; close current without save + open) |
 | `scripts/prep-project.ps1 <Name>` | use-project + `doctor` + `compile --apply` + save — real projects often arrive uncompiled and every export dies until compiled |

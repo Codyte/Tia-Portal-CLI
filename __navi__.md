@@ -1,10 +1,10 @@
-# __navi__ · repo tree — 112 files in 24 folders
-<!-- navindex · 2026-07-20 · DO NOT EDIT BY HAND; regen via navindex skill -->
+# __navi__ · repo tree — 113 files in 24 folders
+<!-- navindex · 2026-07-27 · DO NOT EDIT BY HAND; regen via navindex skill -->
 
 Universal index: every folder below -> the files it holds (names only). A `→ __navi__.md` marker means that folder has a symbol map — open `<that path>/__navi__.md` for exact line numbers (2 reads total: this tree -> folder map).
 
 ## `./` (2 files)
-CLAUDE.md(36)  README.md(159)
+CLAUDE.md(36)  README.md(175)
 
 ## `Scripts_Siemens/FINAIS/` (10 files) → __navi__.md
 Gerador de Conexão Profinet FINAL- config.json.txt(219)  Gerador de Conexão Profinet FINAL.txt(259)  Gerador de OB Falha Módulos FINAL.txt(612)  Padronizador de Variável-FINAL.txt(664)  Replicador de FC Acionamentos-FINAL-Config.json.txt(19)  Replicador de FC Acionamentos-FINAL-Program.txt(398)  Replicador de FC AcionamentosV3-FINAL-Program.txt(917)  Replicador de FC Alarmes-FINAL.txt(1028)  Replicador de FC Instrumentos-FINAL-Config.json.txt(17)  Replicador de FC Instrumentos-FINAL-Program.txt(1087)
@@ -30,8 +30,8 @@ ProjectInfo.txt(15)
 ## `proj/SmokeTest_01/IM/SPL/` (1 files)
 options.json(1)
 
-## `scripts/` (10 files)
-clone-hw.ps1(25)  grant-whitelist-acl.ps1(12)  prep-project.ps1(16)  raio-x.ps1(29)  rebuild.ps1(23)  setup-tasks.ps1(20)  smokeloop.ps1(40)  taskrun.ps1(14)  use-project.ps1(21)  whitelist.ps1(25)
+## `scripts/` (11 files)
+clone-hw.ps1(25)  grant-whitelist-acl.ps1(12)  init.ps1(65)  prep-project.ps1(16)  raio-x.ps1(29)  rebuild.ps1(23)  setup-tasks.ps1(20)  smokeloop.ps1(40)  taskrun.ps1(14)  use-project.ps1(21)  whitelist.ps1(25)
 
 ## `src/Tia.Cli/obj/` (2 files) → __navi__.md
 Tia.Cli.csproj.nuget.dgspec.json(119)  project.assets.json(579)

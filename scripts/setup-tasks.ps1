@@ -30,7 +30,9 @@ $svc.GetFolder('\').GetTask('TiaWhitelist').SetSecurityDescriptor(
     "D:P(A;;FA;;;BA)(A;;FA;;;SY)(A;;FRFX;;;$sid)", 0)
 
 $action = New-ScheduledTaskAction -Execute $pwsh -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$tr`""
-$principal = New-ScheduledTaskPrincipal -UserId "TITANXNEXUS\Carlos_Ortiz" -LogonType S4U -RunLevel Limited
+# Interactive (nao S4U): S4U roda numa sessao propria e TiaPortal.GetProcesses() nao enxerga o
+# portal da sessao 1 -> "No running TIA Portal instance found" mesmo com o portal aberto na tela.
+$principal = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType Interactive -RunLevel Limited
 $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit (New-TimeSpan -Hours 2) -AllowStartIfOnBatteries
 Register-ScheduledTask -TaskName TiaSmokeRun -Action $action -Principal $principal -Settings $settings -Force
 

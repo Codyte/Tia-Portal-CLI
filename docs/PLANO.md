@@ -144,8 +144,9 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
    `export-cax`/`import-cax` AML). ✅ smoke dry 2026-07-27: `set-address` lê o endereço atual
    (`192.168.10.1`), `connect-subnet` detecta `subnetAction: reuse`, `add-device`/`export-cax`/
    `import-cax` ok. `--apply` de hardware não exercitado (atributos Node e CreateIoSystem seguem
-   não validados). **`--device` quer nome de estação** (`S7-1500/ET200MP station_1`), não o nome
-   do PLC que `info`/`doctor` reportam (`CPU CCO`) — erro não sugere o nome próximo.
+   não validados). ~~`--device` só aceitava nome de estação~~ ✅ 2026-07-27: `Hardware.FindDevice`
+   cai pra busca recursiva nos `DeviceItems`, então `--device "CPU CCO"` resolve pra
+   `S7-1500/ET200MP station_1`; quando não acha, o erro lista os devices conhecidos.
 4. ~~**Compile granular + diff-block**~~ ✅ feito (`compile [--block X | --folder A/B]`,
    `diff-block --file F.xml [--name X]` read-only). `BlocksIdentical` movido pra `Ops`
    (param ignoreComments; AlarmFc=true, InstrumentFc=false — comportamento preservado).

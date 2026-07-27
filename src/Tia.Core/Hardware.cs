@@ -14,11 +14,24 @@ namespace Tia.Core
     {
         public static Device FindDevice(TiaSession session, string name)
         {
-            var device = session.AllDevices()
-                .FirstOrDefault(d => d.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            var devices = session.AllDevices();
+            var device = devices.FirstOrDefault(d => d.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                // info/doctor report the CPU item name ("CPU CCO"), not the station ("…station_1") — accept both
+                ?? devices.FirstOrDefault(d => HasItemNamed(d.DeviceItems, name));
             if (device == null)
-                throw new InvalidOperationException("Device '" + name + "' not found. Run tia list-devices.");
+                throw new InvalidOperationException("Device '" + name + "' not found. Known devices: "
+                    + string.Join(", ", devices.Select(d => "'" + d.Name + "'")) + ". Run tia list-devices.");
             return device;
+        }
+
+        private static bool HasItemNamed(DeviceItemComposition items, string name)
+        {
+            foreach (DeviceItem item in items)
+            {
+                if (item.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) return true;
+                if (HasItemNamed(item.DeviceItems, name)) return true;
+            }
+            return false;
         }
 
         private static NetworkInterface Interface(Device device)

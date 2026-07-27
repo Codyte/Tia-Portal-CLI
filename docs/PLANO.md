@@ -66,6 +66,7 @@ Verbos por fase (nomes finais definidos na F1):
 | F3.6 | Macros de fluxo (itens 1-4 da lista aprovada) | smoked contra SmokeTest_01 | ✅ 2026-07-18: `prep-project.ps1` (use-project+doctor+compile+save), `raio-x.ps1` (banho read-only → workspace/<proj>/, xref de todos os OBs), `clone-hw.ps1` (CAx A→B, dry por padrão, -Apply salva), `docs/examples/gen-all.json` (6 verbos FINAIS dry via `tia run`, attach 1x). Macros 5-7 (new-area/sync-check/adopt-project) só se user pedir. |
 | F4 | Polimento p/ GitHub (README EN, licença, exemplos) | repo publicável | ✅ 2026-07-18: LICENSE MIT, README EN completo (contrato dry-run/--apply, 3 gates Openness, tabela de verbos, macros, limitações), nome público decidido `tia-cli`. Publicação em si (gh repo create) pendente de ordem do user. |
 | F5? | MCP server fino sobre Tia.Core | só se D1 cair | ⬜ |
+| F6 | Endurecer os scripts PS (ver seção "F6" no fim) | macros rodáveis do agente (sessão 0) + 5 bugs fechados | ⬜ |
 
 Regra: **uma fase por vez, commit + handoff no fim de cada uma.** FINAIS vira referência
 read-only — nunca editar lá; extrair pra `src/` e pronto.
@@ -223,3 +224,103 @@ cobre só %M; endereço físico continua manual, de propósito.
   `Scripts_Siemens/` excluído do público — removido do tracking + scrubado do histórico
   via `git-filter-repo` (verificado: clone fresh sem o diretório em working tree ou histórico).
 - Smoke F1 na máquina do TIA (user leva o exe; primeira execução dispara popup Openness — permitir).
+
+## F6 — Endurecer os scripts PS (plano, 2026-07-27)
+
+Auditoria dos 11 scripts em `scripts/`. Problema central: **nenhum macro roda a partir do
+agente**. `use-project`/`prep-project`/`raio-x`/`clone-hw` chamam `& $exe` no processo local;
+na sessão 0 isso é sempre `"No running TIA Portal instance found"` (confirmado nesta máquina:
+`[Environment]::UserInteractive=False`, `SessionId=0`; portal em `SessionId=1`). Hoje eles só
+servem se o **usuário** rodar à mão numa janela da sessão 1 — o agente refaz o protocolo taskio
+na unha todo turno.
+
+### F6.1 — Bugs pontuais (independentes, fazer primeiro)
+
+| # | Arquivo | Defeito | Correção |
+|---|---------|---------|----------|
+| 1 | `setup-tasks.ps1:19` | Registra `TiaSmokeRun` com `LogonType S4U`. S4U cai na sessão 0 e nunca attacha. A task viva na máquina está `Interactive` (corrigida à mão), o script ficou pra trás. | `-LogonType Interactive`. **Não re-rodar o script depois de corrigir** — é `-Force`, recria a task e derruba o canal que hoje funciona. Corrigir e deixar quieto; vale só pra máquina nova. |
+| 2 | `taskrun.ps1:15` | `& $tia @tiaArgs *> out.txt` funde stdout e stderr. Contrato do CLI é stdout=JSON / stderr=log humano; fundido, `ConvertFrom-Json` engasga. | Redirects separados (`1>` / `2>`), arquivos distintos. |
+| 3 | `taskrun.ps1:11` | Quem apaga `exit.txt` é o runner, depois da task já ter arrancado. Entre `Start-ScheduledTask` e esse `Remove-Item` o `exit.txt` da rodada anterior ainda está no disco → poller lê e conclui que terminou. | Resolvido de graça pelo run-id da F6.2 (nome único por chamada = sem arquivo velho pra ler). Runner para de apagar. |
+| 4 | `rebuild.ps1` `Get-RegHash` | `Select-Object -First 1` sobre os filhos de `...\Openness`: com V19 e V21 no registro compara contra a que vier primeiro, enquanto `whitelist.ps1` grava em todas. Só olha a chave `Entry`, ignora a `EntryLocal` que o próprio whitelist escreve. | Comparar contra **todas** as versões/chaves; stale = qualquer uma divergente. |
+| 5 | `smokeloop.ps1` × `taskrun.ps1` | Nomes de saída divergentes (`result.txt` vs `out.txt`); CLAUDE.md documenta só `out.txt`. Poll no arquivo errado dependendo da rota de pé. | Mesmo protocolo run-id nas duas rotas (F6.2). |
+
+### F6.2 — `scripts/_common.ps1` + `Invoke-Tia` (o núcleo)
+
+Um arquivo novo, dot-sourced pelos macros. Mata as três duplicações de hoje
+(caminho do exe em 5 arquivos, `c:\Scripts\TIA Portal` hardcoded em 5, `TITANXNEXUS\Carlos_Ortiz`
+em 2 — e o repo é público como `tia-cli`, nada disso roda em clone de terceiro).
+
+```powershell
+$script:Repo = Split-Path $PSScriptRoot
+$script:Exe  = Join-Path $script:Repo 'src\Tia.Cli\bin\Debug\net48\tia.exe'
+
+function Invoke-Tia {
+    param([int]$TimeoutSec = 600, [Parameter(ValueFromRemainingArguments)][string[]]$TiaArgs)
+    if ((Get-Process -Id $PID).SessionId -ne 0) { & $script:Exe @TiaArgs; return }   # sessão 1: direto
+    # sessão 0: rotear pela task TiaSmokeRun (que roda na 1)
+}
+```
+
+Regras de projeto (cada uma resolve um problema conhecido):
+
+- **Roteamento por sessão.** `SessionId -ne 0` → invoca direto. Senão → canal taskio. Callers
+  não sabem a diferença.
+- **`$global:LASTEXITCODE`.** Uma função PS não seta `$LASTEXITCODE` sozinha. No caminho da task,
+  ler o código de `exit-<id>.txt` e atribuir a `$global:LASTEXITCODE` — assim todos os
+  `if ($LASTEXITCODE) { exit }` dos macros continuam valendo **sem edição**.
+- **Run-id único por chamada.** `cmd.json` passa a aceitar as duas formas: array (`["doctor"]`,
+  compatível com o uso manual documentado) ou objeto `{"id":"...","args":[...]}`. Com id, o runner
+  escreve `out-<id>.txt` / `err-<id>.txt` / `exit-<id>.txt`. Isso resolve **dois** problemas de
+  uma vez: a race do item 3 (não existe arquivo velho com aquele nome) e o lock que forçou o
+  `smokeloop` a rotacionar pra `result.txt` — quando um verbo inicia o portal, o portal herda o
+  handle do arquivo de saída e o mantém aberto enquanto viver; nome fixo = próxima rodada não
+  consegue redirecionar pra ele. Nome único contorna sem depender de o portal morrer.
+  Prune de `out-*`/`err-*`/`exit-*` com mais de 1 dia na entrada, erro ignorado (podem estar
+  travados pelo portal). `workspace/` é gitignored.
+- **Ordem do protocolo** (cliente): escreve `cmd.json` → `Start-ScheduledTask TiaSmokeRun` →
+  poll de `exit-<id>.txt` → emite `out-<id>` em stdout, `err-<id>` em stderr → seta
+  `$global:LASTEXITCODE`.
+- **Timeout.** Default 600s (`open-project` leva 2-4 min; compile de projeto real também demora).
+  Estouro = erro claro, não trava. Cobre também o gap do `smokeloop`, que hoje faz
+  `Start-Process -Wait` sem limite e prende o loop pra sempre num `open-project` travado.
+- **Guard de concorrência (D9).** `cmd.json` já existente na entrada = outra chamada em andamento
+  → falha alto em vez de clobber.
+
+Depois disso, `scripts/tia.ps1` vira wrapper de 3 linhas (`. _common.ps1; Invoke-Tia @args`) —
+o comando único que hoje não existe e que o CLAUDE.md descreve em prosa como 3 passos manuais.
+
+### F6.3 — Migrar os macros
+
+`use-project.ps1`, `prep-project.ps1`, `raio-x.ps1`, `clone-hw.ps1`: trocar `& $exe` por
+`Invoke-Tia` e o `& pwsh -NoProfile -File use-project.ps1` (spawn de pwsh ~1s) por dot-source.
+Zero mudança de lógica — os checks de `$LASTEXITCODE` seguem funcionando pelo `$global:`.
+Ganho: os quatro passam a rodar do agente.
+
+### F6.4 — Robustez menor
+
+- `prep-project.ps1` é o único macro que muta (`compile --apply` + `save-project`) **sem gate** —
+  `clone-hw.ps1` tem `-Apply`, esse não. Apontar projeto errado grava nele. Adicionar `-Apply`
+  com o mesmo contrato (dry = só `doctor`).
+- `use-project.ps1:21`: `open-project` é a última linha, sem checar exit — propaga pelo exit do
+  script, mas sem mensagem própria de "abriu e falhou".
+- `clone-hw.ps1`: sem check de exit no `save-project` final; salva sem confirmar que o
+  `import-cax` aplicou.
+- `raio-x.ps1`: `ConvertTo-Json -Depth 8` no agregado de xref pode truncar em silêncio.
+
+### F6.5 — CLI (opcional, C#)
+
+`raio-x.ps1` faz **um Attach por OB** no loop de xref (segundos cada). `xref --name` aceitar
+lista de nomes (ou `--all-obs`) resolve na raiz. Só vale se o raio-x doer no projeto real.
+
+### Verificação
+
+- F6.1: `pwsh scripts/rebuild.ps1` ALL PASS; diff do `setup-tasks.ps1` conferido **sem re-rodar**.
+- F6.2: o check é end-to-end e vale mais que teste unitário — `pwsh scripts/tia.ps1 doctor`
+  **do shell do agente** (sessão 0) tem que devolver JSON e sair 0. Hoje isso é impossível.
+- F6.3: `pwsh scripts/raio-x.ps1 <Projeto>` do agente, read-only, contra o AsBuilt.
+- F6.4: `prep-project` sem `-Apply` não pode salvar nada.
+
+### Ordem
+
+F6.1 → F6.2 → F6.3 (F6.4 junto com a 3, mesma edição de arquivo) → F6.5 só se necessário.
+Commit por bloco.

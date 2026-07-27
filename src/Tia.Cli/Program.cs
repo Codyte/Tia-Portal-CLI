@@ -55,7 +55,7 @@ namespace Tia.Cli
                         "gen-profinet --config F [--apply]",
                         "standardize-tags [--config F] [--apply]",
                         "gen-fault-ob [--config F] [--out DIR] [--apply]",
-                        "replicate-fc --config F [--out DIR] [--apply]",
+                        "replicate-fc --config F [--out DIR] [--apply] [--force]  (--force: sobrescreve pasta já populada)",
                         "gen-alarm-fc [--config F] [--out DIR] [--apply]",
                         "replicate-instruments --config F [--out DIR] [--apply]" } },
                     { "library", new[] { "list-library --file X.al19",
@@ -383,7 +383,8 @@ namespace Tia.Cli
                         var repConfig = JsonConvert.DeserializeObject<Core.ReplicateFcConfig>(
                             File.ReadAllText(Require(args, "--config")));
                         using (WriteLock(session, apply, verb))
-                            result = Core.ReplicateFc.Run(session.GetPlc(plcName), repConfig, outDir, apply);
+                            result = Core.ReplicateFc.Run(session.GetPlc(plcName), repConfig, outDir, apply,
+                                args.Contains("--force"));
                         break;
                     case "gen-alarm-fc":
                         var almPath = OptionValue(args, "--config");

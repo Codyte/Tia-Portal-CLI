@@ -34,7 +34,8 @@ namespace Tia.Core
     /// </summary>
     public static class ReplicateFc
     {
-        public static object Run(PlcSoftware plc, ReplicateFcConfig config, string outDir, bool apply)
+        public static object Run(PlcSoftware plc, ReplicateFcConfig config, string outDir, bool apply,
+            bool force = false)
         {
             if (string.IsNullOrEmpty(config?.BlocksFolder))
                 throw new ArgumentException("Config must set 'BlocksFolder'.");
@@ -68,12 +69,30 @@ namespace Tia.Core
             var natural = new NaturalStringComparer();
             var groups = new List<object>();
 
+            // este verbo copia o molde de cada tipo por cima de TODAS as pastas irmãs. Num projeto
+            // já completo (o de referência tem 32 equipamentos prontos) isso apaga o trabalho todo,
+            // e a checagem tem que vir antes da 1ª escrita — abortar no meio deixa o projeto misto.
+            if (apply && !force)
+            {
+                var populated = new List<string>();
+                foreach (var equipmentType in config.EquipmentTypes)
+                {
+                    var candidates = FoldersOfType(allSubFolders, equipmentType, natural);
+                    var template = candidates.FirstOrDefault(f => f.Blocks.Any());
+                    if (template == null) continue;
+                    populated.AddRange(candidates.Where(f => f != template && f.Blocks.Any()).Select(f => f.Name));
+                }
+                if (populated.Any())
+                    throw new InvalidOperationException(
+                        populated.Count + " target folder(s) already have blocks and would be overwritten " +
+                        "by the template: " + string.Join(", ", populated.Take(5)) +
+                        (populated.Count > 5 ? ", ..." : "") +
+                        ". Run without --apply to review, or add --force to overwrite anyway.");
+            }
+
             foreach (var equipmentType in config.EquipmentTypes)
             {
-                var folders = allSubFolders
-                    .Where(f => f.Name.IndexOf(equipmentType, StringComparison.OrdinalIgnoreCase) >= 0
-                                && !string.IsNullOrEmpty(ExtractId(f.Name)))
-                    .OrderBy(f => f.Name, natural).ToList();
+                var folders = FoldersOfType(allSubFolders, equipmentType, natural);
                 int noId = allSubFolders.Count(f =>
                     f.Name.IndexOf(equipmentType, StringComparison.OrdinalIgnoreCase) >= 0
                     && string.IsNullOrEmpty(ExtractId(f.Name)));
@@ -154,6 +173,16 @@ namespace Tia.Core
                 { "groups", groups },
                 { "warnings", warnings },
             };
+        }
+
+        /// <summary>Pastas "NOME (ID)" cujo nome contém a palavra-chave do tipo, em ordem natural.</summary>
+        private static List<PlcBlockUserGroup> FoldersOfType(List<PlcBlockUserGroup> all,
+            string equipmentType, NaturalStringComparer natural)
+        {
+            return all
+                .Where(f => f.Name.IndexOf(equipmentType, StringComparison.OrdinalIgnoreCase) >= 0
+                            && !string.IsNullOrEmpty(ExtractId(f.Name)))
+                .OrderBy(f => f.Name, natural).ToList();
         }
 
         private static void ReplicateInto(PlcSoftware plc, ReplicateFcConfig config,

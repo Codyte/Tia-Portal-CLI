@@ -18,7 +18,11 @@ namespace Tia.Core
         public string GroupPrefix { get; set; } = "HW_QA-";
         public string TemplateOb { get; set; } = "MODULE_ERROR_MOLDE";
         public string ObNamePrefix { get; set; } = "OB_DIAG_";
-        /// <summary>DB whose WORD_n bits receive the per-module alarm in the template network.</summary>
+        /// <summary>
+        /// Struct whose WORD_n bits receive the per-module alarm. NOT a block: no padrão real vive
+        /// dentro da DB global (DB GLOBAL.HARDWARE_INTERRUPT.ALARMES_MODULOS.QA-xx.WORD_n.xB) —
+        /// só existe como Component do Symbol no FlgNet do template OB.
+        /// </summary>
         public string AlarmDb { get; set; } = "ALARMES_MODULOS";
         public List<string> CommentCultures { get; set; } = new List<string> { "pt-BR", "en-US" };
     }
@@ -216,7 +220,10 @@ namespace Tia.Core
             var alarmAccess = network.Descendants(FlgNetNs + "Symbol")
                 .FirstOrDefault(s => s.Elements(FlgNetNs + "Component")
                     .Any(c => c.Attribute("Name")?.Value == config.AlarmDb));
-            if (alarmAccess != null)
+            if (alarmAccess == null)
+                throw new InvalidOperationException(
+                    "template OB '" + config.TemplateOb + "' has no access to '" + config.AlarmDb +
+                    "' — every generated OB would keep the template's alarm bit. Check alarmDb in the config.");
             {
                 var qa = alarmAccess.Elements(FlgNetNs + "Component")
                     .FirstOrDefault(c => c.Attribute("Name")?.Value.StartsWith("QA-") ?? false);

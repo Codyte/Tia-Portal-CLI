@@ -183,6 +183,12 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
   `XML root object is 'SW.Tags.PlcTagTable', expected 'SW.Blocks.*'`. Teste offline
   `Ops.RequireRootType`; smoke real: 4 combinações (2 aceitas, 2 recusadas) no AsBuilt.
 
+## Projeto de referência (2026-07-27)
+
+`proj/Software de ETE Insular_Inicial_V21` = projeto-molde da casa, conforme ao padrão que gerou
+os scripts FINAIS. Estrutura completa + divergências CLI×padrão em [`docs/PADRAO.md`](PADRAO.md).
+Regra: **quando a CLI diverge desse projeto, quem está errado é a CLI.**
+
 ## Clonar acionamento — fluxo real validado (2026-07-27, AsBuilt)
 
 Objetivo do usuário ("mais uma bomba igual à BH-01A") fechado ponta-a-ponta clonando

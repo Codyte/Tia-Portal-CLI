@@ -37,6 +37,7 @@ if ((Get-ExeHash64) -ne (Get-RegHash)) {
     }
     if ((Get-ExeHash64) -ne (Get-RegHash)) {
         Write-Host 'ATENCAO: whitelist AINDA stale — Openness vai recusar tia.exe' -ForegroundColor Red
+        Write-Host 'Falta a task TiaWhitelist? rodar elevado 1x: pwsh -File scripts\setup-tasks.ps1' -ForegroundColor Red
         exit 1
     }
     Write-Host 'rebuild ok — whitelist refeita'

@@ -8,8 +8,11 @@ $pwsh = (Get-Command pwsh).Source
 $wl = 'c:\Scripts\TIA Portal\scripts\whitelist.ps1'
 $tr = 'c:\Scripts\TIA Portal\scripts\taskrun.ps1'
 
-schtasks /Create /F /TN TiaWhitelist /SC ONCE /ST 00:00 /RU SYSTEM /RL HIGHEST `
-    /TR "`"$pwsh`" -NoProfile -ExecutionPolicy Bypass -File `"$wl`""
+# sem trigger: /SC ONCE com hora passada some sozinho depois de rodar (o Windows apaga tarefa
+# ONCE expirada) e o rebuild caia no fallback RunAs, que da sessao 0 nao mostra UAC nenhum.
+Register-ScheduledTask -TaskName TiaWhitelist -Force `
+    -Action (New-ScheduledTaskAction -Execute $pwsh -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$wl`"") `
+    -Principal (New-ScheduledTaskPrincipal -UserId 'SYSTEM' -LogonType ServiceAccount -RunLevel Highest)
 
 $action = New-ScheduledTaskAction -Execute $pwsh -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$tr`""
 $principal = New-ScheduledTaskPrincipal -UserId "TITANXNEXUS\Carlos_Ortiz" -LogonType S4U -RunLevel Limited

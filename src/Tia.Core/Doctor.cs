@@ -94,7 +94,8 @@ namespace Tia.Core
                     {
                         var c = Load<FaultObConfig>();
                         check("template OB '" + c.TemplateOb + "'", Ops.FindBlock(plc, c.TemplateOb) != null, null);
-                        check("alarm DB '" + c.AlarmDb + "'", Ops.FindBlock(plc, c.AlarmDb) != null, null);
+                        // sem check de bloco p/ AlarmDb: é membro da DB global, não bloco — FindBlock
+                        // reprovava até projeto 100% no padrão. Validado no gen-fault-ob, contra o template.
                         var tasks = FaultOb.DiscoverTasks(session, c);
                         check("device groups '" + c.GroupPrefix + "*'", tasks.Count > 0,
                             tasks.Count + " group(s) with modules");

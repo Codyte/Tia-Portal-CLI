@@ -13,5 +13,11 @@ $tia = "c:\Scripts\TIA Portal\src\Tia.Cli\bin\Debug\net48\tia.exe"
 # ("doctor" -> 'd','o',...). Nao usar $args (automatica) como nome.
 $tiaArgs = @(Get-Content "$dir\cmd.json" -Raw | ConvertFrom-Json)
 Set-Location "c:\Scripts\TIA Portal"
-& $tia @tiaArgs *> "$dir\out.txt"
+if ($tiaArgs[0] -eq '--script-ps1') {
+    # macro-verbo (raio-x/prep-project/...) precisa rodar INTEIRO na sessao 1: ele chama tia varias vezes
+    $rest = @($tiaArgs | Select-Object -Skip 2)
+    & pwsh -NoProfile -File $tiaArgs[1] @rest *> "$dir\out.txt"
+} else {
+    & $tia @tiaArgs *> "$dir\out.txt"
+}
 $LASTEXITCODE | Out-File "$dir\exit.txt" -Encoding ascii

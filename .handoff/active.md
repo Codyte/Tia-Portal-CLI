@@ -1,73 +1,76 @@
 # Handoff · TIA Portal Openness API · 2026-07-27
 
 ## Goal
-Usar `proj/Software de ETE Insular_Inicial_V21` (projeto-molde da casa, conforme ao padrão que
-gerou os scripts FINAIS) como régua executável da CLI. Regra: **CLI diverge do projeto → a CLI
-está errada.** Estrutura completa em `docs/PADRAO.md`.
+Tirar a CLI do "funciona na máquina do Carlos": rodar em **qualquer computador**, contra
+**TIA Project Server** (vários engenheiros no mesmo projeto ao mesmo tempo), e ter um `init` que
+prepara a base inteira — máquina e projeto — sem coreografia manual.
 
 ## State
-- HEAD: 48ad388 — working tree limpo. `rebuild.ps1` ALL PASS (mas whitelist stale, ver blockers).
-- Projeto de referência importado, compilado (Success/0 erros) e salvo. Banho `raio-x` completo em
-  `workspace/Software de ETE Insular_Inicial_V21/`.
-- `doctor` neste projeto: `standardize-tags` ok · `gen-alarm-fc` 8/8 ok · `gen-fault-ob` ok após
-  correção · `gen-profinet`/`replicate-fc`/`replicate-instruments` = `skipped` (faltam configs).
-- In progress: nada mid-flight. Próxima ação exige o portal (bloqueado por whitelist).
+- HEAD: d6eee46 — working tree limpo. `rebuild.ps1` ALL PASS. Whitelist ok, canal sessão 0→1 ok.
+- Done nesta sessão: `doctor` **6/6** contra o projeto de referência; 3 bugs reais corrigidos
+  (`gen-profinet` nome de tag, `FcSuffix` do `replicate-instruments`, guard do `replicate-fc`);
+  fixtures offline agora são **exports reais** (`scripts/export-fixtures.ps1`, 15 blocos/tabelas).
+- In progress: nada mid-flight.
 
 ## Decisions (and why)
-- Fixtures de teste são **sintéticas** e essa é a dívida principal: `docs/examples/ModuleErrorMolde.xml`
-  = 4.8K com `ALARMES_MODULOS.QA-01.WORD_1`; o molde real = 14K com
-  `DB GLOBAL.HARDWARE_INTERRUPT.ALARMES_MODULOS.QA-00.WORD_1.x0`. A suíte offline concordava com o
-  código errado. Trocar por exports reais é pré-requisito de tudo, inclusive de um futuro `scaffold`.
-- `Doctor.cs` — removido o check `alarm DB 'ALARMES_MODULOS'` (`FindBlock`): alvo é membro da DB
-  global, não bloco; reprovava até em projeto 100% conforme.
-- `FaultOb.RewireNetwork` — lança quando o template não tem acesso ao `AlarmDb`. Antes seguia em
-  silêncio e **todo** OB gerado saía com o bit de alarme do molde.
-- `--script-ps1` no `taskrun.ps1` — macro-verbo roda inteiro na sessão 1; um verbo por vez via
-  taskio seria 8 round-trips por raio-x.
-- `scripts/tia-task.ps1` sem `param` block de propósito: qualquer param faz o PS engolir `--out`
-  (`parameter name 'out' is ambiguous`). E apaga `exit.txt` ANTES de disparar — sem isso o poll lê
-  o resultado da rodada anterior (caí nisso).
-- `setup-tasks.ps1` — `TiaWhitelist` sem trigger: `/SC ONCE` com hora passada é apagada pelo Windows
-  depois de rodar, e o fallback `RunAs` do `rebuild.ps1` não mostra UAC nenhum na sessão 0.
-- **`replicate-fc --apply` é proibido neste projeto**: replica a 1ª pasta populada de cada tipo por
-  cima de **todas** as irmãs, e aqui as 34 pastas de equipamento já estão completas. Só dry.
+- **Régua**: CLI diverge do projeto de referência → a CLI está errada. Pegou 2 bugs que o próprio
+  script FINAL também tem (nome de tag Profinet, sufixo `_ANALOGS` hardcoded).
+- Fixture sintética esconde bug: a suíte offline concordava com o código errado. Toda fixture nova
+  sai de `export-fixtures.ps1`, nunca escrita à mão.
+- `TiaWhitelist` = task **do usuário** com `RunLevel Highest` + SDDL `FRFX` pro SID dele. Task de
+  SYSTEM só aceita `Start-ScheduledTask` de token elevado → o agente levava "Acesso negado".
+  Enfraquece o UAC de propósito (o usuário já é admin da máquina); revertível.
+- `TiaSmokeRun` **tem** que ser `LogonType Interactive`. S4U roda em sessão própria e
+  `TiaPortal.GetProcesses()` não enxerga o portal da sessão 1.
+- `replicate-fc --apply` continua proibido neste projeto — 32 pastas completas viram `overwrite`.
+  O guard novo bloqueia; `--force` é a válvula consciente.
 
 ## Next steps (ordered)
-1. Desbloquear whitelist (elevado, 1x): `pwsh -File scripts\setup-tasks.ps1`.
-2. **Fixtures reais** (maior alavanca). Exportar do projeto de referência para `docs/examples/`:
-   `FC_Modelo`, `OB_MOLDE_ALARMES`, `OB_MOLDE_PARTIDAS`, `MOLDE_ANALOGS`, `MOLDE TOT1`,
-   `DB GLOBAL`, os 6 blocos de `Soprador 1 (S-01A)`, e uma tabela de 29 tags. Já exportado:
-   `workspace/padrao/MODULE_ERROR_MOLDE.xml` (14K, real). Repontar `Fixture()` e rodar `rebuild.ps1`
-   — o que quebrar é bug real que a fixture sintética escondia.
-3. **Fechar `doctor` 6/6**: escrever os 3 configs contra este projeto. Campos já confirmados:
-   `BlocksFolder: "4. Motores/Bombas"`, UDTs `MotorDados`/`MotorPrincipal`/`ValvDados`,
-   `GlobalDb: "DB GLOBAL"`, `TagTable: "DISPOSITIVOS_PROFINET"`, `TagFolder: "4. Comm"`.
-   Falta ler os FINAIS para `SourceNumbersToReplace` e para o `replicate-instruments` (o exemplo
-   pede `DB INSTRUMENTOS`, que aqui não existe — o padrão usa `DB GLOBAL`).
-4. Dry-run dos 3 replicadores aqui (as pastas `Equipamento (TAG)` que o `replicate-fc` exige
-   existem neste projeto; o AsBuilt não tinha).
-5. Guard no `replicate-fc --apply`: recusar alvo que já tem blocos, salvo `--force`.
-6. **`import-ladder` contra a verdade** — FlgNet escrito de memória, nunca validado. Gerar e comparar
-   com `diff-block` contra um `PARTIDA_*` real.
-7. Só então avaliar `scaffold`/`init` (projeto novo nascendo com as 34 FBs da biblioteca + moldes +
-   árvore de pastas + `DB GLOBAL`) — ele consome os exports do passo 2.
-8. Ideia aberta: verbo `audit` — conferir projeto qualquer contra a lei de nomenclatura (`(TAG)` na
-   folha, 6 blocos por equipamento, 1 tabela por acionamento, N de área consistente entre
-   `2.N`/`3.N`/`3.1.N`/`5.1.N`). É auditar AsBuilt contra o molde = o problema real do usuário.
+1. **Portabilidade (bloqueia todo o resto).** 14 caminhos `c:\Scripts\TIA Portal` hardcoded em 6
+   scripts (`whitelist`, `setup-tasks`, `taskrun`, `tia-task`, `smokeloop`, `export-fixtures`) —
+   derivar de `$PSScriptRoot`. Idem usuário (`$env:USERDOMAIN\$env:USERNAME`, já feito em
+   setup-tasks) e versão do Portal (`Portal V21`, `lib\*.dll`): descobrir em runtime, não fixar.
+2. **`scripts/init.ps1` = init da MÁQUINA** (hoje é folclore no CLAUDE.md): checa .NET + versão do
+   TIA, resolve `lib\` a partir da instalação local do Openness, `setup-tasks`, whitelist,
+   `rebuild`, `doctor`. Um comando, idempotente, saída "pronto / falta X". É o pré-requisito de
+   "usável em todos os computadores".
+3. **Multiuser / Project Server.** A API existe na DLL: namespace `Siemens.Engineering.Multiuser`
+   com `LocalSession`, `ServerProjectInfo`, `GetServerProjects`, `OpenServerProject`,
+   `CreateLocalSession`, `DeleteLocalSessionFromServer`, `MultiuserProject`, `MultiuserException`.
+   Ordem sugerida: (a) `tia list-server-projects --server <host>` read-only pra provar o attach;
+   (b) `open-session` / `close-session` (local session = cópia de trabalho); (c) refresh/commit com
+   `MultiuserException` tratado como conflito, não como crash. **Toda escrita passa a ser commit
+   numa sessão local, nunca no projeto do servidor direto.**
+4. **Concorrência real.** D9 assume "um `tia` por vez, single-session" — vale por máquina, mas com
+   N engenheiros: `--out workspace/` colide se dois rodarem no mesmo share; o guard do
+   `replicate-fc` vira crítico; `doctor` deveria rodar **antes de cada commit**. Decidir se `tia`
+   ganha lock por projeto e o que fazer quando o servidor já mudou o bloco que vamos importar.
+5. **`tia init` / `scaffold` = init do PROJETO** ("preparar a base de forma completa"). Consome os
+   exports de `workspace/padrao/`: árvore de pastas da lei de nomenclatura, `DB GLOBAL` com
+   `HARDWARE_INTERRUPT`/`ALARMES_MODULOS`, os moldes (`MODULE_ERROR_MOLDE`, `OB_MOLDE_ALARMES`,
+   `OB_MOLDE_PARTIDAS`, `MOLDE_ANALOGS`, `MOLDE TOT1`, `FC_Modelo`), o acionamento-modelo de 6
+   blocos, tabelas `1. I/OS`…`5. Instrumentação`. Só depois disso os replicadores têm o que
+   replicar num projeto novo.
+6. **Verbo `audit`** — projeto qualquer contra a lei de nomenclatura: `(TAG)` na folha, 6 blocos por
+   equipamento, 1 tabela por acionamento, N de área consistente entre `2.N`/`3.N`/`3.1.N`/`5.1.N`.
+   Com multiusuário vira gate de commit, não só relatório.
+7. `import-ladder` contra a verdade (FlgNet escrito de memória, nunca validado): gerar e comparar
+   com `diff-block` contra um `PARTIDA_*` real de `workspace/padrao/`.
+8. `replicate-fc --apply` nunca exercitado — testar num projeto vazio (aqui o guard barra, certo).
 
 ## Key files
-- `docs/PADRAO.md` — estrutura do projeto de referência + lei de nomenclatura + divergências.
-- `docs/PLANO.md:186` — seção "Projeto de referência"; adiante, clone de acionamento (AsBuilt).
-- `src/Tia.Core/FaultOb.cs:22` — comentário do `AlarmDb`; `:219` o throw novo.
-- `src/Tia.Core/Doctor.cs:97` — onde o check bogus foi removido.
-- `src/Tia.Core/Replicate.cs:15` — `ReplicateFcConfig` (campos do passo 3).
-- `src/Tia.Tests/Program.cs:40` — `Fixture()` aponta para `docs/examples/` (passo 2).
-- `scripts/tia-task.ps1` — driver sessão 0→1 (`--script-ps1 scripts\raio-x.ps1 "<Projeto>"`).
-- `workspace/Software de ETE Insular_Inicial_V21/` — raio-x completo (plc-navi, snapshot, tags).
+- `docs/PADRAO.md` — estrutura do projeto de referência, lei de nomenclatura, os 3 bugs achados.
+- `docs/PLANO.md` — decisões D1–D9 (D9 = single-session, revisar para multiuser).
+- `scripts/setup-tasks.ps1` — tasks + ACL + whitelist; base do futuro `init.ps1`.
+- `scripts/export-fixtures.ps1` — regenera as 15 fixtures reais (roda na sessão 1).
+- `src/Tia.Core/Replicate.cs:37` — `Run(..., bool force)` e o guard de alvo populado.
+- `src/Tia.Core/InstrumentFc.cs:24` — `FcSuffix`; `src/Tia.Core/Profinet.cs` — `TagName`.
+- `src/Tia.Cli/Program.cs:193` — parsing de flags (`--apply`, `--force`).
+- `lib/Siemens.Engineering.Base.dll` — contém o namespace `Multiuser` (verificado por strings).
 
 ## Open / blockers
-- **Whitelist stale + task `TiaWhitelist` inexistente** → qualquer `tia` recusa com
-  `EngineeringSecurityException`. Passo 1 destrava; nada que toque o portal anda antes disso.
-- Projeto importado chega inconsistente: `export-*` morre com `Inconsistent blocks and PLC data
-  types (UDT) cannot be exported`. `prep-project` resolve (já rodado aqui).
-- Openness single-session: um verbo por vez; `run --script` não isola steps.
+- Nada bloqueando. Portal aberto no projeto de referência; smoke via
+  `pwsh scripts/tia-task.ps1 <verbo>` funciona sem intervenção.
+- A decidir com o usuário: host do Project Server para teste, e se há projeto de teste no servidor
+  (nunca contra produção).
+- Openness single-session continua valendo por máquina — não paralelizar `tia` local.

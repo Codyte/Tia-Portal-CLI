@@ -151,28 +151,36 @@ namespace Tia.Tests
         private static void InstrumentFc_BuildAreaFcXml()
         {
             var template = XDocument.Load(Fixture("InstrumentTemplateFc.xml"));
-            var source = new InstrumentFc.Instrument { Id = "FIT-01", GlobalDbPath = "\"ETA\".\"FIT-01\"" };
+            // valores reais do molde: instrumento FQIT-01 sob "DB GLOBAL"."PRELIMINAR"."INSTRUMENTACAO"
+            var source = new InstrumentFc.Instrument
+            {
+                Id = "FQIT-01",
+                GlobalDbPath = "\"PRELIMINAR\".\"INSTRUMENTACAO\".\"FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO\"",
+            };
             var target = new InstrumentFc.Instrument
             {
-                Id = "FIT-02", GlobalDbPath = "\"ETA\".\"FIT-02\"", CmdAfericao = 101, CmdLimites = 201,
+                Id = "FQIT-07",
+                GlobalDbPath = "\"ELEVATÓRIA_DE_LODO_DIGERIDO\".\"INSTRUMENTACAO\".\"FQIT-07_MEDIDOR_DE_VAZAO_ULTRASSONICO\"",
+                CmdAfericao = 101, CmdLimites = 201,
             };
             var task = new InstrumentFc.AreaTask
             {
-                AreaName = "ETA", TargetFcName = "FC_INSTR_TESTE",
+                AreaName = "Elevatória de Lodo Digerido", TargetFcName = "FC_INSTR_TESTE",
                 Instruments = new List<InstrumentFc.Instrument> { target },
             };
             var path = InstrumentFc.BuildAreaFcXml(template, task, source,
-                new InstrumentFcConfig { GlobalDb = "DB INSTRUMENTOS" }, OutDir());
+                new InstrumentFcConfig { GlobalDb = "DB GLOBAL" }, OutDir());
             var doc = XDocument.Load(path);
             Check(doc.Descendants("AttributeList").Elements("Name").First().Value == "FC_INSTR_TESTE", "nome do FC");
             var names = doc.Descendants().Where(e => e.Name.LocalName == "Component")
                 .Select(e => (string)e.Attribute("Name")).ToList();
-            Check(names.Contains("DB_BITS_TO_WORD_FIT-02"), "instance DB renomeado");
-            Check(names.Contains("FIT-02") && !names.Contains("FIT-01"), "path do DB global reescrito");
-            Check(names.Contains("FIT-02_STS") && !names.Contains("FIT-01_STS"), "prefixo de tag reescrito");
+            Check(names.Contains("FB AFERIÇÃO INSTRUMENTOS_FQIT-07"), "instance DB renomeado");
+            Check(names.Contains("FQIT-07_MEDIDOR_DE_VAZAO_ULTRASSONICO")
+                && !names.Contains("FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO"), "path do DB global reescrito");
+            Check(names.Contains("FQIT-07_PV_MACRO_MEDIDOR_VAZAO_INSTANTANEA")
+                && !names.Contains("FQIT-01_PV_MACRO_MEDIDOR_VAZAO_INSTANTANEA"), "prefixo de tag reescrito");
             var texts = doc.Descendants().Where(e => e.Name.LocalName == "Text").Select(t => t.Value).ToList();
-            Check(texts.Any(t => t.Contains("(FIT-02)") && t.Contains("AF=101") && t.Contains("LIM=201")),
-                "título: id e comandos 8888/9999 trocados");
+            Check(texts.Any(t => t.Contains("(FQIT-07)")), "título com o id do alvo");
             Check(!doc.Descendants().Any(e => e.Name.LocalName == "ConstantValue"
                 && (e.Value.Trim() == "8888" || e.Value.Trim() == "9999")), "nenhum placeholder 8888/9999 sobrando");
         }

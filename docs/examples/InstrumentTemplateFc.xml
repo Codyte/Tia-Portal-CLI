@@ -1,6 +1,52 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Document>
   <Engineering version="V21" />
+  <DocumentInfo>
+    <Created>2026-07-27T22:10:58.774591Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, G200, G220, S200, S210, S220, Innomotics MVD</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>Tech WebApplication</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Professional</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
   <SW.Blocks.FC ID="0">
     <AttributeList>
       <AutoNumber>true</AutoNumber>
@@ -22,9 +68,9 @@
       </Interface>
       <IsIECCheckEnabled>false</IsIECCheckEnabled>
       <MemoryLayout>Optimized</MemoryLayout>
-      <Name>FC_MOLDE_INSTRUMENTOS</Name>
+      <Name>MOLDE_ANALOGS</Name>
       <Namespace />
-      <Number>220</Number>
+      <Number>128</Number>
       <ProgrammingLanguage>LAD</ProgrammingLanguage>
       <SetENOAutomatically>false</SetENOAutomatically>
       <UDABlockProperties />
@@ -36,126 +82,528 @@
           <MultilingualTextItem ID="2" CompositionName="Items">
             <AttributeList>
               <Culture>en-US</Culture>
-              <Text />
+              <Text>Parâmetros da Equação da Reta
+ANALOG_IN_4a20mA: Entrada Analógica
+Y1_CONFIG: Range mínimo Sinal de Campo
+Y2_CONFIG: Range máximo Sinal de Campo
+X1_CONFIG: Range Mínimo Entrada Analógica CLP
+X2_CONFIG: Range Máximo Entrada Analógica CLP
+COMANDO: Parâmetro enviado da IHM/SCADA
+COMANDO_VALOR: Parâmetro referente à aferição do bloco
+GRANDEZA_MAX = Valor de comunicação RS485, enviado pelo inversor 
+RANGE_MIN_CADASTRADO = Valor de leitura minimo que irá aparecer no display IHM
+RANGE_MAX_CADASTRADO = Valor de leitura maximo que irá aparecer no display IHM
+
+Comando Aferição 8888: (FQIT-01)
+Comando Limites 9999: (FQIT-01)
+
+</Text>
+            </AttributeList>
+          </MultilingualTextItem>
+          <MultilingualTextItem ID="3" CompositionName="Items">
+            <AttributeList>
+              <Culture>pt-BR</Culture>
+              <Text>Parâmetros da Equação da Reta
+ANALOG_IN_4a20mA: Entrada Analógica
+Y1_CONFIG: Range mínimo Sinal de Campo
+Y2_CONFIG: Range máximo Sinal de Campo
+X1_CONFIG: Range Mínimo Entrada Analógica CLP
+X2_CONFIG: Range Máximo Entrada Analógica CLP
+COMANDO: Parâmetro enviado da IHM/SCADA
+COMANDO_VALOR: Parâmetro referente à aferição do bloco
+GRANDEZA_MAX = Valor de comunicação RS485, enviado pelo inversor 
+RANGE_MIN_CADASTRADO = Valor de leitura minimo que irá aparecer no display IHM
+RANGE_MAX_CADASTRADO = Valor de leitura maximo que irá aparecer no display IHM
+
+Comando Aferição 8888: (FQIT-01)
+Comando Limites 9999: (FQIT-01)
+
+</Text>
             </AttributeList>
           </MultilingualTextItem>
         </ObjectList>
       </MultilingualText>
-      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+      <SW.Blocks.CompileUnit ID="4" CompositionName="CompileUnits">
         <AttributeList>
           <NetworkSource>
             <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
               <Parts>
                 <Access Scope="GlobalVariable" UId="21">
                   <Symbol>
-                    <Component Name="FIT-01_STS" />
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="AFERICAO" />
+                    <Component Name="AFERICAO_ANALOGICA" />
+                    <Component Name="COMANDO" />
                   </Symbol>
                 </Access>
-                <Access Scope="GlobalVariable" UId="22">
-                  <Symbol>
-                    <Component Name="Smoke_Bit" />
-                  </Symbol>
+                <Access Scope="LiteralConstant" UId="22">
+                  <Constant>
+                    <ConstantType>Int</ConstantType>
+                    <ConstantValue>8888</ConstantValue>
+                  </Constant>
                 </Access>
                 <Access Scope="GlobalVariable" UId="23">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="AFERICAO" />
+                    <Component Name="AFERICAO_ANALOGICA" />
+                    <Component Name="X1_CONFIG" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="24">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="CMD_CADASTRO_MIN" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="25">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="AFERICAO" />
+                    <Component Name="AFERICAO_ANALOGICA" />
+                    <Component Name="X2_CONFIG" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="26">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="CMD_CADASTRO_MAX" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="27">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="FQIT-01_PV_MACRO_MEDIDOR_VAZAO_INSTANTANEA" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="28">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="STS_AMOSTRA_SENSOR" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="29">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="STS_AMOSTRA_SENSOR" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="30">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="CMD_CADASTRO_MIN" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="31">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="CMD_CADASTRO_MAX" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="32">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="AFERICAO" />
+                    <Component Name="AFERICAO_ANALOGICA" />
+                    <Component Name="Y1_CONFIG" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="33">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="AFERICAO" />
+                    <Component Name="AFERICAO_ANALOGICA" />
+                    <Component Name="Y2_CONFIG" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="34">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="AFERICAO" />
+                    <Component Name="AFERICAO_ANALOGICA" />
+                    <Component Name="COMANDO" />
                   </Symbol>
                 </Access>
-                <Access Scope="GlobalVariable" UId="35">
-                  <Symbol>
-                    <Component Name="Smoke_Bit" />
-                  </Symbol>
+                <Access Scope="LiteralConstant" UId="35">
+                  <Constant>
+                    <ConstantType>Int</ConstantType>
+                    <ConstantValue>8888</ConstantValue>
+                  </Constant>
                 </Access>
                 <Access Scope="GlobalVariable" UId="36">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="STS_STATUS_SENSOR" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="37">
                   <Symbol>
-                    <Component Name="DB INSTRUMENTOS" />
-                    <Component Name="ETA" />
-                    <Component Name="FIT-01" />
-                    <Component Name="WORD_STS" />
+                    <Component Name="FQIT-01_STS_SEM_4mA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="38">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="STS_SET_MIN_SENSOR" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="39">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="STS_SET_MAX_SENSOR" />
+                  </Symbol>
+                </Access>
+                <Part Name="Eq" UId="40">
+                  <TemplateValue Name="SrcType" Type="Type">Int</TemplateValue>
+                </Part>
+                <Part Name="Move" UId="41" DisabledENO="true">
+                  <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+                </Part>
+                <Part Name="Move" UId="42" DisabledENO="true">
+                  <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+                </Part>
+                <Call UId="43">
+                  <CallInfo Name="FB FILTRO DE AMOSTRAGEM  ANALÍTICA" BlockType="FB">
+                    <Instance Scope="GlobalVariable" UId="44">
+                      <Component Name="FB FILTRO DE AMOSTRAGEM  ANALITICA_FQIT-01" />
+                    </Instance>
+                    <Parameter Name="INPUT_SENSOR" Section="Input" Type="Int" />
+                    <Parameter Name="OUTPUT_SENSOR" Section="Output" Type="Int" />
+                  </CallInfo>
+                </Call>
+                <Call UId="45">
+                  <CallInfo Name="FB AFERIÇÃO INSTRUMENTOS" BlockType="FB">
+                    <Instance Scope="GlobalVariable" UId="46">
+                      <Component Name="FB AFERIÇÃO INSTRUMENTOS_FQIT-01" />
+                    </Instance>
+                    <Parameter Name="ANALOG_IN_4a20mA" Section="Input" Type="Int" />
+                    <Parameter Name="X1_CONFIG" Section="Input" Type="Int" />
+                    <Parameter Name="X2_CONFIG" Section="Input" Type="Int" />
+                    <Parameter Name="Y1_CONFIG" Section="Input" Type="Int" />
+                    <Parameter Name="Y2_CONFIG" Section="Input" Type="Int" />
+                    <Parameter Name="COMANDO" Section="Input" Type="Int" />
+                    <Parameter Name="COMANDO_VALOR" Section="Input" Type="Int" />
+                    <Parameter Name="ANALOG_OUT_4a20mA" Section="Output" Type="Real" />
+                    <Parameter Name="ALARME_SEM_4mA" Section="Output" Type="Bool" />
+                    <Parameter Name="RANGE_MIN_CADASTRADO" Section="Output" Type="UInt" />
+                    <Parameter Name="RANGE_MAX_CADASTRADO" Section="Output" Type="UInt" />
+                  </CallInfo>
+                </Call>
+              </Parts>
+              <Wires>
+                <Wire UId="47">
+                  <Powerrail />
+                  <NameCon UId="40" Name="pre" />
+                  <NameCon UId="43" Name="en" />
+                  <NameCon UId="45" Name="en" />
+                </Wire>
+                <Wire UId="48">
+                  <IdentCon UId="21" />
+                  <NameCon UId="40" Name="in1" />
+                </Wire>
+                <Wire UId="49">
+                  <IdentCon UId="22" />
+                  <NameCon UId="40" Name="in2" />
+                </Wire>
+                <Wire UId="50">
+                  <NameCon UId="40" Name="out" />
+                  <NameCon UId="41" Name="en" />
+                  <NameCon UId="42" Name="en" />
+                </Wire>
+                <Wire UId="51">
+                  <IdentCon UId="23" />
+                  <NameCon UId="41" Name="in" />
+                </Wire>
+                <Wire UId="52">
+                  <NameCon UId="41" Name="out1" />
+                  <IdentCon UId="24" />
+                </Wire>
+                <Wire UId="53">
+                  <IdentCon UId="25" />
+                  <NameCon UId="42" Name="in" />
+                </Wire>
+                <Wire UId="54">
+                  <NameCon UId="42" Name="out1" />
+                  <IdentCon UId="26" />
+                </Wire>
+                <Wire UId="55">
+                  <IdentCon UId="27" />
+                  <NameCon UId="43" Name="INPUT_SENSOR" />
+                </Wire>
+                <Wire UId="56">
+                  <NameCon UId="43" Name="OUTPUT_SENSOR" />
+                  <IdentCon UId="28" />
+                </Wire>
+                <Wire UId="57">
+                  <IdentCon UId="29" />
+                  <NameCon UId="45" Name="ANALOG_IN_4a20mA" />
+                </Wire>
+                <Wire UId="58">
+                  <IdentCon UId="30" />
+                  <NameCon UId="45" Name="X1_CONFIG" />
+                </Wire>
+                <Wire UId="59">
+                  <IdentCon UId="31" />
+                  <NameCon UId="45" Name="X2_CONFIG" />
+                </Wire>
+                <Wire UId="60">
+                  <IdentCon UId="32" />
+                  <NameCon UId="45" Name="Y1_CONFIG" />
+                </Wire>
+                <Wire UId="61">
+                  <IdentCon UId="33" />
+                  <NameCon UId="45" Name="Y2_CONFIG" />
+                </Wire>
+                <Wire UId="62">
+                  <IdentCon UId="34" />
+                  <NameCon UId="45" Name="COMANDO" />
+                </Wire>
+                <Wire UId="63">
+                  <IdentCon UId="35" />
+                  <NameCon UId="45" Name="COMANDO_VALOR" />
+                </Wire>
+                <Wire UId="64">
+                  <NameCon UId="45" Name="ANALOG_OUT_4a20mA" />
+                  <IdentCon UId="36" />
+                </Wire>
+                <Wire UId="65">
+                  <NameCon UId="45" Name="ALARME_SEM_4mA" />
+                  <IdentCon UId="37" />
+                </Wire>
+                <Wire UId="66">
+                  <NameCon UId="45" Name="RANGE_MIN_CADASTRADO" />
+                  <IdentCon UId="38" />
+                </Wire>
+                <Wire UId="67">
+                  <NameCon UId="45" Name="RANGE_MAX_CADASTRADO" />
+                  <IdentCon UId="39" />
+                </Wire>
+              </Wires>
+            </FlgNet>
+          </NetworkSource>
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="5" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="6" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Aferição Entrada Analógica (FQIT-01)
+
+Comando:
+8888: Comando de Aferição (FQIT-01)
+</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Aferição Entrada Analógica (FQIT-01)
+
+Comando:
+8888: Comando de Aferição (FQIT-01)
+</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="8" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="9" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Aferição Equipamento (FQIT-01)</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Aferição Equipamento (FQIT-01)</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="B" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource>
+            <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+              <Parts>
+                <Access Scope="GlobalVariable" UId="21">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="STS_STATUS_SENSOR" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="22">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="AFERICAO" />
+                    <Component Name="AFERICAO_ANALOGICA" />
+                    <Component Name="COMANDO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="LiteralConstant" UId="23">
+                  <Constant>
+                    <ConstantType>Int</ConstantType>
+                    <ConstantValue>9999</ConstantValue>
+                  </Constant>
+                </Access>
+                <Access Scope="GlobalVariable" UId="24">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="AFERICAO" />
+                    <Component Name="AFERICAO_ANALOGICA" />
+                    <Component Name="Z1_CONFIG" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="25">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="AFERICAO" />
+                    <Component Name="AFERICAO_ANALOGICA" />
+                    <Component Name="Z2_CONFIG" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="26">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="AFERICAO" />
+                    <Component Name="AFERICAO_ANALOGICA" />
+                    <Component Name="Z3_CONFIG" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="27">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="AFERICAO" />
+                    <Component Name="AFERICAO_ANALOGICA" />
+                    <Component Name="Z4_CONFIG" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="28">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="CMD_MANUTENCAO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="29">
+                  <Symbol>
+                    <Component Name="FQIT-01_STS_SEM_4mA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="30">
+                  <Symbol>
+                    <Component Name="FQIT-01_STS_LEITURA_MUITO_BAIXA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="31">
+                  <Symbol>
+                    <Component Name="FQIT-01_STS_LEITURA_BAIXA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="32">
+                  <Symbol>
+                    <Component Name="FQIT-01_STS_LEITURA_ALTA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="33">
+                  <Symbol>
+                    <Component Name="FQIT-01_STS_LEITURA_MUITO_ALTA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="34">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="CMD_CADASTRO_LEITURA_MUITO_BAIXA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="35">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="CMD_CADASTRO_LEITURA_BAIXA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="36">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="CMD_CADASTRO_LEITURA_ALTA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="37">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="PRELIMINAR" />
+                    <Component Name="INSTRUMENTACAO" />
+                    <Component Name="FQIT-01_MEDIDOR_DE_VAZAO_ULTRASSONICO" />
+                    <Component Name="CMD_CADASTRO_LEITURA_MUITO_ALTA" />
                   </Symbol>
                 </Access>
                 <Call UId="38">
-                  <CallInfo Name="FB BITS TO WORD" BlockType="FB">
+                  <CallInfo Name="FB LIMITES_OPERACAO_SENSOR" BlockType="FB">
                     <Instance Scope="GlobalVariable" UId="39">
-                      <Component Name="DB_BITS_TO_WORD_FIT-01" />
+                      <Component Name="FB LIMITES OPERACAO SENSOR_FQIT-01" />
                     </Instance>
-                    <Parameter Name="SIGNAL_Bit0" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit1" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit2" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit3" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit4" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit5" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit6" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit7" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit8" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit9" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit10" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit11" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit12" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit13" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit14" Section="Input" Type="Bool" />
-                    <Parameter Name="SIGNAL_Bit15" Section="Input" Type="Bool" />
-                    <Parameter Name="BITS_TO_WORD" Section="Output" Type="Word" />
+                    <Parameter Name="STATUS_SENSOR" Section="Input" Type="Real" />
+                    <Parameter Name="COMANDO" Section="Input" Type="Int" />
+                    <Parameter Name="COMANDO_VALOR" Section="Input" Type="Int" />
+                    <Parameter Name="ENTRADA_VALOR_MUITO_BAIXO" Section="Input" Type="Int" />
+                    <Parameter Name="ENTRADA_VALOR_BAIXO" Section="Input" Type="Int" />
+                    <Parameter Name="ENTRADA_VALOR_ALTO" Section="Input" Type="Int" />
+                    <Parameter Name="ENTRADA_VALOR_MUITO_ALTO" Section="Input" Type="Int" />
+                    <Parameter Name="COMANDO_MANUTENCAO" Section="Input" Type="Bool" />
+                    <Parameter Name="SEM_SINAL_4mA" Section="Input" Type="Bool" />
+                    <Parameter Name="SAIDA_LEITURA_MUITO_BAIXA" Section="Output" Type="Bool" />
+                    <Parameter Name="SAIDA_LEITURA_BAIXO" Section="Output" Type="Bool" />
+                    <Parameter Name="SAIDA_LEITURA_ALTO" Section="Output" Type="Bool" />
+                    <Parameter Name="SAIDA_LEITURA_MUITO_ALTO" Section="Output" Type="Bool" />
+                    <Parameter Name="VALOR_MUITO_BAIXO" Section="Output" Type="Int" />
+                    <Parameter Name="VALOR_BAIXO" Section="Output" Type="Int" />
+                    <Parameter Name="VALOR_ALTO" Section="Output" Type="Int" />
+                    <Parameter Name="VALOR_MUITO_ALTO" Section="Output" Type="Int" />
                   </CallInfo>
                 </Call>
               </Parts>
@@ -166,71 +614,71 @@
                 </Wire>
                 <Wire UId="41">
                   <IdentCon UId="21" />
-                  <NameCon UId="38" Name="SIGNAL_Bit0" />
+                  <NameCon UId="38" Name="STATUS_SENSOR" />
                 </Wire>
                 <Wire UId="42">
                   <IdentCon UId="22" />
-                  <NameCon UId="38" Name="SIGNAL_Bit1" />
+                  <NameCon UId="38" Name="COMANDO" />
                 </Wire>
                 <Wire UId="43">
                   <IdentCon UId="23" />
-                  <NameCon UId="38" Name="SIGNAL_Bit2" />
+                  <NameCon UId="38" Name="COMANDO_VALOR" />
                 </Wire>
                 <Wire UId="44">
                   <IdentCon UId="24" />
-                  <NameCon UId="38" Name="SIGNAL_Bit3" />
+                  <NameCon UId="38" Name="ENTRADA_VALOR_MUITO_BAIXO" />
                 </Wire>
                 <Wire UId="45">
                   <IdentCon UId="25" />
-                  <NameCon UId="38" Name="SIGNAL_Bit4" />
+                  <NameCon UId="38" Name="ENTRADA_VALOR_BAIXO" />
                 </Wire>
                 <Wire UId="46">
                   <IdentCon UId="26" />
-                  <NameCon UId="38" Name="SIGNAL_Bit5" />
+                  <NameCon UId="38" Name="ENTRADA_VALOR_ALTO" />
                 </Wire>
                 <Wire UId="47">
                   <IdentCon UId="27" />
-                  <NameCon UId="38" Name="SIGNAL_Bit6" />
+                  <NameCon UId="38" Name="ENTRADA_VALOR_MUITO_ALTO" />
                 </Wire>
                 <Wire UId="48">
                   <IdentCon UId="28" />
-                  <NameCon UId="38" Name="SIGNAL_Bit7" />
+                  <NameCon UId="38" Name="COMANDO_MANUTENCAO" />
                 </Wire>
                 <Wire UId="49">
                   <IdentCon UId="29" />
-                  <NameCon UId="38" Name="SIGNAL_Bit8" />
+                  <NameCon UId="38" Name="SEM_SINAL_4mA" />
                 </Wire>
                 <Wire UId="50">
+                  <NameCon UId="38" Name="SAIDA_LEITURA_MUITO_BAIXA" />
                   <IdentCon UId="30" />
-                  <NameCon UId="38" Name="SIGNAL_Bit9" />
                 </Wire>
                 <Wire UId="51">
+                  <NameCon UId="38" Name="SAIDA_LEITURA_BAIXO" />
                   <IdentCon UId="31" />
-                  <NameCon UId="38" Name="SIGNAL_Bit10" />
                 </Wire>
                 <Wire UId="52">
+                  <NameCon UId="38" Name="SAIDA_LEITURA_ALTO" />
                   <IdentCon UId="32" />
-                  <NameCon UId="38" Name="SIGNAL_Bit11" />
                 </Wire>
                 <Wire UId="53">
+                  <NameCon UId="38" Name="SAIDA_LEITURA_MUITO_ALTO" />
                   <IdentCon UId="33" />
-                  <NameCon UId="38" Name="SIGNAL_Bit12" />
                 </Wire>
                 <Wire UId="54">
+                  <NameCon UId="38" Name="VALOR_MUITO_BAIXO" />
                   <IdentCon UId="34" />
-                  <NameCon UId="38" Name="SIGNAL_Bit13" />
                 </Wire>
                 <Wire UId="55">
+                  <NameCon UId="38" Name="VALOR_BAIXO" />
                   <IdentCon UId="35" />
-                  <NameCon UId="38" Name="SIGNAL_Bit14" />
                 </Wire>
                 <Wire UId="56">
+                  <NameCon UId="38" Name="VALOR_ALTO" />
                   <IdentCon UId="36" />
-                  <NameCon UId="38" Name="SIGNAL_Bit15" />
                 </Wire>
                 <Wire UId="57">
+                  <NameCon UId="38" Name="VALOR_MUITO_ALTO" />
                   <IdentCon UId="37" />
-                  <NameCon UId="38" Name="BITS_TO_WORD" />
                 </Wire>
               </Wires>
             </FlgNet>
@@ -238,33 +686,65 @@
           <ProgrammingLanguage>LAD</ProgrammingLanguage>
         </AttributeList>
         <ObjectList>
-          <MultilingualText ID="4" CompositionName="Comment">
+          <MultilingualText ID="C" CompositionName="Comment">
             <ObjectList>
-              <MultilingualTextItem ID="5" CompositionName="Items">
+              <MultilingualTextItem ID="D" CompositionName="Items">
                 <AttributeList>
                   <Culture>en-US</Culture>
-                  <Text />
+                  <Text>Cadastro Limites de Operação sensor (FQIT-01)
+Alarme leitura muito baixa
+Alarme leitura baixa
+Alarme leitura alta
+Alarme leitura muito alta
+
+Comando:
+9999: Definição de Limites para (FQIT-01)</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="E" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Cadastro Limites de Operação sensor (FQIT-01)
+Alarme leitura muito baixa
+Alarme leitura baixa
+Alarme leitura alta
+Alarme leitura muito alta
+
+Comando:
+9999: Definição de Limites para (FQIT-01)</Text>
                 </AttributeList>
               </MultilingualTextItem>
             </ObjectList>
           </MultilingualText>
-          <MultilingualText ID="6" CompositionName="Title">
+          <MultilingualText ID="F" CompositionName="Title">
             <ObjectList>
-              <MultilingualTextItem ID="7" CompositionName="Items">
+              <MultilingualTextItem ID="10" CompositionName="Items">
                 <AttributeList>
                   <Culture>en-US</Culture>
-                  <Text>Instrumento (FIT-01) AF=8888 LIM=9999</Text>
+                  <Text>Limites de Operação (FQIT-01)</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="11" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Limites de Operação (FQIT-01)</Text>
                 </AttributeList>
               </MultilingualTextItem>
             </ObjectList>
           </MultilingualText>
         </ObjectList>
       </SW.Blocks.CompileUnit>
-      <MultilingualText ID="8" CompositionName="Title">
+      <MultilingualText ID="12" CompositionName="Title">
         <ObjectList>
-          <MultilingualTextItem ID="9" CompositionName="Items">
+          <MultilingualTextItem ID="13" CompositionName="Items">
             <AttributeList>
               <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+          <MultilingualTextItem ID="14" CompositionName="Items">
+            <AttributeList>
+              <Culture>pt-BR</Culture>
               <Text />
             </AttributeList>
           </MultilingualTextItem>

@@ -1,6 +1,52 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Document>
   <Engineering version="V21" />
+  <DocumentInfo>
+    <Created>2026-07-27T22:11:00.9600775Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, G200, G220, S200, S210, S220, Innomotics MVD</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>Tech WebApplication</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Professional</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
   <SW.Blocks.FC ID="0">
     <AttributeList>
       <AutoNumber>true</AutoNumber>
@@ -24,7 +70,7 @@
       <MemoryLayout>Optimized</MemoryLayout>
       <Name>FC_Modelo</Name>
       <Namespace />
-      <Number>210</Number>
+      <Number>516</Number>
       <ProgrammingLanguage>LAD</ProgrammingLanguage>
       <SetENOAutomatically>false</SetENOAutomatically>
       <UDABlockProperties />
@@ -39,105 +85,125 @@
               <Text />
             </AttributeList>
           </MultilingualTextItem>
+          <MultilingualTextItem ID="3" CompositionName="Items">
+            <AttributeList>
+              <Culture>pt-BR</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
         </ObjectList>
       </MultilingualText>
-      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+      <SW.Blocks.CompileUnit ID="4" CompositionName="CompileUnits">
         <AttributeList>
           <NetworkSource>
             <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
               <Parts>
                 <Access Scope="GlobalVariable" UId="21">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_0" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="22">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_1" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="23">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_2" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="24">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_3" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="25">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_4" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="26">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_5" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="27">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_6" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="28">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_7" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="29">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_8" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="30">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_9" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="31">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_10" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="32">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_11" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="33">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_12" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="34">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_13" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="35">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_14" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="36">
                   <Symbol>
-                    <Component Name="Smoke_Bit" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyBit_15" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="37">
                   <Symbol>
-                    <Component Name="DB GLOBAL" />
-                    <Component Name="ETA" />
-                    <Component Name="ALARMES" />
-                    <Component Name="WORD_ALARMES_1" />
+                    <Component Name="DB_DUMMY" />
+                    <Component Name="DummyWord_0" />
                   </Symbol>
                 </Access>
                 <Call UId="38">
                   <CallInfo Name="FB BITS TO WORD" BlockType="FB">
                     <Instance Scope="GlobalVariable" UId="39">
-                      <Component Name="DB_BITS_TO_WORD_MODELO" />
+                      <Component Name="FB BITS TO WORD MODELO" />
                     </Instance>
                     <Parameter Name="SIGNAL_Bit0" Section="Input" Type="Bool" />
                     <Parameter Name="SIGNAL_Bit1" Section="Input" Type="Bool" />
@@ -229,8 +295,8 @@
                   <NameCon UId="38" Name="SIGNAL_Bit15" />
                 </Wire>
                 <Wire UId="57">
-                  <IdentCon UId="37" />
                   <NameCon UId="38" Name="BITS_TO_WORD" />
+                  <IdentCon UId="37" />
                 </Wire>
               </Wires>
             </FlgNet>
@@ -238,34 +304,94 @@
           <ProgrammingLanguage>LAD</ProgrammingLanguage>
         </AttributeList>
         <ObjectList>
-          <MultilingualText ID="4" CompositionName="Comment">
+          <MultilingualText ID="5" CompositionName="Comment">
             <ObjectList>
-              <MultilingualTextItem ID="5" CompositionName="Items">
+              <MultilingualTextItem ID="6" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>
+</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>
+</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="8" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="9" CompositionName="Items">
                 <AttributeList>
                   <Culture>en-US</Culture>
                   <Text />
                 </AttributeList>
               </MultilingualTextItem>
-            </ObjectList>
-          </MultilingualText>
-          <MultilingualText ID="6" CompositionName="Title">
-            <ObjectList>
-              <MultilingualTextItem ID="7" CompositionName="Items">
+              <MultilingualTextItem ID="A" CompositionName="Items">
                 <AttributeList>
-                  <Culture>en-US</Culture>
-                  <Text>Word de Alarmes: MODELO</Text>
+                  <Culture>pt-BR</Culture>
+                  <Text />
                 </AttributeList>
               </MultilingualTextItem>
             </ObjectList>
           </MultilingualText>
         </ObjectList>
       </SW.Blocks.CompileUnit>
-      <MultilingualText ID="8" CompositionName="Title">
+      <SW.Blocks.CompileUnit ID="B" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource />
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
         <ObjectList>
-          <MultilingualTextItem ID="9" CompositionName="Items">
+          <MultilingualText ID="C" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="D" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="E" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="F" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="10" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="11" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="12" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="13" CompositionName="Items">
             <AttributeList>
               <Culture>en-US</Culture>
-              <Text />
+              <Text>Montagem de Word de Alarmes</Text>
+            </AttributeList>
+          </MultilingualTextItem>
+          <MultilingualTextItem ID="14" CompositionName="Items">
+            <AttributeList>
+              <Culture>pt-BR</Culture>
+              <Text>Montagem de Word de Alarmes</Text>
             </AttributeList>
           </MultilingualTextItem>
         </ObjectList>

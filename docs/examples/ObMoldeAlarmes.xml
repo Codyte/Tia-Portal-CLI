@@ -1,6 +1,52 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Document>
   <Engineering version="V21" />
+  <DocumentInfo>
+    <Created>2026-07-27T22:10:56.6374588Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, G200, G220, S200, S210, S220, Innomotics MVD</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>Tech WebApplication</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Professional</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
   <SW.Blocks.OB ID="0">
     <AttributeList>
       <AutoNumber>true</AutoNumber>
@@ -11,8 +57,16 @@
       <Interface>
         <Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
           <Section Name="Input">
-            <Member Name="Initial_Call" Datatype="Bool" Accessibility="Public" Informative="true" />
-            <Member Name="Remanence" Datatype="Bool" Accessibility="Public" Informative="true" />
+            <Member Name="Initial_Call" Datatype="Bool" Accessibility="Public" Informative="true">
+              <Comment>
+                <MultiLanguageText Lang="en-US">Initial call of this OB</MultiLanguageText>
+              </Comment>
+            </Member>
+            <Member Name="Remanence" Datatype="Bool" Accessibility="Public" Informative="true">
+              <Comment>
+                <MultiLanguageText Lang="en-US">=True, if remanent data are available</MultiLanguageText>
+              </Comment>
+            </Member>
           </Section>
           <Section Name="Temp" />
           <Section Name="Constant" />
@@ -22,7 +76,7 @@
       <MemoryLayout>Optimized</MemoryLayout>
       <Name>OB_MOLDE_ALARMES</Name>
       <Namespace />
-      <Number>124</Number>
+      <Number>1</Number>
       <ProgrammingLanguage>LAD</ProgrammingLanguage>
       <SecondaryType>ProgramCycle</SecondaryType>
       <SetENOAutomatically>false</SetENOAutomatically>
@@ -36,14 +90,66 @@
               <Text />
             </AttributeList>
           </MultilingualTextItem>
+          <MultilingualTextItem ID="3" CompositionName="Items">
+            <AttributeList>
+              <Culture>pt-BR</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
         </ObjectList>
       </MultilingualText>
-      <MultilingualText ID="8" CompositionName="Title">
+      <SW.Blocks.CompileUnit ID="4" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource />
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
         <ObjectList>
-          <MultilingualTextItem ID="9" CompositionName="Items">
+          <MultilingualText ID="5" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="6" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>comentário da chamada da fc 1</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>comentário da chamada da fc 1</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="8" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="9" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>FC Alarmes: Paineis</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>FC Alarmes: Paineis</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="B" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="C" CompositionName="Items">
             <AttributeList>
               <Culture>en-US</Culture>
-              <Text>OB_MOLDE_ALARMES</Text>
+              <Text>"Main Program Sweep (Cycle)"</Text>
+            </AttributeList>
+          </MultilingualTextItem>
+          <MultilingualTextItem ID="D" CompositionName="Items">
+            <AttributeList>
+              <Culture>pt-BR</Culture>
+              <Text>"Main Program Sweep (Cycle)"</Text>
             </AttributeList>
           </MultilingualTextItem>
         </ObjectList>

@@ -1,6 +1,52 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Document>
   <Engineering version="V21" />
+  <DocumentInfo>
+    <Created>2026-07-27T22:11:03.5219089Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, G200, G220, S200, S210, S220, Innomotics MVD</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>Tech WebApplication</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Professional</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
   <SW.Blocks.FC ID="0">
     <AttributeList>
       <AutoNumber>true</AutoNumber>
@@ -22,9 +68,9 @@
       </Interface>
       <IsIECCheckEnabled>false</IsIECCheckEnabled>
       <MemoryLayout>Optimized</MemoryLayout>
-      <Name>BOMBA (BH-01A)</Name>
+      <Name>PARTIDA_SOPRADOR_1 (S-01A)</Name>
       <Namespace />
-      <Number>200</Number>
+      <Number>148</Number>
       <ProgrammingLanguage>LAD</ProgrammingLanguage>
       <SetENOAutomatically>false</SetENOAutomatically>
       <UDABlockProperties />
@@ -36,49 +82,122 @@
           <MultilingualTextItem ID="2" CompositionName="Items">
             <AttributeList>
               <Culture>en-US</Culture>
-              <Text />
+              <Text>Network 1: Set memórias entradas digitais
+Network 2: Function Block FALHA
+Network 3: MODO AUTOMÁTICO: Condições para Modo Automático
+Network 4: Alternância/Rotatividade de bombas Principal-Reserva
+Network 5: Function Block CONDIÇÃO DE PARTIDA
+Network 6: Setpoint Manual - Velocidade Proporcial ao Sinal de Saída
+Network 7: Reset Comando Liga
+Network 8: Intertravamento para habilitar o botão liga na IHM
+Network 9: Intertravamento de Segurança
+Network 10: Bloco de Controle Inversor Profinet
+Network 11: Aciona saída digital para partir o motor/bomba</Text>
+            </AttributeList>
+          </MultilingualTextItem>
+          <MultilingualTextItem ID="3" CompositionName="Items">
+            <AttributeList>
+              <Culture>pt-BR</Culture>
+              <Text>Network 1: Set memórias entradas digitais
+Network 2: Function Block FALHA
+Network 3: MODO AUTOMÁTICO: Condições para Modo Automático
+Network 4: Alternância/Rotatividade de bombas Principal-Reserva
+Network 5: Function Block CONDIÇÃO DE PARTIDA
+Network 6: Reset Comando Liga
+Network 7: Function Block MODOS DE OPERAÇÃO - Atribuição dos Modos de Operação
+Network 8: Intertravamento para habilitar o botão liga na IHM
+Network 9: Intertravamento de Segurança
+Network 10: Function Block SUCÇÃO OK
+Network 11: Aciona saída digital para partir o motor/bomba
+Network 12: Function Block HORÍMETRO - Tempo de bomba ligada em horas</Text>
             </AttributeList>
           </MultilingualTextItem>
         </ObjectList>
       </MultilingualText>
-      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+      <SW.Blocks.CompileUnit ID="4" CompositionName="CompileUnits">
         <AttributeList>
           <NetworkSource>
             <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
               <Parts>
                 <Access Scope="GlobalVariable" UId="21">
                   <Symbol>
-                    <Component Name="DB GLOBAL" />
-                    <Component Name="Motor_BH-01A" />
-                    <Component Name="Liga" />
+                    <Component Name="S-01A_STS_SOPRADOR_DESANERADOR_MODO_LOCAL_1" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="22">
                   <Symbol>
-                    <Component Name="DB GLOBAL" />
-                    <Component Name="Motor_BH-01A" />
-                    <Component Name="Ligado" />
+                    <Component Name="S-01A_STS_MODO_LOCAL" />
                   </Symbol>
                 </Access>
-                <Part Name="Contact" UId="23" />
-                <Part Name="Coil" UId="24" />
+                <Access Scope="GlobalVariable" UId="23">
+                  <Symbol>
+                    <Component Name="S-01A_STS_SOPRADOR_DESANERADOR_MODO_REMOTO_1" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="24">
+                  <Symbol>
+                    <Component Name="S-01A_STS_MODO_REMOTO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="25">
+                  <Symbol>
+                    <Component Name="QA-01_CMD_RESET_REMOTA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="26">
+                  <Symbol>
+                    <Component Name="S-01A_CMD_BOTAO_RESET_FALHA" />
+                  </Symbol>
+                </Access>
+                <Part Name="Contact" UId="27" />
+                <Part Name="Coil" UId="28" />
+                <Part Name="Contact" UId="29" />
+                <Part Name="Coil" UId="30" />
+                <Part Name="Contact" UId="31" />
+                <Part Name="Coil" UId="32" />
               </Parts>
               <Wires>
-                <Wire UId="25">
-                  <IdentCon UId="21" />
-                  <NameCon UId="23" Name="operand" />
-                </Wire>
-                <Wire UId="26">
-                  <IdentCon UId="22" />
-                  <NameCon UId="24" Name="operand" />
-                </Wire>
-                <Wire UId="27">
+                <Wire UId="33">
                   <Powerrail />
-                  <NameCon UId="23" Name="in" />
+                  <NameCon UId="27" Name="in" />
+                  <NameCon UId="29" Name="in" />
+                  <NameCon UId="31" Name="in" />
                 </Wire>
-                <Wire UId="28">
-                  <NameCon UId="23" Name="out" />
-                  <NameCon UId="24" Name="in" />
+                <Wire UId="34">
+                  <IdentCon UId="21" />
+                  <NameCon UId="27" Name="operand" />
+                </Wire>
+                <Wire UId="35">
+                  <NameCon UId="27" Name="out" />
+                  <NameCon UId="28" Name="in" />
+                </Wire>
+                <Wire UId="36">
+                  <IdentCon UId="22" />
+                  <NameCon UId="28" Name="operand" />
+                </Wire>
+                <Wire UId="37">
+                  <IdentCon UId="23" />
+                  <NameCon UId="29" Name="operand" />
+                </Wire>
+                <Wire UId="38">
+                  <NameCon UId="29" Name="out" />
+                  <NameCon UId="30" Name="in" />
+                </Wire>
+                <Wire UId="39">
+                  <IdentCon UId="24" />
+                  <NameCon UId="30" Name="operand" />
+                </Wire>
+                <Wire UId="40">
+                  <IdentCon UId="25" />
+                  <NameCon UId="31" Name="operand" />
+                </Wire>
+                <Wire UId="41">
+                  <NameCon UId="31" Name="out" />
+                  <NameCon UId="32" Name="in" />
+                </Wire>
+                <Wire UId="42">
+                  <IdentCon UId="26" />
+                  <NameCon UId="32" Name="operand" />
                 </Wire>
               </Wires>
             </FlgNet>
@@ -86,33 +205,1784 @@
           <ProgrammingLanguage>LAD</ProgrammingLanguage>
         </AttributeList>
         <ObjectList>
-          <MultilingualText ID="4" CompositionName="Comment">
+          <MultilingualText ID="5" CompositionName="Comment">
             <ObjectList>
-              <MultilingualTextItem ID="5" CompositionName="Items">
+              <MultilingualTextItem ID="6" CompositionName="Items">
                 <AttributeList>
                   <Culture>en-US</Culture>
-                  <Text />
+                  <Text>Instanciando entradas digitais em PLC Tags "%M " Address
+
+MODO LOCAL: Indica Operação Local da bomba.
+MODO REMOTO: Indica Operação Remoto da bomba (IHM).
+LIGADO: Indica bomba ligada (caso, via sinal discreto).
+FALHA: Sinal de Falha (caso, via sinal discreto).</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Instanciando entradas digitais em PLC Tags "M" Address
+
+MODO LOCAL: Indica Operação Local da bomba
+MODO REMOTO: Indica Operação Remoto da bomba (IHM)
+LIGADO: Indica bomba ligada
+FALHA: Sinal de Falha </Text>
                 </AttributeList>
               </MultilingualTextItem>
             </ObjectList>
           </MultilingualText>
-          <MultilingualText ID="6" CompositionName="Title">
+          <MultilingualText ID="8" CompositionName="Title">
             <ObjectList>
-              <MultilingualTextItem ID="7" CompositionName="Items">
+              <MultilingualTextItem ID="9" CompositionName="Items">
                 <AttributeList>
                   <Culture>en-US</Culture>
-                  <Text>Partida BH-01A</Text>
+                  <Text>Set memórias entradas digitais</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text> Set memórias entradas digitais</Text>
                 </AttributeList>
               </MultilingualTextItem>
             </ObjectList>
           </MultilingualText>
         </ObjectList>
       </SW.Blocks.CompileUnit>
-      <MultilingualText ID="8" CompositionName="Title">
+      <SW.Blocks.CompileUnit ID="B" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource>
+            <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+              <Parts>
+                <Access Scope="GlobalVariable" UId="21">
+                  <Symbol>
+                    <Component Name="S-01A_STS_FALHA_PROFINET" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="22">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_RESET_FALHA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="23">
+                  <Symbol>
+                    <Component Name="S-01A_CMD_BOTAO_RESET_FALHA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="TypedConstant" UId="24">
+                  <Constant>
+                    <ConstantValue>T#2S</ConstantValue>
+                  </Constant>
+                </Access>
+                <Access Scope="TypedConstant" UId="25">
+                  <Constant>
+                    <ConstantValue>T#10S</ConstantValue>
+                  </Constant>
+                </Access>
+                <Access Scope="TypedConstant" UId="26">
+                  <Constant>
+                    <ConstantValue>T#10S</ConstantValue>
+                  </Constant>
+                </Access>
+                <Access Scope="GlobalVariable" UId="27">
+                  <Symbol>
+                    <Component Name="S-01A_LIGADO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="28">
+                  <Symbol>
+                    <Component Name="S-01A_STS_REMOTO_AUTO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="TypedConstant" UId="29">
+                  <Constant>
+                    <ConstantValue>T#5S</ConstantValue>
+                  </Constant>
+                </Access>
+                <Access Scope="GlobalVariable" UId="30">
+                  <Symbol>
+                    <Component Name="S-01A_CMD_LIGA_PROFINET" />
+                  </Symbol>
+                </Access>
+                <Access Scope="LiteralConstant" UId="31">
+                  <Constant>
+                    <ConstantType>Bool</ConstantType>
+                    <ConstantValue>TRUE</ConstantValue>
+                  </Constant>
+                </Access>
+                <Access Scope="GlobalVariable" UId="32">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_MANUTENCAO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="33">
+                  <Symbol>
+                    <Component Name="S-01A_FALHA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="34">
+                  <Symbol>
+                    <Component Name="S-01A_CMD_RESET_FALHA_PROFINET" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="35">
+                  <Symbol>
+                    <Component Name="S-01A_STS_FALHA_NAO_LIGOU" />
+                  </Symbol>
+                </Access>
+                <Part Name="Contact" UId="36">
+                  <Negated Name="operand" />
+                </Part>
+                <Part Name="Contact" UId="37" />
+                <Part Name="Contact" UId="38" />
+                <Part Name="O" UId="39">
+                  <TemplateValue Name="Card" Type="Cardinality">2</TemplateValue>
+                </Part>
+                <Call UId="40">
+                  <CallInfo Name="FB FALHA" BlockType="FB">
+                    <Instance Scope="GlobalVariable" UId="41">
+                      <Component Name="FB FALHA_S-01A" />
+                    </Instance>
+                    <Parameter Name="INPUT_FALHA" Section="Input" Type="Bool" />
+                    <Parameter Name="INPUT_FILTRO_PARA_FALHA" Section="Input" Type="Time" />
+                    <Parameter Name="INPUT_TEMPO_RESET" Section="Input" Type="Time" />
+                    <Parameter Name="INPUT_TEMPO_NÃO_LIGOU" Section="Input" Type="Time" />
+                    <Parameter Name="INPUT_LIGADO" Section="Input" Type="Bool" />
+                    <Parameter Name="INPUT_RESET_FALHA" Section="Input" Type="Bool" />
+                    <Parameter Name="INPUT_REMOTO_AUTO" Section="Input" Type="Bool" />
+                    <Parameter Name="INPUT_TEMPO_RESET_AUTO" Section="Input" Type="Time" />
+                    <Parameter Name="INPUT_SAIDA_LIGA_BOMBA" Section="Input" Type="Bool" />
+                    <Parameter Name="INPUT_HABILITA_CONJUNTO" Section="Input" Type="Bool" />
+                    <Parameter Name="INPUT_MANUTENCAO" Section="Input" Type="Bool" />
+                    <Parameter Name="FALHA" Section="Output" Type="Bool" />
+                    <Parameter Name="RESET_FALHA_INVERSOR" Section="Output" Type="Bool" />
+                    <Parameter Name="FALHA_NÃO_LIGOU" Section="Output" Type="Bool" />
+                  </CallInfo>
+                </Call>
+              </Parts>
+              <Wires>
+                <Wire UId="42">
+                  <Powerrail />
+                  <NameCon UId="40" Name="en" />
+                  <NameCon UId="36" Name="in" />
+                  <NameCon UId="37" Name="in" />
+                  <NameCon UId="38" Name="in" />
+                </Wire>
+                <Wire UId="43">
+                  <IdentCon UId="21" />
+                  <NameCon UId="36" Name="operand" />
+                </Wire>
+                <Wire UId="44">
+                  <NameCon UId="36" Name="out" />
+                  <NameCon UId="40" Name="INPUT_FALHA" />
+                </Wire>
+                <Wire UId="45">
+                  <IdentCon UId="22" />
+                  <NameCon UId="37" Name="operand" />
+                </Wire>
+                <Wire UId="46">
+                  <NameCon UId="37" Name="out" />
+                  <NameCon UId="39" Name="in1" />
+                </Wire>
+                <Wire UId="47">
+                  <IdentCon UId="23" />
+                  <NameCon UId="38" Name="operand" />
+                </Wire>
+                <Wire UId="48">
+                  <NameCon UId="38" Name="out" />
+                  <NameCon UId="39" Name="in2" />
+                </Wire>
+                <Wire UId="49">
+                  <NameCon UId="39" Name="out" />
+                  <NameCon UId="40" Name="INPUT_RESET_FALHA" />
+                </Wire>
+                <Wire UId="50">
+                  <IdentCon UId="24" />
+                  <NameCon UId="40" Name="INPUT_FILTRO_PARA_FALHA" />
+                </Wire>
+                <Wire UId="51">
+                  <IdentCon UId="25" />
+                  <NameCon UId="40" Name="INPUT_TEMPO_RESET" />
+                </Wire>
+                <Wire UId="52">
+                  <IdentCon UId="26" />
+                  <NameCon UId="40" Name="INPUT_TEMPO_NÃO_LIGOU" />
+                </Wire>
+                <Wire UId="53">
+                  <IdentCon UId="27" />
+                  <NameCon UId="40" Name="INPUT_LIGADO" />
+                </Wire>
+                <Wire UId="54">
+                  <IdentCon UId="28" />
+                  <NameCon UId="40" Name="INPUT_REMOTO_AUTO" />
+                </Wire>
+                <Wire UId="55">
+                  <IdentCon UId="29" />
+                  <NameCon UId="40" Name="INPUT_TEMPO_RESET_AUTO" />
+                </Wire>
+                <Wire UId="56">
+                  <IdentCon UId="30" />
+                  <NameCon UId="40" Name="INPUT_SAIDA_LIGA_BOMBA" />
+                </Wire>
+                <Wire UId="57">
+                  <IdentCon UId="31" />
+                  <NameCon UId="40" Name="INPUT_HABILITA_CONJUNTO" />
+                </Wire>
+                <Wire UId="58">
+                  <IdentCon UId="32" />
+                  <NameCon UId="40" Name="INPUT_MANUTENCAO" />
+                </Wire>
+                <Wire UId="59">
+                  <NameCon UId="40" Name="FALHA" />
+                  <IdentCon UId="33" />
+                </Wire>
+                <Wire UId="60">
+                  <NameCon UId="40" Name="RESET_FALHA_INVERSOR" />
+                  <IdentCon UId="34" />
+                </Wire>
+                <Wire UId="61">
+                  <NameCon UId="40" Name="FALHA_NÃO_LIGOU" />
+                  <IdentCon UId="35" />
+                </Wire>
+              </Wires>
+            </FlgNet>
+          </NetworkSource>
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
         <ObjectList>
-          <MultilingualTextItem ID="9" CompositionName="Items">
+          <MultilingualText ID="C" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="D" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Tratamento de falha.
+---------------------------------------------------------------------*INPUT*---------------------------------------------------------------------
+INPUT_FALHA: Entrada do sinal de falha instanciado na Network 1.
+INPUT_FILTRO_PARA_FALHA: Tempo de filtro para entrar em falha.
+TEMPO_RESET: Tempo em segundos que a bomba irá resetar após identificar sem falha.
+TEMPO_NÃO_LIGOU: Se após ligar a bomba não retornar o sinal de INPUT_LIGADO pelo tempo configurado em "INPUT_TEMPO_NAO_LIGOU", acionara falha.
+INPUT_RESET_FALHA: Resetar a falha manualmente caso o sinal de INPUT_FALHA esteja "FALSE".
+INPUT_REMOTO_AUTO: Caso o equipamento entrar em estado de "FALHA" em "REMOTO_AUTOMATICO" o bloco fará um reset com atraso pelo tempo "INPUT_TEMPO_RESET_AUTO".
+INPUT_TEMPO_RESET_AUTO: Caso em "REMOTO_AUTO", para resetar será contado o tempo de entrada.
+INPUT_SAIDA_LIGA_BOMBA: Comando de saída para acionar o equipamento.
+INPUT_HABILITA_CONJUNTO: Comando para casos de Principal e Reserva (padrão "TRUE").
+INPUT_MANUTENCAO: Comando de manutenção do equipamento intertrava qualquer acionamento e status de "FALHA".
+---------------------------------------------------------------------*OUTPUT*---------------------------------------------------------------------
+FALHA: Sinal de saída de "FALHA" do equipamento.
+RESET_FALHA_INVERSOR: Comando enviado para reset do inversor em caso de "FALHA".
+FALHA_NAO_LIGOU: Caso esteja sendo enviado o comando para "LIGAR" e não receber o feedback de ligado, no tempo de "TEMPO_NÃO_LIGOU", o equiapamento entra em "FALHA".
+</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="E" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Tratamento de falha da bomba
+INPUT_FALHA: Entrada do sinal de falha instanciado na Network 1.
+TEMPO_RESET: Tempo em segundos que a bomba irá resetar após identificar sem falha.
+TEMPO_NÃO_LIGOU: Se após ligar a bomba não retornar o sinal de LIGADO pelo tempo configurado, acionara falha.
+INPUT_RESET_FALHA: Resetar a falha manualmente caso o sinal de INPUT_FALHA esteja FALSE</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="F" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="10" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Function Block FALHA</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="11" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Function Block FALHA</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="12" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource />
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="13" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="14" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>----------------------------------------------------------------------*INPUT*---------------------------------------------------------------------
+---------------------------------------------------------------------*OUTPUT*------------------------------------------------------------------</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="15" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="16" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="17" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>MODO AUTOMÁTICO: Condições para Modo Automático</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="18" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>MODO AUTOMÁTICO: Condições para Modo Automático</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="19" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource />
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="1A" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="1B" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>----------------------------------------------------------------------*INPUT*---------------------------------------------------------------------
+---------------------------------------------------------------------*OUTPUT*------------------------------------------------------------------</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="1C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="1D" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="1E" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Alternância/Rotatividade de bombas Principal-Reserva</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="1F" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Alternância/Rotatividade de bombas Principal-Reserva</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="20" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource>
+            <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+              <Parts>
+                <Access Scope="GlobalVariable" UId="21">
+                  <Symbol>
+                    <Component Name="S-01A_LIGADO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="22">
+                  <Symbol>
+                    <Component Name="S-01A_FALHA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="23">
+                  <Symbol>
+                    <Component Name="S-01A_STS_MODO_LOCAL" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="24">
+                  <Symbol>
+                    <Component Name="S-01A_STS_LOCAL_AUTO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="25">
+                  <Symbol>
+                    <Component Name="S-01A_STS_MODO_REMOTO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="26">
+                  <Symbol>
+                    <Component Name="S-01A_STS_FALHA_PROFINET" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="27">
+                  <Symbol>
+                    <Component Name="S-01A_CMD_HABILITA_LIGA_AUTO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="28">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_LIGA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="29">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_MANUTENCAO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="30">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_MODO_OPERACAO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="31">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_RESET_HORIMETRO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="32">
+                  <Symbol>
+                    <Component Name="S-01A_CMD_LIGA_BOMBA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="33">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="STS_STATUS_MOTOR" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="34">
+                  <Symbol>
+                    <Component Name="S-01A_STS_REMOTO_AUTO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="35">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="STS_MODO_OPERACAO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="36">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="STS_HORIMETRO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="37">
+                  <Symbol>
+                    <Component Name="S-01A_CMD_RESET_LIGA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="38">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="STS_INTERTRAVAMENTO_AUTOMATICO" />
+                  </Symbol>
+                </Access>
+                <Call UId="39">
+                  <CallInfo Name="FB CONDIÇÃO DE PARTIDA" BlockType="FB">
+                    <Instance Scope="GlobalVariable" UId="40">
+                      <Component Name="FB CONDIÇÃO DE PARTIDA_S-01A" />
+                    </Instance>
+                    <Parameter Name="INPUT_LIGADO" Section="Input" Type="Bool" />
+                    <Parameter Name="INPUT_DESLIGADO" Section="Input" Type="Bool" />
+                    <Parameter Name="INPUT_FALHA" Section="Input" Type="Bool" />
+                    <Parameter Name="INPUT_LOCAL_MAN" Section="Input" Type="Bool" />
+                    <Parameter Name="INPUT_LOCAL_AUTO" Section="Input" Type="Bool" />
+                    <Parameter Name="INPUT_REMOTO" Section="Input" Type="Bool" />
+                    <Parameter Name="INPUT_FALHA_PROFINET" Section="Input" Type="Bool" />
+                    <Parameter Name="INPUT_HABILITA_LIGA_AUTO" Section="Input" Type="Bool" />
+                    <Parameter Name="INPUT_CMD_LIGA" Section="Input" Type="Bool" />
+                    <Parameter Name="CMD_MANUTEN" Section="Input" Type="Bool" />
+                    <Parameter Name="CMD_MODO_OPERACAO" Section="Input" Type="Bool" />
+                    <Parameter Name="CMD_RESET_HORIMETRO" Section="Input" Type="Bool" />
+                    <Parameter Name="LIGA_BOMBA" Section="Output" Type="Bool" />
+                    <Parameter Name="STATUS_MOTOR" Section="Output" Type="Byte" />
+                    <Parameter Name="OUTPUT_REMOTO_AUTO" Section="Output" Type="Bool" />
+                    <Parameter Name="OUTPUT_MODO_OPER" Section="Output" Type="Byte" />
+                    <Parameter Name="STS_HORIMETRO" Section="Output" Type="UInt" />
+                    <Parameter Name="RESET_CMD_LIGA" Section="Output" Type="Bool" />
+                    <Parameter Name="STS_INTERTRAVAMENTO_AUTOMATICO" Section="Output" Type="Bool" />
+                  </CallInfo>
+                </Call>
+              </Parts>
+              <Wires>
+                <Wire UId="42">
+                  <Powerrail />
+                  <NameCon UId="39" Name="en" />
+                </Wire>
+                <Wire UId="43">
+                  <IdentCon UId="21" />
+                  <NameCon UId="39" Name="INPUT_LIGADO" />
+                </Wire>
+                <Wire UId="44">
+                  <OpenCon UId="41" />
+                  <NameCon UId="39" Name="INPUT_DESLIGADO" />
+                </Wire>
+                <Wire UId="45">
+                  <IdentCon UId="22" />
+                  <NameCon UId="39" Name="INPUT_FALHA" />
+                </Wire>
+                <Wire UId="46">
+                  <IdentCon UId="23" />
+                  <NameCon UId="39" Name="INPUT_LOCAL_MAN" />
+                </Wire>
+                <Wire UId="47">
+                  <IdentCon UId="24" />
+                  <NameCon UId="39" Name="INPUT_LOCAL_AUTO" />
+                </Wire>
+                <Wire UId="48">
+                  <IdentCon UId="25" />
+                  <NameCon UId="39" Name="INPUT_REMOTO" />
+                </Wire>
+                <Wire UId="49">
+                  <IdentCon UId="26" />
+                  <NameCon UId="39" Name="INPUT_FALHA_PROFINET" />
+                </Wire>
+                <Wire UId="50">
+                  <IdentCon UId="27" />
+                  <NameCon UId="39" Name="INPUT_HABILITA_LIGA_AUTO" />
+                </Wire>
+                <Wire UId="51">
+                  <IdentCon UId="28" />
+                  <NameCon UId="39" Name="INPUT_CMD_LIGA" />
+                </Wire>
+                <Wire UId="52">
+                  <IdentCon UId="29" />
+                  <NameCon UId="39" Name="CMD_MANUTEN" />
+                </Wire>
+                <Wire UId="53">
+                  <IdentCon UId="30" />
+                  <NameCon UId="39" Name="CMD_MODO_OPERACAO" />
+                </Wire>
+                <Wire UId="54">
+                  <IdentCon UId="31" />
+                  <NameCon UId="39" Name="CMD_RESET_HORIMETRO" />
+                </Wire>
+                <Wire UId="55">
+                  <NameCon UId="39" Name="LIGA_BOMBA" />
+                  <IdentCon UId="32" />
+                </Wire>
+                <Wire UId="56">
+                  <NameCon UId="39" Name="STATUS_MOTOR" />
+                  <IdentCon UId="33" />
+                </Wire>
+                <Wire UId="57">
+                  <NameCon UId="39" Name="OUTPUT_REMOTO_AUTO" />
+                  <IdentCon UId="34" />
+                </Wire>
+                <Wire UId="58">
+                  <NameCon UId="39" Name="OUTPUT_MODO_OPER" />
+                  <IdentCon UId="35" />
+                </Wire>
+                <Wire UId="59">
+                  <NameCon UId="39" Name="STS_HORIMETRO" />
+                  <IdentCon UId="36" />
+                </Wire>
+                <Wire UId="60">
+                  <NameCon UId="39" Name="RESET_CMD_LIGA" />
+                  <IdentCon UId="37" />
+                </Wire>
+                <Wire UId="61">
+                  <NameCon UId="39" Name="STS_INTERTRAVAMENTO_AUTOMATICO" />
+                  <IdentCon UId="38" />
+                </Wire>
+              </Wires>
+            </FlgNet>
+          </NetworkSource>
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="21" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="22" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Varredura de condicionais para ligar
+----------------------------------------------------------------------*INPUT*---------------------------------------------------------------------
+INPUT_LIGADO: Entrada do sinal de ligado instanciado na Network 1.
+INPUT_DESLIGADO: Entrada do sinal discreto "DESLIGADO" (caso, feedback via sinal discreto).
+INPUT_FALHA: Entrada do sinal de falha da saída do bloco na Network 2.
+INPUT_LOCAL: Entrada do sinal de modo local instanciado na Network 1.
+INPUT_LOC_AUTO: Entrada do sinal do modo Local Automático
+INPUT_REMOTO: Entrada do sinal de modo remoto instanciado na Network 1.
+INPUT_FALHA_PROFNET: Entrada do sinal de Falha na comunicação Profinet.
+INPUT_HABILITA_AUTO: Entrada do Sinal que habilita o modo Automático.
+INPUT_CMD_LIGA: Entrada do sinal para acionar o equipamento.
+CMD_MANUTENÇÃO:Comando de manutenção do equipamento intertrava qualquer acionamento.
+CMD_MODO_OPERAÇÃO: Seleção do modo de operação do equipamento.
+CMD_RESET_HORIMETRO: Comando para resetar o contador de Horas Trabalhadas.
+
+
+---------------------------------------------------------------------*OUTPUT*------------------------------------------------------------------
+LIGA_BOMBA: Se TRUE, as condições estão OK para ligar na Network 11.
+STATUS_MOTOR: Status de saída; 0 = DESLIGADO; 1 = LIGADO; 2 = FALHA; 3 = MANUTENÇÃO.
+OUTPUT_REMOTO_AUTO: Saída indica que o motor/bomba está em modo Remoto Automático.
+OUTPUT_MODO_OPERAÇÃO: Modo de operação local/remoto, manual/automático do equipamento
+STS_HORIMETRO: Contabilização do tempo do equipamento em operação.
+RESET_CMD_LIGA: Reset da memória de comando "LIGA" em casos do equipamento estar em modo "REMOTO_AUTOMATICO" ou "FALHA" ou "MANUTENÇÃO".</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="23" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Varredura de condicionais para ligar
+INPUT_LIGADO: Entrada do sinal de ligado instanciado na Network 1.
+INPUT_FALHA: Entrada do sinal de falha da saída do bloco na Network 2.
+INPUT_LOCAL: Entrada do sinal de modo local instanciado na Network 1.
+INPUT_LOC_AUTO: Entrada do sinal do modo Local Automático
+INPUT_REMOTO: Entrada do sinal de modo remoto instanciado na Network 1.
+PARÂMETRO: Parâmetro de monitoramento para ligar e desligar a bomba em automático.
+PARÂMETRO_LIGA/DESLIGA: Cadastros de programação liga/desliga em relação ao parâmetro.
+CMD: Comandos recebidos pelo bloco
+STATUS_MOTOR: Status de saída; 0 = DESLIGADO; 1 = LIGADO; 2 = FALHA; 3 = MANUTENÇÃO.
+LIGA_BOMBA: Se TRUE, as condições estão OK para ligar na 5.
+REMOTO_MAN: Saída indica que o motor/bomba está em modo Remoto Manual
+REMOTO_AUTO: Saída indica que o motor/bomba está em modo Remoto Automático
+LOCAL_MAN: Saída indica que o motor/bomba está em modo Local Manual</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="24" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="25" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Function Block CONDIÇÃO DE PARTIDA</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="26" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Function Block CONDIÇÃO DE PARTIDA</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="27" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource>
+            <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+              <Parts>
+                <Access Scope="GlobalVariable" UId="21">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="AFERICAO" />
+                    <Component Name="AFERICAO_ANALOGICA" />
+                    <Component Name="COMANDO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="LiteralConstant" UId="22">
+                  <Constant>
+                    <ConstantType>Int</ConstantType>
+                    <ConstantValue>300</ConstantValue>
+                  </Constant>
+                </Access>
+                <Access Scope="GlobalVariable" UId="23">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="AFERICAO" />
+                    <Component Name="AFERICAO_ANALOGICA" />
+                    <Component Name="X1_CONFIG" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="24">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_CADASTRO_MIN_LEITURA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="25">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="AFERICAO" />
+                    <Component Name="AFERICAO_ANALOGICA" />
+                    <Component Name="X2_CONFIG" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="26">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_CADASTRO_MAX_LEITURA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="27">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_CADASTRO_MAX_LEITURA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="28">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_CADASTRO_MAX_LEITURA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="29">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_CADASTRO_MAX_LEITURA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="30">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_CADASTRO_MIN_LEITURA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="31">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_SETPOINT_MANUAL" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="32">
+                  <Symbol>
+                    <Component Name="S-01A_SP_SETPOINT_MANUAL" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="33">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_REF_VELOCIDADE" />
+                  </Symbol>
+                </Access>
+                <Part Name="Eq" UId="34">
+                  <TemplateValue Name="SrcType" Type="Type">Int</TemplateValue>
+                </Part>
+                <Part Name="Move" UId="35" DisabledENO="true">
+                  <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+                </Part>
+                <Part Name="Move" UId="36" DisabledENO="true">
+                  <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+                </Part>
+                <Call UId="37">
+                  <CallInfo Name="FB SETPOINT ESCALONAMENTO" BlockType="FB">
+                    <Instance Scope="GlobalVariable" UId="38">
+                      <Component Name="FB SETPOINT ESCALONAMENTO S-01A" />
+                    </Instance>
+                    <Parameter Name="MAX_UNIT" Section="Input" Type="Int" />
+                    <Parameter Name="MAX_RPM_TOTAL" Section="Input" Type="Int" />
+                    <Parameter Name="MAX_RPM_IHM" Section="Input" Type="Int" />
+                    <Parameter Name="MIN_RPM_IHM" Section="Input" Type="Int" />
+                    <Parameter Name="SETPOINT_UNIT_OUT" Section="Output" Type="Int" />
+                    <Parameter Name="SETPOINT_UNIT_IN" Section="Output" Type="Int" />
+                    <Parameter Name="SETPOINT" Section="InOut" Type="Int" />
+                  </CallInfo>
+                </Call>
+              </Parts>
+              <Wires>
+                <Wire UId="39">
+                  <Powerrail />
+                  <NameCon UId="34" Name="pre" />
+                  <NameCon UId="37" Name="en" />
+                </Wire>
+                <Wire UId="40">
+                  <IdentCon UId="21" />
+                  <NameCon UId="34" Name="in1" />
+                </Wire>
+                <Wire UId="41">
+                  <IdentCon UId="22" />
+                  <NameCon UId="34" Name="in2" />
+                </Wire>
+                <Wire UId="42">
+                  <NameCon UId="34" Name="out" />
+                  <NameCon UId="35" Name="en" />
+                  <NameCon UId="36" Name="en" />
+                </Wire>
+                <Wire UId="43">
+                  <IdentCon UId="23" />
+                  <NameCon UId="35" Name="in" />
+                </Wire>
+                <Wire UId="44">
+                  <NameCon UId="35" Name="out1" />
+                  <IdentCon UId="24" />
+                </Wire>
+                <Wire UId="45">
+                  <IdentCon UId="25" />
+                  <NameCon UId="36" Name="in" />
+                </Wire>
+                <Wire UId="46">
+                  <NameCon UId="36" Name="out1" />
+                  <IdentCon UId="26" />
+                </Wire>
+                <Wire UId="47">
+                  <IdentCon UId="27" />
+                  <NameCon UId="37" Name="MAX_UNIT" />
+                </Wire>
+                <Wire UId="48">
+                  <IdentCon UId="28" />
+                  <NameCon UId="37" Name="MAX_RPM_TOTAL" />
+                </Wire>
+                <Wire UId="49">
+                  <IdentCon UId="29" />
+                  <NameCon UId="37" Name="MAX_RPM_IHM" />
+                </Wire>
+                <Wire UId="50">
+                  <IdentCon UId="30" />
+                  <NameCon UId="37" Name="MIN_RPM_IHM" />
+                </Wire>
+                <Wire UId="51">
+                  <IdentCon UId="31" />
+                  <NameCon UId="37" Name="SETPOINT" />
+                </Wire>
+                <Wire UId="52">
+                  <NameCon UId="37" Name="SETPOINT_UNIT_OUT" />
+                  <IdentCon UId="32" />
+                </Wire>
+                <Wire UId="53">
+                  <NameCon UId="37" Name="SETPOINT_UNIT_IN" />
+                  <IdentCon UId="33" />
+                </Wire>
+              </Wires>
+            </FlgNet>
+          </NetworkSource>
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="28" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="29" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Function Block SETPOINT UNIT TO RPM = Recebe o setpoint da IHM em L/h e o converte em RPM
+----------------------------------------------------------------------*INPUT*---------------------------------------------------------------------
+MAX_RPM = Valor cadastrado para definir qual o valor que corresponde ao RPM máximo
+MIN_RPM = Valor cadastrado para definir qual o valor que corresponde àao RPM mínimo
+SETPOINT = Valor recebido em L/h
+
+Function Block SETPOINT_MANUAL = Recebe o setpoint convertido em RPM e calcula a referência de velocidade proporcional baseando-se no fundo de escala
+REMOTO_COMANDO_VALOR = Valor de comando para comparação
+COMANDO = Comando recebido para confirmar setpoint
+RANGE_MAX: Valor cadastrado para definir qual o valor que corresponde ao RPM máximo
+RANGE_MIN: Valor cadastrado para definir qual o valor que corresponde àao RPM mínimo
+VALOR_SAIDA: Valor do setpoint interpretado dentro da escala do CLP correspondente ao sinal elétrico (4-20mA ou 0-10V) que o inversor recebe e ajusta sua saída proporcionalmente.
+
+---------------------------------------------------------------------*OUTPUT*------------------------------------------------------------------</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="2A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Function Block SETPOINT UNIT TO RPM = Recebe o setpoint da IHM em L/h e o converte em RPM
+----------------------------------------------------------------------*INPUT*---------------------------------------------------------------------
+MAX_RPM = Valor cadastrado para definir qual o valor que corresponde ao RPM máximo
+MIN_RPM = Valor cadastrado para definir qual o valor que corresponde àao RPM mínimo
+SETPOINT = Valor recebido em L/h
+
+Function Block SETPOINT_MANUAL = Recebe o setpoint convertido em RPM e calcula a referência de velocidade proporcional baseando-se no fundo de escala
+REMOTO_COMANDO_VALOR = Valor de comando para comparação
+COMANDO = Comando recebido para confirmar setpoint
+RANGE_MAX: Valor cadastrado para definir qual o valor que corresponde ao RPM máximo
+RANGE_MIN: Valor cadastrado para definir qual o valor que corresponde àao RPM mínimo
+VALOR_SAIDA: Valor do setpoint interpretado dentro da escala do CLP correspondente ao sinal elétrico (4-20mA ou 0-10V) que o inversor recebe e ajusta sua saída proporcionalmente.
+
+---------------------------------------------------------------------*OUTPUT*------------------------------------------------------------------</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="2B" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="2C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Setpoint Manual - Velocidade Proporcial ao Sinal de Saída</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="2D" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Setpoint Manual - Velocidade Proporcial ao Sinal de Saída</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="2E" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource>
+            <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+              <Parts>
+                <Access Scope="GlobalVariable" UId="21">
+                  <Symbol>
+                    <Component Name="S-01A_CMD_RESET_LIGA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="22">
+                  <Symbol>
+                    <Component Name="CCM-1_STS_PAINEL_OK" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="23">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_LIGA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="24">
+                  <Symbol>
+                    <Component Name="S-01A_STS_REMOTO_AUTO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="25">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_MODO_OPERACAO" />
+                  </Symbol>
+                </Access>
+                <Part Name="Contact" UId="26" />
+                <Part Name="Contact" UId="27">
+                  <Negated Name="operand" />
+                </Part>
+                <Part Name="O" UId="28">
+                  <TemplateValue Name="Card" Type="Cardinality">2</TemplateValue>
+                </Part>
+                <Part Name="RCoil" UId="29" />
+                <Part Name="Contact" UId="30" />
+                <Part Name="RCoil" UId="31" />
+              </Parts>
+              <Wires>
+                <Wire UId="32">
+                  <Powerrail />
+                  <NameCon UId="26" Name="in" />
+                  <NameCon UId="27" Name="in" />
+                </Wire>
+                <Wire UId="33">
+                  <IdentCon UId="21" />
+                  <NameCon UId="26" Name="operand" />
+                </Wire>
+                <Wire UId="34">
+                  <NameCon UId="26" Name="out" />
+                  <NameCon UId="28" Name="in1" />
+                </Wire>
+                <Wire UId="35">
+                  <IdentCon UId="22" />
+                  <NameCon UId="27" Name="operand" />
+                </Wire>
+                <Wire UId="36">
+                  <NameCon UId="27" Name="out" />
+                  <NameCon UId="28" Name="in2" />
+                </Wire>
+                <Wire UId="37">
+                  <NameCon UId="28" Name="out" />
+                  <NameCon UId="29" Name="in" />
+                  <NameCon UId="30" Name="in" />
+                </Wire>
+                <Wire UId="38">
+                  <IdentCon UId="23" />
+                  <NameCon UId="29" Name="operand" />
+                </Wire>
+                <Wire UId="39">
+                  <IdentCon UId="24" />
+                  <NameCon UId="30" Name="operand" />
+                </Wire>
+                <Wire UId="40">
+                  <NameCon UId="30" Name="out" />
+                  <NameCon UId="31" Name="in" />
+                </Wire>
+                <Wire UId="41">
+                  <IdentCon UId="25" />
+                  <NameCon UId="31" Name="operand" />
+                </Wire>
+              </Wires>
+            </FlgNet>
+          </NetworkSource>
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="2F" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="30" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Condições para resetar o comando liga enviado ao function block CONDIÇÃO DE PARTIDA:
+Caso o Modo Automático, Falha no motor/bomba ou Modo Manutenção sejam acionados, o Comando Liga será resetado, desligando o motor/bomba.</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="31" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Condições para resetar o comando liga enviado ao function block CONDIÇÃO DE PARTIDA:
+Caso o Modo Automático, Falha no motor/bomba ou Modo Manutenção sejam acionados, o Comando Liga será resetado, desligando o motor/bomba.</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="32" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="33" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Reset Comando Liga</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="34" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Reset Comando Liga</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="35" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource>
+            <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+              <Parts>
+                <Access Scope="GlobalVariable" UId="21">
+                  <Symbol>
+                    <Component Name="S-01A_STS_MODO_LOCAL" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="22">
+                  <Symbol>
+                    <Component Name="S-01A_STS_MODO_REMOTO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="23">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_LIGA" />
+                  </Symbol>
+                </Access>
+                <Part Name="Contact" UId="24" />
+                <Part Name="Contact" UId="25">
+                  <Negated Name="operand" />
+                </Part>
+                <Part Name="O" UId="26">
+                  <TemplateValue Name="Card" Type="Cardinality">2</TemplateValue>
+                </Part>
+                <Part Name="RCoil" UId="27" />
+              </Parts>
+              <Wires>
+                <Wire UId="28">
+                  <Powerrail />
+                  <NameCon UId="24" Name="in" />
+                  <NameCon UId="25" Name="in" />
+                </Wire>
+                <Wire UId="29">
+                  <IdentCon UId="21" />
+                  <NameCon UId="24" Name="operand" />
+                </Wire>
+                <Wire UId="30">
+                  <NameCon UId="24" Name="out" />
+                  <NameCon UId="26" Name="in1" />
+                </Wire>
+                <Wire UId="31">
+                  <IdentCon UId="22" />
+                  <NameCon UId="25" Name="operand" />
+                </Wire>
+                <Wire UId="32">
+                  <NameCon UId="25" Name="out" />
+                  <NameCon UId="26" Name="in2" />
+                </Wire>
+                <Wire UId="33">
+                  <NameCon UId="26" Name="out" />
+                  <NameCon UId="27" Name="in" />
+                </Wire>
+                <Wire UId="34">
+                  <IdentCon UId="23" />
+                  <NameCon UId="27" Name="operand" />
+                </Wire>
+              </Wires>
+            </FlgNet>
+          </NetworkSource>
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="36" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="37" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Caso a o equipamento esteja em "REMOTO" e a chave foi passada para "LOCAL", O equipamento é  colocado em modo "REMOTO MANUAL" e desligado.
+Desse modo, ao girar  novamente de "LOCAL" para "REMOTO", é preciso que o  operador acione manualmente para ligar a bomba ou coloque manualmente em modo "REMOTO_AUTOMÁTICO".
+Isso acontece independente do estado em que a bomba se encontrava antes de girar de "REMOTO" para "LOCAL", garantindo assim, segurança em casos de manutenção.</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="38" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>
+Se Conjunto Bomba = 3 (Principal e Reserva)
+Se Remoto Manual Principal
+Se Remoto Manual Reserva
+Se Habilitado Liga Principal
+Se Habilitado Liga Reserva
+Então Habilita Conjunto de Bomba
+
+Se Conjunto Bomba &lt;&gt; 3
+Se Remoto Manual Principal
+Se Habilita Principal 
+ou
+Se Remoto Manual Reserva 
+Se Habilita Reserva
+Então Habilita Bomba Unitária
+
+Se Bomba Unitária Habilitado
+ou
+Se Conjunto Bomba Habilitado
+Então 
+Habilita Intertravamento Botão IHM de Conjunto Bomba</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="39" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="3A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Intertravamento para habilitar o botão liga na IHM</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="3B" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text> Intertravamento para habilitar o botão liga na IHM</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="3C" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource>
+            <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+              <Parts>
+                <Access Scope="GlobalVariable" UId="21">
+                  <Symbol>
+                    <Component Name="S-01A_STS_MODO_LOCAL" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="22">
+                  <Symbol>
+                    <Component Name="S-01A_STS_LOCAL_AUTO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="23">
+                  <Symbol>
+                    <Component Name="S-01A_STS_LOCAL_MANUAL" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="24">
+                  <Symbol>
+                    <Component Name="S-01A_STS_MODO_REMOTO" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="25">
+                  <Symbol>
+                    <Component Name="S-01A_STS_REMOTO_MANUAL" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="26">
+                  <Symbol>
+                    <Component Name="S-01A_FALHA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="27">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_INTERTRAVAMENTO_LIGA" />
+                  </Symbol>
+                </Access>
+                <Part Name="Contact" UId="28">
+                  <Negated Name="operand" />
+                </Part>
+                <Part Name="Contact" UId="29">
+                  <Negated Name="operand" />
+                </Part>
+                <Part Name="Contact" UId="30">
+                  <Negated Name="operand" />
+                </Part>
+                <Part Name="Contact" UId="31" />
+                <Part Name="Contact" UId="32" />
+                <Part Name="Contact" UId="33">
+                  <Negated Name="operand" />
+                </Part>
+                <Part Name="Coil" UId="34">
+                  <Negated Name="operand" />
+                </Part>
+              </Parts>
+              <Wires>
+                <Wire UId="35">
+                  <Powerrail />
+                  <NameCon UId="28" Name="in" />
+                </Wire>
+                <Wire UId="36">
+                  <IdentCon UId="21" />
+                  <NameCon UId="28" Name="operand" />
+                </Wire>
+                <Wire UId="37">
+                  <NameCon UId="28" Name="out" />
+                  <NameCon UId="29" Name="in" />
+                </Wire>
+                <Wire UId="38">
+                  <IdentCon UId="22" />
+                  <NameCon UId="29" Name="operand" />
+                </Wire>
+                <Wire UId="39">
+                  <NameCon UId="29" Name="out" />
+                  <NameCon UId="30" Name="in" />
+                </Wire>
+                <Wire UId="40">
+                  <IdentCon UId="23" />
+                  <NameCon UId="30" Name="operand" />
+                </Wire>
+                <Wire UId="41">
+                  <NameCon UId="30" Name="out" />
+                  <NameCon UId="31" Name="in" />
+                </Wire>
+                <Wire UId="42">
+                  <IdentCon UId="24" />
+                  <NameCon UId="31" Name="operand" />
+                </Wire>
+                <Wire UId="43">
+                  <NameCon UId="31" Name="out" />
+                  <NameCon UId="32" Name="in" />
+                </Wire>
+                <Wire UId="44">
+                  <IdentCon UId="25" />
+                  <NameCon UId="32" Name="operand" />
+                </Wire>
+                <Wire UId="45">
+                  <NameCon UId="32" Name="out" />
+                  <NameCon UId="33" Name="in" />
+                </Wire>
+                <Wire UId="46">
+                  <IdentCon UId="26" />
+                  <NameCon UId="33" Name="operand" />
+                </Wire>
+                <Wire UId="47">
+                  <NameCon UId="33" Name="out" />
+                  <NameCon UId="34" Name="in" />
+                </Wire>
+                <Wire UId="48">
+                  <IdentCon UId="27" />
+                  <NameCon UId="34" Name="operand" />
+                </Wire>
+              </Wires>
+            </FlgNet>
+          </NetworkSource>
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="3D" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="3E" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Se {
+Modo Local = False
+e Se Local Automático = False
+e Se Local Manual = False
+e Se Modo Remoto = True
+e Se Remoto Manual = True
+e Se FALHA = False
+} 
+Habilita botão para ligar manualmente pela IHM.</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="3F" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Caso a bomba esteja em REMOTO e a chave foi passada para LOCAL, A bomba é  colocada em modo REMOTO MANUAL E desligada. Desse modo, ao girar  novamente de LOCAL para REMOTO, é preciso que o  operador acione manualmente para ligar a bomba ou coloque manualmente em modo REMOTO AUTOMÁTICO. Isso acontece independente do estado em que a bomba se encontrava antes de girar de REMOTO para LOCAL, garantindo assim, segurança em casos de manutenção.</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="40" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="41" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Intertravamento de Segurança</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="42" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Intertravamento de Segurança</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="43" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource>
+            <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+              <Parts>
+                <Access Scope="GlobalVariable" UId="21">
+                  <Symbol>
+                    <Component Name="S-01A_CMD_LIGA_PROFINET" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="22">
+                  <Symbol>
+                    <Component Name="S-01A_CMD_RESET_FALHA_PROFINET" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="23">
+                  <Symbol>
+                    <Component Name="S-01A_SP_SETPOINT_MANUAL" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="24">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_REF_VELOCIDADE" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="25">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_REF_CORRENTE" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="26">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_REF_TORQUE" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="27">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="CMD_REF_POTENCIA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalConstant" UId="28">
+                  <Constant Name="INVERSOR_S-01A_CCM1~PROFINET_interface~Standard_telegram_20" />
+                </Access>
+                <Access Scope="GlobalConstant" UId="29">
+                  <Constant Name="INVERSOR_S-01A_CCM1~PROFINET_interface~Standard_telegram_20" />
+                </Access>
+                <Access Scope="GlobalVariable" UId="30">
+                  <Symbol>
+                    <Component Name="S-01A_STS_LIGADO_PROFINET" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="31">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="STS_VELOCIDADE" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="32">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="STS_CORRENTE" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="33">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="STS_TORQUE" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="34">
+                  <Symbol>
+                    <Component Name="DB GLOBAL" />
+                    <Component Name="CASA_DE_SOPRADORES" />
+                    <Component Name="SOPRADORES_DESARENADOR" />
+                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="STS_POTENCIA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="35">
+                  <Symbol>
+                    <Component Name="S-01A_STS_FALHA_PROFINET" />
+                  </Symbol>
+                </Access>
+                <Call UId="36">
+                  <CallInfo Name="SINA_SPEED_TLG20" BlockType="FB">
+                    <Instance Scope="GlobalVariable" UId="37">
+                      <Component Name="SINA_SPEED_TLG20_S-01A" />
+                    </Instance>
+                    <Parameter Name="enableAxis" Section="Input" Type="Bool" />
+                    <Parameter Name="ackError" Section="Input" Type="Bool" />
+                    <Parameter Name="speedSp" Section="Input" Type="Real" />
+                    <Parameter Name="selectCDS" Section="Input" Type="USInt" />
+                    <Parameter Name="refSpeed" Section="Input" Type="Real" />
+                    <Parameter Name="refCurrent" Section="Input" Type="Real" />
+                    <Parameter Name="refTorque" Section="Input" Type="Real" />
+                    <Parameter Name="refPower" Section="Input" Type="Real" />
+                    <Parameter Name="configAxis" Section="Input" Type="Word" />
+                    <Parameter Name="HWIDSTW" Section="Input" Type="HW_IO" />
+                    <Parameter Name="HWIDZSW" Section="Input" Type="HW_IO" />
+                    <Parameter Name="axisEnabled" Section="Output" Type="Bool" />
+                    <Parameter Name="lockout" Section="Output" Type="Bool" />
+                    <Parameter Name="actCDS" Section="Output" Type="USInt" />
+                    <Parameter Name="actSpeed" Section="Output" Type="Real" />
+                    <Parameter Name="actCurrent" Section="Output" Type="Real" />
+                    <Parameter Name="actTorque" Section="Output" Type="Real" />
+                    <Parameter Name="actPower" Section="Output" Type="Real" />
+                    <Parameter Name="faultVIKNAMUR" Section="Output" Type="Word" />
+                    <Parameter Name="error" Section="Output" Type="Bool" />
+                    <Parameter Name="status" Section="Output" Type="Int" />
+                    <Parameter Name="diagId" Section="Output" Type="Int" />
+                  </CallInfo>
+                </Call>
+              </Parts>
+              <Wires>
+                <Wire UId="45">
+                  <Powerrail />
+                  <NameCon UId="36" Name="en" />
+                </Wire>
+                <Wire UId="46">
+                  <IdentCon UId="21" />
+                  <NameCon UId="36" Name="enableAxis" />
+                </Wire>
+                <Wire UId="47">
+                  <IdentCon UId="22" />
+                  <NameCon UId="36" Name="ackError" />
+                </Wire>
+                <Wire UId="48">
+                  <IdentCon UId="23" />
+                  <NameCon UId="36" Name="speedSp" />
+                </Wire>
+                <Wire UId="49">
+                  <OpenCon UId="38" />
+                  <NameCon UId="36" Name="selectCDS" />
+                </Wire>
+                <Wire UId="50">
+                  <IdentCon UId="24" />
+                  <NameCon UId="36" Name="refSpeed" />
+                </Wire>
+                <Wire UId="51">
+                  <IdentCon UId="25" />
+                  <NameCon UId="36" Name="refCurrent" />
+                </Wire>
+                <Wire UId="52">
+                  <IdentCon UId="26" />
+                  <NameCon UId="36" Name="refTorque" />
+                </Wire>
+                <Wire UId="53">
+                  <IdentCon UId="27" />
+                  <NameCon UId="36" Name="refPower" />
+                </Wire>
+                <Wire UId="54">
+                  <OpenCon UId="39" />
+                  <NameCon UId="36" Name="configAxis" />
+                </Wire>
+                <Wire UId="55">
+                  <IdentCon UId="28" />
+                  <NameCon UId="36" Name="HWIDSTW" />
+                </Wire>
+                <Wire UId="56">
+                  <IdentCon UId="29" />
+                  <NameCon UId="36" Name="HWIDZSW" />
+                </Wire>
+                <Wire UId="57">
+                  <NameCon UId="36" Name="axisEnabled" />
+                  <IdentCon UId="30" />
+                </Wire>
+                <Wire UId="58">
+                  <NameCon UId="36" Name="lockout" />
+                  <OpenCon UId="40" />
+                </Wire>
+                <Wire UId="59">
+                  <NameCon UId="36" Name="actCDS" />
+                  <OpenCon UId="41" />
+                </Wire>
+                <Wire UId="60">
+                  <NameCon UId="36" Name="actSpeed" />
+                  <IdentCon UId="31" />
+                </Wire>
+                <Wire UId="61">
+                  <NameCon UId="36" Name="actCurrent" />
+                  <IdentCon UId="32" />
+                </Wire>
+                <Wire UId="62">
+                  <NameCon UId="36" Name="actTorque" />
+                  <IdentCon UId="33" />
+                </Wire>
+                <Wire UId="63">
+                  <NameCon UId="36" Name="actPower" />
+                  <IdentCon UId="34" />
+                </Wire>
+                <Wire UId="64">
+                  <NameCon UId="36" Name="faultVIKNAMUR" />
+                  <OpenCon UId="42" />
+                </Wire>
+                <Wire UId="65">
+                  <NameCon UId="36" Name="error" />
+                  <IdentCon UId="35" />
+                </Wire>
+                <Wire UId="66">
+                  <NameCon UId="36" Name="status" />
+                  <OpenCon UId="43" />
+                </Wire>
+                <Wire UId="67">
+                  <NameCon UId="36" Name="diagId" />
+                  <OpenCon UId="44" />
+                </Wire>
+              </Wires>
+            </FlgNet>
+          </NetworkSource>
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="44" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="45" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Bloco de Comm Profinet Telegrama 20:
+----------------------------------------------------------------------*INPUT*---------------------------------------------------------------------
+enableAxis: 0 -> 1 = Habilita o inversor (OFF2 / OFF 3 são 1 no status padrão) (OFF1 = 0->1)
+ackError: 0 -> 1 = Reconhecer erro da unidade
+speedSp: Ponto de ajuste de velocidade [rpm]
+selectCDS: Seleção do Conjunto de Dados de Comando (0 = CDS0, 1 = CDS1)
+refSpeed: Velocidade de referência [p2000] em [rpm]
+refCurrent:Corrente de referência [p2002] em [Aeff]
+refTorque: Torque de referência [p2003] em [Nm]
+refPower: Potência de referência [r2005] em [kW]
+configAxis: Entrada binária programada para controlar todas as funções do telegrama sem sua própria entrada de bloco de função
+HWIDSTW: Slot de ponto de ajuste do identificador de hardware
+HWIDZSW: Slot de valor real do identificador de hardware
+---------------------------------------------------------------------*OUTPUT*------------------------------------------------------------------
+axisEnabled: 1 = O inversor está habilitado
+lockout: 1 = Bloqueio do inversor ativo
+actCDS: Conjunto de dados de comando ativo (0 = CDS0, 1 = CDS1)
+actSpeed: Velocidade real suavizada em [1/min]
+actCurrent: Corrente real suavizada em [Arms]
+actTorque: Torque real suavizado em [Nm]
+actPower: Potência ativa real suavizada em [kW]
+faultVIKNAMUR: Palavra de falha de acordo com a definição VIK-NAMUR
+error: 1 = Erro (FB e Infeed)
+status: Saída de status (7002 = FB em operação; 7xxx = aviso; 8xxx = descrição do erro - leia o manual)
+diagId: Códigos de erro dos blocos funcionais do sistema DPWR / DPRD_DAT
+</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="46" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="47" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="48" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Bloco de Controle Inversor Profinet</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="49" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Bloco de Controle Inversor Profinet</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="4A" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource>
+            <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+              <Parts>
+                <Access Scope="GlobalVariable" UId="21">
+                  <Symbol>
+                    <Component Name="S-01A_CMD_LIGA_BOMBA" />
+                  </Symbol>
+                </Access>
+                <Access Scope="GlobalVariable" UId="22">
+                  <Symbol>
+                    <Component Name="S-01A_CMD_LIGA_PROFINET" />
+                  </Symbol>
+                </Access>
+                <Part Name="Contact" UId="23" />
+                <Part Name="Coil" UId="24" />
+              </Parts>
+              <Wires>
+                <Wire UId="25">
+                  <Powerrail />
+                  <NameCon UId="23" Name="in" />
+                </Wire>
+                <Wire UId="26">
+                  <IdentCon UId="21" />
+                  <NameCon UId="23" Name="operand" />
+                </Wire>
+                <Wire UId="27">
+                  <NameCon UId="23" Name="out" />
+                  <NameCon UId="24" Name="in" />
+                </Wire>
+                <Wire UId="28">
+                  <IdentCon UId="22" />
+                  <NameCon UId="24" Name="operand" />
+                </Wire>
+              </Wires>
+            </FlgNet>
+          </NetworkSource>
+          <ProgrammingLanguage>LAD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4B" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="4C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>LIGA_BOMBA: Comando recebido pelo bloco FB CONDIÇÃO DE PARTIDA para ligar.
+SUCÇÂO_OK: Se TRUE, bomba está habilitada para ligar.
+
+Saída digital do CLP que envia o comando de liga para a bomba.</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="4D" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>LIGA_BOMBA: Comando recebido pelo bloco FB CONDIÇÃO DE PARTIDA para ligar.
+SUCÇÂO_OK: Se TRUE, bomba está habilitada para ligar.
+
+Saída digital do CLP que envia o comando de liga para a bomba.</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="4E" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="4F" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Aciona saída digital para partir o motor/bomba</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+              <MultilingualTextItem ID="50" CompositionName="Items">
+                <AttributeList>
+                  <Culture>pt-BR</Culture>
+                  <Text>Aciona saída digital para partir o motor/bomba</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="51" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="52" CompositionName="Items">
             <AttributeList>
               <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+          <MultilingualTextItem ID="53" CompositionName="Items">
+            <AttributeList>
+              <Culture>pt-BR</Culture>
               <Text />
             </AttributeList>
           </MultilingualTextItem>

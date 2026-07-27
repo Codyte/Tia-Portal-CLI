@@ -361,6 +361,11 @@ namespace Tia.Tests
             Check(plan[2].Folder.Count == 2 && plan[2].Folder[0] == "3. Alarmes/Eventos/Falhas",
                 "'/' no nome da pasta continua um segmento só");
             Check(plan.All(p => !string.IsNullOrEmpty(p.Name)), "nome do objeto lido de cada XML");
+            // <Culture> é elemento, não atributo — ler errado deixa o projeto novo sem a língua do XML
+            var cultures = Ops.XmlCultures(Fixture("ObMoldeAlarmes.xml")).ToList();
+            Check(cultures.Contains("pt-BR") && cultures.Contains("en-US"),
+                "culturas lidas do XML (" + string.Join(", ", cultures) + ")");
+
             Check(Throws(() => Scaffold.Plan(new ScaffoldManifest
                 {
                     Items = new List<ScaffoldItem> { new ScaffoldItem { File = "nao-existe.xml" } },

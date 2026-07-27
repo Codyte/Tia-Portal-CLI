@@ -121,9 +121,26 @@ DB global → iDB → FC → OB. Sem isso o iDB entra antes do FB que ele instan
 Caminho de pasta é **lista de segmentos**, não string com `/`: os nomes reais contêm barra
 (`3. Alarmes/Eventos/Falhas`, `4. Motores/Bombas`) e `Ops.ResolveFolder` quebraria neles.
 
-Estado: dry contra este projeto = **26/26 pastas e 66/66 itens já existentes** (o manifesto casa
-com a realidade e é idempotente). O ramo `create` — importar de fato num projeto vazio — segue
-não exercitado; teste de aceite é `scaffold --apply` num projeto novo seguido de `tia audit`.
+Dry contra este projeto = **26/26 pastas e 66/66 itens já existentes** (o manifesto casa com a
+realidade e é idempotente).
+
+### Aceite do `--apply` (2026-07-27, projeto `workspace/ScaffoldTest`)
+
+`create-project` → `add-device` (CPU 6ES7 515-2AN03-0AB0/V3.1) → `scaffold --apply` →
+`compile --apply` → `save-project` → `audit`. Resultado: **66/66 criados**, `audit` **5/5 limpo**
+(1 acionamento, o S-01A). Dois bugs que só o ramo `create` expôs:
+
+- Projeto novo nasce só com a cultura de instalação do TIA → todo import de texto multilíngue
+  morria com `Cannot import multilingual text with culture 'pt-BR'`. `Ops.EnsureCultures` ativa
+  as culturas do XML antes de importar (`LanguageSettings.ActiveLanguages.Add(Languages.Find(c))`);
+  saída reporta `languagesActivated`.
+- `<Culture>` é **elemento**, não atributo — a primeira versão lia atributo e não achava nada.
+
+`compile` fecha com **26 erros, todos de ambiente que o scaffold não traz** (nenhum é do import):
+`FirstScan`/`Clock_1Hz`/`AlwaysTRUE` (bits de system/clock memory não habilitados na CPU nova),
+tags de IO e de instrumento (só 2 das 194 tabelas entram no manifesto) e `Missing instance DB`
+nos dois moldes (`MOLDE_ANALOGS`, `MOLDE TOT1` — o iDB é criado pelo `replicate-instruments`).
+Pendência daí: `scaffold` (ou `add-device`) poderia habilitar os bytes de system/clock memory.
 
 ## Estado da CLI contra este projeto
 

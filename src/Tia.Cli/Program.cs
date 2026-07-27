@@ -301,7 +301,7 @@ namespace Tia.Cli
                         var manifest = JsonConvert.DeserializeObject<Core.ScaffoldManifest>(
                             File.ReadAllText(manifestFile));
                         using (WriteLock(session, apply, verb))
-                            result = Core.Scaffold.Run(session.GetPlc(plcName), manifest,
+                            result = Core.Scaffold.Run(session, session.GetPlc(plcName), manifest,
                                 Path.GetDirectoryName(manifestFile), apply, args.Contains("--force"));
                         break;
                     case "clone":

@@ -2,7 +2,7 @@
 // 20-40    ScaffoldManifest / ScaffoldItem / ScaffoldPlanItem (config do verbo scaffold)
 // 42-58    Scaffold — Rank (ordem de import por tipo de objeto)
 // 60-88    Plan — puro, sem TIA: resolve arquivos, lê root/nome do XML, ordena
-// 90-140   Run — cria pastas e importa o que falta (skip se existe, --force sobrescreve)
+// 90-145   Run — ativa culturas do XML, cria pastas, importa o que falta (skip se existe)
 // 142-176  ResolveBlockPath / ResolveTagPath — caminho por segmentos ('/' é literal em nome de pasta)
 using System;
 using System.Collections.Generic;
@@ -94,9 +94,13 @@ namespace Tia.Core
             return items.OrderBy(i => i.Rank).ToList(); // stable: manifest order kept inside a rank
         }
 
-        public static object Run(PlcSoftware plc, ScaffoldManifest manifest, string baseDir, bool apply, bool force)
+        public static object Run(TiaSession session, PlcSoftware plc, ScaffoldManifest manifest,
+            string baseDir, bool apply, bool force)
         {
             var plan = Plan(manifest, baseDir);
+            // projeto novo só tem a cultura de instalação do TIA; sem ativar as do XML, todo import falha
+            var languages = Ops.EnsureCultures(session.Project,
+                plan.SelectMany(i => Ops.XmlCultures(i.File)), apply);
             var folders = new List<object>();
             foreach (var segments in manifest.Folders ?? new List<List<string>>())
                 folders.Add(FolderAction(plc, segments, false, apply));
@@ -132,6 +136,7 @@ namespace Tia.Core
             }
             return new Dictionary<string, object>
             {
+                { "languagesActivated", languages },
                 { "folders", folders },
                 { "items", items },
                 { "created", items.Count(i => (string)((Dictionary<string, object>)i)["action"] == "create") },

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -372,6 +373,42 @@ namespace Tia.Core
             if (root == null || !root.StartsWith(expectedPrefix, StringComparison.Ordinal))
                 throw new InvalidOperationException(
                     "XML root object is '" + (root ?? "none") + "', expected '" + expectedPrefix + "*': " + file);
+        }
+
+        /// <summary>Culturas dos textos multilíngues de um export XML (elemento &lt;Culture&gt;pt-BR&lt;/Culture&gt;).</summary>
+        internal static IEnumerable<string> XmlCultures(string file)
+        {
+            return XDocument.Load(file).Descendants()
+                .Where(e => e.Name.LocalName == "Culture")
+                .Select(e => e.Value.Trim())
+                .Where(c => c.Length > 0)
+                .Distinct();
+        }
+
+        /// <summary>
+        /// Culturas do XML que o projeto ainda não tem ativas (apply=true ativa). Sem isso o import
+        /// morre com "Cannot import multilingual text with culture 'pt-BR' ... does not exist within
+        /// the current project" — projeto novo nasce só com a cultura de instalação do TIA.
+        /// </summary>
+        public static List<string> EnsureCultures(ProjectBase project, IEnumerable<string> cultures, bool apply)
+        {
+            var missing = new List<string>();
+            var settings = project.LanguageSettings;
+            foreach (var name in cultures.Distinct())
+            {
+                CultureInfo culture;
+                try { culture = CultureInfo.GetCultureInfo(name); }
+                catch (CultureNotFoundException) { continue; } // cultura do XML que o Windows não conhece
+                if (settings.ActiveLanguages.Find(culture) != null) continue;
+                missing.Add(name);
+                var language = settings.Languages.Find(culture);
+                if (language == null)
+                    throw new InvalidOperationException(
+                        "Culture '" + name + "' is not available in this TIA installation; install the "
+                        + "language pack or export the XMLs in a culture the project supports.");
+                if (apply) settings.ActiveLanguages.Add(language);
+            }
+            return missing;
         }
 
         /// <summary>First AttributeList/Name in a Siemens export XML = object name (block, tag table…).</summary>

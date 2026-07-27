@@ -179,8 +179,13 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
     Idempotente (objeto existente = `skip`), ordem de import por tipo (UDT→tags→FB→DB→iDB→FC→OB),
     caminho de pasta em segmentos (nome real tem `/`). Manifesto:
     `docs/examples/scaffold-padrao.json`; fonte `workspace/padrao/` (66 itens, gitignored).
-    Dry contra o de referência: 26/26 pastas e 66/66 itens `exists`. **`--apply` num projeto vazio
-    ainda não exercitado** — é o teste de aceite (depois `tia audit` tem que passar limpo).
+    Dry contra o de referência: 26/26 pastas e 66/66 itens `exists`. ✅ **aceite fechado**
+    (`workspace/ScaffoldTest`): `create-project` → `add-device` → `scaffold --apply` (66/66 criados)
+    → `compile --apply` → `save-project` → `audit` **5/5 limpo**. Dois bugs que só o ramo `create`
+    expôs (culturas do projeto, `<Culture>` elemento vs atributo) — ver PADRAO.
+    `add-device --apply` exercitado pela 1ª vez aqui (item 3 do backlog). Compile do projeto
+    scaffoldado dá 26 erros de ambiente ausente (system/clock memory bits, tags de IO, iDB dos
+    moldes) — nada de import; detalhe e pendência em `docs/PADRAO.md`.
 
 ## Bugs abertos (smoke 2026-07-27)
 

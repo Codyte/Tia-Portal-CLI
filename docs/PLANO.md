@@ -123,22 +123,29 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
 ## Backlog v2 (cobertura Openness — priorizado)
 
 1. ~~**Fontes externas**: `import-source`~~ ✅ feito (`tia import-source --file X.scl [--apply]`;
-   ext .scl/.awl/.st/.db/.udt; exemplo em `docs/examples/example.scl`). Smoke pendente.
+   ext .scl/.awl/.st/.db/.udt; exemplo em `docs/examples/example.scl`). ✅ smoke dry 2026-07-27.
 1b. ~~**Conversor SCL→LAD**: `import-ladder`~~ ✅ feito (`tia import-ladder --file X.scl [--name N]
    [--folder A/B] [--apply]`). Subset: bool AND/OR/NOT/parênteses, comparadores, IF→Set/Reset/Coil,
    MOVE de literal. Rejeita FOR/WHILE/CASE/aritmética/#locais com erro claro. Dry-run gera XML
-   **sem TIA** (testado offline ✅); import real smoke pendente — risco: detalhes FlgNet (nomes de
-   porta de comparador/MOVE, SrcType DInt default) escritos de memória, validar no primeiro smoke.
+   **sem TIA** (testado offline ✅); ✅ smoke dry 2026-07-27 contra projeto real — import com
+   `--apply` ainda não exercitado, então os detalhes FlgNet (nomes de porta de comparador/MOVE,
+   SrcType DInt default) seguem não validados.
    Exemplo: `docs/examples/ladder.scl`. Fora do V1: FB calls (TON/CTU), edge, copy tag→tag.
 2. ~~**Estrutura**~~ ✅ feito (`create-folder`/`delete-folder --path A/B [--tags]`,
    `delete-block --name X`, `export-type`/`import-type` p/ UDT). Dry-run conta conteúdo antes
-   de deletar. Smoke pendente — risco: `PlcBlockUserGroup.Delete()`/`PlcTagTableUserGroup.Delete()`
-   e `plc.TypeGroup.Types.Import` de memória, validar no primeiro smoke.
+   de deletar. ✅ smoke 2026-07-27 no projeto real: `create-folder --apply`, `delete-block --apply`
+   e `delete-folder --apply` executados contra alvo descartável (`ZZ_Smoke`) e revertidos —
+   1011 blocos antes e depois. `export-type`/`import-type` (dry `action: override`) ok **após**
+   `compile --apply`: sem compilar, Openness recusa (`Inconsistent blocks and PLC data types
+   (UDT) cannot be exported`).
 3. ~~**Hardware**~~ ✅ feito (`add-device --mlfb X --name N [--station S]`,
    `set-address --device X [--ip] [--mask] [--pn-name]`, `connect-subnet --device X --subnet S
    [--io-system IO]` — controller cria IO-system, IO device entra num existente;
-   `export-cax`/`import-cax` AML). Smoke pendente — risco: atributos Node ("Address",
-   "PnDeviceName", "PnDeviceNameAutoGeneration") e CreateIoSystem de memória.
+   `export-cax`/`import-cax` AML). ✅ smoke dry 2026-07-27: `set-address` lê o endereço atual
+   (`192.168.10.1`), `connect-subnet` detecta `subnetAction: reuse`, `add-device`/`export-cax`/
+   `import-cax` ok. `--apply` de hardware não exercitado (atributos Node e CreateIoSystem seguem
+   não validados). **`--device` quer nome de estação** (`S7-1500/ET200MP station_1`), não o nome
+   do PLC que `info`/`doctor` reportam (`CPU CCO`) — erro não sugere o nome próximo.
 4. ~~**Compile granular + diff-block**~~ ✅ feito (`compile [--block X | --folder A/B]`,
    `diff-block --file F.xml [--name X]` read-only). `BlocksIdentical` movido pra `Ops`
    (param ignoreComments; AlarmFc=true, InstrumentFc=false — comportamento preservado).
@@ -147,7 +154,10 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
    API compilou contra DLL real; formato do resultado validar no smoke).
 6. ~~**Batch**~~ ✅ feito (`tia run --script ops.json` — JSON array de arg-arrays, attach 1x;
    falha para no passo com erro; `run`/`open-project` proibidos como step.
-   Exemplo: `docs/examples/batch.json`).
+   Exemplo: `docs/examples/batch.json`). ✅ smoke 2026-07-27.
+   **Limitação**: sem try/catch por step, a 1ª exceção aborta o batch **e descarta os resultados
+   já colhidos** (o `Print` final nunca roda) — `Program.cs:148-155`. Pra bateria onde falha é
+   esperada, rodar um verbo por vez.
 7. ~~**Robustez**~~ ✅ feito (exit codes: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA/Openness
    (inclui DLL ausente), 5 timeout; `--retry N` em "busy" com backoff linear, default 3;
    `--timeout SEC` via Task.Wait — abandona a chamada, processo sai). Testado offline: 2/4 ok.
@@ -161,6 +171,15 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
     compilou contra DLL real). **Limite de plataforma**: Openness V19 não exporta/importa telas
     Unified como XML (sem SimaticML pra Unified) — export/import de telas fica fora até a Siemens
     expor; tags HMI editáveis via objetos dinâmicos, adicionar verbo se precisar.
+
+## Bugs abertos (smoke 2026-07-27)
+
+- ~~**`import-block` dry-run dá falso positivo em XML que não é bloco.**~~ ✅ corrigido
+  2026-07-27. `Ops.RequireRootType` valida o root object antes de reportar `action`:
+  `SW.Blocks.*` (`import-block`), `SW.Tags.PlcTagTable` (`import-tags`), `SW.Types.*`
+  (`import-type`). Dry agora sai 1 com
+  `XML root object is 'SW.Tags.PlcTagTable', expected 'SW.Blocks.*'`. Teste offline
+  `Ops.RequireRootType`; smoke real: 4 combinações (2 aceitas, 2 recusadas) no AsBuilt.
 
 ## Pendências / decisões futuras
 

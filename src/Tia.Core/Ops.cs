@@ -247,6 +247,7 @@ namespace Tia.Core
         public static object ImportBlock(PlcSoftware plc, string file, string folderPath, bool apply)
         {
             var full = RequireFile(file);
+            RequireRootType(full, "SW.Blocks.");
             var name = XmlObjectName(full);
             var existing = name != null ? FindBlock(plc, name) : null;
             var result = new Dictionary<string, object>
@@ -268,6 +269,7 @@ namespace Tia.Core
         public static object ImportTagTable(PlcSoftware plc, string file, string folderPath, bool apply)
         {
             var full = RequireFile(file);
+            RequireRootType(full, "SW.Tags.PlcTagTable");
             var name = XmlObjectName(full);
             var result = new Dictionary<string, object>
             {
@@ -285,6 +287,7 @@ namespace Tia.Core
         public static object ImportType(PlcSoftware plc, string file, bool apply)
         {
             var full = RequireFile(file);
+            RequireRootType(full, "SW.Types.");
             var name = XmlObjectName(full);
             var result = new Dictionary<string, object>
             {
@@ -350,6 +353,25 @@ namespace Tia.Core
             var full = Path.GetFullPath(file);
             if (!File.Exists(full)) throw new FileNotFoundException("Import file not found: " + full);
             return full;
+        }
+
+        /// <summary>Root object type of a Siemens export XML (SW.Blocks.FC, SW.Tags.PlcTagTable, SW.Types.PlcStruct…).</summary>
+        public static string XmlRootType(string file)
+        {
+            var root = XDocument.Load(file).Root;
+            if (root == null) return null;
+            return root.Elements()
+                .Select(e => e.Name.LocalName)
+                .FirstOrDefault(n => n != "Engineering" && n != "DocumentInfo");
+        }
+
+        /// <summary>Dry-run must fail on the wrong XML kind — Openness only rejects it at Import().</summary>
+        public static void RequireRootType(string file, string expectedPrefix)
+        {
+            var root = XmlRootType(file);
+            if (root == null || !root.StartsWith(expectedPrefix, StringComparison.Ordinal))
+                throw new InvalidOperationException(
+                    "XML root object is '" + (root ?? "none") + "', expected '" + expectedPrefix + "*': " + file);
         }
 
         /// <summary>First AttributeList/Name in a Siemens export XML = object name (block, tag table…).</summary>

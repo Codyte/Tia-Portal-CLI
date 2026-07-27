@@ -1,11 +1,12 @@
 // NAV INDEX
-// 12-40    infra: Check/Fail, repo root, out dir
-// 42-58    Main — roda todos os testes, resume pass/fail
-// 60-104   AlarmFc_BuildFcXml (3 vars → 1 word; 17 vars → 2 words)
-// 106-133  AlarmFc_BuildCallObXml (2 FCs, número, título sem prefixo numérico)
-// 135-166  FaultOb_BuildObXml (ordena por HW id, troca 999, slice x0/x1)
-// 168-203  InstrumentFc_BuildAreaFcXml (8888/9999, instance DB, path global-DB, prefixo tag)
-// 205-217  LadConverter_Convert (ladder.scl → XML LAD)
+// 12-46    infra: Check/Fail, repo root, out dir
+// 48-67    Main — roda todos os testes, resume pass/fail
+// 68-95    AlarmFc_BuildFcXml (3 vars → 1 word; 17 vars → 2 words)
+// 96-117   AlarmFc_BuildCallObXml (2 FCs, número, título sem prefixo numérico)
+// 118-143  FaultOb_BuildObXml (ordena por HW id, troca 999, slice x0/x1)
+// 144-172  InstrumentFc_BuildAreaFcXml (8888/9999, instance DB, path global-DB, prefixo tag)
+// 173-182  LadConverter_Convert (ladder.scl → XML LAD)
+// 183-196  Ops_RequireRootType (root do XML valida kind no dry-run) + Throws helper
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -54,6 +55,7 @@ namespace Tia.Tests
                 { "FaultOb.BuildObXml", FaultOb_BuildObXml },
                 { "InstrumentFc.BuildAreaFcXml", InstrumentFc_BuildAreaFcXml },
                 { "LadConverter.Convert", LadConverter_Convert },
+                { "Ops.RequireRootType", Ops_RequireRootType },
             };
             foreach (var t in tests)
             {
@@ -178,6 +180,20 @@ namespace Tia.Tests
             var doc = XDocument.Load(xmlFile);
             Check((int)result["networks"] > 0, "networks > 0 (" + result["networks"] + ")");
             Check(doc.Descendants().Any(e => e.Name.LocalName == "FlgNet"), "FlgNet presente");
+        }
+
+        private static void Ops_RequireRootType()
+        {
+            Check(Ops.XmlRootType(Fixture("StdBombaA.xml")) == "SW.Tags.PlcTagTable", "root de tag table");
+            Check(Ops.XmlRootType(Fixture("BombaTemplateFc.xml")) == "SW.Blocks.FC", "root de bloco");
+            Check(Throws(() => Ops.RequireRootType(Fixture("StdBombaA.xml"), "SW.Blocks.")),
+                "tag table recusada como bloco (era falso positivo no dry-run)");
+            Check(!Throws(() => Ops.RequireRootType(Fixture("BombaTemplateFc.xml"), "SW.Blocks.")), "FC aceito como bloco");
+        }
+
+        private static bool Throws(Action a)
+        {
+            try { a(); return false; } catch { return true; }
         }
     }
 }

@@ -5,7 +5,19 @@ $ErrorActionPreference = 'Stop'
 $repo = Split-Path $PSScriptRoot
 $exe = Join-Path $repo 'src\Tia.Cli\bin\Debug\net48\tia.exe'
 
-$before = (Test-Path $exe) ? (Get-FileHash $exe).Hash : ''
+function Get-ExeHash64 {
+    [Convert]::ToBase64String(
+        [System.Security.Cryptography.SHA256]::Create().ComputeHash([IO.File]::ReadAllBytes($exe)))
+}
+# Verdade = o hash gravado no registro, nao o delta do build: um build que nao mudou tia.exe
+# mas cujo whitelist anterior falhou deixava o registro stale indefinidamente (aconteceu, 9 dias).
+function Get-RegHash {
+    $k = 'HKLM:\SOFTWARE\Siemens\Automation\Openness'
+    Get-ChildItem $k -ErrorAction SilentlyContinue | ForEach-Object {
+        (Get-ItemProperty (Join-Path $_.PSPath 'Whitelist\tia.exe\Entry') -Name FileHash -ErrorAction SilentlyContinue).FileHash
+    } | Select-Object -First 1
+}
+
 dotnet build (Join-Path $repo 'src') -c Debug --nologo -v q
 if ($LASTEXITCODE -ne 0) { exit 1 }
 
@@ -14,10 +26,20 @@ if (-not $SkipTests) {
     if ($LASTEXITCODE -ne 0) { exit 1 }
 }
 
-if ($before -ne (Get-FileHash $exe).Hash) {
-    # UAC 1 clique — schtasks sem elevação falha (ver CLAUDE.md)
-    Start-Process pwsh -Verb RunAs -Wait -ArgumentList '-NoProfile','-File',(Join-Path $repo 'scripts\whitelist.ps1')
-    Write-Host 'rebuild ok — whitelist refeita (tia.exe mudou)'
+if ((Get-ExeHash64) -ne (Get-RegHash)) {
+    # Task TiaWhitelist roda como SYSTEM/Highest: sem UAC, disparavel por qualquer sessao.
+    if (Get-ScheduledTask -TaskName TiaWhitelist -ErrorAction SilentlyContinue) {
+        Start-ScheduledTask -TaskName TiaWhitelist
+        $limit = (Get-Date).AddSeconds(30)
+        while ((Get-ExeHash64) -ne (Get-RegHash) -and (Get-Date) -lt $limit) { Start-Sleep -Milliseconds 500 }
+    } else {
+        Start-Process pwsh -Verb RunAs -Wait -ArgumentList '-NoProfile','-File',(Join-Path $repo 'scripts\whitelist.ps1')
+    }
+    if ((Get-ExeHash64) -ne (Get-RegHash)) {
+        Write-Host 'ATENCAO: whitelist AINDA stale — Openness vai recusar tia.exe' -ForegroundColor Red
+        exit 1
+    }
+    Write-Host 'rebuild ok — whitelist refeita'
 } else {
-    Write-Host 'rebuild ok — tia.exe inalterado, whitelist mantida'
+    Write-Host 'rebuild ok — whitelist ja bate com tia.exe'
 }

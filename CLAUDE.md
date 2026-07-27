@@ -26,8 +26,33 @@
   - `pwsh scripts/clone-hw.ps1 <Origem> <Destino> [-Apply]` = copia hardware via CAx/AML.
   - `tia run --script ops.json` = batch de verbos, attach 1x. Fluxo FINAIS completo em dry:
     `tia run --script docs/examples/gen-all.json`.
+    **Não isola steps**: sem try/catch por item, a 1ª exceção aborta o batch e descarta os
+    resultados já obtidos. Pra bateria onde falha é esperada, rodar um verbo por vez.
   - `tia doctor` = preflight dos 6 verbos antes de qualquer smoke.
 - Smoke test exige TIA Portal aberto com projeto de teste — confirmar com o usuário antes.
+
+## Sessão 0 × sessão 1 (por que `tia` não roda direto do agente)
+
+O agente vive na **sessão 0** do Windows (isolada de serviços, `UserInteractive=False`). TIA Portal
+e o desktop vivem na **sessão 1**. `TiaPortal.GetProcesses()` não enxerga processo de outra sessão,
+então `Attach()` a partir do shell do agente **sempre** devolve
+`"No running TIA Portal instance found"` — mesmo com o portal aberto na tela. É fronteira do SO,
+não configuração; `--no-ui` não resolve (só troca o erro de modo pelo de whitelist).
+
+**Canal correto — task `TiaSmokeRun`** (`LogonType Interactive` = executa na sessão 1):
+
+1. escrever os args em `workspace/taskio/cmd.json` (array JSON, ex. `["doctor"]`);
+2. `Start-ScheduledTask -TaskName TiaSmokeRun` — funciona do shell do agente, sem UAC;
+3. poll de `workspace/taskio/exit.txt`; saída em `workspace/taskio/out.txt`.
+
+O runner é `scripts/taskrun.ps1`. Não exige janela interativa aberta pelo user
+(`scripts/smokeloop.ps1` é rota alternativa, útil só pra ver a saída ao vivo).
+O portal só morre junto com a task se tiver sido *iniciado por ela* (fica na árvore de processos);
+portal aberto à mão pelo user sobrevive.
+
+Whitelist stale = `EngineeringSecurityException`. Refazer com
+`Start-ScheduledTask -TaskName TiaWhitelist` (SYSTEM, sem UAC); `rebuild.ps1` já compara contra
+o hash gravado no registro e falha alto se continuar divergente.
 
 ## Economia de tokens
 

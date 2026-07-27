@@ -1,6 +1,9 @@
 # NAV INDEX
 # 1-6    header
-# 7-25   creates scheduled tasks TiaWhitelist (SYSTEM) + TiaSmokeRun (S4U user token) and runs whitelist
+# 7-20   registra TiaWhitelist (dono = usuario, RunLevel Highest -> agente pode dispara-la)
+# 22-30  ACL da task: read+execute pro usuario, senao o agente nao consegue dispara-la
+# 32-36  registra TiaSmokeRun (token do usuario)
+# 38-42  confere e roda o whitelist
 # Run elevated, once. Idempotent.
 
 Start-Transcript 'c:\Scripts\TIA Portal\workspace\setup-log.txt' -Force
@@ -10,9 +13,21 @@ $tr = 'c:\Scripts\TIA Portal\scripts\taskrun.ps1'
 
 # sem trigger: /SC ONCE com hora passada some sozinho depois de rodar (o Windows apaga tarefa
 # ONCE expirada) e o rebuild caia no fallback RunAs, que da sessao 0 nao mostra UAC nenhum.
+# Dona = o proprio usuario (nao SYSTEM): task de SYSTEM so aceita Start-ScheduledTask de um token
+# elevado, entao o shell do agente levava "Acesso negado" e todo rebuild exigia terminal do usuario.
+# RunLevel Highest usa o token elevado do usuario sem prompt de UAC — o whitelist precisa de HKLM.
 Register-ScheduledTask -TaskName TiaWhitelist -Force `
     -Action (New-ScheduledTaskAction -Execute $pwsh -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$wl`"") `
-    -Principal (New-ScheduledTaskPrincipal -UserId 'SYSTEM' -LogonType ServiceAccount -RunLevel Highest)
+    -Principal (New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType S4U -RunLevel Highest)
+
+# task criada por processo elevado nasce com SD que so admins leem/executam — sem isto o shell do
+# agente (token filtrado) leva "Acesso negado" ate no Get-ScheduledTask. FRFX = read+execute apenas:
+# o usuario dispara, mas nao reescreve a acao da task sem elevar.
+$sid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+$svc = New-Object -ComObject Schedule.Service
+$svc.Connect()
+$svc.GetFolder('\').GetTask('TiaWhitelist').SetSecurityDescriptor(
+    "D:P(A;;FA;;;BA)(A;;FA;;;SY)(A;;FRFX;;;$sid)", 0)
 
 $action = New-ScheduledTaskAction -Execute $pwsh -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$tr`""
 $principal = New-ScheduledTaskPrincipal -UserId "TITANXNEXUS\Carlos_Ortiz" -LogonType S4U -RunLevel Limited
@@ -20,4 +35,7 @@ $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit (New-TimeSpan -Hour
 Register-ScheduledTask -TaskName TiaSmokeRun -Action $action -Principal $principal -Settings $settings -Force
 
 schtasks /Query /TN TiaSmokeRun /FO LIST | Out-File 'c:\Scripts\TIA Portal\workspace\tasks-check.txt'
+
+# ja estamos elevados: roda o whitelist agora, senao o proximo tia morre com EngineeringSecurityException
+& $wl
 Stop-Transcript

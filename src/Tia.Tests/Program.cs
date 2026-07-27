@@ -59,6 +59,7 @@ namespace Tia.Tests
                 { "DbMember.AddToXml", DbMember_AddToXml },
                 { "Memory.Occupied", Memory_Occupied },
                 { "Clone.Rewrite", Clone_Rewrite },
+                { "Profinet.TagName", Profinet_TagName },
             };
             foreach (var t in tests)
             {
@@ -192,6 +193,16 @@ namespace Tia.Tests
             Check(Throws(() => Ops.RequireRootType(Fixture("StdBombaA.xml"), "SW.Blocks.")),
                 "tag table recusada como bloco (era falso positivo no dry-run)");
             Check(!Throws(() => Ops.RequireRootType(Fixture("BombaTemplateFc.xml"), "SW.Blocks.")), "FC aceito como bloco");
+        }
+
+        /// <summary>Nomes conferidos contra as tags reais de DISPOSITIVOS_PROFINET (projeto de referência).</summary>
+        private static void Profinet_TagName()
+        {
+            Func<string, int, string> name = (tag, n) =>
+                Profinet.TagName(new ProfinetMapping { EquipmentTag = tag, DeviceNumber = n });
+            Check(name("INVERSOR_AG-02 CCM3", 60) == "COMM_60_INVERSOR_AG-02_CCM3", "espaço vira _, hífen fica");
+            Check(name("REM_RM1.0", 1) == "COMM_1_REM_RM1.0", "ponto fica");
+            Check(name("ACB_2", 3) == "COMM_3_ACB_2", "sem separador especial");
         }
 
         private static void DbMember_AddToXml()

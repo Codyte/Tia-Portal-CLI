@@ -39,8 +39,7 @@ namespace Tia.Core
 
             foreach (var mapping in config.Devices.OrderBy(m => m.DeviceNumber))
             {
-                string tagName = "COMM_" + mapping.DeviceNumber + "_" +
-                    mapping.EquipmentTag.Replace(" ", "_").Replace("-", "_").Replace(".", "_");
+                string tagName = TagName(mapping);
                 string action;
                 string address = null;
 
@@ -82,6 +81,17 @@ namespace Tia.Core
                 { "applied", apply },
                 { "tags", actions },
             };
+        }
+
+        /// <summary>
+        /// Nome da tag de conexão. Só o espaço vira '_': as 45 tags de DISPOSITIVOS_PROFINET do
+        /// projeto de referência mantêm hífen e ponto (COMM_60_INVERSOR_AG-02_CCM3,
+        /// COMM_1_REM_RM1.0). O script FINAL também troca '-' e '.', e com --apply criaria uma
+        /// tag nova ao lado de cada existente em vez de reconhecê-la.
+        /// </summary>
+        internal static string TagName(ProfinetMapping mapping)
+        {
+            return "COMM_" + mapping.DeviceNumber + "_" + mapping.EquipmentTag.Replace(" ", "_");
         }
 
         private static PlcTagTable FindTable(PlcSoftware plc, ProfinetConfig config)

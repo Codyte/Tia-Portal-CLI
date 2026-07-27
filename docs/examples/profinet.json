@@ -4,7 +4,7 @@
   "TagTable": "DISPOSITIVOS_PROFINET",
   "Devices": [
     { "Hardware": "ET 200SP station_1", "EquipmentTag": "REM_RM1.0", "DeviceNumber": 1 },
-    { "Hardware": "IHM_1.0", "EquipmentTag": "IHM_1.0", "DeviceNumber": 10 },
+    { "Hardware": "ET 200SP station_2", "EquipmentTag": "REM_RM1.1", "DeviceNumber": 20 },
     { "Hardware": "SINAMICS G_24", "EquipmentTag": "INVERSOR_AG-04 CCM1", "DeviceNumber": 21 }
   ]
 }

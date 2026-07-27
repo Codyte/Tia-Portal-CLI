@@ -119,8 +119,22 @@ Configs de exemplo acertados contra este projeto:
   `Hardware` = nome da station (`SINAMICS G_24`), `EquipmentTag` = nome do device
   (`INVERSOR_AG-04 CCM1`) — pares tirados do config FINAL.
 
+`doctor` fecha **6/6** com os configs de `docs/examples/` (os 3 que pedem `--config` rodam um por
+vez: `tia doctor --verb <v> --config <f.json>`).
+
+Bugs que os dry-runs contra este projeto expuseram:
+- `gen-profinet` trocava `-` e `.` por `_` no nome da tag. As 45 tags reais são
+  `COMM_60_INVERSOR_AG-02_CCM3` / `COMM_1_REM_RM1.0`: só o espaço vira `_`. Com `--apply` teria
+  criado uma tag nova ao lado de cada existente. Corrigido → dry dá 3/3 `exists`.
+- `replicate-instruments` hardcodava o sufixo `_ANALOGS` (o FINAL também, linha 961). São duas
+  famílias: `5.1 Aferição Analógica` → `_ANALOGS`, `5.2 Totalizadores` → `_TOTALIZADOR`. Virou
+  `FcSuffix` no config → dry dá 7/7 `in-sync` e `addedCalls` vazio.
+- `replicate-fc --apply` sobrescreveria 32 equipamentos completos (o dry lista `overwrite` em
+  todos). Guard novo recusa alvo populado antes da 1ª escrita, salvo `--force`.
+
 Pendências abertas contra este projeto:
-- `replicate-fc` dry (pastas `(TAG)` existem aqui) e `replicate-instruments` dry.
+- `replicate-fc --apply` nunca exercitado (o guard bloqueia aqui, e é o comportamento correto);
+  testar num projeto vazio.
 - Projeto importado chega inconsistente: `export-*` morre com
   `Inconsistent blocks and PLC data types (UDT) cannot be exported`. `prep-project` resolve
   (compile Success / 0 erros / salvo em 2026-07-27).

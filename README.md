@@ -88,6 +88,12 @@ tia run --script docs/examples/gen-all.json
 
 ## Quick start
 
+0. **One-time**: your Windows user is in the `Siemens TIA Openness` group (fresh logon after
+   being added — see "Setup — the three Openness gates" below).
+1. `git clone https://github.com/Codyte/tia-cli.git && cd tia-cli`
+2. Open TIA Portal manually with a test project — `tia` attaches to a running instance, it
+   doesn't launch one.
+
 ```powershell
 pwsh scripts/rebuild.ps1      # build + offline tests + Openness whitelist (UAC only if exe changed)
 tia doctor                    # preflight: is the open project ready for the generators?
@@ -95,6 +101,9 @@ tia snapshot                  # full inventory of the open project, as JSON
 tia standardize-tags          # dry-run: what would change
 tia standardize-tags --apply  # do it
 ```
+
+First attach without a whitelist entry triggers an Openness consent popup in the Portal UI —
+click allow, it won't ask again for that exe hash.
 
 <details>
 <summary><b>Requirements</b></summary>

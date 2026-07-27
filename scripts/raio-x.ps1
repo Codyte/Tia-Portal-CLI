@@ -4,26 +4,26 @@
 # Uso: pwsh scripts/raio-x.ps1 SmokeTest_01
 param([Parameter(Mandatory)][string]$Name)
 $ErrorActionPreference = 'Stop'
-$repo = Split-Path $PSScriptRoot
-$exe = Join-Path $repo 'src\Tia.Cli\bin\Debug\net48\tia.exe'
+. (Join-Path $PSScriptRoot '_common.ps1')
 
-& pwsh -NoProfile -File (Join-Path $PSScriptRoot 'use-project.ps1') $Name
+& (Join-Path $PSScriptRoot 'use-project.ps1') $Name
 if ($LASTEXITCODE) { exit $LASTEXITCODE }
 
-$proj = (& $exe info | ConvertFrom-Json).project
-$out = Join-Path $repo "workspace\$proj"
+$proj = (Invoke-Tia info | ConvertFrom-Json).project
+$out = Join-Path $script:Repo "workspace\$proj"
 New-Item -ItemType Directory -Force $out | Out-Null
 
 foreach ($v in 'doctor', 'snapshot', 'list-devices', 'list-tags', 'list-types') {
-    & $exe $v | Set-Content (Join-Path $out "$v.json")
+    Invoke-Tia $v | Set-Content (Join-Path $out "$v.json")
     if ($LASTEXITCODE) { exit $LASTEXITCODE }
 }
-& $exe tree --out $out | Out-Null
-& $exe export-cax --out $out | Set-Content (Join-Path $out 'export-cax.json')
+Invoke-Tia tree --out $out | Out-Null
+Invoke-Tia export-cax --out $out | Set-Content (Join-Path $out 'export-cax.json')
 if ($LASTEXITCODE) { exit $LASTEXITCODE }
 
 # ponytail: xref de TODOS os OBs (projetos reais têm poucos); filtro se doer
-$obs = (& $exe list-blocks | ConvertFrom-Json) | Where-Object type -eq 'OB'
-$xref = foreach ($ob in $obs) { & $exe xref --name $ob.name | ConvertFrom-Json }
-$xref | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'xref-obs.json')
+$obs = (Invoke-Tia list-blocks | ConvertFrom-Json) | Where-Object type -eq 'OB'
+$xref = foreach ($ob in $obs) { Invoke-Tia xref --name $ob.name | ConvertFrom-Json }
+# Depth alto: xref aninha fundo e -Depth estourado trunca em SILENCIO (vira "System.Object[]")
+$xref | ConvertTo-Json -Depth 32 | Set-Content (Join-Path $out 'xref-obs.json')
 Write-Host "raio-x ok → $out"

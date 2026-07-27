@@ -11,11 +11,16 @@ function Get-ExeHash64 {
 }
 # Verdade = o hash gravado no registro, nao o delta do build: um build que nao mudou tia.exe
 # mas cujo whitelist anterior falhou deixava o registro stale indefinidamente (aconteceu, 9 dias).
-function Get-RegHash {
-    $k = 'HKLM:\SOFTWARE\Siemens\Automation\Openness'
-    Get-ChildItem $k -ErrorAction SilentlyContinue | ForEach-Object {
-        (Get-ItemProperty (Join-Path $_.PSPath 'Whitelist\tia.exe\Entry') -Name FileHash -ErrorAction SilentlyContinue).FileHash
-    } | Select-Object -First 1
+# TODAS as versoes (V19 e V21 coexistem) e as DUAS chaves (Entry/EntryLocal, ambas escritas pelo
+# whitelist.ps1): stale = qualquer uma divergente, ou nenhuma existindo.
+function Test-WhitelistStale {
+    $h = Get-ExeHash64
+    $reg = @(Get-ChildItem 'HKLM:\SOFTWARE\Siemens\Automation\Openness' -ErrorAction SilentlyContinue |
+        ForEach-Object { $v = $_.PSPath
+            foreach ($n in 'Entry', 'EntryLocal') {
+                (Get-ItemProperty (Join-Path $v "Whitelist\tia.exe\$n") -Name FileHash -ErrorAction SilentlyContinue).FileHash
+            } })
+    return ($reg.Count -eq 0) -or [bool]@($reg | Where-Object { $_ -ne $h })
 }
 
 dotnet build (Join-Path $repo 'src') -c Debug --nologo -v q
@@ -26,16 +31,16 @@ if (-not $SkipTests) {
     if ($LASTEXITCODE -ne 0) { exit 1 }
 }
 
-if ((Get-ExeHash64) -ne (Get-RegHash)) {
+if (Test-WhitelistStale) {
     # Task TiaWhitelist roda como SYSTEM/Highest: sem UAC, disparavel por qualquer sessao.
     if (Get-ScheduledTask -TaskName TiaWhitelist -ErrorAction SilentlyContinue) {
         Start-ScheduledTask -TaskName TiaWhitelist
         $limit = (Get-Date).AddSeconds(30)
-        while ((Get-ExeHash64) -ne (Get-RegHash) -and (Get-Date) -lt $limit) { Start-Sleep -Milliseconds 500 }
+        while ((Test-WhitelistStale) -and (Get-Date) -lt $limit) { Start-Sleep -Milliseconds 500 }
     } else {
         Start-Process pwsh -Verb RunAs -Wait -ArgumentList '-NoProfile','-File',(Join-Path $repo 'scripts\whitelist.ps1')
     }
-    if ((Get-ExeHash64) -ne (Get-RegHash)) {
+    if (Test-WhitelistStale) {
         Write-Host 'ATENCAO: whitelist AINDA stale — Openness vai recusar tia.exe' -ForegroundColor Red
         Write-Host 'Falta a task TiaWhitelist? rodar elevado 1x: pwsh -File scripts\setup-tasks.ps1' -ForegroundColor Red
         exit 1

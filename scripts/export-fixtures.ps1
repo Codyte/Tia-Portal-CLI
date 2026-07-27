@@ -2,7 +2,7 @@
 # 1-8    header
 # 9-24   lista de blocos/tabelas do projeto de referencia
 # 25-40  exporta um por vez (falha de um nao aborta os outros)
-# Roda NA SESSAO 1: pwsh scripts/tia-task.ps1 --script-ps1 scripts\export-fixtures.ps1
+# Roda NA SESSAO 1: pwsh scripts/tia.ps1 --script-ps1 scripts\export-fixtures.ps1
 # Saida: workspace/padrao/. Sao as fixtures reais que substituem as sinteticas de docs/examples.
 $ErrorActionPreference = 'Continue'
 $repo = Split-Path $PSScriptRoot

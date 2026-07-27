@@ -19,12 +19,13 @@
   Scripts não têm caminho nem usuário fixo — tudo sai de `$PSScriptRoot`/`$env:USERNAME`, e a versão
   do Portal (V19–V21) é descoberta em runtime.
 - **Macro-verbos — usar SEMPRE em vez da coreografia manual:**
+  - `pwsh scripts/tia.ps1 <verbo> [args]` = chamar o CLI de qualquer sessão (ver seção abaixo).
   - `pwsh scripts/rebuild.ps1` = build + testes offline + whitelist (UAC só se tia.exe mudou).
     Nunca rodar dotnet build/whitelist/testes soltos.
   - `pwsh scripts/use-project.ps1 <Nome|caminho.ap21> [-Save]` = garante projeto aberto
     (no-op se já aberto; fecha o atual sem save por padrão; open leva 2-4 min → background).
-  - `pwsh scripts/prep-project.ps1 <Nome>` = use-project + doctor + compile --apply + save
-    (projeto real chega sem compilar — rodar antes de qualquer export).
+  - `pwsh scripts/prep-project.ps1 <Nome> [-Apply]` = use-project + doctor (+ compile --apply +
+    save só com `-Apply`; projeto real chega sem compilar — rodar antes de qualquer export).
   - `pwsh scripts/raio-x.ps1 <Nome>` = banho read-only → `workspace/<proj>/` (doctor, snapshot,
     devices, tags, types, plc-navi.md, AML, xref dos OBs).
   - `pwsh scripts/clone-hw.ps1 <Origem> <Destino> [-Apply]` = copia hardware via CAx/AML.
@@ -35,22 +36,32 @@
   - `tia doctor` = preflight dos 6 verbos antes de qualquer smoke.
 - Smoke test exige TIA Portal aberto com projeto de teste — confirmar com o usuário antes.
 
-## Sessão 0 × sessão 1 (por que `tia` não roda direto do agente)
+## Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto)
 
-O agente vive na **sessão 0** do Windows (isolada de serviços, `UserInteractive=False`). TIA Portal
-e o desktop vivem na **sessão 1**. `TiaPortal.GetProcesses()` não enxerga processo de outra sessão,
-então `Attach()` a partir do shell do agente **sempre** devolve
-`"No running TIA Portal instance found"` — mesmo com o portal aberto na tela. É fronteira do SO,
-não configuração; `--no-ui` não resolve (só troca o erro de modo pelo de whitelist).
+`pwsh scripts/tia.ps1 <args>` é **o comando único** — resolve isso sozinho, use sempre.
 
-**Canal correto — task `TiaSmokeRun`** (`LogonType Interactive` = executa na sessão 1):
+Se o shell nascer na **sessão 0** do Windows (isolada de serviços, `UserInteractive=False`), TIA
+Portal e desktop vivem na **sessão 1** e `TiaPortal.GetProcesses()` não enxerga processo de outra
+sessão: `Attach()` devolve `"No running TIA Portal instance found"` mesmo com o portal na tela.
+É fronteira do SO, não configuração; `--no-ui` não resolve (só troca o erro de modo pelo de
+whitelist). O shell do agente **pode** nascer na sessão 1 (VSCode na sessão do usuário) — daí
+tudo roda direto; checar com `(Get-Process -Id $PID).SessionId`.
 
-1. escrever os args em `workspace/taskio/cmd.json` (array JSON, ex. `["doctor"]`);
-2. `Start-ScheduledTask -TaskName TiaSmokeRun` — funciona do shell do agente, sem UAC;
-3. poll de `workspace/taskio/exit.txt`; saída em `workspace/taskio/out.txt`.
+`Invoke-Tia` (`scripts/_common.ps1`, dot-sourced por todos os macros) roteia: sessão ≠ 0 invoca
+`tia.exe` direto; sessão 0 passa pela task `TiaSmokeRun` (`LogonType Interactive` = sessão 1).
+Caller não vê diferença — `$LASTEXITCODE` e stdout/stderr valem nas duas rotas.
+`TIA_VIA_TASK=1` força a rota da task (é como se testa esse ramo da sessão 1);
+`TIA_TIMEOUT` = segundos (default 600).
+
+Protocolo da task, se precisar na unha: `workspace/taskio/cmd.json` recebe
+`{"id":"<run>","args":[...]}` (ou array cru `["doctor"]`, forma legada) →
+`Start-ScheduledTask -TaskName TiaSmokeRun` → poll de `exit-<run>.txt`; saída em
+`out-<run>.txt` / `err-<run>.txt` (stdout e stderr **separados**; sem `id`, os nomes são
+`out.txt`/`err.txt`/`exit.txt`). Nome único por rodada é obrigatório: verbo que inicia o portal
+deixa o handle do arquivo de saída herdado e aberto enquanto o portal viver.
 
 O runner é `scripts/taskrun.ps1`. Não exige janela interativa aberta pelo user
-(`scripts/smokeloop.ps1` é rota alternativa, útil só pra ver a saída ao vivo).
+(`scripts/smokeloop.ps1` é rota alternativa, mesmo protocolo, útil só pra ver a saída ao vivo).
 O portal só morre junto com a task se tiver sido *iniciado por ela* (fica na árvore de processos);
 portal aberto à mão pelo user sobrevive.
 

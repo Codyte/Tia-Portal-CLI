@@ -66,7 +66,7 @@ Verbos por fase (nomes finais definidos na F1):
 | F3.6 | Macros de fluxo (itens 1-4 da lista aprovada) | smoked contra SmokeTest_01 | ✅ 2026-07-18: `prep-project.ps1` (use-project+doctor+compile+save), `raio-x.ps1` (banho read-only → workspace/<proj>/, xref de todos os OBs), `clone-hw.ps1` (CAx A→B, dry por padrão, -Apply salva), `docs/examples/gen-all.json` (6 verbos FINAIS dry via `tia run`, attach 1x). Macros 5-7 (new-area/sync-check/adopt-project) só se user pedir. |
 | F4 | Polimento p/ GitHub (README EN, licença, exemplos) | repo publicável | ✅ 2026-07-18: LICENSE MIT, README EN completo (contrato dry-run/--apply, 3 gates Openness, tabela de verbos, macros, limitações), nome público decidido `tia-cli`. Publicação em si (gh repo create) pendente de ordem do user. |
 | F5? | MCP server fino sobre Tia.Core | só se D1 cair | ⬜ |
-| F6 | Endurecer os scripts PS (ver seção "F6" no fim) | macros rodáveis do agente (sessão 0) + 5 bugs fechados | ⬜ |
+| F6 | Endurecer os scripts PS (ver seção "F6" no fim) | macros rodáveis do agente (sessão 0) + 5 bugs fechados | ✅ 2026-07-27: `scripts/_common.ps1` (`Invoke-Tia`, roteia por sessão, run-id, `$global:LASTEXITCODE`, timeout 600s, guard D9) + `scripts/tia.ps1` (comando único, substitui `tia-task.ps1` — removido); macros migrados; bugs 2-5 fechados (bug 1 já estava). Verificado end-to-end: `tia.ps1 doctor` exit 0, rota da task (`TIA_VIA_TASK=1`) exit 0, forma legada `["info"]` exit 0, `use-project`/`prep-project` do shell do agente |
 
 Regra: **uma fase por vez, commit + handoff no fim de cada uma.** FINAIS vira referência
 read-only — nunca editar lá; extrair pra `src/` e pronto.
@@ -244,7 +244,26 @@ cobre só %M; endereço físico continua manual, de propósito.
   via `git-filter-repo` (verificado: clone fresh sem o diretório em working tree ou histórico).
 - Smoke F1 na máquina do TIA (user leva o exe; primeira execução dispara popup Openness — permitir).
 
-## F6 — Endurecer os scripts PS (plano, 2026-07-27)
+## F6 — Endurecer os scripts PS (✅ executada 2026-07-27)
+
+**Resultado.** `scripts/_common.ps1` + `scripts/tia.ps1` entregues como planejado; `tia-task.ps1`
+removido (o wrapper o substitui). Bugs: **1 já estava corrigido** na máquina *e* no script
+(`setup-tasks.ps1:37` já era `-LogonType Interactive` — a auditoria leu o principal da
+`TiaWhitelist`, que é S4U de propósito); 2, 3, 4 e 5 fechados.
+
+Dois achados novos, ambos de PowerShell:
+- **`$raw -is [pscustomobject]` é verdadeiro até pra `[string]`** (tudo vira PSObject). Era como o
+  runner distinguia `{"id","args"}` de array cru — a forma legada `["doctor"]` virava `args` vazio e
+  o CLI cuspia o help com exit 1. Correto é testar a propriedade: `if ($null -ne $raw.args)`.
+- **Splat de array vazio vira argumento `""`**: `Invoke-Tia close-project @($Save ? @('--save') : @())`
+  passa string vazia pro CLI. Trocado por `if/else` explícito em `use-project`/`clone-hw`.
+
+**O shell do agente pode nascer na sessão 1** (VSCode na sessão do usuário — foi o caso na
+verificação: `SessionId=1`, `UserInteractive=True`). A premissa "nenhum macro roda do agente"
+vale só quando ele nasce na sessão 0. O roteamento cobre os dois casos e `TIA_VIA_TASK=1` força a
+rota da task — sem esse knob o ramo da sessão 0 seria código morto até falhar em produção.
+
+### Plano original (referência)
 
 Auditoria dos 11 scripts em `scripts/`. Problema central: **nenhum macro roda a partir do
 agente**. `use-project`/`prep-project`/`raio-x`/`clone-hw` chamam `& $exe` no processo local;

@@ -17,23 +17,27 @@ Write-Host "Aguardando cmd.json em $dir (stop.txt encerra)..." -ForegroundColor 
 while ($true) {
     if (Test-Path "$dir\stop.txt") { break }
     if (Test-Path "$dir\cmd.json") {
-        $cmdArgs = Get-Content "$dir\cmd.json" -Raw | ConvertFrom-Json
+        $raw = Get-Content "$dir\cmd.json" -Raw | ConvertFrom-Json
         Remove-Item "$dir\cmd.json"
+        # mesmo protocolo do taskrun.ps1: {id,args} do Invoke-Tia, ou array cru (uso manual)
+        # testar a propriedade, nao o tipo: `-is [pscustomobject]` e verdadeiro ate pra string
+        if ($null -ne $raw.args) { $cmdArgs = @($raw.args); $sfx = "-$($raw.id)" }
+        else { $cmdArgs = @($raw); $sfx = '' }
         Write-Host ">> tia $($cmdArgs -join ' ')" -ForegroundColor Cyan
         # Start-Process com redirect p/ arquivo: filho TIA herda handle mas -Wait espera
         # so tia.exe (nao EOF de pipe) — sem travar quando open-project deixa TIA aberto.
-        # result.txt (nao out.txt): out.txt ficou lockado por handle herdado pelo TIA.
+        # Nome unico por rodada: com nome fixo o handle herdado pelo TIA lockava o arquivo.
         $quoted = $cmdArgs | ForEach-Object { '"' + $_ + '"' }
         try {
             $p = Start-Process -FilePath $tia -ArgumentList $quoted `
                 -WorkingDirectory $repo -NoNewWindow -Wait -PassThru `
-                -RedirectStandardOutput "$dir\result.txt" -RedirectStandardError "$dir\result-err.txt" `
+                -RedirectStandardOutput "$dir\out$sfx.txt" -RedirectStandardError "$dir\err$sfx.txt" `
                 -ErrorAction Stop
-            $p.ExitCode | Out-File "$dir\exit.txt" -Encoding ascii
+            $p.ExitCode | Out-File "$dir\exit$sfx.txt" -Encoding ascii
             Write-Host "<< exit $($p.ExitCode)" -ForegroundColor Cyan
         } catch {
-            $_.Exception.Message | Out-File "$dir\result.txt" -Encoding utf8
-            "99" | Out-File "$dir\exit.txt" -Encoding ascii
+            $_.Exception.Message | Out-File "$dir\err$sfx.txt" -Encoding utf8
+            "99" | Out-File "$dir\exit$sfx.txt" -Encoding ascii
             Write-Host "<< loop error: $($_.Exception.Message)" -ForegroundColor Red
         }
     }

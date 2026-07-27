@@ -8,18 +8,21 @@ param(
     [switch]$Apply
 )
 $ErrorActionPreference = 'Stop'
-$repo = Split-Path $PSScriptRoot
-$exe = Join-Path $repo 'src\Tia.Cli\bin\Debug\net48\tia.exe'
+. (Join-Path $PSScriptRoot '_common.ps1')
 $use = Join-Path $PSScriptRoot 'use-project.ps1'
 
-& pwsh -NoProfile -File $use $From
+& $use $From
 if ($LASTEXITCODE) { exit $LASTEXITCODE }
-$aml = (& $exe export-cax --out (Join-Path $repo 'workspace\clone-hw') | ConvertFrom-Json).file
+$aml = (Invoke-Tia export-cax --out (Join-Path $script:Repo 'workspace\clone-hw') | ConvertFrom-Json).file
 if (-not $aml) { Write-Error 'export-cax não retornou arquivo'; exit 1 }
 Write-Host "AML exportado: $aml"
 
-& pwsh -NoProfile -File $use $To
+& $use $To
 if ($LASTEXITCODE) { exit $LASTEXITCODE }
-& $exe import-cax --file $aml @($Apply ? @('--apply') : @())
+if ($Apply) { Invoke-Tia import-cax --file $aml --apply } else { Invoke-Tia import-cax --file $aml }
 if ($LASTEXITCODE) { exit $LASTEXITCODE }
-if ($Apply) { & $exe save-project }
+if ($Apply) {
+    Invoke-Tia save-project
+    if ($LASTEXITCODE) { Write-Host "save-project falhou (exit $LASTEXITCODE) — import aplicado mas NÃO salvo" -ForegroundColor Red }
+}
+exit $LASTEXITCODE

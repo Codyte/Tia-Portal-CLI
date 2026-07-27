@@ -46,6 +46,7 @@ namespace Tia.Cli
                         "import-source --file F.scl [--apply]",
                         "import-ladder --file F.scl [--name N] [--folder A/B] [--apply]  (SCL subset → LAD; dry-run works without TIA)",
                         "import-tags --file F [--folder A/B] [--apply]",
+                        "add-db-member --db X --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]",
                         "compile [--block X | --folder A/B] [--apply]",
                         "diff-block --file F.xml [--name X]  (read-only, normalized compare)",
                         "doctor [--verb V] [--config F]  (read-only preflight dos verbos geradores)",
@@ -273,6 +274,12 @@ namespace Tia.Cli
                     case "import-type":
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.ImportType(session.GetPlc(plcName), Require(args, "--file"), apply);
+                        break;
+                    case "add-db-member":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.DbMember.Add(session.GetPlc(plcName), Require(args, "--db"),
+                                OptionValue(args, "--path"), Require(args, "--name"),
+                                OptionValue(args, "--type"), OptionValue(args, "--like"), outDir, apply);
                         break;
                     case "import-tags":
                         using (WriteLock(session, apply, verb))

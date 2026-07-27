@@ -56,6 +56,7 @@ namespace Tia.Tests
                 { "InstrumentFc.BuildAreaFcXml", InstrumentFc_BuildAreaFcXml },
                 { "LadConverter.Convert", LadConverter_Convert },
                 { "Ops.RequireRootType", Ops_RequireRootType },
+                { "DbMember.AddToXml", DbMember_AddToXml },
             };
             foreach (var t in tests)
             {
@@ -189,6 +190,50 @@ namespace Tia.Tests
             Check(Throws(() => Ops.RequireRootType(Fixture("StdBombaA.xml"), "SW.Blocks.")),
                 "tag table recusada como bloco (era falso positivo no dry-run)");
             Check(!Throws(() => Ops.RequireRootType(Fixture("BombaTemplateFc.xml"), "SW.Blocks.")), "FC aceito como bloco");
+        }
+
+        private static void DbMember_AddToXml()
+        {
+            const string ns = "http://www.siemens.com/automation/Openness/SW/Interface/v5";
+            Func<XDocument> db = () => XDocument.Parse(
+                "<Document xmlns='" + ns + "'><SW.Blocks.GlobalDB><Sections><Section Name='Static'>" +
+                "<Member Name='AREA' Datatype='Struct'><Sections><Section Name='None'>" +
+                "<Member Name='BOMBA_A' Datatype='&quot;MotorDados&quot;'><Comment>x</Comment></Member>" +
+                "</Section></Sections></Member></Section></Sections></SW.Blocks.GlobalDB></Document>");
+            XNamespace n = ns;
+            Func<XDocument, IEnumerable<XElement>> areaMembers = d => d.Descendants(n + "Section")
+                .First(s => (string)s.Attribute("Name") == "None").Elements(n + "Member");
+
+            var d1 = db();
+            var e1 = DbMember.AddToXml(d1, "AREA", "BOMBA_C", null, "BOMBA_A");
+            var m1 = areaMembers(d1).ToList();
+            Check(e1.Action == "create" && e1.Datatype == "\"MotorDados\"", "--like herda o Datatype do irmão");
+            Check(m1.Select(m => (string)m.Attribute("Name")).SequenceEqual(new[] { "BOMBA_A", "BOMBA_C" }),
+                "membro clonado entra logo após o modelo");
+            Check(m1[1].Element(n + "Comment") != null, "clone leva os filhos do modelo");
+
+            var d2 = db();
+            Check(DbMember.AddToXml(d2, "AREA", "NIVEL", "Real", null).Datatype == "Real", "primitivo sem aspas");
+            Check(DbMember.AddToXml(d2, "AREA", "BOMBA_D", "MotorDados", null).Datatype == "\"MotorDados\"",
+                "UDT entre aspas");
+            Check(DbMember.AddToXml(d2, "AREA", "BOMBA_A", "MotorDados", null).Action == "exists",
+                "membro já existente = no-op (idempotente)");
+            Check(areaMembers(d2).Count() == 3, "nenhum duplicado inserido");
+
+            // Struct nativo: <Member> aninhado direto, sem <Sections><Section>
+            var d3 = XDocument.Parse("<Document xmlns='" + ns + "'><SW.Blocks.GlobalDB><Sections>" +
+                "<Section Name='Static'><Member Name='AREA' Datatype='Struct'><Comment>a</Comment>" +
+                "<Member Name='BOMBA_A' Datatype='&quot;MotorDados&quot;' /></Member>" +
+                "</Section></Sections></SW.Blocks.GlobalDB></Document>");
+            Check(DbMember.AddToXml(d3, "AREA", "BOMBA_C", null, "BOMBA_A").Datatype == "\"MotorDados\"",
+                "struct nativo (Member aninhado direto) aceito no path");
+            Check(d3.Descendants(n + "Member").Count(m => ((string)m.Attribute("Name")).StartsWith("BOMBA")) == 2,
+                "inserido dentro do struct nativo");
+
+            Check(Throws(() => DbMember.AddToXml(db(), "AREA", "X", null, "NAO_EXISTE")), "--like inexistente falha");
+            Check(Throws(() => DbMember.AddToXml(db(), "NAO_EXISTE", "X", "Bool", null)), "--path inexistente falha");
+            Check(Throws(() => DbMember.AddToXml(db(), "AREA.BOMBA_A", "X", "Bool", null)),
+                "path através de membro não-struct falha");
         }
 
         private static bool Throws(Action a)

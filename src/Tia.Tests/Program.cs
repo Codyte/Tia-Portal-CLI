@@ -62,6 +62,7 @@ namespace Tia.Tests
                 { "Profinet.TagName", Profinet_TagName },
                 { "InstrumentFc.FcName", InstrumentFc_FcName },
                 { "Audit.Naming", Audit_Naming },
+                { "Scaffold.Plan", Scaffold_Plan },
             };
             foreach (var t in tests)
             {
@@ -338,6 +339,33 @@ namespace Tia.Tests
             var word = XDocument.Parse("<Document xmlns='" + ns + "'><SW.Tags.PlcTag><AttributeList>" +
                 "<LogicalAddress>%MW20</LogicalAddress></AttributeList></SW.Tags.PlcTag></Document>");
             Check(Throws(() => Clone.Readdress(word, "%M432.0")), "tag não-bit aborta o --at (sem sobreposição)");
+        }
+
+        private static void Scaffold_Plan()
+        {
+            var manifest = new ScaffoldManifest
+            {
+                Source = "",
+                Items = new List<ScaffoldItem>
+                {
+                    new ScaffoldItem { File = "ObMoldeAlarmes.xml",
+                        Folder = new List<string> { "3. Alarmes/Eventos/Falhas", "3.1 Alarmes Words" } },
+                    new ScaffoldItem { File = "FcModeloAlarmes.xml" },
+                    new ScaffoldItem { File = "SmokeTags.xml" },
+                },
+            };
+            var plan = Scaffold.Plan(manifest, Path.Combine(RepoRoot(), "docs", "examples"));
+            Check(plan.Select(p => p.RootType).SequenceEqual(
+                    new[] { "SW.Tags.PlcTagTable", "SW.Blocks.FC", "SW.Blocks.OB" }),
+                "ordem de import: tabela → FC → OB (" + string.Join(", ", plan.Select(p => p.RootType)) + ")");
+            Check(plan[2].Folder.Count == 2 && plan[2].Folder[0] == "3. Alarmes/Eventos/Falhas",
+                "'/' no nome da pasta continua um segmento só");
+            Check(plan.All(p => !string.IsNullOrEmpty(p.Name)), "nome do objeto lido de cada XML");
+            Check(Throws(() => Scaffold.Plan(new ScaffoldManifest
+                {
+                    Items = new List<ScaffoldItem> { new ScaffoldItem { File = "nao-existe.xml" } },
+                }, ".")),
+                "arquivo ausente falha no plano, antes de tocar o projeto");
         }
 
         private static bool Throws(Action a)

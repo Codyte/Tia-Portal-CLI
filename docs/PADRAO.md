@@ -102,6 +102,29 @@ Régua: este projeto passa **limpo** (36 acionamentos, 5/5 checks) — se reprov
 errada. Discrimina de verdade: no `Automação ETE SG AsBuilt` são 69 acionamentos, **69 sem `(TAG)`**
 na pasta e 58 com contagem de blocos ≠ 6.
 
+## `tia scaffold` — projeto novo recebe o padrão
+
+`tia scaffold --manifest docs/examples/scaffold-padrao.json [--apply] [--force]`. Manifesto =
+árvore de pastas (blocos e tags) + lista de XMLs exportados deste projeto. Sem `--force`, objeto
+que já existe é `skip (exists)` — rodar de novo não sobrescreve nada.
+
+Fonte dos XMLs: `workspace/padrao/` (gitignored — conteúdo da casa, não vai pro repo público).
+66 itens: 13 UDTs, 34 FBs de `1. FB Bilbiotecas`, `DB GLOBAL`, os 6 moldes
+(`FC_Modelo`+`FB BITS TO WORD MODELO`+`DB_DUMMY`, `OB_MOLDE_ALARMES`, `OB_MOLDE_PARTIDAS`,
+`MODULE_ERROR_MOLDE`+`FB DIAG MODULES_DB`+`DB DIAGNOSTICO DISPOSITIVOS`, `MOLDE_ANALOGS`,
+`MOLDE TOT1`), o acionamento-modelo `Soprador 1 (S-01A)` (6 blocos) e 2 tabelas de tags.
+Regenerar: `tia run --script workspace/export-padrao.json` (51 export-block/export-type).
+
+Ordem de import é por tipo de objeto, não pela ordem do manifesto: UDT → tabela de tags → FB →
+DB global → iDB → FC → OB. Sem isso o iDB entra antes do FB que ele instancia.
+
+Caminho de pasta é **lista de segmentos**, não string com `/`: os nomes reais contêm barra
+(`3. Alarmes/Eventos/Falhas`, `4. Motores/Bombas`) e `Ops.ResolveFolder` quebraria neles.
+
+Estado: dry contra este projeto = **26/26 pastas e 66/66 itens já existentes** (o manifesto casa
+com a realidade e é idempotente). O ramo `create` — importar de fato num projeto vazio — segue
+não exercitado; teste de aceite é `scaffold --apply` num projeto novo seguido de `tia audit`.
+
 ## Estado da CLI contra este projeto
 
 `tia doctor`: `standardize-tags` ok · `gen-alarm-fc` ok (8/8: `3.1.0 Modelo`, `FC_Modelo`,

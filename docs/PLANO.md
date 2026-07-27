@@ -174,6 +174,14 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
     Unified como XML (sem SimaticML pra Unified) — export/import de telas fica fora até a Siemens
     expor; tags HMI editáveis via objetos dinâmicos, adicionar verbo se precisar.
 
+11. ~~**Scaffold de projeto**~~ ✅ feito 2026-07-27 (`scaffold --manifest F.json [--apply] [--force]`):
+    projeto novo recebe a árvore da lei + os moldes exportados do projeto de referência.
+    Idempotente (objeto existente = `skip`), ordem de import por tipo (UDT→tags→FB→DB→iDB→FC→OB),
+    caminho de pasta em segmentos (nome real tem `/`). Manifesto:
+    `docs/examples/scaffold-padrao.json`; fonte `workspace/padrao/` (66 itens, gitignored).
+    Dry contra o de referência: 26/26 pastas e 66/66 itens `exists`. **`--apply` num projeto vazio
+    ainda não exercitado** — é o teste de aceite (depois `tia audit` tem que passar limpo).
+
 ## Bugs abertos (smoke 2026-07-27)
 
 - ~~**`import-block` dry-run dá falso positivo em XML que não é bloco.**~~ ✅ corrigido

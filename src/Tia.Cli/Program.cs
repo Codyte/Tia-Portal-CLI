@@ -38,7 +38,8 @@ namespace Tia.Cli
                     { "structure", new[] { "create-folder --path A/B [--tags] [--apply]",
                         "delete-folder --path A/B [--tags] [--apply]",
                         "delete-block --name X [--apply]",
-                        "import-type --file F.xml [--apply]" } },
+                        "import-type --file F.xml [--apply]",
+                        "scaffold --manifest F.json [--apply] [--force]  (árvore da lei + moldes num projeto novo)" } },
                     { "hardware", new[] { "add-device --mlfb \"6ES7 ...\" --name X [--station S] [--group G] [--apply]",
                         "set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]",
                         "connect-subnet --device X --subnet S [--io-system IO] [--apply]",
@@ -294,6 +295,14 @@ namespace Tia.Cli
                     case "import-type":
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.ImportType(session.GetPlc(plcName), Require(args, "--file"), apply);
+                        break;
+                    case "scaffold":
+                        var manifestFile = Path.GetFullPath(Require(args, "--manifest"));
+                        var manifest = JsonConvert.DeserializeObject<Core.ScaffoldManifest>(
+                            File.ReadAllText(manifestFile));
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Scaffold.Run(session.GetPlc(plcName), manifest,
+                                Path.GetDirectoryName(manifestFile), apply, args.Contains("--force"));
                         break;
                     case "clone":
                         using (WriteLock(session, apply, verb))

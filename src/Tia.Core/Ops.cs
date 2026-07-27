@@ -81,7 +81,7 @@ namespace Tia.Core
             return current;
         }
 
-        private static PlcTagTable FindTagTable(PlcTagTableGroup group, string name)
+        internal static PlcTagTable FindTagTable(PlcTagTableGroup group, string name)
         {
             var hit = group.TagTables.Find(name);
             if (hit != null) return hit;
@@ -112,7 +112,7 @@ namespace Tia.Core
             return current;
         }
 
-        private static PlcType FindType(PlcTypeGroup group, string name)
+        internal static PlcType FindType(PlcTypeGroup group, string name)
         {
             var hit = group.Types.Find(name);
             if (hit != null) return hit;
@@ -375,7 +375,7 @@ namespace Tia.Core
         }
 
         /// <summary>First AttributeList/Name in a Siemens export XML = object name (block, tag table…).</summary>
-        private static string XmlObjectName(string file)
+        internal static string XmlObjectName(string file)
         {
             var doc = XDocument.Load(file);
             return doc.Descendants()

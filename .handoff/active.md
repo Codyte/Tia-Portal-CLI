@@ -1,57 +1,73 @@
 # Handoff · TIA Portal Openness API · 2026-07-27
 
 ## Goal
-Testar a funcionalidade real da ferramenta contra projeto TIA de verdade. Objetivo declarado
-("mais uma bomba igual à BH-01A") **fechado**: clone de acionamento ponta-a-ponta funciona.
+Usar `proj/Software de ETE Insular_Inicial_V21` (projeto-molde da casa, conforme ao padrão que
+gerou os scripts FINAIS) como régua executável da CLI. Regra: **CLI diverge do projeto → a CLI
+está errada.** Estrutura completa em `docs/PADRAO.md`.
 
 ## State
-- HEAD: a3b10e0 — working tree limpo. `rebuild.ps1` ALL PASS.
-- Projeto de teste = o AsBuilt aberto na sessão 1 (**user autorizou `--apply` nele**).
-  Clone BH-01B → BH-01C aplicado e **salvo**: 13 tags em `%M432.0-433.4`, 5 instance DBs,
-  1 FC, 2 membros novos na DB GLOBAL. Compile do PLC inteiro Success/0 erros,
-  `diff-block` do FC clonado `identical`.
-- Verbos novos (3 commits): `add-db-member`, `clone`, `free-memory`. 3 baterias de teste
-  offline novas (DbMember.AddToXml, Memory.Occupied, Clone.Rewrite).
-- In progress: nada mid-flight.
+- HEAD: 48ad388 — working tree limpo. `rebuild.ps1` ALL PASS (mas whitelist stale, ver blockers).
+- Projeto de referência importado, compilado (Success/0 erros) e salvo. Banho `raio-x` completo em
+  `workspace/Software de ETE Insular_Inicial_V21/`.
+- `doctor` neste projeto: `standardize-tags` ok · `gen-alarm-fc` 8/8 ok · `gen-fault-ob` ok após
+  correção · `gen-profinet`/`replicate-fc`/`replicate-instruments` = `skipped` (faltam configs).
+- In progress: nada mid-flight. Próxima ação exige o portal (bloqueado por whitelist).
 
 ## Decisions (and why)
-- `clone` genérico (`--block`/`--table` + `--replace OLD=NEW`) em vez de `clone-equipment`
-  monolítico — um `--replace BH-01B=BH-01C` já reescreve nome, símbolos, path do DB global e
-  instance DBs; serve tags, FC e iDBs com um verbo só.
-- `--at` reendereça só tags Bool e **aborta** em tag mais larga — endereço sobreposto é pior
-  que erro. Reusa `BoolAddressAllocator` (Profinet.cs).
-- Tags de IO físico (`BOMBA_2_ELEVATORIA_DE_GORDURA_*`) **não** são clonadas: bomba nova de
-  verdade precisa de %I/%Q próprios, que dependem de hardware novo. `free-memory` cobre só %M.
-- `replicate-fc` não serve neste projeto (exige pasta `... (ID)`, e é replicador em massa que
-  sobrescreve todas as irmãs). Confirmado por dry: 0 grupos, 61 pastas puladas.
-- Achados no `docs/PLANO.md` (seção "Clonar acionamento — fluxo real validado"), sem doc separado.
+- Fixtures de teste são **sintéticas** e essa é a dívida principal: `docs/examples/ModuleErrorMolde.xml`
+  = 4.8K com `ALARMES_MODULOS.QA-01.WORD_1`; o molde real = 14K com
+  `DB GLOBAL.HARDWARE_INTERRUPT.ALARMES_MODULOS.QA-00.WORD_1.x0`. A suíte offline concordava com o
+  código errado. Trocar por exports reais é pré-requisito de tudo, inclusive de um futuro `scaffold`.
+- `Doctor.cs` — removido o check `alarm DB 'ALARMES_MODULOS'` (`FindBlock`): alvo é membro da DB
+  global, não bloco; reprovava até em projeto 100% conforme.
+- `FaultOb.RewireNetwork` — lança quando o template não tem acesso ao `AlarmDb`. Antes seguia em
+  silêncio e **todo** OB gerado saía com o bit de alarme do molde.
+- `--script-ps1` no `taskrun.ps1` — macro-verbo roda inteiro na sessão 1; um verbo por vez via
+  taskio seria 8 round-trips por raio-x.
+- `scripts/tia-task.ps1` sem `param` block de propósito: qualquer param faz o PS engolir `--out`
+  (`parameter name 'out' is ambiguous`). E apaga `exit.txt` ANTES de disparar — sem isso o poll lê
+  o resultado da rodada anterior (caí nisso).
+- `setup-tasks.ps1` — `TiaWhitelist` sem trigger: `/SC ONCE` com hora passada é apagada pelo Windows
+  depois de rodar, e o fallback `RunAs` do `rebuild.ps1` não mostra UAC nenhum na sessão 0.
+- **`replicate-fc --apply` é proibido neste projeto**: replica a 1ª pasta populada de cada tipo por
+  cima de **todas** as irmãs, e aqui as 34 pastas de equipamento já estão completas. Só dry.
 
 ## Next steps (ordered)
-1. Se quiser reverter o teste no AsBuilt: apagar a pasta de blocos
-   `4. Motores/Bombas/4.4 Elevatória de Gordura/Bomba Reserva 2 BH-01C`, a tag table
-   `BOMBA_01_ELEVATORIA_DE_GORDURA_RESERVA_2 (BH-01C)` e os 2 membros BH-01C da DB GLOBAL
-   (`delete-block`/`delete-folder` existem; `add-db-member` não remove).
-2. `--apply` ainda não exercitados: `import-ladder` (FlgNet escrito de memória, nunca validado
-   contra TIA real) e hardware (`set-address`/`connect-subnet`/`add-device`).
-3. F1 propriamente dito (`docs/PLANO.md:171`).
-4. Ressalvas de error-handling do code-review F3 (Standardize rebuild, FaultOb import sem
-   try/catch por item) — não bloqueiam.
+1. Desbloquear whitelist (elevado, 1x): `pwsh -File scripts\setup-tasks.ps1`.
+2. **Fixtures reais** (maior alavanca). Exportar do projeto de referência para `docs/examples/`:
+   `FC_Modelo`, `OB_MOLDE_ALARMES`, `OB_MOLDE_PARTIDAS`, `MOLDE_ANALOGS`, `MOLDE TOT1`,
+   `DB GLOBAL`, os 6 blocos de `Soprador 1 (S-01A)`, e uma tabela de 29 tags. Já exportado:
+   `workspace/padrao/MODULE_ERROR_MOLDE.xml` (14K, real). Repontar `Fixture()` e rodar `rebuild.ps1`
+   — o que quebrar é bug real que a fixture sintética escondia.
+3. **Fechar `doctor` 6/6**: escrever os 3 configs contra este projeto. Campos já confirmados:
+   `BlocksFolder: "4. Motores/Bombas"`, UDTs `MotorDados`/`MotorPrincipal`/`ValvDados`,
+   `GlobalDb: "DB GLOBAL"`, `TagTable: "DISPOSITIVOS_PROFINET"`, `TagFolder: "4. Comm"`.
+   Falta ler os FINAIS para `SourceNumbersToReplace` e para o `replicate-instruments` (o exemplo
+   pede `DB INSTRUMENTOS`, que aqui não existe — o padrão usa `DB GLOBAL`).
+4. Dry-run dos 3 replicadores aqui (as pastas `Equipamento (TAG)` que o `replicate-fc` exige
+   existem neste projeto; o AsBuilt não tinha).
+5. Guard no `replicate-fc --apply`: recusar alvo que já tem blocos, salvo `--force`.
+6. **`import-ladder` contra a verdade** — FlgNet escrito de memória, nunca validado. Gerar e comparar
+   com `diff-block` contra um `PARTIDA_*` real.
+7. Só então avaliar `scaffold`/`init` (projeto novo nascendo com as 34 FBs da biblioteca + moldes +
+   árvore de pastas + `DB GLOBAL`) — ele consome os exports do passo 2.
+8. Ideia aberta: verbo `audit` — conferir projeto qualquer contra a lei de nomenclatura (`(TAG)` na
+   folha, 6 blocos por equipamento, 1 tabela por acionamento, N de área consistente entre
+   `2.N`/`3.N`/`3.1.N`/`5.1.N`). É auditar AsBuilt contra o molde = o problema real do usuário.
 
 ## Key files
-- `src/Tia.Core/Clone.cs` — `Rewrite` (substituição textual) + `Readdress` (%M sequencial).
-- `src/Tia.Core/DbMember.cs` — `AddToXml`/`ResolveSection`: Struct nativo aninha `<Member>`
-  direto, instância de UDT expande em `<Sections><Section>` — trata os dois.
-- `src/Tia.Core/Memory.cs` — `Occupied`/`Gaps`: mapa de bytes %M ocupados.
-- `docs/PLANO.md` — seção "Clonar acionamento" com a sequência exata que funciona.
-- `workspace/real-A/` — exports e XMLs gerados do teste (DB GLOBAL original em `db/`).
-- `scripts/taskrun.ps1` + `workspace/taskio/` — canal da sessão 1.
+- `docs/PADRAO.md` — estrutura do projeto de referência + lei de nomenclatura + divergências.
+- `docs/PLANO.md:186` — seção "Projeto de referência"; adiante, clone de acionamento (AsBuilt).
+- `src/Tia.Core/FaultOb.cs:22` — comentário do `AlarmDb`; `:219` o throw novo.
+- `src/Tia.Core/Doctor.cs:97` — onde o check bogus foi removido.
+- `src/Tia.Core/Replicate.cs:15` — `ReplicateFcConfig` (campos do passo 3).
+- `src/Tia.Tests/Program.cs:40` — `Fixture()` aponta para `docs/examples/` (passo 2).
+- `scripts/tia-task.ps1` — driver sessão 0→1 (`--script-ps1 scripts\raio-x.ps1 "<Projeto>"`).
+- `workspace/Software de ETE Insular_Inicial_V21/` — raio-x completo (plc-navi, snapshot, tags).
 
 ## Open / blockers
-- **Ordem de compile é obrigatória**: todo import deixa o alvo inconsistente e
-  `Inconsistent blocks and PLC data types (UDT) cannot be exported` derruba o *próximo* export —
-  inclusive de blocos que só referenciam o DB alterado. Compilar entre etapas.
-- **Whitelist**: `rebuild.ps1` refez a whitelist mas o portal já aberto continuou com o hash
-  velho → `EngineeringSecurityException: The operation has timed out`.
-  `Start-ScheduledTask -TaskName TiaWhitelist` resolveu sem reabrir o portal.
+- **Whitelist stale + task `TiaWhitelist` inexistente** → qualquer `tia` recusa com
+  `EngineeringSecurityException`. Passo 1 destrava; nada que toque o portal anda antes disso.
+- Projeto importado chega inconsistente: `export-*` morre com `Inconsistent blocks and PLC data
+  types (UDT) cannot be exported`. `prep-project` resolve (já rodado aqui).
 - Openness single-session: um verbo por vez; `run --script` não isola steps.
-- Allocator de %I/%Q não existe (e não deve chutar endereço físico).

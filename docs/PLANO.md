@@ -182,6 +182,40 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
   `XML root object is 'SW.Tags.PlcTagTable', expected 'SW.Blocks.*'`. Teste offline
   `Ops.RequireRootType`; smoke real: 4 combinações (2 aceitas, 2 recusadas) no AsBuilt.
 
+## Clonar acionamento — fluxo real validado (2026-07-27, AsBuilt)
+
+Objetivo do usuário ("mais uma bomba igual à BH-01A") fechado ponta-a-ponta clonando
+**BH-01B → BH-01C** na Elevatória de Gordura. Verbos novos desta rodada:
+
+- `add-db-member --db X --name M [--path A.B] [--type T | --like SIBLING] [--apply]` — a lacuna
+  registrada antes (nenhum verbo *criava* instância de UDT na DB global). `--like` clona o nó do
+  irmão e insere logo depois. Idempotente (`action: exists`). `ResolveSection` cobre as duas
+  formas do XML: Struct nativo aninha `<Member>` direto, instância de UDT expande em
+  `<Sections><Section>`.
+- `clone --block N | --table T --replace OLD=NEW [--at %M432.0] [--folder A/B] [--apply]` —
+  export → substituição textual → import. Um `--replace BH-01B=BH-01C` reescreve de uma vez nome
+  do bloco, símbolos de tag, caminhos do DB global e instance DBs. `--at` reendereça as tags Bool
+  em sequência; tag de largura maior aborta em vez de sobrepor endereço.
+- `free-memory [--bytes N] [--from B]` — read-only, buracos livres da área %M (2588 tags,
+  605 bytes usados, topo %M9001). Foi ele que apontou o bloco usado no teste (`%M432.0`, 8 bytes).
+
+**Sequência que funciona** (cada passo um verbo, nunca `run --script`):
+`free-memory` → `add-db-member` (instância + struct de comando do par) → `compile --block "DB GLOBAL"`
+→ `clone --table` → `clone --block` (5 instance DBs, depois o FC) → `compile --apply` → `save-project`
+→ `diff-block`. Resultado: PLC inteiro compila Success/0 erros, `diff-block` do FC clonado `identical`.
+
+**Ordem é obrigatória, não estilo**: todo import deixa o alvo inconsistente e
+`Inconsistent blocks and PLC data types (UDT) cannot be exported` derruba o *próximo* export —
+inclusive de blocos que só *referenciam* o DB alterado. Compilar entre etapas.
+
+`replicate-fc` **não** serve para este projeto: exige pasta nomeada `... (ID)` (AsBuilt usa
+`Bomba Reserva BH-01B`) e é replicador em massa — sobrescreve todas as pastas irmãs a partir do
+molde, não clona um equipamento. Dry no AsBuilt: 0 grupos, 61 pastas puladas.
+
+**Limite conhecido**: tags de IO físico (`BOMBA_2_ELEVATORIA_DE_GORDURA_*`) não são clonadas —
+uma bomba nova de verdade precisa de %I/%Q próprios, que dependem de hardware novo. `free-memory`
+cobre só %M; endereço físico continua manual, de propósito.
+
 ## Pendências / decisões futuras
 
 - ~~Licença~~ ✅ MIT (F4, 2026-07-18). ~~Nome público~~ ✅ `tia-cli`.

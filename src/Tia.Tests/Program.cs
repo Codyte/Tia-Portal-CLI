@@ -61,6 +61,7 @@ namespace Tia.Tests
                 { "Clone.Rewrite", Clone_Rewrite },
                 { "Profinet.TagName", Profinet_TagName },
                 { "InstrumentFc.FcName", InstrumentFc_FcName },
+                { "Audit.Naming", Audit_Naming },
             };
             foreach (var t in tests)
             {
@@ -223,6 +224,24 @@ namespace Tia.Tests
             Check(name("INVERSOR_AG-02 CCM3", 60) == "COMM_60_INVERSOR_AG-02_CCM3", "espaço vira _, hífen fica");
             Check(name("REM_RM1.0", 1) == "COMM_1_REM_RM1.0", "ponto fica");
             Check(name("ACB_2", 3) == "COMM_3_ACB_2", "sem separador especial");
+        }
+
+        // strings reais do projeto de referência (workspace/.../snapshot.json)
+        private static void Audit_Naming()
+        {
+            Check(Audit.TagOf("Soprador 1 (S-01A)") == "S-01A", "TAG da pasta de equipamento");
+            Check(Audit.TagOf("4.1.2 Dosagem Sistema Alcalinizante (RA-01)") == "RA-01", "TAG da pasta de área");
+            Check(Audit.TagOf("3.1.4 Elevatória de Gordura") == null, "pasta sem (TAG)");
+            Check(Audit.CarriesTag("PARTIDA_SOPRADOR_1 (S-01A)", "S-01A"), "TAG entre parênteses");
+            Check(Audit.CarriesTag("FB FALHA_S-01A", "S-01A"), "TAG como sufixo _TAG");
+            Check(Audit.CarriesTag("FB SETPOINT MANUAL S-01A", "S-01A"), "TAG separado por espaço");
+            Check(!Audit.CarriesTag("FB FALHA_S-01B", "S-01A"), "bloco de outro equipamento reprova");
+            // 3.1.15 'Elevatória Agua de Serviço' × 2.15 'Elevatória Água de Serviço' = mesma área
+            Check(Audit.NormalizeArea("Elevatória Agua de Serviço") == Audit.NormalizeArea("Elevatória Água de Serviço"),
+                "acento não separa área");
+            Check(Audit.NormalizeArea("Preliminar (P-GM-01)") == Audit.NormalizeArea("Preliminar"),
+                "(TAG) na pasta de área não separa");
+            Check(Audit.NormalizeArea("Desarenador") != Audit.NormalizeArea("Casa de Cloro"), "áreas distintas");
         }
 
         private static void DbMember_AddToXml()

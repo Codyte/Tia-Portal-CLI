@@ -91,6 +91,17 @@ DB DIAGNOSTICO DISPOSITIVOS . HW_DIAG_STATE . {OwnState,IOState,OperatingState,M
 `ALARMES_MODULOS` é **membro** da DB global, não bloco. `FaultObConfig.AlarmDb` é o nome do
 `Component` no FlgNet — o `gen-fault-ob` já casava certo; só o check do `doctor` procurava bloco.
 
+## `tia audit` — projeto × lei de nomenclatura
+
+Read-only, sem config. Acionamento = pasta de blocos com um FC `PARTIDA_*`; checa `(TAG)` na folha,
+6 blocos por acionamento, todo bloco carregando o TAG, 1 tabela de tags com o mesmo `(TAG)`, e N de
+área consistente entre `2.N`/`3.N` (tags) e `3.1.N`/`5.1.N` (blocos), com nome normalizado
+(sem acento/caixa/`(TAG)`) e `N=0` fora (é molde/painéis).
+
+Régua: este projeto passa **limpo** (36 acionamentos, 5/5 checks) — se reprovasse, a regra estaria
+errada. Discrimina de verdade: no `Automação ETE SG AsBuilt` são 69 acionamentos, **69 sem `(TAG)`**
+na pasta e 58 com contagem de blocos ≠ 6.
+
 ## Estado da CLI contra este projeto
 
 `tia doctor`: `standardize-tags` ok · `gen-alarm-fc` ok (8/8: `3.1.0 Modelo`, `FC_Modelo`,

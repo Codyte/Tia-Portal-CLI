@@ -52,6 +52,7 @@ namespace Tia.Cli
                         "compile [--block X | --folder A/B] [--apply]",
                         "diff-block --file F.xml [--name X]  (read-only, normalized compare)",
                         "doctor [--verb V] [--config F]  (read-only preflight dos verbos geradores)",
+                        "audit [--plc N] [--max 50]  (read-only: projeto × lei de nomenclatura do PADRAO)",
                         "gen-profinet --config F [--apply]",
                         "standardize-tags [--config F] [--apply]",
                         "gen-fault-ob [--config F] [--out DIR] [--apply]",
@@ -359,6 +360,10 @@ namespace Tia.Cli
                     case "diff-block":
                         result = Core.Ops.DiffBlock(session.GetPlc(plcName),
                             OptionValue(args, "--name"), Require(args, "--file"));
+                        break;
+                    case "audit":
+                        result = Core.Audit.Run(session.GetPlc(plcName),
+                            int.Parse(OptionValue(args, "--max") ?? "50"));
                         break;
                     case "doctor":
                         var docVerb = OptionValue(args, "--verb");

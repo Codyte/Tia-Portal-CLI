@@ -1,65 +1,56 @@
 # Handoff · TIA Portal Openness API · 2026-07-27
 
 ## Goal
-CLI usável em **qualquer máquina**, contra **TIA Project Server** (vários engenheiros no mesmo
-projeto), com `init` de máquina e de projeto — sem coreografia manual.
+CLI usável em qualquer máquina, contra TIA Project Server, com `init` de máquina e de **projeto**
+(scaffold) — sem coreografia manual. Régua = projeto de referência `Software de ETE Insular_Inicial_V21`.
 
 ## State
-- HEAD: 880ef5e — working tree limpo. `rebuild.ps1` ALL PASS (11 suítes + `Audit.Naming`).
+- HEAD: bdaa59a — working tree limpo. `rebuild.ps1` ALL PASS (13 suítes, `Scaffold.Plan` incluída).
 - Done nesta sessão:
-  - **Portabilidade** (bloqueava o resto): 14 caminhos `c:\Scripts\TIA Portal` viraram
-    `$PSScriptRoot` em `whitelist`/`taskrun`/`smokeloop`/`setup-tasks`/`export-fixtures`.
-    `grant-whitelist-acl.ps1` deletado (ACL com usuário fixo, obsoleto).
-  - **`init.ps1` gate 4**: registra `TiaWhitelist`/`TiaSmokeRun` via `setup-tasks` elevado (1 UAC),
-    idempotente, falha alto se não registrar. `init.ps1` roda limpo de ponta a ponta.
-  - **`tia list-server-projects --server HOST [--port N] [--http] [--keep-connection]`** —
-    multiuser read-only (passo 3a).
-  - **`tia audit [--plc N] [--max 50]`** — projeto × lei de nomenclatura, 5 checks, sem config.
+  - **`tia scaffold --manifest F.json [--apply] [--force]`** — projeto novo recebe a árvore da lei
+    (26 pastas de blocos+tags) e 66 objetos do padrão. Idempotente (`skip (exists)`).
+  - **`workspace/padrao/` completado**: +51 exports do projeto de referência (13 UDTs, 34 FBs de
+    `1. FB Bilbiotecas`, `DB_DUMMY`, `FB BITS TO WORD MODELO`, `FB DIAG MODULES_DB`,
+    `DB DIAGNOSTICO DISPOSITIVOS`). Regen: `tia run --script workspace/export-padrao.json`.
+  - **Aceite do `--apply` fechado** em `workspace/ScaffoldTest` (projeto novo, criado pela CLI):
+    `create-project` → `add-device` CPU 6ES7 515-2AN03-0AB0/V3.1 → `scaffold --apply` **66/66** →
+    `compile --apply` → `save-project` → `audit` **5/5 limpo**.
+  - **2 bugs que só o ramo `create` expôs** (o dry passava): projeto novo sem a cultura `pt-BR`
+    derrubava todo import → `Ops.EnsureCultures`; e `<Culture>` é **elemento**, não atributo.
+  - `add-device --apply` exercitado pela 1ª vez (pendência do backlog item 3).
 - In progress: nada mid-flight.
 
 ## Decisions (and why)
-- API Multiuser levantada por **reflexão na DLL**, não de memória:
-  `TiaPortal.ProjectServers` (`Create(name, Protocol, host, port)`), `GetServerProjects`,
-  `GetLockStateProvider` (`IsProjectLocked`/`GetLockOwner`), `GetLocalSessions`,
-  `CreateLocalSession(info, name, dir, SessionCreationMode)`, `LocalSessions.OpenServerProject(file)`,
-  `LocalSession.CloseAndCommit(msg)`/`Save`/`IsUptoDate`/`Close`.
-- `list-server-projects` roda **antes** do `TiaSession.Attach()`: precisa de portal, não de projeto
-  aberto. Conexão que ele cria é removida no `finally` (`--keep-connection` mantém).
-- `audit` lê o prefixo de área **por árvore** (`2.N`/`3.N` só em tags, `3.1.N`/`5.1.N` só em blocos).
-  Sem isso `3.2 Comunicacao Profinet` (blocos) colide com `3.2 <Área>` (tags) e todo projeto
-  conforme acusava conflito. `N=0` fora (molde/painéis).
-- Régua do PADRAO aplicada nos dois sentidos: referência passa limpo (36 acionamentos, 5/5);
-  AsBuilt acusa 69/69 sem `(TAG)` e 58 com ≠ 6 blocos. Check que não discrimina é check inútil.
-- Escrita multiuser **não** foi escrita sem servidor pra testar — código não exercitável foi o que
-  produziu os 3 bugs da sessão passada.
+- Manifesto guarda caminho de pasta como **lista de segmentos**, não string com `/`: nomes reais
+  contêm barra (`3. Alarmes/Eventos/Falhas`, `4. Motores/Bombas`) e `Ops.ResolveFolder` quebraria.
+- Ordem de import é por **tipo de objeto** (UDT→tags→FB→DB global→iDB→FC→OB), não pela ordem do
+  manifesto: iDB não importa limpo sem o FB dele.
+- `Scaffold.Plan` é puro (sem TIA) → testável offline; `Run` só entra no portal.
+- Objeto existente = `skip`, nunca override silencioso (`--force` é a válvula consciente).
+- API de idioma levantada por reflexão na DLL: `LanguageSettings.ActiveLanguages.Add(...)`,
+  `Languages.Find(CultureInfo)` (`LanguageComposition` não tem Create — é o que está instalado).
 
 ## Next steps (ordered)
-1. **`scaffold` / `tia init` do PROJETO** (maior valor restante): consome `workspace/padrao/` —
-   árvore de pastas da lei, `DB GLOBAL` com `HARDWARE_INTERRUPT`/`ALARMES_MODULOS`, os moldes
-   (`MODULE_ERROR_MOLDE`, `OB_MOLDE_ALARMES`, `OB_MOLDE_PARTIDAS`, `MOLDE_ANALOGS`, `MOLDE TOT1`,
-   `FC_Modelo`), acionamento-modelo de 6 blocos, tabelas `1. I/OS`…`5. Instrumentação`.
-   Sem isso os replicadores não têm o que replicar num projeto novo. `audit` vira o teste de aceite.
-2. `import-ladder` contra a verdade (FlgNet escrito de memória, nunca validado): gerar e comparar
-   com `diff-block` contra um `PARTIDA_*` real de `workspace/padrao/`.
-3. `replicate-fc --apply` nunca exercitado — testar em projeto vazio (no de referência o guard barra,
-   certo; `--force` é a válvula consciente).
-4. **Multiuser 3b/3c** (bloqueado por host): `open-session`/`close-session` (`CreateLocalSession` +
-   `OpenServerProject`), depois refresh/commit com `MultiuserException` tratada como conflito.
-   Toda escrita passa a ser commit numa sessão local, nunca no projeto do servidor direto.
-5. **Concorrência** (D9 = single-session vale por máquina): com N engenheiros `--out workspace/`
-   colide em share; `audit`+`doctor` deveriam rodar antes de cada commit; decidir lock por projeto.
+1. `import-ladder` contra a verdade — gerar e comparar com `diff-block` contra um `PARTIDA_*` real.
+   O FlgNet foi escrito de memória e `--apply` nunca rodou.
+2. `replicate-fc --apply` — agora tem projeto vazio (`ScaffoldTest`) com o molde dentro; é o alvo
+   certo (no de referência o guard barra, corretamente).
+3. `scaffold`/`add-device` habilitar os bytes de **system/clock memory** da CPU: 8 dos 26 erros de
+   compile do ScaffoldTest são `FirstScan`/`Clock_1Hz`/`AlwaysTRUE` não definidos.
+4. Multiuser 3b/3c (`open-session`/`close-session`, commit com `MultiuserException` como conflito).
+5. Concorrência (D9 vale por máquina): `--out workspace/` colide com N engenheiros; decidir lock.
 
 ## Key files
-- `src/Tia.Core/Audit.cs` — 5 checks; `AreaConflicts` (prefixo por árvore), `NormalizeArea`.
-- `src/Tia.Core/Multiuser.cs` — `ListServerProjects`, `ResolveServer` (reusa/cria+apaga conexão).
-- `src/Tia.Cli/Program.cs:145` — `list-server-projects` antes do Attach; `case "audit"` no Dispatch.
-- `src/Tia.Tests/Program.cs` — `Audit_Naming`, 10 asserts com strings reais do projeto.
-- `scripts/init.ps1` — 4 gates (grupo Openness, dotnet, `lib/*.dll`, tasks) + rebuild.
-- `docs/PADRAO.md` — lei de nomenclatura + seção nova `tia audit`.
-- `docs/PLANO.md` — D1–D9 (D9 a revisar quando o multiuser escrever).
+- `src/Tia.Core/Scaffold.cs` — `Rank` (ordem), `Plan` (puro), `Run`, `ResolveBlockPath`/`ResolveTagPath`.
+- `src/Tia.Core/Ops.cs` — `EnsureCultures` + `XmlCultures` (perto de `XmlObjectName`).
+- `src/Tia.Cli/Program.cs` — `case "scaffold"` no Dispatch.
+- `docs/examples/scaffold-padrao.json` — manifesto (26 pastas, 66 itens, fonte `workspace/padrao/`).
+- `docs/PADRAO.md` — seção `tia scaffold` + aceite e os 26 erros de compile explicados.
+- `src/Tia.Tests/Program.cs` — `Scaffold_Plan` (ordem, segmento com `/`, culturas, arquivo ausente).
 
 ## Open / blockers
-- **Falta o host do Project Server** (+ porta, http/https) e um projeto de **teste** no servidor,
-  nunca produção — trava só o passo 4.
-- Portal aberto no projeto de referência; smoke via `pwsh scripts/tia-task.ps1 <verbo>` funciona
-  sem intervenção. Openness single-session continua valendo por máquina.
+- Portal está com **`ScaffoldTest` aberto** (o de referência foi fechado sem salvar, autorizado pelo
+  user, que tem backup). Voltar: `pwsh scripts/use-project.ps1 "Software de ETE Insular_Inicial_V21"`.
+- Falta host/porta do TIA Project Server + projeto de teste lá (nunca produção) — trava o passo 4.
+- Só 2 das 194 tabelas de tags entram no manifesto (as do acionamento-modelo); o resto é conteúdo
+  de projeto, não padrão — se projeto novo precisar do esqueleto de IO, é decisão a tomar.

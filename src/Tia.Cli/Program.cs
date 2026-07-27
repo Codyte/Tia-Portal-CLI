@@ -60,6 +60,8 @@ namespace Tia.Cli
                         "replicate-instruments --config F [--out DIR] [--apply]" } },
                     { "library", new[] { "list-library --file X.al19",
                         "import-master-copy --file X.al19 --name M [--folder A/B] [--apply]" } },
+                    { "multiuser", new[] { "list-server-projects --server HOST [--port N] [--http] [--keep-connection]" +
+                        "  (read-only: projetos do TIA Project Server, lock e sessões locais)" } },
                     { "batch", new[] { "run --script ops.json  (JSON array de arg-arrays, uma sessão só)" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports; " +
                         "--retry N (busy, default 3) --timeout SEC; exit: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA, 5 timeout" },
@@ -134,6 +136,15 @@ namespace Tia.Cli
             {
                 Print(Core.TiaSession.CreateProject(Require(args, "--dir"), Require(args, "--name"),
                     !args.Contains("--no-ui")));
+                return 0;
+            }
+
+            // read-only no servidor: precisa de portal aberto, mas NÃO de projeto aberto
+            if (args[0] == "list-server-projects")
+            {
+                Print(Core.Multiuser.ListServerProjects(Require(args, "--server"),
+                    int.Parse(OptionValue(args, "--port") ?? "0"),
+                    args.Contains("--http"), args.Contains("--keep-connection")));
                 return 0;
             }
 

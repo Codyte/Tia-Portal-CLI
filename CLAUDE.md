@@ -60,6 +60,18 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
   - `tia doctor` = preflight dos 6 verbos antes de qualquer smoke.
 - Smoke test exige TIA Portal aberto com projeto de teste — confirmar com o usuário antes.
 
+## Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza
+
+`python scripts/tia-help.py --search "termo"` → busca nos **45518 tópicos** da ajuda do TIA Portal
+(a mesma do F1), dos quais **1083 são de Openness**; `--topic "PKG/TOC/ID.htm"` devolve o texto
+limpo. Sobe o serviço e monta o índice sozinho na 1ª vez (`--ensure`).
+
+**Use antes de sondar a API por tentativa e erro** — nome de atributo, o que o import recusa,
+diferença entre famílias de CPU, assinatura de instrução. O custo é ~1 s e uns poucos KB; o de
+descobrir no braço foi metade de uma sessão. Busca casa por **AND de palavras no título** (o índice
+não tem corpo): termo que só existe no texto dá 0 hits — achar o tópico plausível e ler com
+`--topic`.
+
 ## Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto)
 
 `pwsh scripts/tia.ps1 <args>` é **o comando único** — resolve isso sozinho, use sempre.

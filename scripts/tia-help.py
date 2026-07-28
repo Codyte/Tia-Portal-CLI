@@ -19,17 +19,23 @@ Protocolo (descoberto em runtime, não documentado):
   - /HelpViewer/Html quer helpReferenceString = objeto HelpReference completo; com campo
     faltando devolve `null` com status 200, não erro.
 
+O servidor é o serviço do Windows "Siemens TIA Help Viewer Service" (StartMode Auto) — vive
+sozinho, **não** depende do F1 estar aberto. `--ensure` sobe se estiver parado.
+
 Uso:
-  python scripts/tia-help.py --index                      # 1x: cria workspace/help-index.txt
-  grep -i "clock memory" workspace/help-index.txt
+  python scripts/tia-help.py --search "clock memory"      # o caminho normal: sobe, indexa, busca
   python scripts/tia-help.py --topic ProgKOP2MenUS/10867183243/10383119371.htm
+  python scripts/tia-help.py --ensure                     # só o preflight (serviço + índice)
 """
 import argparse
 import html
 import json
 import os
 import re
+import socket
+import subprocess
 import sys
+import time
 import urllib.parse
 
 import httpx
@@ -100,22 +106,83 @@ def index(base, name, out):
     return len(seen), total
 
 
+SERVICE = "Siemens TIA Help Viewer Service"
+
+
+def ensure(base, name, out):
+    """
+    Preflight: serviço no ar + índice em disco. Idempotente; devolve o que fez.
+    O serviço é Auto, então o normal é já estar rodando — subir é o caso raro (e pede elevação).
+    """
+    did = []
+    if not _listening(base):
+        did.append("start-service")
+        subprocess.run(["powershell", "-NoProfile", "-Command",
+                        "Start-Service -Name '{}'".format(SERVICE)],
+                       capture_output=True, timeout=120)
+        for _ in range(20):
+            if _listening(base):
+                break
+            time.sleep(1)
+        if not _listening(base):
+            raise SystemExit("serviço '{}' não subiu — `Start-Service` precisa de elevação."
+                             .format(SERVICE))
+    if not os.path.exists(out) or os.path.getsize(out) == 0:
+        did.append("index")
+        index(base, name, out)
+    return did
+
+
+def _listening(base):
+    host, _, port = urllib.parse.urlsplit(base).netloc.partition(":")
+    s = socket.socket()
+    s.settimeout(2)
+    try:
+        s.connect((host or "localhost", int(port or 443)))
+        return True
+    except OSError:
+        return False
+    finally:
+        s.close()
+
+
+def search(base, name, out, term, limit):
+    """Grep no índice. O endpoint /Search do viewer responde 404, então a busca é local."""
+    # ponytail: casa por AND de palavras no *título* — o índice não tem corpo. Termo que só existe
+    # no texto do tópico (ex.: "DisableENO") dá 0 hits; achar o tópico plausível e ler com --topic.
+    ensure(base, name, out)
+    words = [re.compile(re.escape(w), re.I) for w in term.split()]
+    hits = [l.rstrip("\n") for l in open(out, encoding="utf-8")
+            if all(w.search(l) for w in words)]
+    return hits[:limit], len(hits)
+
+
 def main():
     p = argparse.ArgumentParser(description="Ajuda do TIA Portal (F1) como texto.")
     p.add_argument("--base", default=DEFAULT_BASE, help="default " + DEFAULT_BASE)
     p.add_argument("--api", default=DEFAULT_API, help="valor do ?api= (default PortalV21)")
     p.add_argument("--topic", help='ItemId "PKG/TOC/ID.htm"')
-    p.add_argument("--index", action="store_true", help="gera o índice pesquisável")
+    p.add_argument("--search", help="grep no índice (sobe o serviço e indexa se preciso)")
+    p.add_argument("--limit", type=int, default=15, help="hits do --search (default 15)")
+    p.add_argument("--index", action="store_true", help="(re)gera o índice pesquisável")
+    p.add_argument("--ensure", action="store_true", help="preflight: serviço no ar + índice")
     p.add_argument("--out", default=os.path.join("workspace", "help-index.txt"))
     a = p.parse_args()
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # ajuda tem CJK; console é cp1252
-    if a.index:
+    if a.search:
+        hits, total = search(a.base, a.api, a.out, a.search, a.limit)
+        print(json.dumps({"term": a.search, "hits": total, "shown": len(hits)}, ensure_ascii=False))
+        for h in hits:
+            print(h)
+    elif a.ensure:
+        print(json.dumps({"did": ensure(a.base, a.api, a.out) or ["nothing"], "index": a.out}))
+    elif a.index:
         n, raw = index(a.base, a.api, a.out)
         print(json.dumps({"file": a.out, "topics": n, "streamed": raw}, ensure_ascii=False))
     elif a.topic:
         print(topic(a.base, a.api, a.topic))
     else:
-        p.error("passe --index ou --topic")
+        p.error("passe --search, --topic, --ensure ou --index")
 
 
 if __name__ == "__main__":

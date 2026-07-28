@@ -1,78 +1,76 @@
-# Handoff · TIA Portal Openness API · 2026-07-28 — **dois tracks paralelos**
+# Handoff · TIA Portal Openness API · 2026-07-28
 
-## Roteador (leia só o seu)
-- User disse **"continue 1"** → leia `.handoff/track1.md`. Portal: `replicate-fc --apply` contra
-  dados reais. **É o único track que pode chamar `tia`.**
-- User disse **"continue 2"** → leia `.handoff/track2.md`. Offline: biblioteca de blocos
-  (`library/`), `.gitignore`, docs. **Nunca chama `tia`, nunca roda `rebuild.ps1`.**
-- Sem número → perguntar qual, ou tratar como sessão única e executar o track 1 primeiro.
+Split de 2 tracks **fundido** — sessão única a partir daqui. Histórico dos dois em
+`.handoff/archive/2026-07-28T125409.md`.
 
-Não leia o arquivo do outro track: o que você precisa saber dele já está aqui embaixo.
+## Goal
+F8 (caminho de escrita contra projeto real) está fechado. Próximo alvo: **fatia 2 da biblioteca de
+blocos** — escrever os ~10 itens autorais do núcleo genérico (tabela em `docs/PLANO.md`, seção
+"Biblioteca de blocos"), e o teste da biblioteca contra o Portal.
 
-## Por que o paralelismo é seguro (e onde deixa de ser)
-Openness é **single-session**: duas chamadas `tia` simultâneas se derrubam. Por isso o corte é
-Portal × offline, não "metade das tarefas cada". Três proibições que sustentam isso:
-1. Só o track 1 chama `tia` (qualquer verbo, inclusive leitura).
-2. Ninguém roda `rebuild.ps1` enquanto o outro trabalha — ele substitui o `tia.exe` que o track 1
-   está usando e refaz a whitelist. Track 2 não altera `src/**`, então não precisa.
-3. **`git add -A` proibido nos dois.** Mesma working tree: `-A` commita o trabalho pela metade do
-   outro. Sempre caminhos explícitos.
-
-Divisão de arquivos (quem escreve o quê) está no fim de cada track. Único ponto de contato é
-`docs/PLANO.md`, em seções diferentes: reler o arquivo imediatamente antes de editar.
-
-## Encerramento (quem fecha, e como)
-Track que terminar **não escreve `active.md`** — dois agentes sobrescrevendo o roteador é
-exatamente o atropelo que o split evita.
-1. Ao terminar, cada track escreve o resultado no **próprio** `trackN.md` (o que entregou, o que
-   caiu e por quê, o que a próxima sessão precisa), commita, marca `DONE:` no topo e para.
-2. **O track 1 é o dono do merge.** Ele só funde depois que `track2.md` estiver com `DONE:`.
-3. **No merge, a regra de "não ler o outro track" cai** — fundir exige ler os dois. O track 1 roda
-   `/handoff` normal: `--archive` dobra os dois track files num arquivo só e os apaga, e ele
-   escreve um `active.md` novo, único, com o resultado dos dois.
-4. Depois disso: `/clear` e **uma** sessão nova a partir desse handoff. Não continuar a conversa
-   com nenhum dos dois agentes velhos — cada um tem metade do quadro.
-Se um track travar ou for abandonado, o outro funde assim mesmo e registra o estado do travado
-como item aberto.
-
-## Estado compartilhado
-- HEAD ao escrever: 740f6bc. Working tree limpo.
+## State
+- HEAD: 2849fca. Working tree limpo.
 - Portal aberto na sessão 1 com **Software de ETE Insular_Inicial_V21** (cópia de teste, backup do
-  user, dano autorizado). **PLC compila Success / 0 erros / 0 warnings.**
-- Repo é **público** (`github.com/Codyte/TIA-Portal`) — pesa na decisão do track 2.
-- **F8 fechado hoje** (caminho de escrita): primitivas 11/11 ✅, `import-ladder --apply` ✅ com 2
-  bugs de FlgNet corrigidos (comparador `pre`/`in1`/`in2`; paralelo = parte `O` com `Card` +
-  `in1..inN`), 6 geradores ✅ em dry + payload de `gen-fault-ob`/`gen-alarm-fc` importado no
-  sandbox → compile 0 erros → `explain-block` round-trip.
-- Tudo que foi escrito hoje vive em `ClaudeTest/`, `ClaudeTest/Sub`, `ClaudeTest/Gen` (+
-  `DB INSTRUMENTOS` na raiz). User mandou deixar lá e continuar usando essas pastas.
+  user, dano autorizado). PLC compila **Success / 0 erros / 0 warnings** + `save-project` feito.
+- **F8 fechado.** Primitivas 11/11 ✅, `import-ladder --apply` ✅, 6 geradores ✅ em dry + payload
+  importado, e nesta rodada: `replicate-fc --apply` no tipo `Soprador` da árvore de produção
+  (2 alvos S-01B/C, batch 0 falhas, 2 compiles 0 erros, conteúdo conferido — 5 linhas de 1993
+  diferem do molde, todas devidas), `gen-profinet --apply` (no-op) e `standardize-tags --apply`
+  (5 tabelas rebuilt). Detalhe completo na linha F8 do PLANO.
+- **Biblioteca fatia 1 fechada** (offline): `library/library.json` (manifesto, `Source: "blocks"`),
+  `library/export-all.json` (batch inverso, 66 exports, 1 attach), `library/README.md` (inventário
+  + como repor + o que cada gerador exige), `library/blocks/` = 66 XMLs / 3,3 MB **fora do Git**
+  (`.gitignore`). Removido `scripts/export-fixtures.ps1` (cobria 15 dos 66).
+- Tudo que foi escrito nos sandboxes vive em `ClaudeTest/`, `ClaudeTest/Sub`, `ClaudeTest/Gen`
+  (+ `DB INSTRUMENTOS` na raiz). User mandou deixar lá e continuar usando essas pastas.
 
-## Decisões travadas (não rediscutir)
-- **`replicate-fc --apply` no projeto ouro, escopado a 1 tipo** — projeto separado via `scaffold`
-  descartado: dado sintético já coberto pelo SmokeTest_01, e o `scaffold` tem bug próprio.
-- Os 6 geradores **já rodaram `--apply` completo** no SmokeTest_01 (PLANO F3). O que falta é
-  robustez contra dados reais, não primeira execução.
-- **`replicate-instruments --apply` cortado**: dá `in-sync`, não escreveria nada.
-- **Empacotamento da biblioteca**: `.scl` padrão, `.xml` só pra LAD, `.al19` descartado.
-- Otimizar verbo é alvo errado agora: attach = 2,9s fixo, amortizado por `run --script`. Critério
-  de sucesso é `compile` 0 erros, não tempo.
+## Decisions (and why)
+- **`replicate-fc --apply` exige `--force`** quando a pasta-alvo já tem blocos — guard correto,
+  não bug. Sem ele: `2 target folder(s) already have blocks…`.
+- **Idempotência do `replicate-fc` é funcional, não no-op**: o verbo não detecta in-sync, reimporta
+  e recompila. Resultado idêntico, 0 erros. Não "consertar" sem motivo novo.
+- **`replicate-instruments --apply` cortado** — dry dá `in-sync`, não escreveria nada.
+- **Empacotamento da biblioteca**: `.scl` padrão (diffável, imune à versão do Engineering; limitação:
+  bloco nasce na raiz, contorno = `export-block` → `import-block --folder` → `delete-block`);
+  `.xml` só pro que precisa nascer em LAD; `.al19` descartado (binário). `import-ladder` não serve
+  pra escrever biblioteca (sem timer, sem aritmética).
+- **Repo é público** (`github.com/Codyte/TIA-Portal`) — nenhum payload de cliente versionado
+  (gate explícito na linha F4 do PLANO).
+- Otimizar verbo é alvo errado: attach = 2,9s fixo, amortizado por `run --script`. Critério de
+  sucesso é `compile` 0 erros, não tempo.
 
-## Regras duras que valem pros dois
-- Todo import deixa o alvo **e quem o referencia** inconsistente, e o Openness recusa exportar
-  bloco inconsistente → `compile --apply` entre etapas.
-- `pwsh scripts/tia.ps1 <verbo>` é o comando único (roteia sessão 0 × sessão 1 sozinho).
-- Verbo de escrita: dry por padrão, `--apply` explícito.
-- Chamada pendurada com `tia.exe` vivo e CPU ~0 = diálogo de aceite do Openness na tela: pedir o
-  clique, não investigar código.
+## Next steps (ordered)
+1. **Teste da biblioteca contra o Portal** (nunca rodou): `scaffold --manifest library/library.json`
+   em dry no projeto de referência → esperado 66/66 `skip (exists)`; depois
+   `run --script library/export-all.json` → 66 arquivos de volta em `library/blocks/`
+   (exige PLC compilado antes — bloco inconsistente não exporta).
+2. **Fatia 2 da biblioteca**: escrever os ~10 itens autorais do núcleo genérico (tabela no PLANO,
+   cada item já linkado ao default do gerador que o exige).
+3. **Bug real do `scaffold`**: item UDT ignora `Folder` — `src/Tia.Core/Scaffold.cs:126` importa todo
+   `SW.Types.*` na raiz do `TypeGroup`, enquanto bloco e tabela resolvem caminho. Correção =
+   `ResolveTypePath` análogo aos outros dois. Exige `rebuild.ps1`.
+   (O gap "`scaffold` não ordena UDT antes de DB/FC" **não existe** — `Scaffold.Rank` sempre teve
+   `SW.Types` = 0, `Scaffold.cs:58`. Não reintroduzir.)
+4. **Sanitizar `docs/examples/*.xml`**: são fixtures de projeto real E estão versionados num repo
+   público — `clone --replace OLD=NEW` ou trocar por sintéticas.
+5. Fatia 3 da biblioteca (utilitários genéricos: escala, debounce, first-out, watchdog, rampa).
 
-## Arquivos-chave
-- `docs/examples/replicate-fc-soprador.json` — config escopado; `replicate-soprador-run.json` — batch.
-- `docs/PLANO.md` — linha **F8** (track 1) · seção **"Biblioteca de blocos"** e linha **F4** (track 2).
+## Key files
+- `docs/PLANO.md` — linha **F8** (fechada), linha **F4** (gate de publicação), seção
+  **"Biblioteca de blocos"** (fatias + tabela do núcleo genérico).
+- `library/library.json` · `library/export-all.json` · `library/README.md`.
+- `docs/examples/replicate-fc-soprador.json` (config escopado) ·
+  `docs/examples/replicate-soprador-run.json` (batch, já com `--force`).
+- `src/Tia.Core/Scaffold.cs:126` — bug do `Folder` do UDT · `:58` — `Rank` (correto).
+- `src/Tia.Core/Ops.cs:213` guard de inconsistência · `:311` `ImportSource` gera blocos.
 - `src/Tia.Core/LadConverter.cs:355-397` — pinos e parte `O`; verdade em
   `docs/examples/BombaTemplateFc.xml:346` e `:1044-1058`.
-- `src/Tia.Core/Ops.cs:213` guard de inconsistência · `:311` `ImportSource` gera blocos.
 
-## Aberto
-- Fatia 3 da biblioteca (utilitários genéricos: escala, debounce, bits→word) — só depois da fatia 1.
-- `scaffold`/`add-device`: bug dos bytes de system/clock memory. `import-master-copy`: sem `.al19`.
+## Open / blockers
+- `scaffold`/`add-device`: bug dos bytes de system/clock memory (separado do bug do `Folder`).
+  `import-master-copy`: sem `.al19` de teste.
 - Sem `checkpoint`/`restore` (F7 item 4): ponto de retorno = `save-project` + backup do user.
+- Regra dura que continua valendo: todo import deixa o alvo **e quem o referencia** inconsistente e
+  o Openness recusa exportar bloco inconsistente → `compile --apply` entre etapas.
+- Chamada pendurada com `tia.exe` vivo e CPU ~0 = diálogo de aceite do Openness na tela: pedir o
+  clique, não investigar código.

@@ -362,9 +362,10 @@ namespace Tia.Core
                     int c = NextUid();
                     Parts.Add(new XElement(FlgNs + "Part", new XAttribute("Name", partName), new XAttribute("UId", c),
                         new XElement(FlgNs + "TemplateValue", new XAttribute("Name", "SrcType"), new XAttribute("Type", "Type"), srcType)));
-                    Operand(cmp.L.IsTag ? TagAccess(cmp.L.Text) : ConstAccess(cmp.L.Text), c, "operand1");
-                    Operand(cmp.R.IsTag ? TagAccess(cmp.R.Text) : ConstAccess(cmp.R.Text), c, "operand2");
-                    inNet.Sinks.Add(Tuple.Create(c, "in"));
+                    // pinos conforme export real (docs/examples/BombaTemplateFc.xml:1044-1058): pre/in1/in2/out
+                    Operand(cmp.L.IsTag ? TagAccess(cmp.L.Text) : ConstAccess(cmp.L.Text), c, "in1");
+                    Operand(cmp.R.IsTag ? TagAccess(cmp.R.Text) : ConstAccess(cmp.R.Text), c, "in2");
+                    inNet.Sinks.Add(Tuple.Create(c, "pre"));
                     outNet.Sources.Add(Tuple.Create(c, "out"));
                     return;
                 }

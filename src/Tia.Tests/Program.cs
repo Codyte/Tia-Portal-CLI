@@ -197,6 +197,13 @@ namespace Tia.Tests
             var doc = XDocument.Load(xmlFile);
             Check((int)result["networks"] > 0, "networks > 0 (" + result["networks"] + ")");
             Check(doc.Descendants().Any(e => e.Name.LocalName == "FlgNet"), "FlgNet presente");
+            // rede 5 do fixture usa ">" → Part Gt com pinos pre/in1/in2/out (BombaTemplateFc.xml:1044-1058)
+            var cmp = doc.Descendants().First(e => e.Name.LocalName == "Part" && (string)e.Attribute("Name") == "Gt");
+            var pins = doc.Descendants().Where(e => e.Name.LocalName == "NameCon"
+                && (string)e.Attribute("UId") == (string)cmp.Attribute("UId"))
+                .Select(e => (string)e.Attribute("Name")).ToList();
+            Check(pins.Contains("in1") && pins.Contains("in2"), "comparador usa in1/in2 (" + string.Join(",", pins) + ")");
+            Check(pins.Contains("pre"), "comparador recebe energia no pino pre (" + string.Join(",", pins) + ")");
         }
 
         private static void BlockExplain_Explain()

@@ -148,6 +148,26 @@ namespace Tia.Core
             return result;
         }
 
+        /// <summary>Apaga um master copy da global library (rebake deixa lixo com nome antigo).</summary>
+        public static object DeleteMasterCopy(TiaSession session, string file, string name, bool apply)
+        {
+            var lib = Open(session, file, apply);
+            var copy = FindMasterCopy(lib.MasterCopyFolder, name);
+            if (copy == null)
+                throw new InvalidOperationException(
+                    "Master copy '" + name + "' not found in library '" + lib.Name + "'.");
+            var result = new Dictionary<string, object>
+            {
+                { "library", lib.Name }, { "masterCopy", name }, { "applied", apply },
+            };
+            if (!apply) return result;
+            copy.Delete();
+            var user = lib as UserGlobalLibrary;
+            if (user != null) user.Save();
+            result["deleted"] = name;
+            return result;
+        }
+
         private static MasterCopyFolder ResolveLibFolder(MasterCopyFolder root, string path)
         {
             if (string.IsNullOrEmpty(path)) return root;

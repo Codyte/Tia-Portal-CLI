@@ -370,6 +370,28 @@ soltos de `1. FB Bilbiotecas` → **2 erros**, ambos `Tag "Clock_1Hz" not define
 instalação do manifesto inteiro. Confirma a lei de escopo: dependência de pacote só aponta pra
 cima, e clock/system memory byte é parte do core (não é bloco).
 
+**Critério de aceite batido — cada pacote sozinho numa CPU virgem = 0 erros.** `scripts/bake-lib.ps1`
+grava a biblioteca do PLC na `.al21` (1 master copy por subpasta de `1. FB Bilbiotecas` + 1 por bloco
+solto do nível 1; `-Apply` pra valer, dry-run mostra o que faria). Instalação de um pacote = os 5
+blocos de nível 1 + o pacote + `set-memory-bytes --clock 0`. Medido em 5 CPUs `6ES7 515-2AM02-0AB0`
+recém-criadas: `1.1 Acionamento`, `1.3 Instrumentação`, `1.4 Alarmes e Falhas`,
+`1.6 Comunicação Modbus` e `1.5 Diagnóstico` → **Success, 0 erros** em todas.
+
+`1.5 Diagnóstico` deu 1 erro no primeiro teste (`FB DIAG MODULES: Missing instance DB`) — bug do
+manifesto, não do desenho: `DIAG to STRING_DB.xml` existia em `library/blocks/` mas ficou fora dos
+63 itens, e a chamada de `DIAG to STRING` dentro do FB é single-instance. Manifesto agora tem 64
+itens e o pacote foi re-bakeado. Esse mesmo erro estava entre os 88 do `PLC_GEN` desde sempre —
+o teste por pacote é que o isolou.
+
+`delete-master-copy --file X.al21 --name M [--apply]`: rebake deixa lixo quando o master copy muda
+de nome (o primeiro probe ficou como `Copy of Function blocks in ...`).
+
+**`--portal PROJETO|PID` (opção global).** `TiaSession.Attach` fazia
+`TiaPortal.GetProcesses().FirstOrDefault()` — com dois portais abertos isso attacha num projeto ao
+acaso, inclusive o do cliente. Agora: 1 instância → attacha; mais de uma sem `--portal` → falha
+listando `PID:projeto`; `--portal` casa por substring (nome do projeto ou PID) e recusa ambíguo.
+Vale pra `open-project`/`create-project` também.
+
 **Movida da árvore feita** (manifesto = fonte, `library/generic.json`): `1.7 Utilitários` dissolvida
 (5 blocos soltos em `1. FB Bilbiotecas`), `1.2 Inversores` → `1. FB Bilbiotecas/1.1 Acionamento/
 1.1.1 Inversores`. `move-block` refletiu no `PLC_GEN` (9 blocos).

@@ -1,6 +1,6 @@
 # Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao)
 
-`tia <verb> [--plc NAME] [--apply]`
+`tia <verb> [--plc NAME] [--portal PROJETO|PID] [--apply]  (--portal obrigat├│rio se houver mais de um TIA Portal aberto)`
 
 ## session
 - `open-project --file X.ap21 [--no-ui]`
@@ -64,6 +64,7 @@
 - `list-library --file X.al19`
 - `import-master-copy --file X.al19 --name M [--folder A/B] [--apply]`
 - `add-master-copy --file X.al21 (--name BLOCO | --folder A/B) [--lib-folder L] [--apply]  (PLC ÔåÆ library; --folder = pasta inteira = pacote; substitui se j├í existir)`
+- `delete-master-copy --file X.al21 --name M [--apply]`
 
 ## multiuser
 - `list-server-projects --server HOST [--port N] [--http] [--keep-connection]  (read-only: projetos do TIA Project Server, lock e sess├Áes locais)`

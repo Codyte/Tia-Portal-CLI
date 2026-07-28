@@ -24,7 +24,8 @@ namespace Tia.Cli
             {
                 Print(new Dictionary<string, object>
                 {
-                    { "usage", "tia <verb> [--plc NAME] [--apply]" },
+                    { "usage", "tia <verb> [--plc NAME] [--portal PROJETO|PID] [--apply]" +
+                        "  (--portal obrigatório se houver mais de um TIA Portal aberto)" },
                     { "session", new[] { "open-project --file X.ap21 [--no-ui]",
                         "create-project --dir D --name N [--no-ui]",
                         "save-project", "close-project [--save]" } },
@@ -75,7 +76,8 @@ namespace Tia.Cli
                     { "library", new[] { "list-library --file X.al19",
                         "import-master-copy --file X.al19 --name M [--folder A/B] [--apply]",
                         "add-master-copy --file X.al21 (--name BLOCO | --folder A/B) [--lib-folder L] [--apply]" +
-                        "  (PLC → library; --folder = pasta inteira = pacote; substitui se já existir)" } },
+                        "  (PLC → library; --folder = pasta inteira = pacote; substitui se já existir)",
+                        "delete-master-copy --file X.al21 --name M [--apply]" } },
                     { "multiuser", new[] { "list-server-projects --server HOST [--port N] [--http] [--keep-connection]" +
                         "  (read-only: projetos do TIA Project Server, lock e sessões locais)" } },
                     { "bulk", new[] { "snapshot  (inventário completo: devices + blocos + tabelas + UDTs de todo PLC)",
@@ -163,6 +165,9 @@ namespace Tia.Cli
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static int Run(string[] args)
         {
+            // com mais de um portal aberto, escolhe qual (senão o attach falha alto)
+            Core.TiaSession.PortalFilter = OptionValue(args, "--portal");
+
             // run before Attach: may start the portal themselves
             if (args[0] == "open-project")
             {
@@ -425,6 +430,11 @@ namespace Tia.Cli
                             result = Core.Library.AddMasterCopy(session, session.GetPlc(plcName),
                                 Require(args, "--file"), OptionValue(args, "--name"),
                                 OptionValue(args, "--folder"), OptionValue(args, "--lib-folder"), apply);
+                        break;
+                    case "delete-master-copy":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Library.DeleteMasterCopy(session, Require(args, "--file"),
+                                Require(args, "--name"), apply);
                         break;
                     case "add-device":
                         using (WriteLock(session, apply, verb))

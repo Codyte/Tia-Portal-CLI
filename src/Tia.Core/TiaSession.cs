@@ -20,12 +20,53 @@ namespace Tia.Core
             Project = project;
         }
 
-        public static TiaSession Attach()
+        /// <summary>Instância a usar quando há mais de um portal aberto (--portal NOME|PID).</summary>
+        public static string PortalFilter { get; set; }
+
+        /// <summary>
+        /// Escolhe o processo do portal. Com mais de um aberto, exige --portal — attachar no
+        /// primeiro da lista é escrever num projeto ao acaso (o do cliente, por exemplo).
+        /// </summary>
+        private static TiaPortalProcess PickProcess(bool required)
         {
-            var proc = TiaPortal.GetProcesses().FirstOrDefault();
-            if (proc == null)
+            var procs = TiaPortal.GetProcesses();
+            if (procs.Count == 0)
+            {
+                if (!required) return null;
                 throw new InvalidOperationException(
                     "No running TIA Portal instance found. Start one with: tia open-project --file <path>.");
+            }
+
+            var filter = PortalFilter;
+            if (!string.IsNullOrEmpty(filter))
+            {
+                var hits = procs.Where(p => Describe(p).IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0)
+                    .ToList();
+                if (hits.Count == 0)
+                    throw new InvalidOperationException("No TIA Portal instance matches --portal '" + filter +
+                        "'. Running: " + string.Join(" | ", procs.Select(Describe)));
+                if (hits.Count > 1)
+                    throw new InvalidOperationException("--portal '" + filter + "' is ambiguous: " +
+                        string.Join(" | ", hits.Select(Describe)));
+                return hits[0];
+            }
+
+            if (procs.Count > 1)
+                throw new InvalidOperationException(procs.Count +
+                    " TIA Portal instances are running — pass --portal <projeto|PID> to pick one: " +
+                    string.Join(" | ", procs.Select(Describe)));
+            return procs[0];
+        }
+
+        private static string Describe(TiaPortalProcess p)
+        {
+            var proj = p.ProjectPath == null ? "(no project)" : p.ProjectPath.Name;
+            return p.Id + ":" + proj;
+        }
+
+        public static TiaSession Attach()
+        {
+            var proc = PickProcess(true);
             var portal = proc.Attach();
 
             ProjectBase project = portal.Projects.FirstOrDefault();
@@ -51,7 +92,7 @@ namespace Tia.Core
             if (!file.Exists)
                 throw new System.IO.FileNotFoundException("Project file not found: " + file.FullName);
 
-            var proc = TiaPortal.GetProcesses().FirstOrDefault();
+            var proc = PickProcess(false);
             var portal = proc != null
                 ? proc.Attach()
                 : new TiaPortal(ui ? TiaPortalMode.WithUserInterface : TiaPortalMode.WithoutUserInterface);
@@ -80,7 +121,7 @@ namespace Tia.Core
             var target = new System.IO.DirectoryInfo(System.IO.Path.GetFullPath(dir));
             if (!target.Exists) target.Create();
 
-            var proc = TiaPortal.GetProcesses().FirstOrDefault();
+            var proc = PickProcess(false);
             var portal = proc != null
                 ? proc.Attach()
                 : new TiaPortal(ui ? TiaPortalMode.WithUserInterface : TiaPortalMode.WithoutUserInterface);

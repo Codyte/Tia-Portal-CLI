@@ -1,5 +1,5 @@
 # __navi__ · `docs/examples/` — 6 files → symbols at exact line numbers
-<!-- navindex · 2026-07-27 · DO NOT EDIT BY HAND; regen via navindex skill -->
+<!-- navindex · 2026-07-28 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../../__navi__.md`](../../__navi__.md)
 
 - **batch.json** (6 ln) — [4 items]

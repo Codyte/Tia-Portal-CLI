@@ -2,6 +2,10 @@
 
 **Toda sessão: ler `docs/PLANO.md` (decisões + fase atual) e `__navi__.md` antes de qualquer coisa.**
 
+Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de `src/` é
+`src/__navi__.md` — símbolos públicos de cada `.cs` + os `case "verbo"` do CLI com linha;
+`navindex.py` não lê C#, então regenerar com `pwsh scripts/navi-cs.ps1` após refatorar.
+
 ## Regras duras
 
 - Decisões D1–D9 do PLANO valem — não rediscutir sem motivo novo.

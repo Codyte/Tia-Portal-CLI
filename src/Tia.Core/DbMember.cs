@@ -59,6 +59,92 @@ namespace Tia.Core
             return Report(dbLabel, path, name, edit.Datatype, "create", file, apply);
         }
 
+        /// <summary>
+        /// edit-db-member: muda tipo e/ou nome de um membro já existente. Mesma coreografia do Add
+        /// (export → XML → import Override), porque membro de DB não é atributo da API.
+        /// Atenção: renomear membro NÃO reescreve quem o referencia no código — os chamadores
+        /// ficam inconsistentes até serem corrigidos à mão (o `xref --name DB` mostra quem é).
+        /// </summary>
+        public static object Change(PlcSoftware plc, string dbName, string path, string name,
+            string type, string rename, string outDir, bool apply)
+        {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException("--name is required.");
+            if (string.IsNullOrEmpty(type) && string.IsNullOrEmpty(rename))
+                throw new ArgumentException("Nothing to change: pass --type and/or --rename.");
+
+            var db = ReplicateFc.FindDataBlock(plc.BlockGroup, dbName);
+            if (db == null)
+                throw new InvalidOperationException("Data block '" + dbName + "' not found.");
+            var dbLabel = db.Name;
+            var group = db.Parent as PlcBlockGroup ?? plc.BlockGroup;
+
+            Directory.CreateDirectory(outDir);
+            var file = Path.GetFullPath(Path.Combine(outDir, "editmember_" + Safe(dbLabel) + ".xml"));
+            if (File.Exists(file)) File.Delete(file);
+            db.Export(new FileInfo(file), ExportOptions.WithDefaults);
+
+            var doc = XDocument.Load(file);
+            var changes = ChangeInXml(doc, path, name, type, rename);
+            var result = Report(dbLabel, path, name, changes.Datatype, changes.Action, file,
+                apply && changes.Action == "update");
+            result["changes"] = changes.Changes;
+            if (changes.Action == "update" && !string.IsNullOrEmpty(rename))
+                result["warning"] = "renaming a member does not fix its references — check `xref --name " + dbLabel + "`.";
+            if (changes.Action != "update") return result;
+
+            doc.Save(file);
+            if (apply)
+                group.Blocks.Import(new FileInfo(file), ImportOptions.Override);
+            return result;
+        }
+
+        internal struct Delta
+        {
+            public string Action;
+            public string Datatype;
+            public Dictionary<string, string> Changes;
+        }
+
+        /// <summary>Núcleo puro do edit — sem Openness, testável offline.</summary>
+        internal static Delta ChangeInXml(XDocument doc, string path, string name, string type, string rename)
+        {
+            var section = ResolveSection(doc, path);
+            var members = section.Elements().Where(e => e.Name.LocalName == "Member").ToList();
+            var member = members.FirstOrDefault(m => NameOf(m).Equals(name, StringComparison.OrdinalIgnoreCase));
+            if (member == null)
+                throw new InvalidOperationException("Member '" + name + "' not found under '" +
+                    (string.IsNullOrEmpty(path) ? "Static" : path) + "'. Known members: " +
+                    string.Join(", ", members.Select(NameOf)));
+
+            var changes = new Dictionary<string, string>();
+            var current = member.Attribute("Datatype")?.Value;
+            if (!string.IsNullOrEmpty(type) && Datatype(type) != current)
+                changes["datatype"] = current + " -> " + Datatype(type);
+            if (!string.IsNullOrEmpty(rename) && !rename.Equals(name, StringComparison.Ordinal))
+            {
+                if (members.Any(m => NameOf(m).Equals(rename, StringComparison.OrdinalIgnoreCase)))
+                    throw new InvalidOperationException("Member '" + rename + "' already exists in the same section.");
+                changes["name"] = name + " -> " + rename;
+            }
+            if (changes.Count == 0)
+                return new Delta { Action = "skip (no change)", Datatype = current, Changes = changes };
+
+            if (changes.ContainsKey("datatype"))
+            {
+                member.SetAttributeValue("Datatype", Datatype(type));
+                // tipo novo invalida o corpo expandido da instância antiga
+                member.Elements().Where(e => e.Name.LocalName == "Sections").Remove();
+            }
+            if (changes.ContainsKey("name")) member.SetAttributeValue("Name", rename);
+            return new Delta
+            {
+                Action = "update",
+                Datatype = member.Attribute("Datatype")?.Value,
+                Changes = changes,
+            };
+        }
+
         internal struct Edit
         {
             public string Action;
@@ -143,7 +229,7 @@ namespace Tia.Core
             return string.Join("_", name.Split(Path.GetInvalidFileNameChars()));
         }
 
-        private static object Report(string db, string path, string name, string datatype,
+        private static Dictionary<string, object> Report(string db, string path, string name, string datatype,
             string action, string file, bool applied)
         {
             return new Dictionary<string, object>

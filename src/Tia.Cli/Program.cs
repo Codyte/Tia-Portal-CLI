@@ -77,6 +77,8 @@ namespace Tia.Cli
                             + "(só o que for passado muda; --rename exige Openness V20+)",
                         "clone --block N | --table T --replace OLD=NEW [--replace ...] [--at %M432.0] [--folder A/B] [--apply]",
                         "add-db-member --db X --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]",
+                        "edit-db-member --db X --name M [--path A.B] [--type T] [--rename NEW] [--out DIR] [--apply]  "
+                            + "(rename não corrige quem referencia o membro)",
                         "compile [--block X | --folder A/B] [--errors] [--apply]  (--errors = lista plana {where,message,count} em vez da árvore)",
                         "diff-block --file F.xml [--name X]  (read-only, normalized compare)",
                         "doctor [--verb V] [--config F]  (read-only preflight dos verbos geradores)",
@@ -474,6 +476,12 @@ namespace Tia.Cli
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.DeleteTag(session.GetPlc(plcName), Require(args, "--table"),
                                 Require(args, "--name"), apply);
+                        break;
+                    case "edit-db-member":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.DbMember.Change(session.GetPlc(plcName), Require(args, "--db"),
+                                OptionValue(args, "--path"), Require(args, "--name"),
+                                OptionValue(args, "--type"), OptionValue(args, "--rename"), outDir, apply);
                         break;
                     case "rename-block":
                         using (WriteLock(session, apply, verb))

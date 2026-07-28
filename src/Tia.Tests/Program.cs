@@ -330,6 +330,18 @@ namespace Tia.Tests
             Check(Throws(() => DbMember.AddToXml(db(), "NAO_EXISTE", "X", "Bool", null)), "--path inexistente falha");
             Check(Throws(() => DbMember.AddToXml(db(), "AREA.BOMBA_A", "X", "Bool", null)),
                 "path através de membro não-struct falha");
+
+            // edit-db-member
+            var d4 = db();
+            var c1 = DbMember.ChangeInXml(d4, "AREA", "BOMBA_A", "Real", "BOMBA_Z");
+            Check(c1.Action == "update" && c1.Datatype == "Real", "muda tipo e nome de uma vez");
+            Check((string)areaMembers(d4).Single().Attribute("Name") == "BOMBA_Z", "nome trocado no XML");
+            Check(DbMember.ChangeInXml(db(), "AREA", "BOMBA_A", "MotorDados", null).Action == "skip (no change)",
+                "mesmo tipo = no-op");
+            Check(Throws(() => DbMember.ChangeInXml(db(), "AREA", "NAO_EXISTE", "Real", null)),
+                "membro inexistente falha");
+            Check(DbMember.ChangeInXml(db(), "AREA", "BOMBA_A", null, "BOMBA_A").Action == "skip (no change)",
+                "renomear pro mesmo nome = no-op");
         }
 
         private static void Memory_Occupied()

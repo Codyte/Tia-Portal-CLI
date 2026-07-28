@@ -345,6 +345,40 @@ o histórico de `.handoff/` — sanitizar isso é reescrever histórico já comm
 first-out, watchdog, rampa de setpoint) só depois da fatia 2. Teste das fatias 2/3 = instalar em
 `ClaudeTest/` e `compile` 0 erros, um `run --script`.
 
+### Master copy de pasta = pacote — ✅ medido 2026-07-28 (0 erros em CPU virgem)
+
+A `.al19/.al21` estava descartada como forma de *escrever* a biblioteca (binário, "só se produz na
+mão"). **A parte "só na mão" está errada**: a ajuda oficial
+(`Create master copy from a project in library`) lista `PlcBlockUserGroup` entre os
+`IMasterCopySource`, então uma **pasta inteira vira um master copy só**, com subpastas. Verbo novo
+`add-master-copy --file X.al21 (--name BLOCO | --folder A/B) [--lib-folder L] [--apply]`
+([Library.cs](../src/Tia.Core/Library.cs)) — abre a global library em `ReadWrite`, cria e
+`UserGlobalLibrary.Save()` (sem Save nada vai pra disco; `GlobalLibrary` não tem `Save`).
+O Portal batiza o master copy de `"Copy of Function blocks in X"` — o verbo renomeia pro nome da
+fonte. `import-master-copy` agora usa `Groups.CreateFrom` quando o `ContentType` é
+`PlcBlockUserGroup`, e `Blocks.CreateFrom` no resto.
+
+Isso **não** revoga "`.al21` é artefato, não fonte" (segue fora do git, `.gitignore`): fonte é
+`.scl`/`.xml`, a library sai de um build. O que muda é o *instalador*: pacote inteiro em 1 chamada,
+com hierarquia, sem os 63 imports do manifesto.
+
+**Medição em CPU virgem** (`PLC_LIBT`, `6ES7 515-2AM02-0AB0/V2.9`, criada por `add-device`):
+`import-master-copy "1.1 Acionamento"` = 12 blocos (7 + 4 na subpasta `1.1.1 Inversores`) →
+**9 erros**, todos dependência de `FB CONTADOR`/`FB_HORÍMETRO` (nível 1). Somando os 5 utilitários
+soltos de `1. FB Bilbiotecas` → **2 erros**, ambos `Tag "Clock_1Hz" not defined`;
+`set-memory-bytes --clock 0 --apply` → **compile Success, 0 erros**. Contra 82–88 erros da
+instalação do manifesto inteiro. Confirma a lei de escopo: dependência de pacote só aponta pra
+cima, e clock/system memory byte é parte do core (não é bloco).
+
+**Movida da árvore feita** (manifesto = fonte, `library/generic.json`): `1.7 Utilitários` dissolvida
+(5 blocos soltos em `1. FB Bilbiotecas`), `1.2 Inversores` → `1. FB Bilbiotecas/1.1 Acionamento/
+1.1.1 Inversores`. `move-block` refletiu no `PLC_GEN` (9 blocos).
+**Cicatriz do move in-place**: mover bloco *chamado* deixa +6 erros nos chamadores
+(`Block call was invalid because interface was changed`, `The block call or the associated instance
+data block could not be updated`) que dois `compile --apply` não limpam — é o vínculo
+chamada↔instance DB, que o `delete`+`import` do `move-block` quebra. Em CPU virgem o problema não
+existe; num PLC já instalado, reimportar o chamador.
+
 ## Bugs abertos (smoke 2026-07-27)
 
 - ~~**`import-block` dry-run dá falso positivo em XML que não é bloco.**~~ ✅ corrigido

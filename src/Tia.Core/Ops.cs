@@ -625,7 +625,8 @@ namespace Tia.Core
         // ---------- compile ----------
 
         /// <summary>Compile whole PLC, one block (--block) or a folder (--folder).</summary>
-        public static object Compile(PlcSoftware plc, string blockName, string folderPath)
+        public static object Compile(PlcSoftware plc, string blockName, string folderPath,
+            bool errorsOnly = false)
         {
             IEngineeringServiceProvider target = plc;
             string scope = "plc " + plc.Name;
@@ -646,14 +647,47 @@ namespace Tia.Core
             if (compiler == null)
                 throw new InvalidOperationException(scope + " is not compilable.");
             var result = compiler.Compile();
-            return new Dictionary<string, object>
+            var head = new Dictionary<string, object>
             {
                 { "scope", scope },
                 { "state", result.State.ToString() },
                 { "errors", result.ErrorCount },
                 { "warnings", result.WarningCount },
-                { "messages", result.Messages.Select(MessageTree).ToList() },
             };
+            if (!errorsOnly)
+            {
+                head["messages"] = result.Messages.Select(MessageTree).ToList();
+                return head;
+            }
+            // a árvore tem 15-18 KB de aninhamento; o que se lê é sempre "qual bloco, qual erro, quantas vezes"
+            var flat = new List<Dictionary<string, object>>();
+            foreach (var m in result.Messages) FlattenErrors(m, null, flat);
+            head["list"] = flat.OrderByDescending(e => (int)e["count"]).ToList();
+            return head;
+        }
+
+        /// <summary>Folhas em estado Error, agrupadas por (ancestral mais fundo com Path, texto).</summary>
+        private static void FlattenErrors(CompilerResultMessage m, string owner,
+            List<Dictionary<string, object>> acc)
+        {
+            var where = string.IsNullOrEmpty(m.Path) ? owner : m.Path;
+            if (m.Messages.Count > 0)
+            {
+                foreach (var child in m.Messages) FlattenErrors(child, where, acc);
+                return;
+            }
+            if (m.State != CompilerResultState.Error || string.IsNullOrEmpty(m.Description)) return;
+            var hit = acc.FirstOrDefault(e => (string)e["where"] == (owner ?? "")
+                && (string)e["message"] == m.Description);
+            if (hit == null)
+            {
+                hit = new Dictionary<string, object>
+                {
+                    { "where", owner ?? "" }, { "message", m.Description }, { "count", 0 },
+                };
+                acc.Add(hit);
+            }
+            hit["count"] = (int)hit["count"] + 1;
         }
 
         private static object MessageTree(CompilerResultMessage m)

@@ -72,7 +72,7 @@ Run `tia --help` for the full, always-current list.
 | 🛠️ Hardware | `add-device` · `set-address` · `connect-subnet` · `export-cax` · `import-cax` (AML) |
 | ✍️ Write | `import-block` · `import-source` · `import-ladder` (SCL subset → LAD) · `import-tags` · `compile` · `diff-block` |
 | ⚙️ Generators | `gen-profinet` · `standardize-tags` · `gen-fault-ob` · `replicate-fc` · `gen-alarm-fc` · `replicate-instruments` — plus `doctor`, a read-only preflight that checks every template/folder they need |
-| 📚 Library | `list-library` · `import-master-copy` |
+| 📚 Library | `list-library` · `import-master-copy` — installable block library in [`library/`](library/README.md) (manifest is versioned, XML payload is not) |
 | 📦 Batch | `run --script ops.json` — array of verb calls, one attach for all |
 
 Global options: `--plc NAME` (multi-PLC projects), `--out DIR` (default `workspace\exports`),

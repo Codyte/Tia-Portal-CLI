@@ -18,8 +18,11 @@ Arquiteto GVL V1.txt(0)  Arquiteto de Automação_2.txt(621)  Gerador Variáveis
 ## `docs/` (3 files) → __navi__.md
 PADRAO.md(191)  PLANO.md(367)  projeto-real-fase-A.md(76)
 
-## `docs/examples/` (6 files) → __navi__.md
-batch.json(6)  gen-all.json(8)  profinet.json(10)  replicate-fc.json(8)  replicate-instruments.json(9)  scaffold-padrao.json(505)
+## `docs/examples/` (5 files) → __navi__.md
+batch.json(6)  gen-all.json(8)  profinet.json(10)  replicate-fc.json(8)  replicate-instruments.json(9)
+
+## `library/` (2 files) — biblioteca instalável; payload `blocks/` é gitignored
+README.md(65)  library.json(504)
 
 ## `proj/Automação ETE SG AsBuilt_1_V21/` (1 files)
 ProjectInfo.txt(26)

@@ -64,7 +64,7 @@ Verbos por fase (nomes finais definidos na F1):
 | F3.5 | Melhorias pré-projeto-real (backlog handoff itens 1-3) + banho de projeto real Fase A/B | robustez por-item, idempotência alarm-fc, verbo `doctor`, achados documentados | ✅ 2026-07-18: itens 1+2+3 aplicados e smoked; `tia doctor` novo (preflight read-only, 6 verbos); `Ops.BlocksIdentical` normaliza namespace+Informative; fix pastas TIA com `/` literal (Replicate/Doctor); Fase A/B contra cópia `Automação ETE SG AsBuilt_1_V21` → 8 achados em `docs/projeto-real-fase-A.md` (viram backlog de adaptação); testes offline `Tia.Tests` (console assert, sem TIA): 31 asserts sobre BuildFcXml/BuildCallObXml/BuildObXml/BuildAreaFcXml/LadConverter vs fixtures `docs/examples/` — ALL PASS 2026-07-18 |
 | v2 | Backlog de cobertura Openness (itens 1-10 abaixo) | verbos compilando 0 erros | 🟡 código 100% offline; smoke V21 core ok (add-device/set-address/connect-subnet/create-folder/import-tags/import-source/import-ladder/compile/export/diff/delete/save); 9 (online) bloqueado por D8; smoke 2026-07-18 contra projeto real (read-only): export-tags/list-types/export-type/xref/export-cax ✅, list-hmi erro claro (projeto sem Unified); smoke mutação 2026-07-18 no SmokeTest_01 ✅: import-type (dry override→apply), import-cax (AML 1.7MB do real; fix: sem ExclusiveAccess — Openness proíbe), gen-alarm-fc callOb=in-sync (idempotência total) |
 | F3.6 | Macros de fluxo (itens 1-4 da lista aprovada) | smoked contra SmokeTest_01 | ✅ 2026-07-18: `prep-project.ps1` (use-project+doctor+compile+save), `raio-x.ps1` (banho read-only → workspace/<proj>/, xref de todos os OBs), `clone-hw.ps1` (CAx A→B, dry por padrão, -Apply salva), `docs/examples/gen-all.json` (6 verbos FINAIS dry via `tia run`, attach 1x). Macros 5-7 (new-area/sync-check/adopt-project) só se user pedir. |
-| F4 | Polimento p/ GitHub (README EN, licença, exemplos) | repo publicável | ✅ 2026-07-18: LICENSE MIT, README EN completo (contrato dry-run/--apply, 3 gates Openness, tabela de verbos, macros, limitações), nome público decidido `tia-cli`. Publicação em si (gh repo create) pendente de ordem do user. |
+| F4 | Polimento p/ GitHub (README EN, licença, exemplos) | repo publicável | ✅ 2026-07-18: LICENSE MIT, README EN completo (contrato dry-run/--apply, 3 gates Openness, tabela de verbos, macros, limitações), nome público decidido `tia-cli`. Publicação em si (gh repo create) pendente de ordem do user. **Gate de publicação (2026-07-28)**: nenhum payload de projeto de cliente entra no repo público — XML/AML exportado de projeto real carrega nome de equipamento, tag e estrutura de DB (`DB GLOBAL.xml` = 869 KB da planta), e publicar é irreversível na prática (fork, cache, índice). O que vai pro Git é autoral ou sanitizado (`clone --replace OLD=NEW`); payload fica gitignored e cada clone repõe o seu (`library/blocks/`, `workspace/`, `Scripts_Siemens/`, `proj/`). |
 | F5? | MCP server fino sobre Tia.Core | só se D1 cair | ⬜ |
 | F6 | Endurecer os scripts PS (ver seção "F6" no fim) | macros rodáveis do agente (sessão 0) + 5 bugs fechados | ✅ 2026-07-27: `scripts/_common.ps1` (`Invoke-Tia`, roteia por sessão, run-id, `$global:LASTEXITCODE`, timeout 600s, guard D9) + `scripts/tia.ps1` (comando único, substitui `tia-task.ps1` — removido); macros migrados; bugs 2-5 fechados (bug 1 já estava). Verificado end-to-end: `tia.ps1 doctor` exit 0, rota da task (`TIA_VIA_TASK=1`) exit 0, forma legada `["info"]` exit 0, `use-project`/`prep-project` do shell do agente |
 | F7 | Camada de compreensão: a IA lê o projeto dentro do orçamento de contexto | `explain-block` (1) e `trace` (2) read-only; depois `index`, `checkpoint`, `apply-spec` | 🔄 item 1 feito 2026-07-27: `explain-block --name X \| --file F.xml` (LAD/FBD → texto; 92KB → 8,3KB no `BombaTemplateFc`; `--file` roda sem TIA, 9 asserts em `Tia.Tests`). Smoke `--name` ok 2026-07-28 no `Software de ETE Insular_Inicial_V21`: `Resets` 58KB → 4,6KB, `Paineis Intertravamento` 53KB → 4,9KB, `FC_ALARMES_PRELIMINAR_P_GM_01` 26KB → 2,2KB — chamadas de FB com pinos, expressões série/paralelo e comentários pt-BR corretos. Item 1 fechado. **Item 2 fechado 2026-07-28**: `trace --equipment X` smoked no mesmo projeto — `AG-01` = 39 símbolos + 39 usos em 10 blocos (`PARTIDA_AGITADOR (AG-01)`, `Resets`, `FB CONDIÇÃO DE PARTIDA`…), **10,1s total / 3,3s de xref, 131 blocos varridos**; cobertura conferida contra `xref --name Resets` independente. `xref` agora resolve bloco → tag → tabela → UDT (`ResolveSymbol`), então serve o sentido direto em qualquer símbolo. O "blocker do xref" do handoff anterior era **diálogo de autorização Openness pendurado na tela**, não custo de API — ver "Openness pede aceite na tela" abaixo. Índice invertido via export XML descartado: não há problema de performance a resolver. **Gargalos de consumo fechados 2026-07-28**: (a) `--out-file F.json` global — JSON completo no arquivo, stdout só `{file,bytes,count,head}`; guard no único `Print` por onde todo verbo sai, sem flag por verbo e sem mudar quem redireciona stdout (`raio-x.ps1`). Motivo medido: `find --pattern "*" --kind tag` = 821 KB / 4372 hits, `snapshot` = 7967 linhas — um verbo desses no contexto custa a sessão que o F7 existe pra proteger. Erro nunca vai pro arquivo. (b) `run --script` isola steps: `{ok:false,error,type}` por item, batch segue, `exit 1` se algum falhou — o batch só compensa se sobreviver à 1ª exceção (attach medido = **2,9s fixo**, não 7s: `info` solo 3,0s, `list-types` 2,9s, batch de 5 steps 7,0s). (c) **`tree` virou a leitura de orientação**: emite blocos + tabelas de tag + UDTs no mesmo `plc-navi.md` — 39 KB / 309 linhas p/ 476 blocos + 194 tabelas + 13 UDTs em 4,0s, contra ~150 KB do JSON equivalente. `snapshot` saiu do bloco "read" do help pro bloco "bulk"; `raio-x.ps1` roda `tree` primeiro e aponta o `plc-navi.md` como entrada. **`--format table` (TSV) foi medido e descartado**: 822 KB → 331 KB é 2x num problema que precisa de 30x — o que paga é agrupar (4,5x) ou não devolver volume (`trace` responde a pergunta inteira em 20 KB). Orçamento resultante: orientação ~10k tokens 1x por sessão, pergunta específica ≤5k, volume bruto nunca no contexto |
@@ -195,7 +195,8 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
     projeto novo recebe a árvore da lei + os moldes exportados do projeto de referência.
     Idempotente (objeto existente = `skip`), ordem de import por tipo (UDT→tags→FB→DB→iDB→FC→OB),
     caminho de pasta em segmentos (nome real tem `/`). Manifesto:
-    `docs/examples/scaffold-padrao.json`; fonte `workspace/padrao/` (66 itens, gitignored).
+    `library/library.json`; fonte `library/blocks/` (66 itens, gitignored) — antes em
+    `docs/examples/scaffold-padrao.json` + `workspace/padrao/`, movidos em 2026-07-28.
     Dry contra o de referência: 26/26 pastas e 66/66 itens `exists`. ✅ **aceite fechado**
     (`workspace/ScaffoldTest`): `create-project` → `add-device` → `scaffold --apply` (66/66 criados)
     → `compile --apply` → `save-project` → `audit` **5/5 limpo**. Dois bugs que só o ramo `create`
@@ -204,7 +205,7 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
     scaffoldado dá 26 erros de ambiente ausente (system/clock memory bits, tags de IO, iDB dos
     moldes) — nada de import; detalhe e pendência em `docs/PADRAO.md`.
 
-## Biblioteca de blocos ("arsenal") — proposta 2026-07-28, análise feita, execução não começou
+## Biblioteca de blocos ("arsenal") — 🔄 fatia 1 fechada 2026-07-28 (`library/`)
 
 Problema que resolve: os 4 geradores só rodam se o projeto do cliente **já tiver** os moldes e a
 lei de pastas (`doctor` checa `FC_Modelo`, `OB_MOLDE_ALARMES`, `DB GLOBAL`, `2. Alarmes`,
@@ -224,23 +225,61 @@ instalável, vira um comando.
 - `import-ladder` (subset nosso) **não serve** pra escrever a biblioteca: sem timer nem aritmética.
 
 **Instalação**: `tia scaffold --manifest library/library.json --apply` — sem verbo novo,
-`scaffold` já é "árvore de pastas + moldes num projeto"; `scaffold-padrao.json` (505 ln) já é um
-manifesto de biblioteca. Falta o `scaffold` ordenar UDT antes de DB/FC/OB (hoje ordena
-tabela → FC → OB).
+`scaffold` já é "árvore de pastas + moldes num projeto". A ordem de import por tipo já está certa
+(UDT → tabela → FB → DB → iDB → FC → OB, [`Scaffold.Rank`](../src/Tia.Core/Scaffold.cs#L58)) —
+a anotação anterior de "falta ordenar UDT antes de DB/FC" estava obsoleta, `Rank` sempre teve
+`SW.Types` = 0.
+
+**Fatia 1 ✅ 2026-07-28 (offline, sem Portal)** — `library/` na raiz:
+- `library/library.json` (versionado) = o antigo `docs/examples/scaffold-padrao.json` com
+  `Source: "blocks"` (relativo ao manifesto, então manifesto + payload viajam juntos pra
+  qualquer pasta). 20 pastas de bloco, 6 de tag, 66 itens.
+- `library/blocks/` (gitignored) = o antigo `workspace/padrao/`, 66 XMLs / 3,3 MB.
+- `library/README.md` (versionado) = por que o payload não viaja, como repor
+  (`scripts/export-fixtures.ps1` cobre 13 blocos + 2 tabelas; o resto item a item por
+  `export-block`/`export-tags`/`export-type`), como instalar, limitação do `Folder` de UDT.
+- Não testado contra Portal (track offline). Teste pendente: `scaffold --manifest
+  library/library.json` dry contra o projeto de referência → esperado 66/66 `skip (exists)`.
+
+**Gap real do `scaffold`** (backlog, exige rebuild): item UDT ignora `Folder` —
+[`Scaffold.cs:126`](../src/Tia.Core/Scaffold.cs#L126) importa todo `SW.Types.*` em
+`plc.TypeGroup.Types` (raiz), enquanto bloco e tabela passam por `ResolveBlockPath`/
+`ResolveTagPath`. Inofensivo hoje (os 13 UDTs do manifesto têm `"Folder": []`); vira bug quando a
+biblioteca quiser UDT em subpasta. Correção = `ResolveTypePath` análogo aos outros dois.
+
+**Núcleo genérico (fatia 2, autoral e publicável — só o desenho, não escrito)**. Os 66 itens de
+hoje são exports do cliente e nunca vão pro Git; o que fecha `doctor` verde num projeto qualquer
+são ~10 itens, escritos do zero:
+
+| item | tipo | formato | por que |
+|---|---|---|---|
+| `MODULE_ERROR_MOLDE` | OB molde de erro de módulo | `.xml` | LAD; template de `gen-fault-ob` ([FaultOb.cs:19](../src/Tia.Core/FaultOb.cs#L19)) |
+| `FC_Modelo` | FC modelo de alarmes | `.xml` | LAD; template de `gen-alarm-fc` ([AlarmFc.cs:20](../src/Tia.Core/AlarmFc.cs#L20)) |
+| `OB_MOLDE_ALARMES` | OB molde de chamada | `.xml` | LAD; `AlarmFc.ObTemplate` |
+| `MOLDE_ANALOGS` | molde de instrumento | `.xml` | LAD; template de `gen-instrument-fc` |
+| `FB BITS TO WORD` | FB 16 bits → word | `.scl` | `AlarmFc.MasterFb`; lógica pura, sem LAD |
+| `MotorDados` / `MotorPrincipal` / `ValvDados` | UDT | `.scl` (`TYPE`) | estrutura por equipamento que `replicate-fc` espera |
+| `DB GLOBAL` **esqueleto** | GlobalDB | `.scl` (`DATA_BLOCK`) | `GlobalDb` dos 3 geradores; só a casca, **não** os 869 KB do cliente |
+| árvore de pastas | — | manifesto | `2. Alarmes`, `3. Partidas`, `3.1 Alarmes Words`, `3.1.0 Modelo` são nome default nos configs |
+
+`.scl` onde a lógica é aritmética/estrutura (diffável, imune à versão do Engineering, nasce na
+raiz → contorno `export-block` → `import-block --folder` → `delete-block`); `.xml` só nos 4 moldes,
+que precisam nascer em LAD legível porque o engenheiro edita e os geradores clonam rede a rede.
 
 **Conteúdo, por valor**: (1) os pré-requisitos dos geradores — é onde está o retorno;
 (2) utilitários genéricos (escala raw↔EU + clamp, debounce de falha, borda + selo com falha/reset,
 horímetro, contador de partidas, bits→word e inverso, first-out, watchdog de comunicação, rampa de
 setpoint); (3) diagnóstico (OB de erro de módulo já existe em `ModuleErrorMolde.xml`).
 
-**Procedência — resolver antes de publicar**: os XMLs de `docs/examples/` saíram de projeto real de
-cliente (nomes de equipamento, tags, estrutura de DB) e o repo é MIT/publicável. Sanitizar com
-`clone --replace OLD=NEW`, que já faz reescrita de símbolo.
+**Procedência** — resolvida pelo gate de publicação da F4: payload de cliente fica gitignored
+(`library/blocks/`), o que for pro Git é autoral ou sanitizado com `clone --replace OLD=NEW`.
+Vale também pros XMLs de `docs/examples/`, que ainda são fixtures de projeto real **e estão
+versionados** — pendência: sanitizar ou trocar por fixtures sintéticas antes de tornar o repo
+visível de fato.
 
-**Fatia 1 sugerida**: `library/` na raiz + `library.json` no formato `ScaffoldManifest`; teste =
-instalar em `ClaudeTest/` e `compile` 0 erros (mesma bateria de 2026-07-28, um `run --script`).
-Pergunta aberta ao user: fatia 1 = 3 utilitários (escala, debounce, bits→word) ou os moldes dos
-geradores?
+**Fatia 3** (utilitários genéricos: escala raw↔EU + clamp, debounce, bits→word e inverso,
+first-out, watchdog, rampa de setpoint) só depois da fatia 2. Teste das fatias 2/3 = instalar em
+`ClaudeTest/` e `compile` 0 erros, um `run --script`.
 
 ## Bugs abertos (smoke 2026-07-27)
 

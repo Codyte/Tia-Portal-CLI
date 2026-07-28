@@ -3,11 +3,11 @@
 # 9-24   lista de blocos/tabelas do projeto de referencia
 # 25-40  exporta um por vez (falha de um nao aborta os outros)
 # Roda NA SESSAO 1: pwsh scripts/tia.ps1 --script-ps1 scripts\export-fixtures.ps1
-# Saida: workspace/padrao/. Sao as fixtures reais que substituem as sinteticas de docs/examples.
+# Saida: library/blocks/ (payload gitignored da biblioteca — ver library/README.md).
 $ErrorActionPreference = 'Continue'
 $repo = Split-Path $PSScriptRoot
 $tia = Join-Path $repo 'src\Tia.Cli\bin\Debug\net48\tia.exe'
-$out = Join-Path $repo 'workspace\padrao'
+$out = Join-Path $repo 'library\blocks'
 
 $blocks = @(
     'MODULE_ERROR_MOLDE'

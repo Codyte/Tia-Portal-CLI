@@ -70,6 +70,100 @@ namespace Tia.Core
             return result;
         }
 
+        // ---------- delete-device ----------
+
+        public static object DeleteDevice(TiaSession session, string name, bool apply)
+        {
+            var device = FindDevice(session, name);
+            var result = new Dictionary<string, object>
+            {
+                { "device", device.Name },
+                { "items", device.DeviceItems.Select(i => i.Name).ToList() },
+                { "applied", apply },
+            };
+            if (apply) device.Delete();
+            return result;
+        }
+
+        // ---------- plug-module ----------
+
+        /// <summary>
+        /// Plugs a new device item (module/submodule) into a device or into one of its items.
+        /// Dry-run is the probe: reports the free slots of the target and whether the given
+        /// typeIdentifier can be plugged — the catalog string for drive telegrams is not in the
+        /// official help, so `CanPlugNew` is how it gets confirmed before `--apply`.
+        /// </summary>
+        public static object PlugModule(TiaSession session, string deviceName, string itemName,
+            string typeId, string name, int? position, bool apply)
+        {
+            var device = FindDevice(session, deviceName);
+            if (itemName == null && typeId == null)
+            {
+                // probe: onde dá pra plugar alguma coisa neste device (nome de item se repete —
+                // varrer tudo é mais barato que adivinhar qual "INVERSOR_X" é o drive object)
+                var slots = new List<object>();
+                CollectSlots(device.DeviceItems, device.Name, slots);
+                return new Dictionary<string, object>
+                {
+                    { "device", device.Name },
+                    { "deviceSlots", device.GetPlugLocations()
+                        .Select(l => (object)(l.PositionNumber + ":" + l.Label)).ToList() },
+                    { "itemSlots", slots },
+                };
+            }
+            HardwareObject target = itemName == null ? (HardwareObject)device : FindItem(device, itemName);
+            var pos = position ?? 1;
+            var result = new Dictionary<string, object>
+            {
+                { "device", device.Name },
+                { "target", itemName ?? device.Name },
+                { "freeSlots", target.GetPlugLocations()
+                    .Select(l => (object)new Dictionary<string, object>
+                        { { "position", l.PositionNumber }, { "label", l.Label } }).ToList() },
+                { "applied", apply },
+            };
+            if (typeId == null) return result;   // probe only: which slots are free
+            result["typeIdentifier"] = typeId;
+            result["name"] = name ?? typeId;
+            result["position"] = pos;
+            result["canPlug"] = target.CanPlugNew(typeId, name ?? typeId, pos);
+            if (apply)
+                result["plugged"] = target.PlugNew(typeId, name ?? typeId, pos).Name;
+            return result;
+        }
+
+        private static void CollectSlots(DeviceItemComposition items, string path, List<object> into)
+        {
+            foreach (DeviceItem item in items)
+            {
+                var here = path + "/" + item.Name;
+                var free = item.GetPlugLocations().Select(l => l.PositionNumber + ":" + l.Label).ToList();
+                if (free.Count > 0)
+                    into.Add(new Dictionary<string, object> { { "item", here }, { "freeSlots", free } });
+                CollectSlots(item.DeviceItems, here, into);
+            }
+        }
+
+        private static DeviceItem FindItem(Device device, string name)
+        {
+            var item = FindItem(device.DeviceItems, name);
+            if (item == null)
+                throw new InvalidOperationException("Device item '" + name + "' not found in '"
+                    + device.Name + "'. Run tia list-devices.");
+            return item;
+        }
+
+        private static DeviceItem FindItem(DeviceItemComposition items, string name)
+        {
+            foreach (DeviceItem item in items)
+            {
+                if (item.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) return item;
+                var found = FindItem(item.DeviceItems, name);
+                if (found != null) return found;
+            }
+            return null;
+        }
+
         // ---------- set-address ----------
 
         public static object SetAddress(TiaSession session, string deviceName, string ip, string mask,

@@ -37,6 +37,8 @@
 
 ## hardware
 - `add-device --mlfb "6ES7 ..." --name X [--station S] [--group G] [--apply]`
+- `delete-device --name X [--apply]`
+- `plug-module --device X [--item I] [--type TID] [--name N] [--pos P] [--apply]  (sem --type: lista slots livres; com --type: canPlug e, com --apply, pluga)`
 - `set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]`
 - `connect-subnet --device X --subnet S [--io-system IO] [--apply]`
 - `set-memory-bytes --device X [--system 1] [--clock 0] [--apply]  (habilita FirstScan/AlwaysTRUE/Clock_1Hz na CPU)`

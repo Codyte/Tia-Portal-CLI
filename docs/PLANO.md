@@ -478,6 +478,34 @@ nível — só na leitura (`create=false`); criar continua um segmento por vez.
 **Master copy de pasta leva os iDBs junto** — a dúvida que fechava a fatia. `Motor 1 (MOTOR_01)`
 (5 iDBs + 1 FC) importou os 6 num PLC de teste; chegam inconsistentes até os FBs-base existirem.
 
+### Hardware do molde: o G120 (2026-07-28)
+
+Os 4 erros que sobram na CPU virgem são a constante de hardware
+`INVERSOR_MOTOR_01_CCM_01~PROFINET_interface~Standard_telegram_20` — o inversor não existe no
+projeto. O que a arqueologia dos AML já responde, sem sondar a API:
+
+- **Inversor certo = `OrderNumber:6SL3244-0BB12-1FA0/4.7.13`** (CU240E-2 PN). `add-device` com esse
+  MLFB monta a estação inteira: `System:Device.G120-2` + rack `System:Rack.G120PN-2` + head com o
+  nome pedido + `PROFINET interface` (é esse nome que a constante exige) + 2 portas.
+  O nome do *item* é o do `--name`; a estação sai do `--station`.
+- O G120X do AsBuilt é outra família (**GSD**, `GSDML-V2.34-SIEMENS-SINAMICS_G120X-20180814.XML`),
+  interface chamada `PN-IO` — não serve pro molde, a constante não bateria.
+- Telegrama do lado GSD: `.../SM/IDS_TEL20` plugado em `DRIVE_1` posição 2. Do lado System (G120-2)
+  o identificador do `Standard telegram 20, PZD-2/6` **não está na ajuda** nem em nenhum AML/XML do
+  repo (Insular tem 30 G120 e nenhum telegrama plugado) — daí o verbo `plug-module`.
+
+**Verbos novos** (`src/Tia.Core/Hardware.cs`):
+- `plug-module --device X [--item I] [--type TID] [--name N] [--pos P] [--apply]` — `PlugNew` da
+  ajuda `87727705355.htm`. Sem `--item` e sem `--type` = **sonda**: varre os itens do device e
+  devolve os slots livres de cada um (`GetPlugLocations`), porque nome de item se repete no G120
+  (head e drive object têm o mesmo nome). Com `--type`, o dry-run devolve `canPlug`
+  (`CanPlugNew`) — é como se confirma um identificador de catálogo antes de escrever.
+- `delete-device --name X [--apply]` — `Project1` acumulou ~15 CPUs de teste; limpar era manual.
+
+**Diálogo de aceite volta depois do `rebuild.ps1`**: hash novo do `tia.exe` → o Portal *já aberto*
+mostra `Openness access (0033:000666)` e a chamada fica pendurada com CPU ~0. Achar a janela:
+`EnumWindows` filtrando pelo PID do portal (título `Openness access`). Só o clique resolve.
+
 ## Bugs abertos (smoke 2026-07-27)
 
 - ~~**`import-block` dry-run dá falso positivo em XML que não é bloco.**~~ ✅ corrigido

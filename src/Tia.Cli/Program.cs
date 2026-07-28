@@ -55,6 +55,9 @@ namespace Tia.Cli
                         "scaffold --manifest F.json [--replace OLD=NEW ...] [--apply] [--force]  "
                             + "(árvore da lei + moldes num projeto novo; --replace troca no XML e nas pastas antes do import)" } },
                     { "hardware", new[] { "add-device --mlfb \"6ES7 ...\" --name X [--station S] [--group G] [--apply]",
+                        "delete-device --name X [--apply]",
+                        "plug-module --device X [--item I] [--type TID] [--name N] [--pos P] [--apply]  "
+                            + "(sem --type: lista slots livres; com --type: canPlug e, com --apply, pluga)",
                         "set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]",
                         "connect-subnet --device X --subnet S [--io-system IO] [--apply]",
                         "set-memory-bytes --device X [--system 1] [--clock 0] [--apply]  (habilita FirstScan/AlwaysTRUE/Clock_1Hz na CPU)",
@@ -448,6 +451,16 @@ namespace Tia.Cli
                             result = Core.Hardware.AddDevice(session, Require(args, "--mlfb"),
                                 Require(args, "--name"), OptionValue(args, "--station"), OptionValue(args, "--group"), apply);
                         break;
+                    case "delete-device":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Hardware.DeleteDevice(session, Require(args, "--name"), apply);
+                        break;
+                    case "plug-module":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Hardware.PlugModule(session, Require(args, "--device"),
+                                OptionValue(args, "--item"), OptionValue(args, "--type"),
+                                OptionValue(args, "--name"), ParseInt(OptionValue(args, "--pos")), apply);
+                        break;
                     case "set-address":
                         using (WriteLock(session, apply, verb))
                             result = Core.Hardware.SetAddress(session, Require(args, "--device"),
@@ -557,6 +570,11 @@ namespace Tia.Cli
         {
             int i = Array.IndexOf(args, name);
             return i >= 0 && i + 1 < args.Length ? args[i + 1] : null;
+        }
+
+        private static int? ParseInt(string value)
+        {
+            return string.IsNullOrEmpty(value) ? (int?)null : int.Parse(value);
         }
 
         /// <summary>"1" ou "%MB1" → 1; ausente → null (atributo não é tocado).</summary>

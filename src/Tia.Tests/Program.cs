@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Tia.Core;
 
@@ -63,6 +64,7 @@ namespace Tia.Tests
                 { "InstrumentFc.FcName", InstrumentFc_FcName },
                 { "Audit.Naming", Audit_Naming },
                 { "Scaffold.Plan", Scaffold_Plan },
+                { "BlockExplain.Explain", BlockExplain_Explain },
             };
             foreach (var t in tests)
             {
@@ -195,6 +197,30 @@ namespace Tia.Tests
             var doc = XDocument.Load(xmlFile);
             Check((int)result["networks"] > 0, "networks > 0 (" + result["networks"] + ")");
             Check(doc.Descendants().Any(e => e.Name.LocalName == "FlgNet"), "FlgNet presente");
+        }
+
+        private static void BlockExplain_Explain()
+        {
+            var xml = Fixture("BombaTemplateFc.xml");
+            var r = BlockExplain.Explain(xml, OutDir());
+            var text = string.Join("\n", (List<string>)r["text"]);
+            Check((int)r["networks"] == 11, "11 redes (" + r["networks"] + ")");
+            Check((int)r["chars"] < new FileInfo(xml).Length / 10, "texto < 10% do XML ("
+                + r["chars"] + " de " + new FileInfo(xml).Length + ")");
+            Check(text.Contains("\"S-01A_STS_MODO_LOCAL\" := \"S-01A_STS_SOPRADOR_DESANERADOR_MODO_LOCAL_1\""),
+                "bobina simples com a tag que a alimenta");
+            Check(text.Contains("CALL FB \"FB FALHA\" inst \"FB FALHA_S-01A\""), "chamada de FB com instância");
+            Check(text.Contains("INPUT_FALHA := NOT \"S-01A_STS_FALHA_PROFINET\""), "parâmetro com contato negado");
+            Check(text.Contains("FALHA => \"S-01A_FALHA\""), "saída da chamada ligada na tag");
+            Check(Regex.IsMatch(text, @"INPUT_RESET_FALHA := \(""[^""]+""(\.[^ ]+)? OR ""[^""]+""\)"),
+                "paralelo vira OR");
+            Check(text.Contains("\"DB GLOBAL\".CASA_DE_SOPRADORES"), "path de DB global preservado");
+            Check(text.Contains("IF \"DB GLOBAL\".AFERICAO.AFERICAO_ANALOGICA.COMANDO = 300 THEN"),
+                "comparador com in1/in2 resolvidos");
+            Check(!text.Contains("GlobalConstant") && text.Contains("HWIDSTW := \"INVERSOR_S-01A"),
+                "constante global nomeada");
+            Check(!text.Contains("Ret_Val : Void"), "Ret_Val vazio fora do cabeçalho");
+            Check(File.Exists((string)r["file"]), "arquivo .explain.txt escrito");
         }
 
         private static void Ops_RequireRootType()

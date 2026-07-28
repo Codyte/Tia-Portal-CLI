@@ -33,6 +33,7 @@ namespace Tia.Cli
                         "tree [--out DIR]  (outline navindex dos Program blocks → plc-navi.md)",
                         "list-hmi [--device X]  (WinCC Unified: telas + tag tables)",
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]",
+                        "explain-block --name X | --file F.xml  (LAD/FBD → texto compacto; --file roda sem TIA)",
                         "export-type --name X [--out DIR]",
                         "free-memory [--bytes N] [--from B] [--count K]  (buracos livres na área %M; length -1 = até o fim)" } },
                     { "structure", new[] { "create-folder --path A/B [--tags] [--apply]",
@@ -75,6 +76,8 @@ namespace Tia.Cli
                 // pure XML generation, no Siemens types — must not enter Run() or its JIT pulls the DLL
                 if (args[0] == "import-ladder" && !args.Contains("--apply"))
                     return RunLadderDryRun(args);
+                if (args[0] == "explain-block" && OptionValue(args, "--file") != null)
+                    return RunExplainFile(args);
 
                 var timeout = OptionValue(args, "--timeout");
                 if (timeout == null) return Run(args);
@@ -121,6 +124,14 @@ namespace Tia.Cli
             var dry = Core.LadConverter.Convert(Require(args, "--file"), OptionValue(args, "--name"), outDir);
             dry["applied"] = false;
             Print(dry);
+            return 0;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static int RunExplainFile(string[] args)
+        {
+            Print(Core.BlockExplain.Explain(Require(args, "--file"),
+                OptionValue(args, "--out") ?? Path.Combine("workspace", "exports")));
             return 0;
         }
 
@@ -254,6 +265,11 @@ namespace Tia.Cli
                         break;
                     case "export-block":
                         result = Core.Ops.ExportBlock(session.GetPlc(plcName), Require(args, "--name"), outDir);
+                        break;
+                    case "explain-block":
+                        var xml = (string)((Dictionary<string, object>)Core.Ops.ExportBlock(
+                            session.GetPlc(plcName), Require(args, "--name"), outDir))["file"];
+                        result = Core.BlockExplain.Explain(xml, outDir);
                         break;
                     case "export-tags":
                         result = Core.Ops.ExportTagTable(session.GetPlc(plcName), Require(args, "--table"), outDir);

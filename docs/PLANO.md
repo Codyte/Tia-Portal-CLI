@@ -67,6 +67,7 @@ Verbos por fase (nomes finais definidos na F1):
 | F4 | Polimento p/ GitHub (README EN, licença, exemplos) | repo publicável | ✅ 2026-07-18: LICENSE MIT, README EN completo (contrato dry-run/--apply, 3 gates Openness, tabela de verbos, macros, limitações), nome público decidido `tia-cli`. Publicação em si (gh repo create) pendente de ordem do user. |
 | F5? | MCP server fino sobre Tia.Core | só se D1 cair | ⬜ |
 | F6 | Endurecer os scripts PS (ver seção "F6" no fim) | macros rodáveis do agente (sessão 0) + 5 bugs fechados | ✅ 2026-07-27: `scripts/_common.ps1` (`Invoke-Tia`, roteia por sessão, run-id, `$global:LASTEXITCODE`, timeout 600s, guard D9) + `scripts/tia.ps1` (comando único, substitui `tia-task.ps1` — removido); macros migrados; bugs 2-5 fechados (bug 1 já estava). Verificado end-to-end: `tia.ps1 doctor` exit 0, rota da task (`TIA_VIA_TASK=1`) exit 0, forma legada `["info"]` exit 0, `use-project`/`prep-project` do shell do agente |
+| F7 | Camada de compreensão: a IA lê o projeto dentro do orçamento de contexto | `explain-block` (1) e `trace` (2) read-only; depois `index`, `checkpoint`, `apply-spec` | 🔄 item 1 feito 2026-07-27: `explain-block --name X \| --file F.xml` (LAD/FBD → texto; 92KB → 8,3KB no `BombaTemplateFc`; `--file` roda sem TIA, 9 asserts em `Tia.Tests`). Falta smoke do `--name` contra projeto real |
 
 Regra: **uma fase por vez, commit + handoff no fim de cada uma.** FINAIS vira referência
 read-only — nunca editar lá; extrair pra `src/` e pronto.
@@ -130,7 +131,9 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
    MOVE de literal. Rejeita FOR/WHILE/CASE/aritmética/#locais com erro claro. Dry-run gera XML
    **sem TIA** (testado offline ✅); ✅ smoke dry 2026-07-27 contra projeto real — import com
    `--apply` ainda não exercitado, então os detalhes FlgNet (nomes de porta de comparador/MOVE,
-   SrcType DInt default) seguem não validados.
+   SrcType DInt default) seguem não validados. **Pista concreta (F7, `BombaTemplateFc.xml`):**
+   export real de comparador usa pinos `in1`/`in2` e série no pino `pre` — o `LadConverter` emite
+   `operand1`/`operand2` e `in`. Conferir isso antes do primeiro `--apply` com comparador.
    Exemplo: `docs/examples/ladder.scl`. Fora do V1: FB calls (TON/CTU), edge, copy tag→tag.
 2. ~~**Estrutura**~~ ✅ feito (`create-folder`/`delete-folder --path A/B [--tags]`,
    `delete-block --name X`, `export-type`/`import-type` p/ UDT). Dry-run conta conteúdo antes

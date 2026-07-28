@@ -75,3 +75,10 @@ pasta separada acima da Main**, e **adaptar-se ao controlador que estiver no pro
 - Regra dura: todo import deixa o alvo **e quem o referencia** inconsistente → `compile --apply`
   entre etapas.
 - Chamada pendurada com CPU ~0 = diálogo de aceite do Openness na tela: pedir o clique.
+
+## Effort
+**Médio** pro passo 1 (`--replace`) — substituição de texto em XML; edge case é encoding
+(`AFERIÇÃO`, `ANALÍTICA`) e ordem de troca (`CCM-1` antes de `CCM1`). Sobe pra alto no mapa de
+sanitização (reescreve os artefatos) ou se o Openness contrariar o doc de novo — foi o padrão
+desta sessão. Gargalo real é attach do Portal (~3 s/chamada), não pensamento: `run --script`
+em lote vale mais que qualquer nível.

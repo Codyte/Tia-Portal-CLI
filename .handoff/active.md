@@ -2,100 +2,97 @@
 
 ## Goal
 Biblioteca da casa **genérica, por demanda e hierárquica**, instalável num PLC virgem até compile
-0 erros — e, no fim, empacotada como **global library (`.al21`)** ao estilo das bibliotecas Siemens.
+0 erros, empacotada como global library (`.al21`). Instalação por pacote já fecha em 0; falta levar
+os **moldes** pra `.al21` e o instalador compor DB + iDBs sozinho.
 
 ## State
-- HEAD: 6e559e1. Working tree limpo (fora este handoff).
-- Live state: Portal na sessão 1 com **Project1** (`proj/Project1/Project1.ap21`, descartável).
-  3 devices: `PLC_1` (S7-1200 órfã), `PLC_1500` (biblioteca antiga instalada, **suja** — não medir
-  nela) e **`PLC_GEN`** (`6ES7 515-2AM02-0AB0/V2.9`, criado nesta sessão, é o PLC de medição).
-- **Trilha paralela no MESMO repo** (agente de "auto ajuda"): `scripts/tia-help.py` (ajuda oficial
-  do F1 como texto — 45518 tópicos, 1083 de Openness; `--search`/`--topic`) + regra no `CLAUDE.md`
-  "consultar antes de deduzir a API". Commits `f3c1c78`/`6e559e1`. **Nunca `git add -A`** — commitar
-  com caminhos explícitos; os dois agentes dividem working tree e `.handoff/active.md`.
-- Done nesta sessão: `--replace OLD=NEW` no `scaffold`/`import-block` (`514d91b`) · campo `Replace`
-  no manifesto + `library/generic.json` (`bc38ee7`) · `compile --errors` lista plana (`ebcd3e2`).
-- Medição no `PLC_GEN` virgem (core + generic + set-memory-bytes, 0 falha de verbo): **82 erros** —
-  63 de ramo ausente no `DB GLOBAL` genérico, 14 de tag de PLC, 5 `Missing instance DB`.
-  Concentrados em 5 blocos: `PARTIDA_MOTOR_1` 39, `MOLDE_ANALOGS` 36, `MOLDE TOT1` 5, resto 2.
-- Medição de acoplamento da biblioteca: 14 chamadas entre blocos → **12 entre irmãos**, 2 na mesma
-  pasta, **0 sobe/desce**. Provedores são sempre `1. FB Bibliotecas`; consumidores são molde,
-  aplicação (`3.`, `4.`) e `1.1 Acionamento`. Nada de `1.x` chama `3./4.`.
+- HEAD: d73138a. Working tree limpo.
+- **Live state**: 2 TIA Portal abertos na sessão 1 — PID 240 = `Software de ETE Insular_Inicial_V21`
+  (projeto real do user, **só leitura nesta sessão**; baseline `compile` = Success 0 erros, não foi
+  tocado) e PID 6920 = `Project1` (descartável). **Todo verbo agora exige `--portal <nome|PID>`.**
+- `Project1` acumulou CPUs de teste: `PLC_GEN` (fonte da library, 87 erros — é o projeto-planta),
+  `PLC_LIBT`, `PLC_T13/T14/T15/T15B/T16`, `PLC_MIX`, `PLC_DB`, `PLC_DB2` e **`PLC_FULL`** (conjunto
+  completo, hoje em **2 erros**). Sem `delete-device` — limpar é manual no Portal.
+- Global library de teste: `src/Tia.Lib/tia_cli/tia_cli.al21`, **fora do git** (`.gitignore`), com
+  5 pacotes (`1.1 Acionamento`, `1.3`, `1.4`, `1.5`, `1.6`) + 5 blocos soltos de nível 1.
+- Resultados medidos: cada pacote sozinho em CPU virgem = **0 erros**; manifesto inteiro + DB
+  composto + tags + iDBs = **2 erros** (só a tag de telegrama do G120, que é hardware).
+- Trilha paralela no mesmo repo (agente de "auto ajuda"): `scripts/tia-help.py`. **Nunca
+  `git add -A`** — commitar com caminhos explícitos.
 
 ## Decisions (and why)
-- **Tudo por demanda** (decisão do user) — projeto pequeno leva só o que usa. Unidade da demanda é
-  **pacote = pasta**, não bloco: bloco sozinho não importa limpo (fecho de dependência).
-- **Lei de escopo em 2 eixos** (a de 1 eixo não sobrevive à medição acima):
-  1. *Camada*: `core` + `1. FB Bibliotecas` = escopo global, visível de qualquer lugar; aplicação
-     consome biblioteca, biblioteca nunca consome aplicação. Sem isso `0 Moldes → 1.3` seria
-     violação eterna (em TIA a biblioteca não tem como ser pasta-mãe da aplicação).
-  2. *Profundidade* (a regra do user): o que é compartilhado sobe; `X.` nível 1, `X.X` nível 2.
-     Largura cresce só na folha (`1.1.1 Inversores`, `1.1.2 Válvulas`, …) sem encanamento novo.
-- **`requires[]` deixa de existir** — dependência = caminho da pasta (instalar `1.1.1` instala os
-  ancestrais). Mata o `packages.json` com lista manual que eu havia proposto.
-- **`DB GLOBAL` não tem "4 ramos fixos"** — cada pacote traz o seu ramo como fragmento `.scl`; o DB
-  final é a concatenação dos pacotes escolhidos. Molde é o *exemplo de instância do pacote*, entra
-  junto com ele (é o que permite 0 erros sem carregar planta alheia).
-- **`.al21` é artefato, não fonte** — binário opaco: git versiona o blob mas não dá diff/review/merge.
-  Fonte fica `.scl`/`.xml` em texto; `.al21` sai de um build (mesma forma do `bake.json`).
-- **Library *type* ≠ master copy** — type é versionado e propaga *Update instances*; é o que dá cara
-  de biblioteca Siemens. Custo: bloco tipado fica read-only no projeto.
-- `DB GLOBAL.xml` e `DISPOSITIVOS_PROFINET.xml` **fora** do manifesto genérico: são a planta
-  (152 e 35 tokens de tag distintos), mapa de substituição só disfarçaria.
-- Moldes em `"0 Moldes"` (sem ponto): `"0.0"` cai depois de `"0. Main"` na ordenação.
+- **Master copy de pasta = pacote.** A ajuda oficial lista `PlcBlockUserGroup` entre os
+  `IMasterCopySource` → pasta inteira vira 1 master copy, com subpastas. Revoga o "só se produz na
+  mão" que tinha descartado a `.al19/.al21`, mas **não** revoga "`.al21` é artefato": fonte segue
+  `.scl`/`.xml`, a library sai de `bake-lib.ps1`.
+- **Library types: sem caminho por Openness.** `LibraryTypeVersion.Edit()` é "available in Project
+  Library and **not supported via Global Library**", e não há API pra criar type do zero. Master
+  copy é a via — não re-sondar.
+- **`--portal` obrigatório com mais de um portal.** `Attach` fazia `GetProcesses().FirstOrDefault()`;
+  com o projeto do cliente aberto ao lado, isso escreve no projeto errado.
+- **Insular não foi reorganizado** (o user autorizou, mas não compra nada): a árvore nova se define
+  ao gravar na library (`--lib-folder`), e `move-block` num projeto que compila 0 só deixaria
+  cicatriz.
+- **`move-block` in-place deixa cicatriz**: mover bloco *chamado* quebra o vínculo chamada↔instance
+  DB (`Block call was invalid because interface was changed`) e 2 `compile --apply` não limpam. Em
+  CPU virgem não acontece; o conserto é reimportar o chamador.
+- **`import-source` exige UTF-8 com BOM** — sem BOM o acento corrompe, `"Aferição CMD"` não resolve
+  e o erro é só `Error when calling method 'GenerateBlocksFromSource'`.
+- Árvore movida na fonte: `1.7 Utilitários` dissolvida (5 blocos soltos no nível 1),
+  `1.2 Inversores` → `1.1 Acionamento/1.1.1 Inversores`.
+- Mantidas da sessão anterior: tudo por demanda · lei de escopo em 2 eixos (camada + profundidade) ·
+  dependência = caminho da pasta (sem `requires[]`) · moldes em `"0 Moldes"`.
 
 ### Tentado e descartado (não repetir)
-- **Portar molde 1500 → 1200 por XML**: `grep DisableENO` nos 13 XMLs = 0 ocorrências — é o Portal
-  materializando a instrução, não o arquivo. Sem saída por texto; caminho é set de molde por família.
-- **`scaffold --force` pra reinstalar por cima**: não apaga antes; falha com *"already exists in this
-  CPU"*. Exige `delete-block`/`delete-type`.
-- **Injetar bloco de usuário no painel *Instructions***: não existe API — é conteúdo de firmware.
-  O painel certo é *Libraries → Global libraries* (é assim que a própria Siemens distribui a LGF).
-- **Medir orçamento de erro no `PLC_1500`**: já tem a biblioteca instalada, quase tudo volta
-  `skip (exists)`. Número honesto só em CPU virgem.
-- **Ler a ajuda com `curl.exe`/`Invoke-WebRequest`**: servidor só fala HTTP/2 sobre TLS, schannel
-  morre em `SEC_E_ILLEGAL_MESSAGE`. Só com cliente OpenSSL (`httpx[http2]`).
+- **Reorganizar pasta por API**: o Openness **renomeia** grupo (`PlcBlockUserGroup.Name`) mas não
+  move bloco nem grupo. Só export→delete→import.
+- `list-blocks` sem `--folder` devolve **array cru**; com `--folder`, objeto `{count,blocks}`.
+- `"a,b"` num token só (chamador bash) não vira array em PowerShell — `install-lib`/`compose-db`
+  fazem `-split ','` por isso.
+- `ValueFromRemainingArguments` engole `-Portal` como "resto" — usar `[Parameter(Position=0)]`.
+- Anteriores que seguem valendo: portar molde 1500→1200 por XML · `scaffold --force` · injetar
+  bloco no painel *Instructions* · medir no `PLC_1500` · ler a ajuda com `curl.exe`.
 
 ## Next steps (ordered)
-1. **Decidir a movida da árvore** (pergunta aberta ao user): mover `1.7 Utilitários` (4 blocos —
-   `FB CONTADOR`, `FB_HORÔMETRO`, `FB BITS TO WORD`, `FB TOTALIZADOR`) para soltos em
-   `1. FB Bibliotecas`, e `1.2 Inversores` → `1.1.1`. Verbo é `move-block` (export→delete→import).
-   Isso zera 7 das 12 chamadas irmãs; as 5 restantes viram legais pela regra de camada.
-2. **Pacote = pasta** no `scaffold`: `--package "1.1 Acionamento"` instala ancestrais + a pasta.
-3. **`DB GLOBAL` composto**: um fragmento `.scl` por pacote, concatenado e importado de uma vez.
-4. **Critério de aceite**: cada pacote sozinho num PLC virgem = **0 erros** (hoje 82 no conjunto).
-5. **Lint de camada** dentro do `audit`: `CallInfo` que aponta pai→filho ou irmão falha (~30 linhas;
-   a varredura ad-hoc que mediu isso está descrita em State).
-6. **Probe da API de library types** — reflexão sobre a DLL falhou por dependência; confirmar
-   abrindo `.al21` em RW (precisa de uma library de teste vazia, criada no Portal). `list-library`
-   já lê master copies **e** types; falta o lado da escrita.
-7. Pendentes antigos: `Cpu` no manifesto + validação de família · `--force` = delete + reimport ·
-   tag tables genéricas (mata os 14) · `delete-device` · otimizar `raio-x.ps1`.
+1. **Moldes como pacote na `.al21`**: hoje só `1.x` está lá. `add-master-copy --folder "0 Moldes"`
+   (+ `3.`/`4.` se fizer sentido) e conferir se o master copy leva junto os iDBs criados por
+   `create-instance-db`.
+2. **`install-lib.ps1` compondo o resto**: chamar `compose-db.ps1` conforme os pacotes escolhidos,
+   `import-tags` do `Genericos.xml` e os `create-instance-db` — roteiro pronto em
+   `docs/examples/install-full.json`. Alvo: "projeto novo até 0 erros" em 1 comando.
+3. **Mapa pacote → fragmento de DB** (hoje o fragmento é escolhido à mão no `compose-db`).
+4. Os 2 erros finais do `PLC_FULL` exigem o **G120 no hardware** (`INVERSOR_MOTOR_01_CCM_01`,
+   telegrama 20): descobrir MLFB e fechar via `add-device` + `connect-subnet`, ou aceitar como
+   "requer hardware" e documentar.
+5. Lint de camada no `audit` (`CallInfo` pai→filho ou irmão falha).
+6. Pendentes antigos: `Cpu` no manifesto + validação de família · `--force` = delete + reimport ·
+   `delete-device` · otimizar `raio-x.ps1`.
 
 ## Key files
-- `library/generic.json` — 63 itens, 11 pares `Replace`, moldes em `0 Moldes`.
-- `library/core/{bake,core}.json` · `library/core/xml/` · `library/core/README.md`.
-- `src/Tia.Core/Clone.cs:RewriteFile` — substituição offline pré-import (scaffold e import-block).
-- `src/Tia.Core/Scaffold.cs` — `Merge` (manifesto + CLI), `Apply` (segmentos de pasta), `Plan`.
-- `src/Tia.Core/Ops.cs:~650` — `Compile(..., errorsOnly)` + `FlattenErrors`.
-- `scripts/tia-help.py` (trilha paralela) — ajuda oficial como texto; consultar antes de deduzir API.
-- `docs/VERBS.md` — assinatura de todo verbo, ler em vez de grepar `Program.cs`.
+- `scripts/bake-lib.ps1` (PLC → `.al21`) · `scripts/install-lib.ps1` (`.al21` → PLC, idempotente) ·
+  `scripts/compose-db.ps1` (fragmentos → `DB GLOBAL`, grava com BOM).
+- `library/db-global/*.scl` — `00-core` (sempre) + `motores`/`instrumentacao`/`afericao`.
+- `library/tags/Genericos.xml` — 11 tags em `%M` a partir de 5520.
+- `library/generic.json` — 64 itens (entrou `DIAG to STRING_DB.xml`).
+- `docs/examples/install-full.json` — receita que leva 81 → 2 erros.
+- `src/Tia.Core/Library.cs` (add/delete master copy, `UserGlobalLibrary.Save()`) ·
+  `src/Tia.Core/TiaSession.cs:PickProcess` (`--portal`) · `src/Tia.Core/Ops.cs:CreateInstanceDb`.
+- `docs/PLANO.md`, seção "Biblioteca de blocos" — as 3 subseções novas têm os números medidos.
 
 ## Open / blockers
-- **Duas perguntas abertas ao user**: mover a árvore agora ou depois? E crio a `.al21` vazia de
-  teste no Portal para o probe de types?
-- Escrever `--out-file` em `$env:TEMP` dá caminho 8.3 (`CARLOS~1`) que o Python não abre — usar
-  `workspace/` (já gitignored, caminho curto).
-- `EngineeringSecurityException: "The operation has timed out."` apareceu 1x com whitelist boa e
-  sumiu no retry — a mensagem de whitelist stale também cobre timeout transitório de attach.
-- Project1 com station S7-1200 órfã; sem `delete-device`. Sem `checkpoint`/`restore`.
-- Todo import deixa o alvo **e quem o referencia** inconsistente → `compile --apply` entre etapas.
+- User abriu o Insular dizendo "projeto base que será copiadas as fcs" e **nunca disse quais FCs** —
+  pergunta aberta. Copiar do Insular traz os nomes reais do cliente; genericizar exige
+  export → `--replace` → import no `PLC_GEN` + rebake, não master copy direto.
+- `Project1` com ~11 CPUs de teste e uma station S7-1200 órfã; sem `delete-device`/`checkpoint`.
+- Todo import deixa o alvo **e quem o referencia** inconsistente → `compile --apply` entre etapas;
+  bloco inconsistente não exporta.
+- `--out-file` em `$env:TEMP` dá caminho 8.3 (`CARLOS~1`) que o Python não abre — usar `workspace/`.
 - Chamada pendurada com CPU ~0 = diálogo de aceite do Openness na tela: pedir o clique.
 
 ## Effort
-**Médio** para o passo 1 — `move-block` é export→delete→import e a ordem importa (importar antes de
-apagar falha), mas o verbo existe e faz a coreografia; o risco é referência quebrada, que o
-`compile --errors` mostra na hora. Sobe para **alto** se a movida quebrar chamada que hoje compila,
-ou no passo 6 (API de types, terreno não verificado — consultar `tia-help.py --search` antes de
-sondar). Gargalo real é attach do Portal (~3 s/chamada) e o compile, não raciocínio: `run --script`
-em lote vale mais que qualquer nível.
+**Baixo–médio** para o passo 1 — `add-master-copy --folder` já está provado em 5 pastas e o verbo faz
+a coreografia; o único desconhecido é se o master copy de `0 Moldes` leva os iDBs junto, e o
+`compile --errors` responde na hora. Sobe para **alto** no passo 4 (MLFB do G120 e configuração de
+telegrama são terreno não verificado — consultar `scripts/tia-help.py --search` antes de sondar).
+Gargalo real não é raciocínio: é attach do Portal (~3–7 s por chamada) e compile — juntar tudo num
+`run --script` vale mais que qualquer nível de esforço.

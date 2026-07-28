@@ -456,6 +456,65 @@ namespace Tia.Core
             return result;
         }
 
+        /// <summary>
+        /// Cria uma tag numa tabela existente. Sem isso, acrescentar uma tag exige montar o XML da
+        /// tabela inteira e reimportar (foi como a `Genericos.xml` nasceu). Idempotente: tag que já
+        /// existe é `skip`, com o tipo/endereço atual no resultado pra conferência.
+        /// </summary>
+        public static object AddTag(PlcSoftware plc, string tableName, string name, string dataType,
+            string address, string comment, bool apply)
+        {
+            var table = FindTagTable(plc.TagTableGroup, tableName);
+            if (table == null)
+                throw new InvalidOperationException("Tag table '" + tableName + "' not found.");
+            var existing = table.Tags.Find(name);
+            var result = new Dictionary<string, object>
+            {
+                { "table", table.Name },
+                { "tag", name },
+                { "action", existing == null ? "create" : "skip (exists)" },
+                { "applied", apply },
+            };
+            if (existing != null)
+            {
+                result["currentType"] = existing.DataTypeName;
+                result["currentAddress"] = existing.LogicalAddress;
+                return result;
+            }
+            if (dataType == null || address == null)
+                throw new InvalidOperationException(
+                    "--type and --address are required to create tag '" + name
+                    + "' (o Openness não escolhe endereço: PlcTagComposition.Create(name, type, address)). "
+                    + "Buraco livre em %M: tia free-memory.");
+            result["type"] = dataType;
+            result["address"] = address;
+            if (!apply) return result;
+
+            var tag = table.Tags.Create(name, dataType, address);
+            if (comment != null) tag.Comment.Items[0].Text = comment;
+            result["created"] = tag.Name;
+            result["addressCreated"] = tag.LogicalAddress;
+            return result;
+        }
+
+        public static object DeleteTag(PlcSoftware plc, string tableName, string name, bool apply)
+        {
+            var table = FindTagTable(plc.TagTableGroup, tableName);
+            if (table == null)
+                throw new InvalidOperationException("Tag table '" + tableName + "' not found.");
+            var tag = table.Tags.Find(name);
+            if (tag == null)
+                throw new InvalidOperationException("Tag '" + name + "' not found in '" + table.Name + "'.");
+            var result = new Dictionary<string, object>
+            {
+                { "table", table.Name }, { "tag", tag.Name },
+                { "type", tag.DataTypeName }, { "address", tag.LogicalAddress },
+                { "applied", apply },
+            };
+            if (apply) tag.Delete();
+            return result;
+        }
+
         public static object ImportType(PlcSoftware plc, string file, bool apply)
         {
             var full = RequireFile(file);

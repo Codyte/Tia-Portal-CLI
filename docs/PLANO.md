@@ -507,6 +507,17 @@ projeto. O que a arqueologia dos AML já responde, sem sondar a API:
   (head e drive object têm o mesmo nome). Com `--type`, o dry-run devolve `canPlug`
   (`CanPlugNew`) — é como se confirma um identificador de catálogo antes de escrever.
 - `delete-device --name X [--apply]` — `Project1` acumulou ~15 CPUs de teste; limpar era manual.
+- `set-attr --device X [--item I] --name A --value V [--apply]` — escreve **qualquer** atributo que
+  o `list-attrs` mostrar, sem verbo novo por atributo. O tipo sai do valor atual (enum inclusive):
+  o Portal recusa `int` onde espera byte e `"True"` onde espera bool. Atributo desconhecido falha
+  antes de escrever, apontando o `list-attrs`. Smoke no `PLC_ZERO`: `PlantDesignation` do G120
+  `""` → `CCM_01`, 2º apply = `none (already set)`, revertido no fim.
+- `add-tag --table T --name N --type Bool --address %M10.0 [--comment C]` / `delete-tag --table T
+  --name N` — acrescentar **uma** tag exigia montar o XML da tabela inteira e reimportar (foi assim
+  que a `Genericos.xml` nasceu). `PlcTagComposition.Create` **exige endereço** (não tem overload de
+  2 args) — o buraco livre sai do `free-memory`. Idempotente: tag existente é `skip`, com tipo e
+  endereço atuais no resultado. Smoke: `ZZ_SMOKE_BIT` criada em `%M5600.0`, achada pelo `find`,
+  apagada.
 - `list-attrs --device X [--item I] [--like SUB]` — read-only, `GetAttributeInfos` + valor atual.
   Usada pra descartar a hipótese "telegrama é atributo": a `PROFINET interface` do G120 tem 20
   atributos (`InterfaceOperatingMode`, `PnSubslotNumber`, `PrioritizedStartup`…) e o head 16

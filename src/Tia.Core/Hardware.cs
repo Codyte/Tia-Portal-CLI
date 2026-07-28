@@ -227,6 +227,49 @@ namespace Tia.Core
             };
         }
 
+        // ---------- set-attr ----------
+
+        /// <summary>
+        /// Escreve um atributo qualquer de device item. `set-address`/`set-memory-bytes` cobrem os
+        /// dois casos frequentes; este cobre o resto sem verbo novo por atributo (o que existe em
+        /// cada versão do Portal sai do `list-attrs`). O tipo vem do valor atual — o Portal recusa
+        /// int onde espera byte, e string "True" onde espera bool.
+        /// </summary>
+        public static object SetAttr(TiaSession session, string deviceName, string itemName,
+            string attribute, string value, bool apply)
+        {
+            var device = FindDevice(session, deviceName);
+            IEngineeringObject target = itemName == null
+                ? (IEngineeringObject)device : FindItem(device, itemName);
+            var known = target.GetAttributeInfos().Select(i => i.Name).ToList();
+            if (!known.Contains(attribute, StringComparer.Ordinal))
+                throw new InvalidOperationException("Attribute '" + attribute + "' not found in '"
+                    + (itemName ?? device.Name) + "'. Run tia list-attrs --device " + deviceName + ".");
+            var current = TryGet(target, attribute);
+            object parsed = Coerce(value, current);
+            var result = new Dictionary<string, object>
+            {
+                { "device", device.Name },
+                { "item", itemName ?? device.Name },
+                { "attribute", attribute },
+                { "from", current == null ? null : current.ToString() },
+                { "to", parsed == null ? null : parsed.ToString() },
+                { "action", Equals(parsed, current) ? "none (already set)" : "set" },
+                { "applied", apply },
+            };
+            if (apply && !Equals(parsed, current)) target.SetAttribute(attribute, parsed);
+            return result;
+        }
+
+        /// <summary>String da linha de comando → o tipo que o atributo já tem (enum inclusive).</summary>
+        private static object Coerce(string value, object current)
+        {
+            if (current == null) return value;
+            var type = current.GetType();
+            if (type.IsEnum) return Enum.Parse(type, value, true);
+            return Convert.ChangeType(value, type);
+        }
+
         private static object TryGet(IEngineeringObject obj, string attribute)
         {
             try { return obj.GetAttribute(attribute); }

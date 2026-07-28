@@ -39,6 +39,7 @@
 - `add-device --mlfb "6ES7 ..." --name X [--station S] [--group G] [--apply]`
 - `delete-device --name X [--apply]`
 - `list-attrs --device X [--item I] [--like SUB]  (read-only: atributos e valores do device item)`
+- `set-attr --device X [--item I] --name A --value V [--apply]  (qualquer atributo que o list-attrs mostrar; tipo vem do valor atual)`
 - `plug-module --device X [--item I] [--type TID] [--name N] [--pos P] [--apply]  (sem --type: lista slots livres; com --type: canPlug e, com --apply, pluga)`
 - `set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]`
 - `connect-subnet --device X --subnet S [--io-system IO] [--apply]`
@@ -51,6 +52,8 @@
 - `import-source --file F.scl [--apply]`
 - `import-ladder --file F.scl [--name N] [--folder A/B] [--apply]  (SCL subset → LAD; dry-run works without TIA)`
 - `import-tags --file F [--folder A/B] [--apply]`
+- `add-tag --table T --name N --type Bool --address %M10.0 [--comment C] [--apply]  (uma tag em tabela existente; endereço livre em %M sai do free-memory)`
+- `delete-tag --table T --name N [--apply]`
 - `clone --block N | --table T --replace OLD=NEW [--replace ...] [--at %M432.0] [--folder A/B] [--apply]`
 - `add-db-member --db X --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]`
 - `compile [--block X | --folder A/B] [--errors] [--apply]  (--errors = lista plana {where,message,count} em vez da árvore)`

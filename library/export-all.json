@@ -43,7 +43,6 @@
   ["export-block", "--name", "FB MODBUS SCAN DRIVERS V2", "--out", "library/blocks"],
   ["export-block", "--name", "FB MODBUS SCAN DRIVERS V1", "--out", "library/blocks"],
   ["export-block", "--name", "FB MODBUS MASTER BLOCK", "--out", "library/blocks"],
-  ["export-block", "--name", "DIAG to STRING_DB", "--out", "library/blocks"],
   ["export-block", "--name", "FB CONDIÇÃO DE PARTIDA", "--out", "library/blocks"],
   ["export-block", "--name", "FB MODBUS MASTER BLOCK MMW", "--out", "library/blocks"],
   ["export-block", "--name", "DB GLOBAL", "--out", "library/blocks"],
@@ -66,3 +65,4 @@
   ["export-tags", "--table", "DISPOSITIVOS_PROFINET", "--out", "library/blocks"],
   ["export-tags", "--table", "SOPRADOR_DESARENADOR (S-01A)", "--out", "library/blocks"]
 ]
+

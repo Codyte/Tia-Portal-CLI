@@ -6,10 +6,10 @@
 
 | arquivo | vai pro Git? | o que é |
 |---|---|---|
-| `library.json` | **sim** | manifesto `ScaffoldManifest`: 20 pastas de bloco, 6 de tag, 66 itens |
-| `export-all.json` | **sim** | batch inverso: exporta os 66 do projeto de referência de volta pra `blocks/` |
+| `library.json` | **sim** | manifesto `ScaffoldManifest`: 27 pastas de bloco, 6 de tag, 65 itens |
+| `export-all.json` | **sim** | batch inverso: exporta os 65 do projeto de referência de volta pra `blocks/` |
 | `README.md` | **sim** | este arquivo |
-| `blocks/*.xml` | **não** (`.gitignore`) | payload: os 66 XMLs exportados |
+| `blocks/*.xml` | **não** (`.gitignore`) | payload: os XMLs exportados (66 arquivos; 65 no manifesto) |
 
 ## Por que o payload não viaja no repo
 
@@ -29,10 +29,10 @@ do repo:
 
 ```powershell
 pwsh scripts/prep-project.ps1 "Software de ETE Insular_Inicial_V21" -Apply   # compila antes: bloco inconsistente não exporta
-pwsh scripts/tia.ps1 run --script library/export-all.json                    # 66 exports, 1 attach
+pwsh scripts/tia.ps1 run --script library/export-all.json                    # 65 exports, 1 attach
 ```
 
-`export-all.json` é gerado a partir do `library.json` — mesmos 66 objetos, verbo por tipo
+`export-all.json` é gerado a partir do `library.json` — mesmos 65 objetos, verbo por tipo
 (`export-type` p/ UDT, `export-tags` p/ tabela, `export-block` p/ o resto) e `--out library/blocks`
 relativo à raiz do repo. Para um item solto, o nome está no batch.
 
@@ -44,7 +44,7 @@ Dois detalhes que mordem:
   `FB_LIGA_DESLIGA MODO AUTO.xml`. O manifesto usa o nome do **arquivo**, o batch usa o nome do
   **objeto** — por isso os dois não são idênticos nesse item.
 - **Hash muda todo export.** Cada XML carrega `<DocumentInfo><Created>` com o timestamp da
-  exportação, então os 66 arquivos mudam de hash a cada rodada mesmo sem mudança no projeto.
+  exportação, então os arquivos mudam de hash a cada rodada mesmo sem mudança no projeto.
   Para comparar duas exportações, ignore essa linha (`(Get-Content f) -notmatch '<Created>'`).
 
 ## Como instalar num projeto
@@ -61,10 +61,9 @@ sobrescreve). A ordem de import é por tipo — UDT → tabela de tag → FB →
 ([`Scaffold.Rank`](../src/Tia.Core/Scaffold.cs#L58)) — porque bloco só importa limpo depois do
 que ele referencia.
 
-**Limitação conhecida**: `Folder` de item UDT é ignorado — `Scaffold.Run` importa todo
-`SW.Types.*` na raiz do `TypeGroup` ([`Scaffold.cs:126`](../src/Tia.Core/Scaffold.cs#L126)),
-enquanto bloco e tabela respeitam o caminho. Sem impacto hoje (os 13 UDTs do manifesto já são
-`"Folder": []`); vira bug no dia em que a biblioteca quiser UDT em subpasta.
+`Folder` de item UDT **é respeitado desde 2026-07-28**
+([`ResolveTypePath`](../src/Tia.Core/Scaffold.cs#L188)) — antes todo `SW.Types.*` caía na raiz do
+`TypeGroup`. Os 13 UDTs do manifesto continuam `"Folder": []`, mas agora dá pra agrupá-los.
 
 ## O que cada gerador exige daqui
 
@@ -78,7 +77,7 @@ sobrescrevíveis no JSON do verbo):
 | `replicate-instruments` | `DB GLOBAL`, molde `MOLDE_ANALOGS` | [InstrumentFc.cs:22](../src/Tia.Core/InstrumentFc.cs#L22) |
 | `replicate-fc` | `DB GLOBAL`, UDTs por tipo de equipamento (`MotorDados`, `ValvDados`, …), FC modelo na pasta de origem | [Replicate.cs:25](../src/Tia.Core/Replicate.cs#L25) |
 
-## Inventário — 66 itens
+## Inventário — 65 itens
 
 Por tipo: 33 FB · 13 UDT (`SW.Types.PlcStruct`) · 8 instance DB · 4 FC · 3 global DB · 3 OB ·
 2 tabela de tag. Import roda nessa ordem de dependência, não na ordem do manifesto.
@@ -88,11 +87,11 @@ Por tipo: 33 FB · 13 UDT (`SW.Types.PlcStruct`) · 8 instance DB · 4 FC · 3 g
 `Diag_Hardware` · `Tlg_20_Out` · `Tlg_20_In` · `HACH_DataType` · `MotorPrincipal` · `MotorDados` ·
 `SULZER_Compressor_Comando` · `SULZER_Compressor_Status`
 
-### `1. FB Bilbiotecas` — 33 FBs + 1 iDB, em 7 subpastas por função
-Reorganizada em 2026-07-28 (era plana): move = `export-block` → `delete-block` → `import-block
---folder` → `compile --apply`, nessa ordem. Importar antes de apagar falha com *"A program element
-with this fully qualified name already exists in this CPU"* — o Openness não move bloco, e não
-existe verbo `move-block`.
+### `1. FB Bilbiotecas` — 33 FBs em 7 subpastas por função
+Reorganizada em 2026-07-28 (era plana). O Openness não move bloco: é `export` → `delete` →
+`import --folder`, nessa ordem (importar com o original no lugar falha com *"A program element with
+this fully qualified name already exists in this CPU"*). Hoje isso está encapsulado em
+**`tia move-block --name X | --pattern P* --folder A/B --apply`**.
 
 - **`1.1 Acionamento`** (7): `FB_LIGA/DESLIGA MODO AUTO` · `FB_PARTIDA_INVERSOR` ·
   `FB CONDIÇÃO DE PARTIDA` · `FB MODOS DE OPERAÇÃO` · `FB VALVULA` · `FB INTERTRAVAMENTO_PAINEL` ·
@@ -103,8 +102,11 @@ existe verbo `move-block`.
   `FB FILTRO DE AMOSTRAGEM  ANALÍTICA` (dois espaços no nome) · `FB SETPOINT ESCALONAMENTO` ·
   `FB SETPOINT MANUAL` · `AUX_PID`
 - **`1.4 Alarmes e Falhas`** (2): `FB FALHA` · `FB ALARME DIGITAL`
-- **`1.5 Diagnóstico`** (6): `FB DIAG MODULES` · `DIAG to STRING` + `DIAG to STRING_DB` (iDB) ·
-  `PROFINET_DEVICE_STATES` · `FB PROFINET DEVICE STATES to BIT` · `FB PROFINET DEVICE STATES to Word`
+- **`1.5 Diagnóstico`** (5): `FB DIAG MODULES` · `DIAG to STRING` · `PROFINET_DEVICE_STATES` ·
+  `FB PROFINET DEVICE STATES to BIT` · `FB PROFINET DEVICE STATES to Word`
+  (o iDB `DIAG to STRING_DB` foi apagado do projeto pelo user em 2026-07-28 — era instância de
+  teste em pasta errada. Saiu dos dois manifestos: **65 itens**, não 66. O XML continua em
+  `blocks/` mas não é mais reposto nem instalado.)
 - **`1.6 Comunicação Modbus`** (4): `FB MODBUS MASTER BLOCK` · `FB MODBUS MASTER BLOCK MMW` ·
   `FB MODBUS SCAN DRIVERS V1` · `FB MODBUS SCAN DRIVERS V2`
 - **`1.7 Utilitários`** (5): `FB BITS TO WORD` · `FB BITS TO DOUBLE WORD` · `FB CONTADOR` ·

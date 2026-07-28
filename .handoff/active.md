@@ -35,12 +35,25 @@ escrever fora de `ClaudeTest/`, e é isso que falta decidir com o user.
   de falhar com `compile --apply` do PLC.
 
 ## Next steps (ordered)
-1. **Decidir com o user** (pergunta já feita, sem resposta): rodar `replicate-fc --apply` no
-   projeto ouro (sobrescreve `Soprador 2..6`, 6 blocos cada) **ou** montar projeto separado via
-   `scaffold` para os verbos que não cabem no sandbox.
-2. Depois da decisão, fechar os 4 pendentes na ordem: `replicate-fc --apply`,
-   `replicate-instruments --apply` (hoje `in-sync`, precisa de alvo fora de sincronia),
-   `gen-profinet --apply` (tabela `4.1 Profinet`), `standardize-tags --apply` (131 tabelas).
+**DECIDIDO 2026-07-28 pelo user: rodar no projeto ouro mesmo (opção a), escopado.** Projeto de
+teste separado via `scaffold` foi descartado — dados sintéticos já cobertos pelo SmokeTest_01
+(F3), e o `scaffold` tem bug próprio, então a sessão viraria depuração de fixture.
+Correção de premissa: os 6 geradores **já rodaram `--apply` completo no SmokeTest_01** (PLANO F3,
+dry→apply→compile→idempotente). O que falta é `--apply` contra **dados reais**, não 1ª execução.
+
+1. `save-project` antes de tudo (ponto de retorno junto do backup do user).
+2. Copiar `docs/examples/replicate-fc.json` para `workspace/sandbox/` com
+   `"EquipmentTypes": ["Soprador"]` — corta de 4 tipos p/ 1: **5 pastas alvo, 6 blocos cada**,
+   todas irmãs do mesmo molde. Rodar dry: plano tem que listar 5 alvos `overwrite` e nada fora de
+   `4.1.1 Desarenador`.
+3. `replicate-fc --apply` → `compile --apply` do PLC inteiro. Critério: **0 erros**. O projeto já
+   compila 0 erros hoje, então qualquer erro novo é do verbo, não herdado.
+4. `diff-block` de 1 bloco replicado contra o molde — prova conteúdo, não só que compilou.
+5. Re-rodar `--apply`: tem que dar idempotente. É o passo que pega bug de replicador.
+6. Se verde: `gen-profinet --apply` e `standardize-tags --apply` na mesma sessão — dry mostrou
+   `action: exists`/`ok`, quase no-op, custo marginal ~zero.
+- **Cortado de propósito**: `replicate-instruments --apply`. Dá `in-sync`, não escreveria nada;
+  cobertura já veio do SmokeTest_01. Só vale com alvo dessincronizado.
 3. **`scaffold` + `add-device`**: bug conhecido dos bytes de system/clock memory faltando
    (dava 8 dos 26 erros de compile num projeto scaffoldado). Escopo pequeno, offline-ish.
 4. `import-master-copy` — sem `.al19` de teste; achar/gerar um ou marcar como não testável.
@@ -60,10 +73,9 @@ Backlog parado: multiuser 3b/3c (falta host/porta do TIA Project Server).
 - `docs/PLANO.md` — linha F8 na tabela de fases + item 1b do backlog v2 (ambos atualizados hoje).
 
 ## Open / blockers
-- **Bloqueio real**: os 4 verbos do passo 2 exigem escrita na árvore de produção do projeto ouro.
-  Backup existe e o user liberou dano, mas ele pediu para manter tudo em pastas de teste — as duas
-  coisas se contradizem aqui. Perguntar antes de rodar.
-- `replicate-instruments` devolve `action: in-sync` no projeto atual: mesmo com `--apply` não
-  escreveria nada. Para testar de verdade, precisa de um alvo fora de sincronia.
+- Sem blocker: a escrita fora de `ClaudeTest/` foi autorizada para os passos 1-6 acima (projeto é
+  cópia de teste com backup). A regra "tudo em pasta de teste" segue valendo para o resto.
+- `checkpoint`/`restore` (F7 item 4) continua não existindo — o ponto de retorno do passo 1 é
+  `save-project` + o backup do user, nada mais.
 - Rebuild com Portal aberto → 1ª chamada pode abrir diálogo de aceite na tela e pendurar. Se não
   retornar com `tia.exe` vivo e CPU ~0, pedir o clique antes de investigar código.

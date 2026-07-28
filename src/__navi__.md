@@ -1,8 +1,8 @@
 # __navi__ · src/ (C#) — símbolos públicos por arquivo
 <!-- gerado por scripts/navi-cs.ps1 · regenerar após refatorar -->
 
-## `Tia.Cli/Program.cs` (584 linhas)
-Program(16)  save-project(250)  close-project(253)  info(256)  list-devices(259)  list-blocks(262)  list-tags(265)  tree(268)  list-types(272)  find(275)  snapshot(279)  xref(282)  trace(285)  list-hmi(288)  free-memory(291)  export-block(297)  explain-block(300)  export-tags(305)  import-block(308)  import-ladder(313)  import-source(321)  create-folder(325)  delete-folder(330)  delete-block(335)  export-type(339)  import-type(342)  scaffold(346)  clone(354)  add-db-member(360)  import-tags(366)  list-library(370)  import-master-copy(373)  add-device(379)  set-address(384)  connect-subnet(390)  export-cax(395)  import-cax(398)  compile(402)  diff-block(416)  audit(420)  doctor(424)  gen-profinet(432)  standardize-tags(438)  gen-fault-ob(446)  replicate-fc(454)  gen-alarm-fc(461)  replicate-instruments(469)
+## `Tia.Cli/Program.cs` (589 linhas)
+Program(16)  save-project(255)  close-project(258)  info(261)  list-devices(264)  list-blocks(267)  list-tags(270)  tree(273)  list-types(277)  find(280)  snapshot(284)  xref(287)  trace(290)  list-hmi(293)  free-memory(296)  export-block(302)  explain-block(305)  export-tags(310)  import-block(313)  import-ladder(318)  import-source(326)  create-folder(330)  delete-folder(335)  delete-block(340)  export-type(344)  import-type(347)  scaffold(351)  clone(359)  add-db-member(365)  import-tags(371)  list-library(375)  import-master-copy(378)  add-device(384)  set-address(389)  connect-subnet(395)  export-cax(400)  import-cax(403)  compile(407)  diff-block(421)  audit(425)  doctor(429)  gen-profinet(437)  standardize-tags(443)  gen-fault-ob(451)  replicate-fc(459)  gen-alarm-fc(466)  replicate-instruments(474)
 
 ## `Tia.Core/AlarmFc.cs` (649 linhas)
 AlarmFcConfig(17)  AlarmFc(39)  Generate(55)  LEITURA_MUITO_ALTA(610)  LEITURA_ALTA(611)  LEITURA_BAIXA(612)  LEITURA_MUITO_BAIXA(613)  SEM_4MA(614)
@@ -37,8 +37,8 @@ Hmi(10)  Targets(12)  List(23)
 ## `Tia.Core/InstrumentFc.cs` (639 linhas)
 InstrumentFcConfig(16)  InstrumentFc(49)  Instrument(59)  AreaTask(69)  Run(77)
 
-## `Tia.Core/Inventory.cs` (423 linhas)
-Inventory(28)  Info(30)  Devices(47)  Blocks(79)  Tree(107)  TagTables(159)  Types(179)  Find(202)  Snapshot(259)  Xref(312)  Trace(360)
+## `Tia.Core/Inventory.cs` (445 linhas)
+Inventory(28)  Info(30)  Devices(47)  Blocks(79)  Tree(109)  TagTables(181)  Types(201)  Find(224)  Snapshot(281)  Xref(334)  Trace(382)
 
 ## `Tia.Core/LadConverter.cs` (484 linhas)
 LadConverter(17)  Convert(19)  ParseAll(150)  NextUid(312)  TagAccess(314)  ConstAccess(322)  Operand(332)  NewNet(339)  Compile(341)  ToFlgNet(386)

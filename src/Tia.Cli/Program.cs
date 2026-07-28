@@ -29,11 +29,11 @@ namespace Tia.Cli
                         "create-project --dir D --name N [--no-ui]",
                         "save-project", "close-project [--save]" } },
                     { "read", new[] { "info", "list-devices", "list-blocks", "list-tags", "list-types",
+                        "tree [--out DIR]  ← COMECE AQUI: outline do PLC inteiro (blocos + tabelas de tag + UDTs) "
+                            + "em plc-navi.md, ~26 KB num projeto de 476 blocos (o mesmo em JSON: 117 KB)",
                         "find --pattern P* [--kind block|table|tag|type]",
-                        "snapshot  (inventário completo)",
                         "xref --name X  (bloco, tag, tabela ou UDT → o que ele usa)",
-                        "trace --equipment AG-01  (símbolos do equipamento + quem referencia; ~10s em projeto grande)",
-                        "tree [--out DIR]  (outline navindex dos Program blocks → plc-navi.md)",
+                        "trace --equipment AG-01  (símbolos do equipamento + quem referencia; ~9s em projeto grande)",
                         "list-hmi [--device X]  (WinCC Unified: telas + tag tables)",
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]",
                         "explain-block --name X | --file F.xml  (LAD/FBD → texto compacto; --file roda sem TIA)",
@@ -68,6 +68,11 @@ namespace Tia.Cli
                         "import-master-copy --file X.al19 --name M [--folder A/B] [--apply]" } },
                     { "multiuser", new[] { "list-server-projects --server HOST [--port N] [--http] [--keep-connection]" +
                         "  (read-only: projetos do TIA Project Server, lock e sessões locais)" } },
+                    { "bulk", new[] { "snapshot  (inventário completo: devices + blocos + tabelas + UDTs de todo PLC)",
+                        "find --pattern \"*\" --kind tag  (todas as tags)",
+                        "→ saída na casa das centenas de KB (snapshot = 251 KB, find de tag = 821 KB num projeto " +
+                        "real). SEMPRE com --out-file, depois grep no arquivo. Não é leitura de orientação: " +
+                        "pra isso é `tree`" } },
                     { "batch", new[] { "run --script ops.json  (JSON array de arg-arrays, uma sessão só; " +
                         "step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou)" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports; " +

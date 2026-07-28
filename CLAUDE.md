@@ -40,6 +40,11 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
   - **`--out-file F.json` em verbo de leitura** (`find`/`snapshot`/`list-*`/`xref`/`trace`): JSON
     completo no arquivo, stdout devolve só `{file,bytes,count,head}`. `find --pattern "*" --kind tag`
     num projeto real = 821 KB (~200k tokens) — sem a opção, isso cai no contexto inteiro.
+  - **Orientação num projeto novo = `tia tree` → `plc-navi.md`, e só isso.** Outline do PLC inteiro
+    (blocos + tabelas de tag + UDTs) agrupado por pasta: 39 KB / 309 linhas p/ 476 blocos + 194
+    tabelas + 13 UDTs, contra ~150 KB do JSON equivalente, em 4s. Depois vem verbo que responde
+    pergunta (`trace`, `xref`, `explain-block`, `find --pattern`). `snapshot` (251 KB) e
+    `find --kind tag` (821 KB) são volume bruto: sempre `--out-file` + grep, nunca leitura direta.
   - `tia doctor` = preflight dos 6 verbos antes de qualquer smoke.
 - Smoke test exige TIA Portal aberto com projeto de teste — confirmar com o usuário antes.
 

@@ -1,76 +1,70 @@
 # Handoff · TIA Portal Openness API · 2026-07-28
 
-Split de 2 tracks **fundido** — sessão única a partir daqui. Histórico dos dois em
-`.handoff/archive/2026-07-28T125409.md`.
-
 ## Goal
-F8 (caminho de escrita contra projeto real) está fechado. Próximo alvo: **fatia 2 da biblioteca de
-blocos** — escrever os ~10 itens autorais do núcleo genérico (tabela em `docs/PLANO.md`, seção
-"Biblioteca de blocos"), e o teste da biblioteca contra o Portal.
+Ciclo que está funcionando: **executar uma operação real no projeto → medir onde ela doeu →
+virar verbo/flag no CLI**. Duas rodadas fechadas (reorganizar uma pasta de 34 blocos, depois as
+6 otimizações que essa operação expôs). Próximo alvo do mesmo ciclo: **orientação em projeto
+novo / `raio-x.ps1`** — é a operação cara que ainda não passou por essa moagem.
 
 ## State
-- HEAD: 2849fca. Working tree limpo.
-- Portal aberto na sessão 1 com **Software de ETE Insular_Inicial_V21** (cópia de teste, backup do
-  user, dano autorizado). PLC compila **Success / 0 erros / 0 warnings** + `save-project` feito.
-- **F8 fechado.** Primitivas 11/11 ✅, `import-ladder --apply` ✅, 6 geradores ✅ em dry + payload
-  importado, e nesta rodada: `replicate-fc --apply` no tipo `Soprador` da árvore de produção
-  (2 alvos S-01B/C, batch 0 falhas, 2 compiles 0 erros, conteúdo conferido — 5 linhas de 1993
-  diferem do molde, todas devidas), `gen-profinet --apply` (no-op) e `standardize-tags --apply`
-  (5 tabelas rebuilt). Detalhe completo na linha F8 do PLANO.
-- **Biblioteca fatia 1 fechada** (offline): `library/library.json` (manifesto, `Source: "blocks"`),
-  `library/export-all.json` (batch inverso, 66 exports, 1 attach), `library/README.md` (inventário
-  + como repor + o que cada gerador exige), `library/blocks/` = 66 XMLs / 3,3 MB **fora do Git**
-  (`.gitignore`). Removido `scripts/export-fixtures.ps1` (cobria 15 dos 66).
-- Tudo que foi escrito nos sandboxes vive em `ClaudeTest/`, `ClaudeTest/Sub`, `ClaudeTest/Gen`
-  (+ `DB INSTRUMENTOS` na raiz). User mandou deixar lá e continuar usando essas pastas.
+- HEAD: f88f020. Working tree limpo.
+- Portal na sessão 1 com **Software de ETE Insular_Inicial_V21** (cópia de teste, dano autorizado).
+  479 blocos, 0 inconsistentes, compile Success, `save-project` feito.
+- **Fatia 1 da biblioteca testada no Portal** ✅ — `scaffold` dry = 33 pastas + **65/65 skip**;
+  `run --script library/export-all.json` = 65/65 ok. Export é determinístico a menos do
+  `<DocumentInfo><Created>` (hash muda sempre, conteúdo não).
+- **Fatia 2, parte SCL** ✅ — `library/core/`: `MotorDados`, `ValvDados`, `MotorPrincipal`
+  (composto de dois `MotorDados`), `DB GLOBAL` (esqueleto) e `FB BITS TO WORD`. Importados com
+  sufixo `_T` pra não colidir: compile 0 erros. Os `_T` foram apagados com o `delete-type` novo.
+- **`1. FB Bilbiotecas` reorganizada** ✅ — 33 FBs em 7 subpastas por função (`1.1 Acionamento` …
+  `1.7 Utilitários`); projeto, `library.json` e README em sincronia.
+- **6 otimizações de contexto no CLI** ✅ (2baff96) — tabela em `docs/PLANO.md`, seção
+  "Otimização de tokens do CLI": filtros do `list-blocks`, `move-block`, `run --summary`,
+  `docs/VERBS.md`, UTF-8 na rota da task, `--types` em create/delete-folder.
+- **Fixtures públicas sanitizadas** ✅ e **bug do `Folder` de UDT no `scaffold`** ✅ corrigido.
 
 ## Decisions (and why)
-- **`replicate-fc --apply` exige `--force`** quando a pasta-alvo já tem blocos — guard correto,
-  não bug. Sem ele: `2 target folder(s) already have blocks…`.
-- **Idempotência do `replicate-fc` é funcional, não no-op**: o verbo não detecta in-sync, reimporta
-  e recompila. Resultado idêntico, 0 erros. Não "consertar" sem motivo novo.
-- **`replicate-instruments --apply` cortado** — dry dá `in-sync`, não escreveria nada.
-- **Empacotamento da biblioteca**: `.scl` padrão (diffável, imune à versão do Engineering; limitação:
-  bloco nasce na raiz, contorno = `export-block` → `import-block --folder` → `delete-block`);
-  `.xml` só pro que precisa nascer em LAD; `.al19` descartado (binário). `import-ladder` não serve
-  pra escrever biblioteca (sem timer, sem aritmética).
-- **Repo é público** (`github.com/Codyte/TIA-Portal`) — nenhum payload de cliente versionado
-  (gate explícito na linha F4 do PLANO).
-- Otimizar verbo é alvo errado: attach = 2,9s fixo, amortizado por `run --script`. Critério de
-  sucesso é `compile` 0 erros, não tempo.
+- **Openness não move bloco**: `export` (de TODOS antes) → `delete` → `import --folder`. Importar
+  antes de apagar falha com *"A program element with this fully qualified name already exists in
+  this CPU"*; e não dá pra exportar depois do primeiro delete, porque o delete deixa quem
+  referencia inconsistente e bloco inconsistente não exporta. Regra encapsulada em `move-block`.
+- **Apagar FB não leva junto as instance DBs** — verificado com um FB de 1 iDB e com os de 36.
+- **`DIAG to STRING_DB` saiu dos manifestos** — o user apagou do projeto (iDB de teste em pasta
+  errada). Manifesto tem **65 itens**, não 66; o XML continua em `library/blocks/`.
+- **Métrica de otimização = chamada de ferramenta e KB de saída**, não tempo: attach é 2,9 s fixo e
+  amortizado por `run --script`. Critério de sucesso continua sendo `compile` 0 erros.
+- Repo é público (`github.com/Codyte/TIA-Portal`) — payload de cliente fica gitignored.
 
 ## Next steps (ordered)
-1. **Teste da biblioteca contra o Portal** (nunca rodou): `scaffold --manifest library/library.json`
-   em dry no projeto de referência → esperado 66/66 `skip (exists)`; depois
-   `run --script library/export-all.json` → 66 arquivos de volta em `library/blocks/`
-   (exige PLC compilado antes — bloco inconsistente não exporta).
-2. **Fatia 2 da biblioteca**: escrever os ~10 itens autorais do núcleo genérico (tabela no PLANO,
-   cada item já linkado ao default do gerador que o exige).
-3. **Bug real do `scaffold`**: item UDT ignora `Folder` — `src/Tia.Core/Scaffold.cs:126` importa todo
-   `SW.Types.*` na raiz do `TypeGroup`, enquanto bloco e tabela resolvem caminho. Correção =
-   `ResolveTypePath` análogo aos outros dois. Exige `rebuild.ps1`.
-   (O gap "`scaffold` não ordena UDT antes de DB/FC" **não existe** — `Scaffold.Rank` sempre teve
-   `SW.Types` = 0, `Scaffold.cs:58`. Não reintroduzir.)
-4. **Sanitizar `docs/examples/*.xml`**: são fixtures de projeto real E estão versionados num repo
-   público — `clone --replace OLD=NEW` ou trocar por sintéticas.
-5. Fatia 3 da biblioteca (utilitários genéricos: escala, debounce, first-out, watchdog, rampa).
+1. **Próxima rodada do ciclo**: rodar `pwsh scripts/raio-x.ps1 <Proj>` e medir chamadas + KB de
+   saída. Alvos já visíveis: `snapshot` (251 KB) e `find --kind tag` (821 KB) não ganharam filtro
+   como o `list-blocks`; falta `--folder`/`--count` em `list-tags` e em `find`, e `xref`/`trace`
+   devolvem tudo.
+2. **Fatia 2, os 4 moldes em LAD** (`MODULE_ERROR_MOLDE`, `FC_Modelo`, `OB_MOLDE_ALARMES`,
+   `MOLDE_ANALOGS`) — não dá em SCL, os geradores clonam rede a rede.
+3. **Assar `library/core/*.scl` → `.xml`** num projeto vazio pra instalar via `scaffold`
+   (`Scaffold.Plan` lê o tipo do XML e `import-source` não tem `--folder`).
+4. Fatia 3 (utilitários genéricos: escala, debounce, first-out, watchdog, rampa).
+5. Sanitizar **nome de projeto de cliente em prosa** (`Insular`, `ETE SG`, `AsBuilt`) em docs,
+   `scripts/raio-x.ps1`, `__navi__.md` e no `.handoff/` — reescreve histórico já commitado,
+   decisão do user.
 
 ## Key files
-- `docs/PLANO.md` — linha **F8** (fechada), linha **F4** (gate de publicação), seção
-  **"Biblioteca de blocos"** (fatias + tabela do núcleo genérico).
-- `library/library.json` · `library/export-all.json` · `library/README.md`.
-- `docs/examples/replicate-fc-soprador.json` (config escopado) ·
-  `docs/examples/replicate-soprador-run.json` (batch, já com `--force`).
-- `src/Tia.Core/Scaffold.cs:126` — bug do `Folder` do UDT · `:58` — `Rank` (correto).
-- `src/Tia.Core/Ops.cs:213` guard de inconsistência · `:311` `ImportSource` gera blocos.
-- `src/Tia.Core/LadConverter.cs:355-397` — pinos e parte `O`; verdade em
-  `docs/examples/BombaTemplateFc.xml:346` e `:1044-1058`.
+- `docs/VERBS.md` — assinatura de todo verbo, gerada do help pelo `rebuild.ps1`.
+  **Ler isto em vez de grepar `Program.cs`.**
+- `docs/PLANO.md` — "Otimização de tokens do CLI" (o que já foi otimizado e por quê) ·
+  "Biblioteca de blocos" (fatias 1–3 + tabela do núcleo genérico).
+- `src/Tia.Core/Ops.cs:290` `MoveBlock` · `:130`/`:155` folders com `--types` · `:205` `DeleteType`.
+- `src/Tia.Core/Inventory.cs:79` `Blocks(plc, folder, type, countOnly)`.
+- `src/Tia.Cli/Program.cs:216` `run --summary`.
+- `library/core/README.md` — contrato de cada item SCL · `library/README.md` — inventário dos 65.
+- `scripts/gen-verbs.ps1` — gera o `VERBS.md`.
 
 ## Open / blockers
-- `scaffold`/`add-device`: bug dos bytes de system/clock memory (separado do bug do `Folder`).
-  `import-master-copy`: sem `.al19` de teste.
-- Sem `checkpoint`/`restore` (F7 item 4): ponto de retorno = `save-project` + backup do user.
-- Regra dura que continua valendo: todo import deixa o alvo **e quem o referencia** inconsistente e
-  o Openness recusa exportar bloco inconsistente → `compile --apply` entre etapas.
+- `scaffold`/`add-device`: bug dos bytes de system/clock memory. `import-master-copy`: sem `.al19`.
+- Sem `checkpoint`/`restore`: ponto de retorno = `save-project` + backup do user.
+- Regra dura: todo import deixa o alvo **e quem o referencia** inconsistente → `compile --apply`
+  entre etapas.
 - Chamada pendurada com `tia.exe` vivo e CPU ~0 = diálogo de aceite do Openness na tela: pedir o
-  clique, não investigar código.
+  clique. `EngineeringSecurityException` logo depois de um `rebuild.ps1` é a mesma família
+  (whitelist nova) — repetir a chamada resolveu.

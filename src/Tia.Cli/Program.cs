@@ -19,6 +19,7 @@ namespace Tia.Cli
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             AppDomain.CurrentDomain.AssemblyResolve += ResolveSiemensAssembly;
+            _outFile = OptionValue(args, "--out-file"); // antes do --help: vale pra toda saída, inclusive ele
             if (args.Length == 0 || args[0] == "--help" || args[0] == "-h")
             {
                 Print(new Dictionary<string, object>
@@ -67,8 +68,11 @@ namespace Tia.Cli
                         "import-master-copy --file X.al19 --name M [--folder A/B] [--apply]" } },
                     { "multiuser", new[] { "list-server-projects --server HOST [--port N] [--http] [--keep-connection]" +
                         "  (read-only: projetos do TIA Project Server, lock e sessões locais)" } },
-                    { "batch", new[] { "run --script ops.json  (JSON array de arg-arrays, uma sessão só)" } },
+                    { "batch", new[] { "run --script ops.json  (JSON array de arg-arrays, uma sessão só; " +
+                        "step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou)" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports; " +
+                        "--out-file F.json (qualquer verbo: JSON completo no arquivo, stdout só {file,bytes,count,head} " +
+                        "— use em find/snapshot/list-*/xref, que dão centenas de KB); " +
                         "--retry N (busy, default 3) --timeout SEC; exit: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA, 5 timeout" },
                 });
                 return args.Length == 0 ? 1 : 0;
@@ -86,6 +90,7 @@ namespace Tia.Cli
                 var task = System.Threading.Tasks.Task.Run(() => Run(args));
                 if (!task.Wait(TimeSpan.FromSeconds(int.Parse(timeout))))
                 {
+                    _outFile = null; // erro sempre em stdout: quem chamou precisa ver, não caçar arquivo
                     Print(new Dictionary<string, object>
                         { { "error", "Timeout after " + timeout + "s." }, { "exitCode", 5 } });
                     return 5; // portal call may still be blocked; process exit abandons it
@@ -98,6 +103,7 @@ namespace Tia.Cli
                 while (inner is AggregateException agg && agg.InnerException != null)
                     inner = agg.InnerException;
                 int code = ExitCodeFor(inner);
+                _outFile = null; // idem: erro nunca vai pro arquivo
                 Print(new Dictionary<string, object>
                 {
                     { "error", inner.Message },
@@ -173,17 +179,37 @@ namespace Tia.Cli
                     if (steps == null || steps.Count == 0)
                         throw new ArgumentException(
                             "Script must be a JSON array of arg arrays, e.g. [[\"list-blocks\"],[\"compile\",\"--apply\"]].");
-                    var results = new List<object>();
+                    // script malformado = fail-fast (erro de uso); exceção de step = isolada.
                     foreach (var step in steps)
-                    {
                         if (step == null || step.Length == 0 || step[0] == "run"
                             || step[0] == "open-project" || step[0] == "create-project")
                             throw new ArgumentException("Each step must be a verb (not 'run'/'open-project'/'create-project').");
-                        results.Add(new Dictionary<string, object>
-                            { { "verb", step[0] }, { "result", DispatchWithRetry(session, step, args) } });
+
+                    var results = new List<object>();
+                    int failed = 0;
+                    foreach (var step in steps)
+                    {
+                        var entry = new Dictionary<string, object> { { "verb", step[0] } };
+                        try
+                        {
+                            entry["result"] = DispatchWithRetry(session, step, args);
+                            entry["ok"] = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            // sem isso, a 1ª exceção aborta o batch e joga fora os resultados já obtidos —
+                            // justo o caso em que o batch (attach 1x) mais compensa.
+                            var inner = ex.InnerException ?? ex;
+                            entry["ok"] = false;
+                            entry["error"] = inner.Message;
+                            entry["type"] = inner.GetType().Name;
+                            failed++;
+                        }
+                        results.Add(entry);
                     }
-                    Print(new Dictionary<string, object> { { "steps", results.Count }, { "results", results } });
-                    return 0;
+                    Print(new Dictionary<string, object>
+                        { { "steps", results.Count }, { "failed", failed }, { "results", results } });
+                    return failed > 0 ? 1 : 0;
                 }
                 Print(DispatchWithRetry(session, args, args));
                 return 0;
@@ -481,9 +507,49 @@ namespace Tia.Cli
             return v;
         }
 
+        /// <summary>
+        /// --out-file: JSON completo vai pro arquivo, stdout recebe só {file,bytes,count,head}.
+        /// Um `find --pattern *` num projeto real são 821 KB — na sessão de um agente isso é a
+        /// sessão inteira. Guarda no único ponto por onde todo verbo sai; sem a opção, nada muda
+        /// (raio-x.ps1 e afins seguem redirecionando stdout).
+        /// </summary>
+        private static string _outFile;
+
         private static void Print(object value)
         {
-            Console.WriteLine(JsonConvert.SerializeObject(value, Formatting.Indented));
+            var json = JsonConvert.SerializeObject(value, Formatting.Indented);
+            if (_outFile == null) { Console.WriteLine(json); return; }
+
+            var path = Path.GetFullPath(_outFile);
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            File.WriteAllText(path, json);
+
+            var stub = new Dictionary<string, object>
+            {
+                { "file", path },
+                { "bytes", json.Length },
+                { "head", json.Length <= 600 ? json : json.Substring(0, 600) + "\n… (truncado; JSON completo no arquivo)" },
+            };
+            var count = CountOf(value);
+            if (count >= 0) stub["count"] = count;
+            Console.WriteLine(JsonConvert.SerializeObject(stub, Formatting.Indented));
+        }
+
+        /// <summary>Tamanho do resultado quando ele é uma lista, ou já traz "count"/"hits". -1 = não aplicável.</summary>
+        private static int CountOf(object value)
+        {
+            var dict = value as IDictionary<string, object>;
+            if (dict != null)
+            {
+                object c;
+                if (dict.TryGetValue("count", out c) && c is int) return (int)c;
+                object hits;
+                if (dict.TryGetValue("hits", out hits) && hits is System.Collections.ICollection)
+                    return ((System.Collections.ICollection)hits).Count;
+                return -1;
+            }
+            var list = value as System.Collections.ICollection;
+            return list != null ? list.Count : -1;
         }
 
         /// <summary>

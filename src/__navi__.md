@@ -1,8 +1,8 @@
 # __navi__ · src/ (C#) — símbolos públicos por arquivo
 <!-- gerado por scripts/navi-cs.ps1 · regenerar após refatorar -->
 
-## `Tia.Cli/Program.cs` (518 linhas)
-Program(16)  save-project(224)  close-project(227)  info(230)  list-devices(233)  list-blocks(236)  list-tags(239)  tree(242)  list-types(246)  find(249)  snapshot(253)  xref(256)  trace(259)  list-hmi(262)  free-memory(265)  export-block(271)  explain-block(274)  export-tags(279)  import-block(282)  import-ladder(287)  import-source(295)  create-folder(299)  delete-folder(304)  delete-block(309)  export-type(313)  import-type(316)  scaffold(320)  clone(328)  add-db-member(334)  import-tags(340)  list-library(344)  import-master-copy(347)  add-device(353)  set-address(358)  connect-subnet(364)  export-cax(369)  import-cax(372)  compile(376)  diff-block(390)  audit(394)  doctor(398)  gen-profinet(406)  standardize-tags(412)  gen-fault-ob(420)  replicate-fc(428)  gen-alarm-fc(435)  replicate-instruments(443)
+## `Tia.Cli/Program.cs` (584 linhas)
+Program(16)  save-project(250)  close-project(253)  info(256)  list-devices(259)  list-blocks(262)  list-tags(265)  tree(268)  list-types(272)  find(275)  snapshot(279)  xref(282)  trace(285)  list-hmi(288)  free-memory(291)  export-block(297)  explain-block(300)  export-tags(305)  import-block(308)  import-ladder(313)  import-source(321)  create-folder(325)  delete-folder(330)  delete-block(335)  export-type(339)  import-type(342)  scaffold(346)  clone(354)  add-db-member(360)  import-tags(366)  list-library(370)  import-master-copy(373)  add-device(379)  set-address(384)  connect-subnet(390)  export-cax(395)  import-cax(398)  compile(402)  diff-block(416)  audit(420)  doctor(424)  gen-profinet(432)  standardize-tags(438)  gen-fault-ob(446)  replicate-fc(454)  gen-alarm-fc(461)  replicate-instruments(469)
 
 ## `Tia.Core/AlarmFc.cs` (649 linhas)
 AlarmFcConfig(17)  AlarmFc(39)  Generate(55)  LEITURA_MUITO_ALTA(610)  LEITURA_ALTA(611)  LEITURA_BAIXA(612)  LEITURA_MUITO_BAIXA(613)  SEM_4MA(614)

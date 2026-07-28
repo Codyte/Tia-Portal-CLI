@@ -33,10 +33,13 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
   - `pwsh scripts/raio-x.ps1 <Nome>` = banho read-only → `workspace/<proj>/` (doctor, snapshot,
     devices, tags, types, plc-navi.md, AML, xref dos OBs).
   - `pwsh scripts/clone-hw.ps1 <Origem> <Destino> [-Apply]` = copia hardware via CAx/AML.
-  - `tia run --script ops.json` = batch de verbos, attach 1x. Fluxo FINAIS completo em dry:
-    `tia run --script docs/examples/gen-all.json`.
-    **Não isola steps**: sem try/catch por item, a 1ª exceção aborta o batch e descarta os
-    resultados já obtidos. Pra bateria onde falha é esperada, rodar um verbo por vez.
+  - `tia run --script ops.json` = batch de verbos, attach 1x (~7s por chamada solta). Fluxo FINAIS
+    completo em dry: `tia run --script docs/examples/gen-all.json`.
+    **Isola steps**: step que falha vira `{ok:false,error,type}` e o batch segue; `exit 1` se algum
+    falhou. Bateria onde falha é esperada roda de uma vez só.
+  - **`--out-file F.json` em verbo de leitura** (`find`/`snapshot`/`list-*`/`xref`/`trace`): JSON
+    completo no arquivo, stdout devolve só `{file,bytes,count,head}`. `find --pattern "*" --kind tag`
+    num projeto real = 821 KB (~200k tokens) — sem a opção, isso cai no contexto inteiro.
   - `tia doctor` = preflight dos 6 verbos antes de qualquer smoke.
 - Smoke test exige TIA Portal aberto com projeto de teste — confirmar com o usuário antes.
 

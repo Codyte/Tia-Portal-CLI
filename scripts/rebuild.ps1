@@ -29,6 +29,17 @@ if ($LASTEXITCODE -ne 0) { exit 1 }
 if (-not $SkipTests) {
     & (Join-Path $repo 'src\Tia.Tests\bin\Debug\net48\Tia.Tests.exe')
     if ($LASTEXITCODE -ne 0) { exit 1 }
+
+    # --out-file: unico check offline possivel (Print e' do Tia.Cli, Tia.Tests so' linka Tia.Core).
+    # --help passa pelo mesmo Print de todo verbo.
+    $tmp = Join-Path ([IO.Path]::GetTempPath()) 'tia-outfile-check.json'
+    Remove-Item $tmp -ErrorAction SilentlyContinue
+    $stub = & $exe --help --out-file $tmp | ConvertFrom-Json
+    if (-not (Test-Path $tmp)) { Write-Host 'FAIL --out-file nao escreveu o arquivo' -ForegroundColor Red; exit 1 }
+    if ($stub.file -ne $tmp -or $stub.bytes -le (($stub.head).Length)) {
+        Write-Host 'FAIL --out-file: stub nao resumiu (bytes <= head)' -ForegroundColor Red; exit 1
+    }
+    Write-Host '  ok  Cli.--out-file (stdout vira stub, JSON completo no arquivo)'
 }
 
 if (Test-WhitelistStale) {

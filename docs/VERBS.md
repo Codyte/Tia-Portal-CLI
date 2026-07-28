@@ -85,7 +85,7 @@
 - `ÔåÆ sa├¡da na casa das centenas de KB (snapshot = 251 KB, find de tag = 821 KB num projeto real). SEMPRE com --out-file, depois grep no arquivo. N├úo ├® leitura de orienta├º├úo: pra isso ├® `tree``
 
 ## batch
-- `run --script ops.json [--summary]  (JSON array de arg-arrays, uma sess├úo s├│; step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou. --summary = s├│ {steps,failed,errors[]}, sem o resultado de cada step)`
+- `run --script ops.json [--summary]  (JSON array de arg-arrays, uma sess├úo s├│; step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou. --summary = s├│ {steps,failed,errors[]}, sem o resultado de cada step. --plc/--out-file do processo N├âO descem pros steps: cada step carrega os seus)`
 
 ## notas
 write verbs are dry-run unless --apply; default --out is .\workspace\exports; --out-file F.json (qualquer verbo: JSON completo no arquivo, stdout s├│ {file,bytes,count,head} ÔÇö use em find/snapshot/list-*/xref, que d├úo centenas de KB); --retry N (busy, default 3) --timeout SEC; exit: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA, 5 timeout

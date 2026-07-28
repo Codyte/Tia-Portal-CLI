@@ -225,6 +225,16 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
     `cpu`. Estação ilegível não bloqueia. Smoke dry: `PLC_1` (1200) barrado, `--force` passou,
     `PLC_ZERO` (1500) passou.
 
+14. ~~**`raio-x.ps1` em 2 attaches**~~ ✅ 2026-07-28: o banho era ~12 chamadas soltas (7 s de attach
+    cada); agora são dois `run --script` (banho + xref de todos os OBs) e o merge dos parciais em
+    `xref-obs.json`. Exigiu duas correções no CLI:
+    **(a) `--out-file` por step** — o `--out-file` do processo vale só pro batch inteiro, então cada
+    step carrega o seu e o resultado dele no batch vira o stub (`Print` foi partido em `WriteOut`);
+    **(b) `list-blocks --type` casava substring** — `OB` batia dentro de `GlobalDB` (`Gl-ob-alDB`) e
+    o filtro devolvia DB junto com OB (4 OBs viravam 7). Agora é igualdade.
+    `raio-x.ps1` ganhou `-Portal` e `-Plc` (com mais de um Portal aberto ou vários PLCs, sem eles
+    todo verbo falha); `--plc` do `run` também não desce pros steps.
+
 ## Otimização de tokens do CLI — ✅ 2026-07-28
 
 Levantada pelo custo real da reorganização da `1. FB Bilbiotecas` (6 chamadas de ferramenta e um

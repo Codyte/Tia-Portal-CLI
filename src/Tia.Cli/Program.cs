@@ -104,7 +104,8 @@ namespace Tia.Cli
                         "pra isso é `tree`" } },
                     { "batch", new[] { "run --script ops.json [--summary]  (JSON array de arg-arrays, uma sessão só; " +
                         "step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou. " +
-                        "--summary = só {steps,failed,errors[]}, sem o resultado de cada step)" } },
+                        "--summary = só {steps,failed,errors[]}, sem o resultado de cada step. " +
+                        "--plc/--out-file do processo NÃO descem pros steps: cada step carrega os seus)" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports; " +
                         "--out-file F.json (qualquer verbo: JSON completo no arquivo, stdout só {file,bytes,count,head} " +
                         "— use em find/snapshot/list-*/xref, que dão centenas de KB); " +
@@ -230,7 +231,11 @@ namespace Tia.Cli
                         var entry = new Dictionary<string, object> { { "verb", step[0] } };
                         try
                         {
-                            entry["result"] = DispatchWithRetry(session, step, args);
+                            var value = DispatchWithRetry(session, step, args);
+                            // --out-file do step: cada leitura pesada do batch vai pro seu arquivo,
+                            // e o resultado no batch fica sendo o stub (o do processo vale só p/ o batch todo)
+                            var stepOut = OptionValue(step, "--out-file");
+                            entry["result"] = stepOut == null ? value : WriteOut(value, stepOut);
                             entry["ok"] = true;
                         }
                         catch (Exception ex)
@@ -667,10 +672,15 @@ namespace Tia.Cli
 
         private static void Print(object value)
         {
-            var json = JsonConvert.SerializeObject(value, Formatting.Indented);
-            if (_outFile == null) { Console.WriteLine(json); return; }
+            if (_outFile == null) { Console.WriteLine(JsonConvert.SerializeObject(value, Formatting.Indented)); return; }
+            Console.WriteLine(JsonConvert.SerializeObject(WriteOut(value, _outFile), Formatting.Indented));
+        }
 
-            var path = Path.GetFullPath(_outFile);
+        /// <summary>Grava o JSON completo em `file` e devolve o stub {file,bytes,head[,count]}.</summary>
+        private static Dictionary<string, object> WriteOut(object value, string file)
+        {
+            var json = JsonConvert.SerializeObject(value, Formatting.Indented);
+            var path = Path.GetFullPath(file);
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             File.WriteAllText(path, json);
 
@@ -682,7 +692,7 @@ namespace Tia.Cli
             };
             var count = CountOf(value);
             if (count >= 0) stub["count"] = count;
-            Console.WriteLine(JsonConvert.SerializeObject(stub, Formatting.Indented));
+            return stub;
         }
 
         /// <summary>Tamanho do resultado quando ele é uma lista, ou já traz "count"/"hits". -1 = não aplicável.</summary>

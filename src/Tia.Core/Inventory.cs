@@ -95,9 +95,11 @@ namespace Tia.Core
                         || f.StartsWith(prefix + "/", StringComparison.OrdinalIgnoreCase);
                 });
             }
+            // igualdade, não substring: "OB" casava dentro de "GlobalDB" (Gl-ob-alDB) e o filtro
+            // devolvia DB junto com OB
             if (!string.IsNullOrEmpty(type))
                 hits = hits.Where(o => ((string)((Dictionary<string, object>)o)["type"])
-                    .IndexOf(type, StringComparison.OrdinalIgnoreCase) >= 0);
+                    .Equals(type, StringComparison.OrdinalIgnoreCase));
             var list = hits.ToList();
             if (!countOnly && string.IsNullOrEmpty(folder) && string.IsNullOrEmpty(type)) return list;
             if (countOnly)

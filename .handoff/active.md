@@ -1,68 +1,64 @@
-# Handoff · TIA Portal Openness API · 2026-07-28 (4ª sessão do dia)
+# Handoff · TIA Portal Openness API · 2026-07-28 — **dois tracks paralelos**
 
-## Goal
-Fechar o último buraco do caminho de escrita: `replicate-fc --apply` contra **dados reais**
-(nunca rodou fora de projeto scaffoldado). Tudo já preparado — o próximo agente executa, não decide.
+## Roteador (leia só o seu)
+- User disse **"continue 1"** → leia `.handoff/track1.md`. Portal: `replicate-fc --apply` contra
+  dados reais. **É o único track que pode chamar `tia`.**
+- User disse **"continue 2"** → leia `.handoff/track2.md`. Offline: biblioteca de blocos
+  (`library/`), `.gitignore`, docs. **Nunca chama `tia`, nunca roda `rebuild.ps1`.**
+- Sem número → perguntar qual, ou tratar como sessão única e executar o track 1 primeiro.
 
-## State
-- HEAD: 26d1ac4 + 1 commit de prep. Working tree limpo.
+Não leia o arquivo do outro track: o que você precisa saber dele já está aqui embaixo.
+
+## Por que o paralelismo é seguro (e onde deixa de ser)
+Openness é **single-session**: duas chamadas `tia` simultâneas se derrubam. Por isso o corte é
+Portal × offline, não "metade das tarefas cada". Três proibições que sustentam isso:
+1. Só o track 1 chama `tia` (qualquer verbo, inclusive leitura).
+2. Ninguém roda `rebuild.ps1` enquanto o outro trabalha — ele substitui o `tia.exe` que o track 1
+   está usando e refaz a whitelist. Track 2 não altera `src/**`, então não precisa.
+3. **`git add -A` proibido nos dois.** Mesma working tree: `-A` commita o trabalho pela metade do
+   outro. Sempre caminhos explícitos.
+
+Divisão de arquivos (quem escreve o quê) está no fim de cada track. Único ponto de contato é
+`docs/PLANO.md`, em seções diferentes: reler o arquivo imediatamente antes de editar.
+
+## Estado compartilhado
+- HEAD ao escrever: 740f6bc. Working tree limpo.
 - Portal aberto na sessão 1 com **Software de ETE Insular_Inicial_V21** (cópia de teste, backup do
-  user, dano liberado). **PLC compila Success / 0 erros / 0 warnings** — qualquer erro depois do
-  apply é do verbo, não herdado. Confirmar com `tia info` antes de começar (3s).
-- **F8 fechado hoje**: primitivas 11/11 ✅, `import-ladder --apply` ✅ (2 bugs de FlgNet
-  corrigidos), 6 geradores ✅ em dry + payload de `gen-fault-ob`/`gen-alarm-fc` importado no
+  user, dano autorizado). **PLC compila Success / 0 erros / 0 warnings.**
+- Repo é **público** (`github.com/Codyte/TIA-Portal`) — pesa na decisão do track 2.
+- **F8 fechado hoje** (caminho de escrita): primitivas 11/11 ✅, `import-ladder --apply` ✅ com 2
+  bugs de FlgNet corrigidos (comparador `pre`/`in1`/`in2`; paralelo = parte `O` com `Card` +
+  `in1..inN`), 6 geradores ✅ em dry + payload de `gen-fault-ob`/`gen-alarm-fc` importado no
   sandbox → compile 0 erros → `explain-block` round-trip.
 - Tudo que foi escrito hoje vive em `ClaudeTest/`, `ClaudeTest/Sub`, `ClaudeTest/Gen` (+
-  `DB INSTRUMENTOS` na raiz). User mandou **deixar lá e continuar usando essas pastas**.
-- In progress: nada rodando.
+  `DB INSTRUMENTOS` na raiz). User mandou deixar lá e continuar usando essas pastas.
 
-## Decisions (and why)
-- **`replicate-fc --apply` roda no projeto ouro mesmo, escopado a 1 tipo** — projeto separado via
-  `scaffold` foi descartado: dados sintéticos já cobertos pelo SmokeTest_01 (PLANO F3) e o
-  `scaffold` tem bug próprio, então a sessão viraria depuração de fixture.
-- **Premissa corrigida**: os 6 geradores **já rodaram `--apply` completo** no SmokeTest_01
-  (dry→apply→compile→idempotente). O que falta é robustez contra **dados reais**, não 1ª execução.
-- **`replicate-instruments --apply` cortado de propósito** — dá `action: in-sync`, não escreveria
-  nada. Só vale com alvo dessincronizado.
-- **Otimizar verbo é alvo errado** (veredito dado ao user): attach = 2,9s fixo, amortizado por
-  `run --script`. Critério de sucesso é `compile` 0 erros, não tempo.
+## Decisões travadas (não rediscutir)
+- **`replicate-fc --apply` no projeto ouro, escopado a 1 tipo** — projeto separado via `scaffold`
+  descartado: dado sintético já coberto pelo SmokeTest_01, e o `scaffold` tem bug próprio.
+- Os 6 geradores **já rodaram `--apply` completo** no SmokeTest_01 (PLANO F3). O que falta é
+  robustez contra dados reais, não primeira execução.
+- **`replicate-instruments --apply` cortado**: dá `in-sync`, não escreveria nada.
+- **Empacotamento da biblioteca**: `.scl` padrão, `.xml` só pra LAD, `.al19` descartado.
+- Otimizar verbo é alvo errado agora: attach = 2,9s fixo, amortizado por `run --script`. Critério
+  de sucesso é `compile` 0 erros, não tempo.
 
-## Next steps (ordered)
-Arquivos **já criados e commitados** — é só executar:
+## Regras duras que valem pros dois
+- Todo import deixa o alvo **e quem o referencia** inconsistente, e o Openness recusa exportar
+  bloco inconsistente → `compile --apply` entre etapas.
+- `pwsh scripts/tia.ps1 <verbo>` é o comando único (roteia sessão 0 × sessão 1 sozinho).
+- Verbo de escrita: dry por padrão, `--apply` explícito.
+- Chamada pendurada com `tia.exe` vivo e CPU ~0 = diálogo de aceite do Openness na tela: pedir o
+  clique, não investigar código.
 
-1. **Dry primeiro** (`replicate-fc-soprador.json` é *config*, não script de batch):
-   `pwsh scripts/tia.ps1 replicate-fc --config docs/examples/replicate-fc-soprador.json --out-file workspace/rep-dry.json`
-   Esperado: 1 grupo (`Soprador`), molde `Soprador 1 (S-01A)`, **5 alvos `overwrite`**
-   (S-01B..S-01F), 6 blocos cada, nada fora de `4. Motores/Bombas`. Se listar outro tipo, parar.
-2. `pwsh scripts/tia.ps1 run --script docs/examples/replicate-soprador-run.json --out-file workspace/rep-run.json`
-   = `save-project` → `--apply` → `compile --apply` → `--apply` de novo (idempotência) →
-   `compile --apply` → `save-project`. Steps isolados: falha vira `{ok:false,error}` e o batch segue.
-   Critério: **os dois compiles 0 erros** e o 2º apply sem reescrever nada.
-3. `diff-block --file <xml gerado em workspace/exports> --name "PARTIDA_SOPRADOR_2 (S-01B)"` —
-   prova conteúdo, não só que compilou.
-4. Se verde, emendar `gen-profinet --apply` e `standardize-tags --apply` (dry mostrou
-   `action: exists`/`ok`, quase no-op, custo marginal ~zero).
-5. Depois disso F8 fecha. Pendentes menores: `scaffold`/`add-device` (bug dos bytes de
-   system/clock memory), `import-master-copy` (sem `.al19` de teste).
-6. **Ideia nova do user, análise pronta, execução não começou**: biblioteca de blocos instalável
-   ("arsenal") — seção inteira em `docs/PLANO.md` (empacotamento `.scl`, instalação via `scaffold`,
-   conteúdo, procedência). **Falta o user responder**: fatia 1 = 3 utilitários (escala, debounce,
-   bits→word) ou os moldes que os geradores exigem?
+## Arquivos-chave
+- `docs/examples/replicate-fc-soprador.json` — config escopado; `replicate-soprador-run.json` — batch.
+- `docs/PLANO.md` — linha **F8** (track 1) · seção **"Biblioteca de blocos"** e linha **F4** (track 2).
+- `src/Tia.Core/LadConverter.cs:355-397` — pinos e parte `O`; verdade em
+  `docs/examples/BombaTemplateFc.xml:346` e `:1044-1058`.
+- `src/Tia.Core/Ops.cs:213` guard de inconsistência · `:311` `ImportSource` gera blocos.
 
-## Key files
-- `docs/examples/replicate-fc-soprador.json` — config escopado (`EquipmentTypes: ["Soprador"]`).
-- `docs/examples/replicate-soprador-run.json` — o batch do passo 2, pronto.
-- `docs/PLANO.md` — linha **F8** na tabela de fases; item **1b** do backlog v2 (LAD validado);
-  seção **"Biblioteca de blocos"** (proposta nova).
-- `src/Tia.Core/LadConverter.cs:355-397` — comparador `pre`/`in1`/`in2`, paralelo = parte `O` com
-  `Card` + `in1..inN`. Verdade: `docs/examples/BombaTemplateFc.xml:346` e `:1044-1058`.
-- `src/Tia.Core/Ops.cs:213` — guard de bloco inconsistente; `:311` — `ImportSource` gera blocos.
-- `src/Tia.Cli/Program.cs:88` — dry de `import-ladder` curto-circuita antes do switch.
-
-## Open / blockers
-- Sem blocker técnico. Escrita fora de `ClaudeTest/` **autorizada** para os passos 1-4.
-- Sem `checkpoint`/`restore` (F7 item 4): o ponto de retorno é o `save-project` do passo 2 + backup
-  do user. Se quiser rede real, fechar o Portal e copiar a pasta `.ap21` antes.
-- Rebuild com Portal aberto → 1ª chamada pode abrir diálogo de aceite na tela e pendurar. Se não
-  retornar com `tia.exe` vivo e CPU ~0, pedir o clique antes de investigar código.
-- Nunca rodar `tia` em paralelo (Openness single-session). `pwsh scripts/tia.ps1` é o comando único.
+## Aberto
+- Fatia 3 da biblioteca (utilitários genéricos: escala, debounce, bits→word) — só depois da fatia 1.
+- `scaffold`/`add-device`: bug dos bytes de system/clock memory. `import-master-copy`: sem `.al19`.
+- Sem `checkpoint`/`restore` (F7 item 4): ponto de retorno = `save-project` + backup do user.

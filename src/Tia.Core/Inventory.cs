@@ -1,17 +1,19 @@
 // NAV INDEX
-// 20-67    Info / Devices (device items recursivos)
-// 69-147   Blocks e Tree (outline navindex dos Program blocks → plc-navi.md)
-// 149-187  TagTables / Types
-// 189-244  find — wildcard sobre nomes de bloco, tabela, tag e UDT
-// 246-265  snapshot — inventário completo
-// 267-306  xref — cross-references de um bloco (sentido direto)
-// 308-386  trace — símbolos de um equipamento + quem referencia (xref reverso)
+// 29-77    Info / Devices (device items recursivos)
+// 78-157   Blocks e Tree (outline navindex dos Program blocks → plc-navi.md)
+// 158-197  TagTables / Types
+// 198-254  find — wildcard sobre nomes de bloco, tabela, tag e UDT
+// 255-275  snapshot — inventário completo
+// 276-310  ResolveSymbol / FindTag — resolve nome → bloco, tag, tabela ou UDT
+// 311-349  xref — cross-references de um símbolo (o que ele usa)
+// 350-427  trace — símbolos de um equipamento + quem referencia (xref reverso)
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Siemens.Engineering;
 using Siemens.Engineering.CrossReference;
 using Siemens.Engineering.HW;
 using Siemens.Engineering.HW.Features;
@@ -274,13 +276,46 @@ namespace Tia.Core
 
         // ---------- cross-references ----------
 
-        /// <summary>Cross-references of a block: what it uses and where.</summary>
-        public static object Xref(PlcSoftware plc, string name)
+        /// <summary>
+        /// Resolve um símbolo pelo nome, na ordem bloco → tag → tabela → UDT. Todos expõem
+        /// <c>CrossReferenceService</c>, então o xref serve tanto o sentido direto (bloco → o que
+        /// usa) quanto o reverso (tag → quem a usa). Null se o nome não existir no PLC.
+        /// </summary>
+        private static IEngineeringServiceProvider ResolveSymbol(PlcSoftware plc, string name, out string kind)
         {
             var block = Ops.FindBlock(plc, name);
-            if (block == null)
-                throw new InvalidOperationException("Block '" + name + "' not found.");
-            var service = block.GetService<CrossReferenceService>();
+            if (block != null) { kind = "block"; return block; }
+            var tag = FindTag(plc.TagTableGroup, name);
+            if (tag != null) { kind = "tag"; return tag; }
+            var table = Ops.FindTagTable(plc.TagTableGroup, name);
+            if (table != null) { kind = "table"; return table; }
+            var type = Ops.FindType(plc.TypeGroup, name);
+            if (type != null) { kind = "type"; return type; }
+            kind = null;
+            return null;
+        }
+
+        private static PlcTag FindTag(PlcTagTableGroup group, string name)
+        {
+            foreach (PlcTagTable table in group.TagTables)
+                foreach (PlcTag tag in table.Tags)
+                    if (string.Equals(tag.Name, name, StringComparison.OrdinalIgnoreCase)) return tag;
+            foreach (PlcTagTableUserGroup sub in group.Groups)
+            {
+                var hit = FindTag(sub, name);
+                if (hit != null) return hit;
+            }
+            return null;
+        }
+
+        /// <summary>Cross-references of a block, tag, tag table or UDT: what it uses / who uses it.</summary>
+        public static object Xref(PlcSoftware plc, string name)
+        {
+            string kind;
+            var target = ResolveSymbol(plc, name, out kind);
+            if (target == null)
+                throw new InvalidOperationException("Symbol '" + name + "' not found (block, tag, table or type).");
+            var service = target.GetService<CrossReferenceService>();
             if (service == null)
                 throw new InvalidOperationException("Cross-reference service unavailable for '" + name + "'.");
             var result = service.GetCrossReferences(CrossReferenceFilter.AllObjects);
@@ -310,16 +345,17 @@ namespace Tia.Core
                     { "references", refs },
                 });
             }
-            return new Dictionary<string, object> { { "block", name }, { "sources", sources } };
+            return new Dictionary<string, object> { { "block", name }, { "kind", kind }, { "sources", sources } };
         }
 
         // ---------- trace ----------
 
         /// <summary>
-        /// Vizinhança semântica de um equipamento ("BH-01A") em uma chamada: símbolos cujo nome
+        /// Vizinhança semântica de um equipamento ("AG-01") em uma chamada: símbolos cujo nome
         /// contém o termo (tags com endereço, blocos, tabelas, UDTs) + quem referencia cada um.
-        /// O Openness só dá xref no sentido direto (bloco → o que usa), então o lado reverso é
-        /// uma varredura de todos os blocos — ~1 min em projeto grande; cache é o item 3 do F7.
+        /// O Openness só dá xref no sentido direto (objeto → o que ele usa), então o lado reverso
+        /// é uma varredura dos blocos de lógica. Medido em projeto real (476 blocos, 131 com
+        /// lógica, 4372 tags): 3,3s de xref, 10s com o attach. Não precisa de cache.
         /// </summary>
         public static object Trace(PlcSoftware plc, string equipment)
         {
@@ -328,8 +364,8 @@ namespace Tia.Core
             var started = DateTime.Now;
 
             var usedBy = new List<object>();
-            int scanned = 0;
-            foreach (var src in AllSources(plc, ref scanned))
+            int scanned;
+            foreach (var src in AllSources(plc, out scanned))
                 foreach (ReferenceObject r in src.References)
                 {
                     if (r.Name == null || !rx.IsMatch(r.Name)) continue;
@@ -357,18 +393,11 @@ namespace Tia.Core
         }
 
         /// <summary>
-        /// Todos os SourceObject do programa. Uma chamada no BlockGroup raiz cobre o programa
-        /// inteiro; se o Openness não expuser o serviço no grupo, cai pra bloco a bloco (lento:
-        /// ~1 chamada por bloco). `scanned` = quantas chamadas de xref foram feitas.
+        /// Todos os SourceObject do programa, bloco a bloco. `scanned` = blocos varridos.
+        /// (V21 não expõe CrossReferenceService no BlockGroup — só nos objetos folha.)
         /// </summary>
-        private static IEnumerable<SourceObject> AllSources(PlcSoftware plc, ref int scanned)
+        private static IEnumerable<SourceObject> AllSources(PlcSoftware plc, out int scanned)
         {
-            var groupService = plc.BlockGroup.GetService<CrossReferenceService>();
-            if (groupService != null)
-            {
-                scanned = 1;
-                return groupService.GetCrossReferences(CrossReferenceFilter.AllObjects).Sources.Cast<SourceObject>();
-            }
             var blocks = new List<PlcBlock>();
             CollectBlockObjects(plc.BlockGroup, blocks);
             scanned = 0;

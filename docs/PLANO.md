@@ -67,7 +67,7 @@ Verbos por fase (nomes finais definidos na F1):
 | F4 | Polimento p/ GitHub (README EN, licença, exemplos) | repo publicável | ✅ 2026-07-18: LICENSE MIT, README EN completo (contrato dry-run/--apply, 3 gates Openness, tabela de verbos, macros, limitações), nome público decidido `tia-cli`. Publicação em si (gh repo create) pendente de ordem do user. |
 | F5? | MCP server fino sobre Tia.Core | só se D1 cair | ⬜ |
 | F6 | Endurecer os scripts PS (ver seção "F6" no fim) | macros rodáveis do agente (sessão 0) + 5 bugs fechados | ✅ 2026-07-27: `scripts/_common.ps1` (`Invoke-Tia`, roteia por sessão, run-id, `$global:LASTEXITCODE`, timeout 600s, guard D9) + `scripts/tia.ps1` (comando único, substitui `tia-task.ps1` — removido); macros migrados; bugs 2-5 fechados (bug 1 já estava). Verificado end-to-end: `tia.ps1 doctor` exit 0, rota da task (`TIA_VIA_TASK=1`) exit 0, forma legada `["info"]` exit 0, `use-project`/`prep-project` do shell do agente |
-| F7 | Camada de compreensão: a IA lê o projeto dentro do orçamento de contexto | `explain-block` (1) e `trace` (2) read-only; depois `index`, `checkpoint`, `apply-spec` | 🔄 item 1 feito 2026-07-27: `explain-block --name X \| --file F.xml` (LAD/FBD → texto; 92KB → 8,3KB no `BombaTemplateFc`; `--file` roda sem TIA, 9 asserts em `Tia.Tests`). Smoke `--name` ok 2026-07-28 no `Software de ETE Insular_Inicial_V21`: `Resets` 58KB → 4,6KB, `Paineis Intertravamento` 53KB → 4,9KB, `FC_ALARMES_PRELIMINAR_P_GM_01` 26KB → 2,2KB — chamadas de FB com pinos, expressões série/paralelo e comentários pt-BR corretos. Item 1 fechado |
+| F7 | Camada de compreensão: a IA lê o projeto dentro do orçamento de contexto | `explain-block` (1) e `trace` (2) read-only; depois `index`, `checkpoint`, `apply-spec` | 🔄 item 1 feito 2026-07-27: `explain-block --name X \| --file F.xml` (LAD/FBD → texto; 92KB → 8,3KB no `BombaTemplateFc`; `--file` roda sem TIA, 9 asserts em `Tia.Tests`). Smoke `--name` ok 2026-07-28 no `Software de ETE Insular_Inicial_V21`: `Resets` 58KB → 4,6KB, `Paineis Intertravamento` 53KB → 4,9KB, `FC_ALARMES_PRELIMINAR_P_GM_01` 26KB → 2,2KB — chamadas de FB com pinos, expressões série/paralelo e comentários pt-BR corretos. Item 1 fechado. **Item 2 fechado 2026-07-28**: `trace --equipment X` smoked no mesmo projeto — `AG-01` = 39 símbolos + 39 usos em 10 blocos (`PARTIDA_AGITADOR (AG-01)`, `Resets`, `FB CONDIÇÃO DE PARTIDA`…), **10,1s total / 3,3s de xref, 131 blocos varridos**; cobertura conferida contra `xref --name Resets` independente. `xref` agora resolve bloco → tag → tabela → UDT (`ResolveSymbol`), então serve o sentido direto em qualquer símbolo. O "blocker do xref" do handoff anterior era **diálogo de autorização Openness pendurado na tela**, não custo de API — ver "Openness pede aceite na tela" abaixo. Índice invertido via export XML descartado: não há problema de performance a resolver |
 
 Regra: **uma fase por vez, commit + handoff no fim de cada uma.** FINAIS vira referência
 read-only — nunca editar lá; extrair pra `src/` e pronto.
@@ -121,6 +121,15 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
   gera certo; re-rodar após rebuild (hash muda); (3) client Openness precisa rodar na **mesma
   sessão interativa** do TIA UI (task S4U/sessão 0 não attacha); (4) TIA e client ambos com
   token fresco. Licença STEP 7 necessária pra add-device (LicenseNotFoundException sem ela).
+- **Openness pede aceite na tela (descoberto 2026-07-28, custou uma sessão inteira de diagnóstico
+  errado).** Quando o Portal já está aberto e o `tia.exe` muda de hash (todo `rebuild.ps1`), o
+  Portal usa a whitelist que leu ao iniciar e abre um **diálogo modal de autorização** na sessão
+  interativa. Ninguém clica → toda chamada fica pendurada com **CPU ~0** e estoura o `TIA_TIMEOUT`,
+  ou volta `EngineeringSecurityException: "Security error. The operation has timed out."`.
+  Assinatura pra reconhecer: `tia info` (a chamada mais barata que existe) também trava — se
+  `info` não responde em segundos, é ambiente, **nunca** custo do verbo. Não medir performance de
+  API nesse estado: foi o que gerou o falso blocker "xref do Openness inviável" no handoff de
+  2026-07-27. Cura: usuário clica no diálogo (não precisa reiniciar o Portal).
 
 ## Backlog v2 (cobertura Openness — priorizado)
 

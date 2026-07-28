@@ -161,6 +161,10 @@ First run against a Portal without whitelist entry triggers the Openness consent
 - Multiuser projects: attach works single-user style; check-in stays in the Portal.
 - `import-ladder` converts a deliberate SCL subset (bool logic, comparators, Set/Reset/MOVE);
   it rejects anything else with a clear error.
+- Openness refuses to export an inconsistent block, and every import leaves its target (and any
+  block referencing it) inconsistent. So compile between steps — `clone`, `diff-block` and
+  `explain-block` all export under the hood, and the generators export the global DB first.
+  The CLI turns the bare Openness message into the exact `tia compile` command to run.
 
 </details>
 

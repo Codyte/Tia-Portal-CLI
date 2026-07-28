@@ -40,8 +40,8 @@ InstrumentFcConfig(16)  InstrumentFc(49)  Instrument(59)  AreaTask(69)  Run(77)
 ## `Tia.Core/Inventory.cs` (445 linhas)
 Inventory(28)  Info(30)  Devices(47)  Blocks(79)  Tree(109)  TagTables(181)  Types(201)  Find(224)  Snapshot(281)  Xref(334)  Trace(382)
 
-## `Tia.Core/LadConverter.cs` (484 linhas)
-LadConverter(17)  Convert(19)  ParseAll(150)  NextUid(312)  TagAccess(314)  ConstAccess(322)  Operand(332)  NewNet(339)  Compile(341)  ToFlgNet(386)
+## `Tia.Core/LadConverter.cs` (501 linhas)
+LadConverter(17)  Convert(19)  ParseAll(150)  NextUid(312)  TagAccess(314)  ConstAccess(322)  Operand(332)  NewNet(339)  Compile(341)  ToFlgNet(403)
 
 ## `Tia.Core/Library.cs` (103 linhas)
 Library(15)  List(26)  ImportMasterCopy(67)
@@ -52,8 +52,8 @@ Memory(20)  FreeM(22)  X(68)  B(69)  W(70)  D(71)  BOOL(76)  WORD(77)  DWORD(78)
 ## `Tia.Core/Multiuser.cs` (98 linhas)
 Multiuser(14)  ListServerProjects(21)
 
-## `Tia.Core/Ops.cs` (532 linhas)
-Ops(18)  FindBlock(22)  ResolveFolder(67)  ResolveTagFolder(98)  CreateFolder(130)  DeleteFolder(155)  DeleteBlock(190)  ExportBlock(207)  ExportTagTable(217)  ExportType(227)  ImportBlock(248)  ImportTagTable(270)  ImportType(288)  ImportSource(306)  XmlRootType(360)  RequireRootType(370)  EnsureCultures(393)  DiffBlock(427)  BlocksIdentical(445)  Compile(490)
+## `Tia.Core/Ops.cs` (537 linhas)
+Ops(18)  FindBlock(22)  ResolveFolder(67)  ResolveTagFolder(98)  CreateFolder(130)  DeleteFolder(155)  DeleteBlock(190)  ExportBlock(207)  ExportTagTable(222)  ExportType(232)  ImportBlock(253)  ImportTagTable(275)  ImportType(293)  ImportSource(311)  XmlRootType(365)  RequireRootType(375)  EnsureCultures(398)  DiffBlock(432)  BlocksIdentical(450)  Compile(495)
 
 ## `Tia.Core/Profinet.cs` (166 linhas)
 ProfinetConfig(12)  ProfinetMapping(20)  Profinet(28)  Generate(30)  BoolAddressAllocator(143)  Next(153)  Skip(161)
@@ -70,6 +70,6 @@ StandardizeConfig(14)  PrefixMapping(128)  TagTemplate(134)  NaturalStringCompar
 ## `Tia.Core/TiaSession.cs` (190 linhas)
 TiaSession(12)  Attach(23)  OpenProject(48)  CreateProject(78)  Save(113)  CloseProject(120)  AllDevices(130)  ExclusiveAccess(147)  Plcs(153)  GetPlc(165)  Dispose(185)
 
-## `Tia.Tests/Program.cs` (407 linhas)
-Program(21)
+## `Tia.Tests/Program.cs` (424 linhas)
+Program(25)
 

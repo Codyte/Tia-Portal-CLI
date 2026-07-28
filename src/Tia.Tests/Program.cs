@@ -1,12 +1,16 @@
 // NAV INDEX
-// 12-46    infra: Check/Fail, repo root, out dir
-// 48-67    Main — roda todos os testes, resume pass/fail
-// 68-95    AlarmFc_BuildFcXml (3 vars → 1 word; 17 vars → 2 words)
-// 96-117   AlarmFc_BuildCallObXml (2 FCs, número, título sem prefixo numérico)
-// 118-143  FaultOb_BuildObXml (ordena por HW id, troca 999, slice x0/x1)
-// 144-172  InstrumentFc_BuildAreaFcXml (8888/9999, instance DB, path global-DB, prefixo tag)
-// 173-182  LadConverter_Convert (ladder.scl → XML LAD)
-// 183-196  Ops_RequireRootType (root do XML valida kind no dry-run) + Throws helper
+// 24-52    infra: Check/Fail, repo root, out dir
+// 54-82    Main — roda todos os testes, resume pass/fail
+// 83-110   AlarmFc_BuildFcXml (3 vars → 1 word; 17 vars → 2 words)
+// 111-132  AlarmFc_BuildCallObXml (2 FCs, número, título sem prefixo numérico)
+// 133-158  FaultOb_BuildObXml (ordena por HW id, troca 999, slice x0/x1)
+// 159-195  InstrumentFc_BuildAreaFcXml (8888/9999, instance DB, path global-DB, prefixo tag)
+// 196-218  LadConverter_Convert (ladder.scl → XML LAD; pinos pre/in1/in2, OR vira parte "O")
+// 219-242  BlockExplain_Explain (XML → texto compacto)
+// 243-252  Ops_RequireRootType (root do XML valida kind no dry-run) + Throws helper
+// 253-273  InstrumentFc_FcName / Profinet_TagName (regras de nome)
+// 274-334  Audit_Naming, DbMember_AddToXml
+// 335-413  Memory_Occupied, Clone_Rewrite, Scaffold_Plan
 using System;
 using System.Collections.Generic;
 using System.IO;

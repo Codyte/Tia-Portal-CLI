@@ -11,6 +11,9 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
 - Decisões D1–D9 do PLANO valem — não rediscutir sem motivo novo.
 - `Scripts_Siemens/FINAIS/` = referência read-only. `Scripts_Siemens/OLD/` = não tocar.
 - Verbos de escrita: dry-run por padrão, `--apply` explícito.
+- **Compile entre etapas**: todo import deixa o alvo (e quem o referencia) inconsistente, e o
+  Openness recusa exportar bloco inconsistente. `clone`, `diff-block`, `explain-block` e os 4
+  geradores exportam por baixo — sem `compile --apply` antes, quebram com essa mensagem.
 - Nunca rodar `tia` em paralelo (Openness single-session).
 - Nunca commitar `Siemens.Engineering.dll`.
 - Testes só contra projeto TIA de teste, nunca produção.

@@ -1,65 +1,60 @@
 # Handoff · TIA Portal Openness API · 2026-07-27
 
 ## Goal
-**F7 — camada de compreensão.** Transformar a CLI (44 verbos de ação) em ferramenta que a IA
-usa pra *diagnosticar* ("problema no acionamento BH-01A" → mapear tudo e alterar o necessário) e
-pra *criar projeto a partir de documentos*. Gargalo real: não é o que a CLI escreve, é o que a IA
-consegue **ler** dentro do orçamento de contexto (1 FC em LAD = ~200KB de XML).
+**F7 — camada de compreensão.** Fazer a IA *ler* o projeto dentro do orçamento de contexto
+(1 FC em LAD = ~200KB de XML) para diagnosticar ("problema no acionamento BH-01A") e criar
+projeto a partir de documentos. 5 itens no plano; item 1 fechado nesta sessão.
 
 ## State
-- HEAD: 10944f7 — working tree limpo (só `.handoff/` desta escrita).
-- Done nesta sessão: **F6 fechada** (`scripts/_common.ps1` → `Invoke-Tia` roteia por sessão;
-  `scripts/tia.ps1` = comando único, substitui `tia-task.ps1` removido; macros migrados;
-  `prep-project` ganhou `-Apply`; bugs 2-5 da auditoria fechados — bug 1 já estava).
-  Verificado: `tia.ps1 doctor` exit 0, rota da task (`TIA_VIA_TASK=1`) exit 0, forma legada
-  `["info"]` exit 0, `use-project`/`prep-project` do shell do agente, `rebuild.ps1` ALL PASS.
-- In progress: nada mid-flight. Plano das 5 melhorias apresentado ao user, **aguardando aceite
-  do par 1+2 e o veredito do D8 read-only**.
+- HEAD: 0f1e2f0 — working tree limpo (só `.handoff/` desta escrita).
+- Done: **F7 item 1 — `explain-block`** (`src/Tia.Core/BlockExplain.cs`, 320 linhas).
+  Percorre Parts/Wires do FlgNet e reconstrói a expressão (série = AND, paralelo = OR, caixas
+  O/A, comparadores, `Negated`); uma linha por bobina/SCoil/RCoil/MOVE/chamada de FB-FC, com
+  título e comentário da rede (pt-BR quando existe) e interface do bloco. Sem FlgNet → `(rede
+  vazia)`; sem CompileUnit (DB/UDT) → árvore de membros com 2 níveis.
+  `--file F.xml` roda offline (mesmo atalho do `import-ladder` dry-run, antes de `Run()`);
+  `--name X` = `Ops.ExportBlock` + explica. Medido: `BombaTemplateFc.xml` 92KB → 8,3KB.
+  9 asserts em `Tia.Tests`, `rebuild.ps1` ALL PASS. Navi regenerado, PLANO com a linha F7.
+- In progress: nada mid-flight.
 
 ## Decisions (and why)
-- **IA escreve a *spec*, nunca o XML.** Docs → `plant.json` (extração é trabalho do LLM) → CLI
-  valida schema e aplica determinístico/idempotente. XML gerado por LLM é onde projetos assim quebram.
-- **Leitura antes de escrita.** 1+2 são read-only, risco zero no projeto real; a IA hoje já
-  *pode* mutar, o que falta é entender o que está mutando.
-- **`checkpoint` antes de `--apply` autônomo.** `dry-run` protege contra ruído, não contra decisão
-  errada aplicada e salva.
-- Achados de PowerShell da F6 (valem pra qualquer script novo): `-is [pscustomobject]` é verdadeiro
-  até pra `[string]`; splat de array vazio vira argumento `""` pro CLI.
+- **`explain-block` offline por padrão** — `--file` não toca Siemens.Engineering, então o parser
+  é testável em `Tia.Tests` contra o fixture real (`docs/examples/BombaTemplateFc.xml`) sem TIA.
+- **Sinks dirigem a saída** (Coil/SCoil/RCoil/Move/Call); contatos e comparadores só aparecem
+  dentro da expressão. Sem isso a lista repete cada parte solta e perde a semântica.
+- **Comentário cortado em 200 chars, seções Temp/Constant/Static fora do cabeçalho** — ruído para
+  diagnóstico; é onde o texto engordaria sem informar.
+- IA escreve a *spec*, nunca o XML (item 5); leitura antes de escrita (1+2 read-only);
+  `checkpoint` antes de qualquer `--apply` autônomo. (Inalteradas.)
 
 ## Next steps (ordered)
-1. **`explain-block --name X`** — XML LAD/FBD → texto compacto (redes numeradas, contatos/bobinas/
-   comparadores, chamadas de FB, comentários). ~200KB → ~3KB. Inverso do `LadConverter` que já
-   existe (SCL→LAD), formato do `FlgNet` já mapeado. **Offline, testável em `Tia.Tests` sem TIA.**
-2. **`trace --equipment BH-01A`** — vizinhança semântica em 1 chamada: tags %I/%Q/%M do símbolo,
-   membro do DB global (instância do UDT), iDBs, FCs que referenciam, word de alarme, OB que chama,
-   endereço físico, pasta. Hoje = ~15 chamadas. `xref` só aceita bloco, não tag → índice invertido
-   próprio (mais barato e offline-testável que forçar `CrossReferenceService` por tag).
-3. **`index` cacheado** → `workspace/<proj>/index.json` (tag→blocos, membro de DB→usuários,
-   bloco→chamadas), invalidado por hash/contagem; `trace` lê o índice. **Só quando 2 doer** no
-   projeto real (1011 blocos).
-4. **`checkpoint` / `restore`** — `export-block` dos blocos no escopo → `workspace/checkpoint/<ts>/`;
-   restore = `import-block` override. Cirúrgico, reusa verbos existentes, sem arquivar projeto inteiro.
-   Pré-requisito de qualquer `--apply` autônomo.
-5. **`apply-spec --file plant.json`** — orquestrador + schema; compõe `scaffold` + `clone` +
-   `import-tags` + `add-db-member`, idempotente. Tudo já existe, falta a casca.
+1. **Smoke do `explain-block --name`** contra projeto real (read-only, ~1 min) — só falta isso
+   para o item 1 estar 100%. Portal está com **ScaffoldTest** aberto; para o de referência:
+   `pwsh scripts/use-project.ps1 "Software de ETE Insular_Inicial_V21"` (2-4 min).
+2. **`trace --equipment BH-01A`** (item 2) — vizinhança semântica em 1 chamada: tags %I/%Q/%M do
+   símbolo, membro do DB global, iDBs, FCs que referenciam, word de alarme, OB que chama, endereço
+   físico, pasta. `xref` só aceita bloco → índice invertido próprio, offline-testável.
+3. `index` cacheado (`workspace/<proj>/index.json`) — só quando 2 doer no projeto real (1011 blocos).
+4. `checkpoint` / `restore` via export-block/import-block por escopo.
+5. `apply-spec --file plant.json` — orquestrador + schema sobre verbos existentes.
 
-Backlog anterior (não perdido, entra depois): `import-ladder --apply` contra um `PARTIDA_*` real
-(FlgNet foi escrito de memória, `--apply` nunca rodou); `replicate-fc --apply` no ScaffoldTest;
-bytes de system/clock memory no `scaffold`/`add-device` (8 dos 26 erros de compile); multiuser 3b/3c.
+Backlog anterior: `import-ladder --apply` contra `PARTIDA_*` real (ver blocker abaixo);
+`replicate-fc --apply` no ScaffoldTest; bytes de system/clock memory no `scaffold`/`add-device`
+(8 dos 26 erros de compile); multiuser 3b/3c.
 
 ## Key files
-- `src/Tia.Core/LadConverter.cs` — SCL→LAD; ponto de partida do `explain-block` (inverso).
-- `src/Tia.Cli/Program.cs` — `Dispatch` (44 `case`), onde entram os verbos novos.
-- `src/Tia.Core/Ops.cs` — `BlocksIdentical`, `RequireRootType`, `EnsureCultures`, `ResolveFolder`.
-- `src/Tia.Tests/Program.cs` — console assert offline; 1+2 devem nascer com teste aqui.
-- `scripts/_common.ps1` — `Invoke-Tia` (rota por sessão, `TIA_VIA_TASK=1`, `TIA_TIMEOUT`).
-- `docs/PLANO.md` — F6 ✅ + achados; tabela de fases; D1-D9.
+- `src/Tia.Core/BlockExplain.cs` — NAV INDEX no topo; `Net.PartExpr`/`Expr` = reconstrução.
+- `src/Tia.Cli/Program.cs:79` (rota offline `--file`) e `case "explain-block"` no `Dispatch`.
+- `src/Tia.Tests/Program.cs` — `BlockExplain_Explain`, asserts contra o fixture real.
+- `docs/examples/BombaTemplateFc.xml` — export LAD real (11 redes, FB calls, MOVE, Eq, OR).
+- `docs/PLANO.md` — linha F7 na tabela; nota do FlgNet no item 1b.
 
 ## Open / blockers
-- **Decisão do user pendente: revogar D8 só pra leitura online** (diagnostic buffer, compare
+- **Achado a validar: pinos de comparador.** Export real usa `in1`/`in2` e série no pino `pre`;
+  o `LadConverter` emite `operand1`/`operand2`/`in`. Provável causa de falha no primeiro
+  `import-ladder --apply` com comparador. Anotado no PLANO (item 1b), não corrigido.
+- **Decisão pendente do user: revogar D8 só para leitura online** (diagnostic buffer, compare
   online×offline, watch de valores; download/start/stop seguem proibidos). Sem isso, "problema no
-  acionamento" só resolve o que é lógica/config offline — metade do objetivo fica de fora.
-- Aceite do par 1+2 como F7 ainda não confirmado.
-- Portal com **ScaffoldTest aberto**. Voltar ao de referência:
-  `pwsh scripts/use-project.ps1 "Software de ETE Insular_Inicial_V21"` (2-4 min).
+  acionamento" só cobre lógica/config offline.
+- Aceite do item 2 (`trace`) como próximo passo ainda não confirmado.
 - Falta host/porta do TIA Project Server + projeto de teste lá (nunca produção) — trava multiuser.

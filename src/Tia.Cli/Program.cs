@@ -317,10 +317,10 @@ namespace Tia.Cli
                         break;
                     case "import-ladder":
                         var lad = Core.LadConverter.Convert(Require(args, "--file"), OptionValue(args, "--name"), outDir);
-                        using (WriteLock(session, true, verb))
-                            Core.Ops.ImportBlock(session.GetPlc(plcName), (string)lad["xmlFile"],
-                                OptionValue(args, "--folder"), true);
-                        lad["applied"] = true;
+                        using (WriteLock(session, apply, verb))
+                            lad["import"] = Core.Ops.ImportBlock(session.GetPlc(plcName), (string)lad["xmlFile"],
+                                OptionValue(args, "--folder"), apply);
+                        lad["applied"] = apply;
                         result = lad;
                         break;
                     case "import-source":

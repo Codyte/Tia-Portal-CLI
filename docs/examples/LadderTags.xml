@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tags do fixture ladder.scl — permitem compilar o FC importado por import-ladder.
+     Faixa %M26..%M31 escolhida via `tia free-memory` no projeto de teste. -->
+<Document>
+  <Engineering version="V21" />
+  <SW.Tags.PlcTagTable ID="0">
+    <AttributeList>
+      <Name>LadderTags</Name>
+    </AttributeList>
+    <ObjectList>
+      <SW.Tags.PlcTag ID="1" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <LogicalAddress>%M26.0</LogicalAddress>
+          <Name>Start</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="2" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <LogicalAddress>%M26.1</LogicalAddress>
+          <Name>Stop</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="3" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <LogicalAddress>%M26.2</LogicalAddress>
+          <Name>Cmd_Motor1</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="4" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <LogicalAddress>%M26.3</LogicalAddress>
+          <Name>Falha_M1</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="5" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <LogicalAddress>%M26.4</LogicalAddress>
+          <Name>Nivel_Alto</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="6" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <LogicalAddress>%M26.5</LogicalAddress>
+          <Name>Auto</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="7" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <LogicalAddress>%M26.6</LogicalAddress>
+          <Name>Alarme</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="8" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <LogicalAddress>%M26.7</LogicalAddress>
+          <Name>Reset</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="9" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <LogicalAddress>%M27.0</LogicalAddress>
+          <Name>Manutencao</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="10" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <LogicalAddress>%M27.1</LogicalAddress>
+          <Name>Pronto</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="11" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <LogicalAddress>%M27.2</LogicalAddress>
+          <Name>Sensor_Falha</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="12" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <LogicalAddress>%M27.3</LogicalAddress>
+          <Name>Temp_OK</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="13" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Int</DataTypeName>
+          <LogicalAddress>%MW28</LogicalAddress>
+          <Name>Temperatura</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="14" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Int</DataTypeName>
+          <LogicalAddress>%MW30</LogicalAddress>
+          <Name>Setpoint</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+    </ObjectList>
+  </SW.Tags.PlcTagTable>
+</Document>

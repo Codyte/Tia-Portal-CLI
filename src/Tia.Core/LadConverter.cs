@@ -380,8 +380,24 @@ namespace Tia.Core
                         cur = next;
                     }
                 }
+                else if (g.Kids.Count == 1)
+                    Compile(g.Kids[0], inNet, outNet);
                 else
-                    foreach (var kid in g.Kids) Compile(kid, inNet, outNet); // parallel branch
+                {
+                    // paralelo = parte "O" explícita (BombaTemplateFc.xml:346 + wires 391-404): cada ramo
+                    // entra num pino in1..inN próprio. Juntar dois "out" no mesmo fio o import recusa.
+                    int o = NextUid();
+                    Parts.Add(new XElement(FlgNs + "Part", new XAttribute("Name", "O"), new XAttribute("UId", o),
+                        new XElement(FlgNs + "TemplateValue", new XAttribute("Name", "Card"),
+                            new XAttribute("Type", "Cardinality"), g.Kids.Count.ToString())));
+                    for (int i = 0; i < g.Kids.Count; i++)
+                    {
+                        var branch = NewNet();
+                        branch.Sinks.Add(Tuple.Create(o, "in" + (i + 1)));
+                        Compile(g.Kids[i], inNet, branch);
+                    }
+                    outNet.Sources.Add(Tuple.Create(o, "out"));
+                }
             }
 
             public XElement ToFlgNet()

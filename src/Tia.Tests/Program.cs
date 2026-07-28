@@ -204,6 +204,12 @@ namespace Tia.Tests
                 .Select(e => (string)e.Attribute("Name")).ToList();
             Check(pins.Contains("in1") && pins.Contains("in2"), "comparador usa in1/in2 (" + string.Join(",", pins) + ")");
             Check(pins.Contains("pre"), "comparador recebe energia no pino pre (" + string.Join(",", pins) + ")");
+            // paralelo = parte "O"; juntar dois "out" no mesmo fio o import do Portal recusa
+            Check(doc.Descendants().Any(e => e.Name.LocalName == "Part" && (string)e.Attribute("Name") == "O"),
+                "OR vira parte O");
+            Check(!doc.Descendants().Any(e => e.Name.LocalName == "Wire"
+                && e.Elements().Count(c => (string)c.Attribute("Name") == "out") > 1),
+                "nenhum fio com dois pinos out");
         }
 
         private static void BlockExplain_Explain()

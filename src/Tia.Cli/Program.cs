@@ -72,6 +72,7 @@ namespace Tia.Cli
                         "add-tag --table T --name N --type Bool --address %M10.0 [--comment C] [--apply]  "
                             + "(uma tag em tabela existente; endereço livre em %M sai do free-memory)",
                         "delete-tag --table T --name N [--apply]",
+                        "rename-block --name X --to NEW [--apply]  (bloco ou UDT; refs seguem, igual ao GUI)",
                         "set-tag --table T --name N [--type T] [--address %M10.0] [--comment C] [--rename NEW] [--apply]  "
                             + "(só o que for passado muda; --rename exige Openness V20+)",
                         "clone --block N | --table T --replace OLD=NEW [--replace ...] [--at %M432.0] [--folder A/B] [--apply]",
@@ -473,6 +474,11 @@ namespace Tia.Cli
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.DeleteTag(session.GetPlc(plcName), Require(args, "--table"),
                                 Require(args, "--name"), apply);
+                        break;
+                    case "rename-block":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Ops.Rename(session.GetPlc(plcName), Require(args, "--name"),
+                                Require(args, "--to"), apply);
                         break;
                     case "set-tag":
                         using (WriteLock(session, apply, verb))

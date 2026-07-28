@@ -558,6 +558,37 @@ namespace Tia.Core
             return result;
         }
 
+        /// <summary>
+        /// Renomeia bloco ou UDT via `SetAttribute("Name", ...)` — o mesmo caminho do GUI, então as
+        /// chamadas/refs seguem o novo nome. Sem export/delete/import (o `move-block` precisa disso
+        /// porque o Openness não move; renomear é atributo RW desde a V19).
+        /// </summary>
+        public static object Rename(PlcSoftware plc, string name, string to, bool apply)
+        {
+            if (string.IsNullOrEmpty(to))
+                throw new ArgumentException("--to <new name> is required.");
+            IEngineeringObject target = FindBlock(plc, name);
+            var kind = "block";
+            if (target == null)
+            {
+                target = FindType(plc.TypeGroup, name);
+                kind = "type";
+            }
+            if (target == null)
+                throw new InvalidOperationException("Block or UDT '" + name + "' not found.");
+
+            var result = new Dictionary<string, object>
+            {
+                { "kind", kind }, { "name", name }, { "to", to },
+                { "action", name == to ? "skip (same name)" : "rename" },
+                { "applied", apply && name != to },
+            };
+            if (!apply || name == to) return result;
+            target.SetAttribute("Name", to);
+            result["now"] = target.GetAttribute("Name");
+            return result;
+        }
+
         public static object ImportType(PlcSoftware plc, string file, bool apply)
         {
             var full = RequireFile(file);

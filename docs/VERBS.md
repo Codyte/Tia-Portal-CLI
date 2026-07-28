@@ -54,6 +54,7 @@
 - `import-tags --file F [--folder A/B] [--apply]`
 - `add-tag --table T --name N --type Bool --address %M10.0 [--comment C] [--apply]  (uma tag em tabela existente; endere├ºo livre em %M sai do free-memory)`
 - `delete-tag --table T --name N [--apply]`
+- `rename-block --name X --to NEW [--apply]  (bloco ou UDT; refs seguem, igual ao GUI)`
 - `set-tag --table T --name N [--type T] [--address %M10.0] [--comment C] [--rename NEW] [--apply]  (s├│ o que for passado muda; --rename exige Openness V20+)`
 - `clone --block N | --table T --replace OLD=NEW [--replace ...] [--at %M432.0] [--folder A/B] [--apply]`
 - `add-db-member --db X --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]`

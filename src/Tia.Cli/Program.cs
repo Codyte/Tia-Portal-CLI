@@ -53,6 +53,7 @@ namespace Tia.Cli
                     { "hardware", new[] { "add-device --mlfb \"6ES7 ...\" --name X [--station S] [--group G] [--apply]",
                         "set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]",
                         "connect-subnet --device X --subnet S [--io-system IO] [--apply]",
+                        "set-memory-bytes --device X [--system 1] [--clock 0] [--apply]  (habilita FirstScan/AlwaysTRUE/Clock_1Hz na CPU)",
                         "export-cax [--out DIR]", "import-cax --file F.aml [--apply]" } },
                     { "write", new[] { "import-block --file F [--folder A/B] [--apply]",
                         "import-source --file F.scl [--apply]",
@@ -424,6 +425,12 @@ namespace Tia.Cli
                                 OptionValue(args, "--ip"), OptionValue(args, "--mask"),
                                 OptionValue(args, "--pn-name"), apply);
                         break;
+                    case "set-memory-bytes":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Hardware.SetMemoryBytes(session, Require(args, "--device"),
+                                ParseByte(OptionValue(args, "--system")), ParseByte(OptionValue(args, "--clock")),
+                                apply);
+                        break;
                     case "connect-subnet":
                         using (WriteLock(session, apply, verb))
                             result = Core.Hardware.ConnectSubnet(session, Require(args, "--device"),
@@ -520,6 +527,13 @@ namespace Tia.Cli
         {
             int i = Array.IndexOf(args, name);
             return i >= 0 && i + 1 < args.Length ? args[i + 1] : null;
+        }
+
+        /// <summary>"1" ou "%MB1" → 1; ausente → null (atributo não é tocado).</summary>
+        private static int? ParseByte(string value)
+        {
+            if (string.IsNullOrEmpty(value)) return null;
+            return int.Parse(value.TrimStart('%').TrimStart('M', 'm').TrimStart('B', 'b'));
         }
 
         /// <summary>Todas as ocorrências de uma opção repetível (ex.: --replace A=B --replace C=D).</summary>

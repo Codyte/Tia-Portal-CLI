@@ -142,7 +142,15 @@ realidade e é idempotente).
 `FirstScan`/`Clock_1Hz`/`AlwaysTRUE` (bits de system/clock memory não habilitados na CPU nova),
 tags de IO e de instrumento (só 2 das 194 tabelas entram no manifesto) e `Missing instance DB`
 nos dois moldes (`MOLDE_ANALOGS`, `MOLDE TOT1` — o iDB é criado pelo `replicate-instruments`).
-Pendência daí: `scaffold` (ou `add-device`) poderia habilitar os bytes de system/clock memory.
+
+**Bits de system/clock resolvidos 2026-07-28** pelo verbo `set-memory-bytes --device X [--system 1]
+[--clock 0] [--apply]` ([Hardware.cs](../src/Tia.Core/Hardware.cs)). Os atributos da CPU são
+`SystemMemoryByte`/`ClockMemoryByte` (bool, o enable) e `SystemMemoryByteAddress`/
+`ClockMemoryByteAddress` (o byte) — os dois de endereço **só existem depois do enable**, e já nascem
+em `%MB1`/`%MB0`, que é o que as tags esperam. O verbo descobre o nome por substring em
+`GetAttributeInfos()` (muda entre V19–V21); dry-run lista atributo + valor atual, então serve de
+sonda. Medido num S7-1515 virgem com a biblioteca instalada: **33 → 25 erros**, some a classe
+`FirstScan`/`AlwaysTRUE`/`Clock_1Hz` inteira. Sobra: tags de projeto e os iDB dos moldes.
 
 ## Estado da CLI contra este projeto
 

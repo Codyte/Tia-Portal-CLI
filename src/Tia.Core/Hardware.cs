@@ -107,6 +107,83 @@ namespace Tia.Core
             catch { return null; }
         }
 
+        // ---------- set-memory-bytes ----------
+
+        /// <summary>
+        /// Habilita os bytes de system/clock memory da CPU (sem eles, `FirstScan`, `AlwaysTRUE` e
+        /// `Clock_1Hz` não existem e meia biblioteca não compila num projeto novo).
+        /// Dry-run lista os atributos encontrados com o valor atual — é a sonda.
+        /// ponytail: nome do atributo descoberto por substring (varia entre V19–V21); se o Portal
+        /// renomear, o dry-run mostra o que existe e o mapeamento se ajusta aqui.
+        /// </summary>
+        public static object SetMemoryBytes(TiaSession session, string deviceName, int? systemByte,
+            int? clockByte, bool apply)
+        {
+            var device = FindDevice(session, deviceName);
+            var cpu = FindMemoryItem(device.DeviceItems);
+            if (cpu == null)
+                throw new InvalidOperationException("Device '" + device.Name
+                    + "' has no device item with system/clock memory attributes (is it a CPU?).");
+
+            var found = new List<object>();
+            var changed = new List<object>();
+            foreach (var info in cpu.GetAttributeInfos())
+            {
+                var attr = info.Name;
+                if (!IsMemoryAttribute(attr)) continue;
+                var current = TryGet(cpu, attr);
+                found.Add(new Dictionary<string, object> { { "attribute", attr }, { "current", current } });
+
+                object target = null;
+                if (current is bool) target = true;                                   // Enable*/`*Enabled`
+                else if (attr.IndexOf("Clock", StringComparison.OrdinalIgnoreCase) >= 0)
+                    target = clockByte;
+                else target = systemByte;
+                if (target == null) continue;
+                // o Portal devolve o endereço como UInt32/Byte conforme a versão — comparar já convertido,
+                // senão int 0 != byte 0 e a chamada idempotente reporta mudança que não existe
+                target = Convert.ChangeType(target, current?.GetType() ?? target.GetType());
+                if (Equals(target, current)) continue;
+
+                changed.Add(new Dictionary<string, object>
+                    { { "attribute", attr }, { "from", current }, { "to", target } });
+                if (apply) cpu.SetAttribute(attr, target);
+            }
+            return new Dictionary<string, object>
+            {
+                { "device", device.Name },
+                { "item", cpu.Name },
+                { "systemByte", systemByte },
+                { "clockByte", clockByte },
+                { "attributes", found },
+                { "changes", changed },
+                { "applied", apply },
+            };
+        }
+
+        private static bool IsMemoryAttribute(string name)
+        {
+            return (name.IndexOf("MemoryByte", StringComparison.OrdinalIgnoreCase) >= 0)
+                || (name.IndexOf("ClockMemory", StringComparison.OrdinalIgnoreCase) >= 0)
+                || (name.IndexOf("SystemMemory", StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        /// <summary>Primeiro device item que expõe atributo de system/clock memory (a CPU).</summary>
+        private static DeviceItem FindMemoryItem(DeviceItemComposition items)
+        {
+            foreach (DeviceItem item in items)
+            {
+                try
+                {
+                    if (item.GetAttributeInfos().Any(i => IsMemoryAttribute(i.Name))) return item;
+                }
+                catch { /* item sem atributos legíveis */ }
+                var nested = FindMemoryItem(item.DeviceItems);
+                if (nested != null) return nested;
+            }
+            return null;
+        }
+
         // ---------- connect-subnet ----------
 
         /// <summary>

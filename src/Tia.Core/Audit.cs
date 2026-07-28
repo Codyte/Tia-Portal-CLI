@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Siemens.Engineering.CrossReference;
 using Siemens.Engineering.SW;
 using Siemens.Engineering.SW.Blocks;
 using Siemens.Engineering.SW.Tags;
@@ -100,6 +101,8 @@ namespace Tia.Core
                 Check("1 tabela de tags por acionamento", noTable, maxFindings),
                 Check("numeração de área consistente entre hierarquias",
                     AreaConflicts(blocksByFolder.Keys, tablesByFolder.Keys), maxFindings),
+                Check("biblioteca não depende de bloco de área",
+                    LayerLeaks(plc, blocksByFolder), maxFindings),
             };
 
             return new Dictionary<string, object>
@@ -109,6 +112,44 @@ namespace Tia.Core
                 { "ok", checks.Cast<Dictionary<string, object>>().All(c => (bool)c["ok"]) },
                 { "checks", checks },
             };
+        }
+
+        /// <summary>
+        /// Camada 1 ("1. FB Bilbiotecas") é biblioteca: seus blocos podem chamar uns aos outros, mas
+        /// não um bloco de área — se chamarem, a biblioteca deixa de ser instalável sozinha (é
+        /// exatamente o que o `install-lib` sofre). Xref é o único jeito de ver a chamada; nome de
+        /// bloco é único no PLC, então o mapa nome → pasta resolve a camada do chamado.
+        /// </summary>
+        private static List<string> LayerLeaks(PlcSoftware plc, Dictionary<string, List<string>> blocksByFolder)
+        {
+            var layerOf = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var kv in blocksByFolder)
+                foreach (string name in kv.Value)
+                    layerOf[name] = kv.Key.Split('/')[0];
+
+            var leaks = new List<string>();
+            int scanned;
+            foreach (var src in Inventory.AllSources(plc, out scanned))
+            {
+                string from;
+                if (!layerOf.TryGetValue(src.Name ?? "", out from) || !IsLibrary(from)) continue;
+                foreach (ReferenceObject r in src.References)
+                {
+                    string to;
+                    if (r.Name == null || !layerOf.TryGetValue(r.Name, out to) || IsLibrary(to)) continue;
+                    // o xref traz os dois sentidos no mesmo saco; só "Uses" é chamada de src para r
+                    // (o resto é "UsedBy": quem chama a biblioteca, que é justamente o certo)
+                    if (!r.Locations.Any(l => l.ReferenceType.ToString() == "Uses")) continue;
+                    leaks.Add(src.Name + " → " + r.Name + " (" + to + ")");
+                }
+            }
+            return leaks;
+        }
+
+        private static bool IsLibrary(string layer)
+        {
+            return layer.StartsWith("1.", StringComparison.Ordinal)
+                || layer.StartsWith("1 ", StringComparison.Ordinal);
         }
 
         /// <summary>Mesmo N tem que ser a mesma área em 2.N/3.N (tags) e 3.1.N/5.1.N (blocos). N=0 = molde.</summary>

@@ -449,7 +449,7 @@ namespace Tia.Core
         /// Todos os SourceObject do programa, bloco a bloco. `scanned` = blocos varridos.
         /// (V21 não expõe CrossReferenceService no BlockGroup — só nos objetos folha.)
         /// </summary>
-        private static IEnumerable<SourceObject> AllSources(PlcSoftware plc, out int scanned)
+        internal static IEnumerable<SourceObject> AllSources(PlcSoftware plc, out int scanned)
         {
             var blocks = new List<PlcBlock>();
             CollectBlockObjects(plc.BlockGroup, blocks);

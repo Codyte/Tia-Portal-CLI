@@ -30,6 +30,7 @@ namespace Tia.Cli
                     { "read", new[] { "info", "list-devices", "list-blocks", "list-tags", "list-types",
                         "find --pattern P* [--kind block|table|tag|type]",
                         "snapshot  (inventário completo)", "xref --name BLOCK",
+                        "trace --equipment BH-01A  (símbolos do equipamento + quem referencia; varre todos os blocos)",
                         "tree [--out DIR]  (outline navindex dos Program blocks → plc-navi.md)",
                         "list-hmi [--device X]  (WinCC Unified: telas + tag tables)",
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]",
@@ -253,6 +254,9 @@ namespace Tia.Cli
                         break;
                     case "xref":
                         result = Core.Inventory.Xref(session.GetPlc(plcName), Require(args, "--name"));
+                        break;
+                    case "trace":
+                        result = Core.Inventory.Trace(session.GetPlc(plcName), Require(args, "--equipment"));
                         break;
                     case "list-hmi":
                         result = Core.Hmi.List(session, OptionValue(args, "--device"));

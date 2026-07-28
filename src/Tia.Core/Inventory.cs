@@ -1,3 +1,11 @@
+// NAV INDEX
+// 20-67    Info / Devices (device items recursivos)
+// 69-147   Blocks e Tree (outline navindex dos Program blocks → plc-navi.md)
+// 149-187  TagTables / Types
+// 189-244  find — wildcard sobre nomes de bloco, tabela, tag e UDT
+// 246-265  snapshot — inventário completo
+// 267-306  xref — cross-references de um bloco (sentido direto)
+// 308-386  trace — símbolos de um equipamento + quem referencia (xref reverso)
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -303,6 +311,84 @@ namespace Tia.Core
                 });
             }
             return new Dictionary<string, object> { { "block", name }, { "sources", sources } };
+        }
+
+        // ---------- trace ----------
+
+        /// <summary>
+        /// Vizinhança semântica de um equipamento ("BH-01A") em uma chamada: símbolos cujo nome
+        /// contém o termo (tags com endereço, blocos, tabelas, UDTs) + quem referencia cada um.
+        /// O Openness só dá xref no sentido direto (bloco → o que usa), então o lado reverso é
+        /// uma varredura de todos os blocos — ~1 min em projeto grande; cache é o item 3 do F7.
+        /// </summary>
+        public static object Trace(PlcSoftware plc, string equipment)
+        {
+            var symbols = (Dictionary<string, object>)Find(plc, "*" + equipment + "*", "all");
+            var rx = new Regex(Regex.Escape(equipment).Replace(@"\*", ".*"), RegexOptions.IgnoreCase);
+            var started = DateTime.Now;
+
+            var usedBy = new List<object>();
+            int scanned = 0;
+            foreach (var src in AllSources(plc, ref scanned))
+                foreach (ReferenceObject r in src.References)
+                {
+                    if (r.Name == null || !rx.IsMatch(r.Name)) continue;
+                    var at = r.Locations.Select(l => l.ReferenceLocation).Distinct().ToList();
+                    usedBy.Add(new Dictionary<string, object>
+                    {
+                        { "block", src.Name },
+                        { "blockType", src.TypeName },
+                        { "uses", r.Name },
+                        { "typeName", r.TypeName },
+                        { "count", at.Count },
+                        { "at", at.Take(8).ToList() },
+                    });
+                }
+
+            return new Dictionary<string, object>
+            {
+                { "equipment", equipment },
+                { "symbols", symbols["hits"] },
+                { "symbolCount", symbols["count"] },
+                { "usedBy", usedBy },
+                { "blocksScanned", scanned },
+                { "seconds", Math.Round((DateTime.Now - started).TotalSeconds, 1) },
+            };
+        }
+
+        /// <summary>
+        /// Todos os SourceObject do programa. Uma chamada no BlockGroup raiz cobre o programa
+        /// inteiro; se o Openness não expuser o serviço no grupo, cai pra bloco a bloco (lento:
+        /// ~1 chamada por bloco). `scanned` = quantas chamadas de xref foram feitas.
+        /// </summary>
+        private static IEnumerable<SourceObject> AllSources(PlcSoftware plc, ref int scanned)
+        {
+            var groupService = plc.BlockGroup.GetService<CrossReferenceService>();
+            if (groupService != null)
+            {
+                scanned = 1;
+                return groupService.GetCrossReferences(CrossReferenceFilter.AllObjects).Sources.Cast<SourceObject>();
+            }
+            var blocks = new List<PlcBlock>();
+            CollectBlockObjects(plc.BlockGroup, blocks);
+            scanned = 0;
+            var sources = new List<SourceObject>();
+            foreach (var block in blocks)
+            {
+                var service = block.GetService<CrossReferenceService>();
+                if (service == null) continue;
+                scanned++;
+                sources.AddRange(service.GetCrossReferences(CrossReferenceFilter.AllObjects).Sources.Cast<SourceObject>());
+            }
+            return sources;
+        }
+
+        private static void CollectBlockObjects(PlcBlockGroup group, List<PlcBlock> into)
+        {
+            foreach (PlcBlock block in group.Blocks)
+                if (!(block is DataBlock)) into.Add(block); // DB não tem lógica: xref só custa tempo
+            foreach (PlcBlockUserGroup sub in group.Groups)
+                CollectBlockObjects(sub, into);
         }
     }
 }

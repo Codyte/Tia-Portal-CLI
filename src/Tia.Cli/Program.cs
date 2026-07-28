@@ -53,7 +53,8 @@ namespace Tia.Cli
                         "delete-type --name X [--apply]  (UDT)",
                         "import-type --file F.xml [--apply]",
                         "scaffold --manifest F.json [--replace OLD=NEW ...] [--apply] [--force]  "
-                            + "(árvore da lei + moldes num projeto novo; --replace troca no XML e nas pastas antes do import)" } },
+                            + "(árvore da lei + moldes num projeto novo; --replace troca no XML e nas pastas antes do import; "
+                            + "\"Cpu\" no manifesto barra família errada, --force ignora)" } },
                     { "hardware", new[] { "add-device --mlfb \"6ES7 ...\" --name X [--station S] [--group G] [--apply]",
                         "delete-device --name X [--apply]",
                         "list-attrs --device X [--item I] [--like SUB]  (read-only: atributos e valores do device item)",

@@ -416,6 +416,9 @@ namespace Tia.Tests
             Check(plan[2].Folder.Count == 2 && plan[2].Folder[0] == "3. Alarmes/Eventos/Falhas",
                 "'/' no nome da pasta continua um segmento só");
             Check(plan.All(p => !string.IsNullOrEmpty(p.Name)), "nome do objeto lido de cada XML");
+            Check(Scaffold.SameFamily("S7-1500", "S71500") && Scaffold.SameFamily("s7 1500", "S71500"),
+                "família da CPU compara sem hífen/espaço/caixa");
+            Check(!Scaffold.SameFamily("S7-1500", "S71200"), "família diferente reprova");
             // <Culture> é elemento, não atributo — ler errado deixa o projeto novo sem a língua do XML
             var cultures = Ops.XmlCultures(Fixture("ObMoldeAlarmes.xml")).ToList();
             Check(cultures.Contains("pt-BR") && cultures.Contains("en-US"),

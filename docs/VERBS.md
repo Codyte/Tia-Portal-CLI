@@ -33,7 +33,7 @@
 - `move-block --name X | --pattern P* --folder A/B [--out DIR] [--apply]  (exportÔåÆdeleteÔåÆimport; o Openness n├úo move bloco)`
 - `delete-type --name X [--apply]  (UDT)`
 - `import-type --file F.xml [--apply]`
-- `scaffold --manifest F.json [--replace OLD=NEW ...] [--apply] [--force]  (├írvore da lei + moldes num projeto novo; --replace troca no XML e nas pastas antes do import)`
+- `scaffold --manifest F.json [--replace OLD=NEW ...] [--apply] [--force]  (├írvore da lei + moldes num projeto novo; --replace troca no XML e nas pastas antes do import; "Cpu" no manifesto barra fam├¡lia errada, --force ignora)`
 
 ## hardware
 - `add-device --mlfb "6ES7 ..." --name X [--station S] [--group G] [--apply]`

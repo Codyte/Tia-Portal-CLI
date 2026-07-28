@@ -33,6 +33,13 @@ namespace Tia.Core
         /// <summary>Pares OLD=NEW da própria biblioteca (o `--replace` da linha de comando soma a estes).</summary>
         public List<string> Replace { get; set; }
 
+        /// <summary>
+        /// Família de CPU exigida pelos moldes ("S7-1500"). O import passa numa CPU de outra família,
+        /// mas o compile depois acusa `not supported for this instruction by the CPU used` — a checagem
+        /// falha antes de escrever. Vazio = qualquer família. `--force` ignora.
+        /// </summary>
+        public string Cpu { get; set; }
+
         public List<ScaffoldItem> Items { get; set; }
     }
 
@@ -130,6 +137,7 @@ namespace Tia.Core
             IList<KeyValuePair<string, string>> replaces = null, string outDir = null)
         {
             replaces = Merge(manifest, replaces);
+            var family = CheckFamily(session, plc, manifest.Cpu, force);
             var plan = Plan(manifest, baseDir, replaces, outDir);
             // projeto novo só tem a cultura de instalação do TIA; sem ativar as do XML, todo import falha
             var languages = Ops.EnsureCultures(session.Project,
@@ -185,12 +193,37 @@ namespace Tia.Core
             }
             return new Dictionary<string, object>
             {
+                { "cpu", family },
                 { "languagesActivated", languages },
                 { "folders", folders },
                 { "items", items },
                 { "created", items.Count(i => (string)((Dictionary<string, object>)i)["action"] == "create") },
                 { "applied", apply },
             };
+        }
+
+        /// <summary>
+        /// Família da estação do PLC ("System:Device.S71500" → "S71500"), conferida contra a exigida
+        /// pelo manifesto. Devolve a família encontrada; `--force` só avisa no resultado.
+        /// </summary>
+        private static string CheckFamily(TiaSession session, PlcSoftware plc, string wanted, bool force)
+        {
+            string actual;
+            try { actual = Hardware.FindDevice(session, plc.Name).TypeIdentifier; }
+            catch (Exception) { return null; }                 // sem estação legível, não bloqueia
+            var found = (actual ?? "").Split('.').Last();
+            if (string.IsNullOrEmpty(wanted) || SameFamily(wanted, found)) return found;
+            if (force) return found + " (mismatch ignorado por --force; manifesto pede " + wanted + ")";
+            throw new InvalidOperationException("PLC '" + plc.Name + "' é " + found + ", mas o manifesto exige "
+                + wanted + ". Os moldes não compilam noutra família (`not supported for this instruction by "
+                + "the CPU used`). Use --force pra importar mesmo assim.");
+        }
+
+        /// <summary>"S7-1500" == "S71500" == "s7 1500": só letras e dígitos contam.</summary>
+        internal static bool SameFamily(string wanted, string actual)
+        {
+            Func<string, string> norm = s => new string((s ?? "").Where(char.IsLetterOrDigit).ToArray()).ToUpperInvariant();
+            return norm(wanted) == norm(actual);
         }
 
         /// <summary>"already exists in this CPU" — o objeto está no projeto, mas noutra pasta.</summary>

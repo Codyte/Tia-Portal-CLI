@@ -217,6 +217,14 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
     referencia o membro — o resultado carrega o aviso). Smoke ida-e-volta no `PLC_ZERO`
     (`Genericos`, `FB FALHA_MOTOR_01`, `DB_DUMMY`), tudo revertido.
 
+13. ~~**`Cpu` no manifesto + validação de família**~~ ✅ 2026-07-28: `ScaffoldManifest.Cpu`
+    (`"S7-1500"` em `library/library.json`) é conferido contra o `TypeIdentifier` da estação do PLC
+    (`System:Device.S71500` → `S71500`; compara só letras e dígitos, então `S7-1500` == `s7 1500`).
+    Família errada falha **antes** de escrever, com o motivo (`not supported for this instruction by
+    the CPU used` só apareceria no compile); `--force` importa mesmo assim e devolve o mismatch em
+    `cpu`. Estação ilegível não bloqueia. Smoke dry: `PLC_1` (1200) barrado, `--force` passou,
+    `PLC_ZERO` (1500) passou.
+
 ## Otimização de tokens do CLI — ✅ 2026-07-28
 
 Levantada pelo custo real da reorganização da `1. FB Bilbiotecas` (6 chamadas de ferramenta e um

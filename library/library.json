@@ -1,5 +1,6 @@
 {
   "Source": "blocks",
+  "Cpu": "S7-1500",
   "Folders": [
     [
       "0. Main"

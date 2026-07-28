@@ -21,6 +21,20 @@ Portal × offline, não "metade das tarefas cada". Três proibições que susten
 Divisão de arquivos (quem escreve o quê) está no fim de cada track. Único ponto de contato é
 `docs/PLANO.md`, em seções diferentes: reler o arquivo imediatamente antes de editar.
 
+## Encerramento (quem fecha, e como)
+Track que terminar **não escreve `active.md`** — dois agentes sobrescrevendo o roteador é
+exatamente o atropelo que o split evita.
+1. Ao terminar, cada track escreve o resultado no **próprio** `trackN.md` (o que entregou, o que
+   caiu e por quê, o que a próxima sessão precisa), commita, marca `DONE:` no topo e para.
+2. **O track 1 é o dono do merge.** Ele só funde depois que `track2.md` estiver com `DONE:`.
+3. **No merge, a regra de "não ler o outro track" cai** — fundir exige ler os dois. O track 1 roda
+   `/handoff` normal: `--archive` dobra os dois track files num arquivo só e os apaga, e ele
+   escreve um `active.md` novo, único, com o resultado dos dois.
+4. Depois disso: `/clear` e **uma** sessão nova a partir desse handoff. Não continuar a conversa
+   com nenhum dos dois agentes velhos — cada um tem metade do quadro.
+Se um track travar ou for abandonado, o outro funde assim mesmo e registra o estado do travado
+como item aberto.
+
 ## Estado compartilhado
 - HEAD ao escrever: 740f6bc. Working tree limpo.
 - Portal aberto na sessão 1 com **Software de ETE Insular_Inicial_V21** (cópia de teste, backup do

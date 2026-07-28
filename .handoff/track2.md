@@ -1,4 +1,6 @@
 # Track 2 · Offline · biblioteca de blocos ("arsenal")
+DONE: (preencher ao terminar, commitar e parar. **Não escreva `active.md`** — o track 1 funde os
+dois. Protocolo em `active.md`.)
 
 Você é **100% offline: nunca chame `tia`, nunca rode `rebuild.ps1`**. O Portal pertence ao track 1
 (Openness é single-session; duas chamadas simultâneas derrubam a dele, e rebuild troca o `tia.exe`

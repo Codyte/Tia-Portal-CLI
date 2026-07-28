@@ -1,4 +1,6 @@
 # Track 1 · Portal · `replicate-fc --apply` contra dados reais
+DONE: (preencher ao terminar — você é o **dono do merge**: quando este e o `track2.md` estiverem
+DONE, leia os dois e rode `/handoff` pra fundir num `active.md` único. Protocolo em `active.md`.)
 
 Você é o **único agente autorizado a chamar `tia`**. O track 2 é 100% offline e não vai te
 atrapalhar. Leia `.handoff/active.md` (regras compartilhadas) antes; não leia `track2.md`.

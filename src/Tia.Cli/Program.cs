@@ -56,6 +56,7 @@ namespace Tia.Cli
                             + "(árvore da lei + moldes num projeto novo; --replace troca no XML e nas pastas antes do import)" } },
                     { "hardware", new[] { "add-device --mlfb \"6ES7 ...\" --name X [--station S] [--group G] [--apply]",
                         "delete-device --name X [--apply]",
+                        "list-attrs --device X [--item I] [--like SUB]  (read-only: atributos e valores do device item)",
                         "plug-module --device X [--item I] [--type TID] [--name N] [--pos P] [--apply]  "
                             + "(sem --type: lista slots livres; com --type: canPlug e, com --apply, pluga)",
                         "set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]",
@@ -454,6 +455,10 @@ namespace Tia.Cli
                     case "delete-device":
                         using (WriteLock(session, apply, verb))
                             result = Core.Hardware.DeleteDevice(session, Require(args, "--name"), apply);
+                        break;
+                    case "list-attrs":
+                        result = Core.Hardware.ListAttrs(session, Require(args, "--device"),
+                            OptionValue(args, "--item"), OptionValue(args, "--like"));
                         break;
                     case "plug-module":
                         using (WriteLock(session, apply, verb))

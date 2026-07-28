@@ -195,6 +195,38 @@ namespace Tia.Core
             return result;
         }
 
+        // ---------- list-attrs ----------
+
+        /// <summary>
+        /// Read-only: todos os atributos (nome + valor atual) de um device item. É a sonda pra
+        /// quando não se sabe se algo é submódulo plugável ou atributo — `GetAttributeInfos` é o
+        /// único jeito de ver o que o Portal expõe naquela versão. `--like` filtra por substring.
+        /// </summary>
+        public static object ListAttrs(TiaSession session, string deviceName, string itemName, string like)
+        {
+            var device = FindDevice(session, deviceName);
+            IEngineeringObject target = itemName == null
+                ? (IEngineeringObject)device : FindItem(device, itemName);
+            var attrs = new List<object>();
+            foreach (var info in target.GetAttributeInfos())
+            {
+                if (like != null && info.Name.IndexOf(like, StringComparison.OrdinalIgnoreCase) < 0) continue;
+                var value = TryGet(target, info.Name);
+                attrs.Add(new Dictionary<string, object>
+                {
+                    { "attribute", info.Name },
+                    { "value", value == null ? null : value.ToString() },
+                });
+            }
+            return new Dictionary<string, object>
+            {
+                { "device", device.Name },
+                { "item", itemName ?? device.Name },
+                { "count", attrs.Count },
+                { "attributes", attrs },
+            };
+        }
+
         private static object TryGet(IEngineeringObject obj, string attribute)
         {
             try { return obj.GetAttribute(attribute); }

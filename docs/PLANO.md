@@ -501,6 +501,11 @@ projeto. O que a arqueologia dos AML já responde, sem sondar a API:
   (head e drive object têm o mesmo nome). Com `--type`, o dry-run devolve `canPlug`
   (`CanPlugNew`) — é como se confirma um identificador de catálogo antes de escrever.
 - `delete-device --name X [--apply]` — `Project1` acumulou ~15 CPUs de teste; limpar era manual.
+- `list-attrs --device X [--item I] [--like SUB]` — read-only, `GetAttributeInfos` + valor atual.
+  Usada pra descartar a hipótese "telegrama é atributo": a `PROFINET interface` do G120 tem 20
+  atributos (`InterfaceOperatingMode`, `PnSubslotNumber`, `PrioritizedStartup`…) e o head 16
+  (`PlantDesignation`, `LocationIdentifier`…) — **nenhum de telegrama**. É submódulo plugável, e o
+  identificador de catálogo dele só sai plugando um na GUI e lendo o `TypeIdentifier`.
 
 ### Lint de camada no `audit` — ✅ 2026-07-28
 

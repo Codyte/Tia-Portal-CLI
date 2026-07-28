@@ -68,16 +68,25 @@ namespace Tia.Core
         {
             PlcBlockGroup current = plc.BlockGroup;
             if (string.IsNullOrEmpty(path)) return current;
-            foreach (var part in path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
+            var parts = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < parts.Length; )
             {
-                var next = current.Groups.Find(part);
+                // nome de pasta pode conter '/' ("3. Alarmes/Eventos/Falhas") — casa o mais longo primeiro
+                PlcBlockGroup next = null;
+                int taken = 1;
+                for (int j = parts.Length; j > i; j--)
+                {
+                    next = current.Groups.Find(string.Join("/", parts, i, j - i));
+                    if (next != null) { taken = j - i; break; }
+                }
                 if (next == null)
                 {
                     if (!create)
-                        throw new InvalidOperationException("Block folder not found: '" + part + "' (in '" + path + "').");
-                    next = current.Groups.Create(part);
+                        throw new InvalidOperationException("Block folder not found: '" + parts[i] + "' (in '" + path + "').");
+                    next = current.Groups.Create(parts[i]);
                 }
                 current = next;
+                i += taken;
             }
             return current;
         }

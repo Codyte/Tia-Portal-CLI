@@ -445,6 +445,39 @@ data block could not be updated`) que dois `compile --apply` não limpam — é 
 chamada↔instance DB, que o `delete`+`import` do `move-block` quebra. Em CPU virgem o problema não
 existe; num PLC já instalado, reimportar o chamador.
 
+### Instalação em 1 comando — ✅ 2026-07-28: CPU virgem → 4 erros (só hardware)
+
+`install-lib.ps1` deixou de instalar só os pacotes `1.x`: agora `library/packages.json` diz, por
+master copy, **o que o import sozinho não traz** — `requires` (dependência entre pacotes), `db`
+(ramos do `DB GLOBAL`), `tags` (tabelas) e `instances` (iDBs de molde). Medido numa CPU criada na
+hora (`PLC_ZERO`, `add-device` + o comando abaixo, nada mais):
+
+```
+pwsh scripts/install-lib.ps1 -Plc PLC_ZERO -Portal Project1 -Apply `
+  "0 Moldes,Motor 1 (MOTOR_01),3.1.0 Modelo,3.5 Barramento de Módulos,1.6 Comunicação Modbus"
+```
+
+→ 5 blocos base + 8 pacotes (4 puxados por `requires`) + 5 UDTs + `DB GLOBAL` + 2 tabelas de tag +
+4 iDBs + 2 compiles = **4 erros**, todos o mesmo `PARTIDA_MOTOR_1`: falta o G120 no hardware
+(`INVERSOR_MOTOR_01_CCM_01~PROFINET_interface~Standard_telegram_20`), os outros 2 são a cascata
+disso (`Block call was invalid...`). Sem `--apply` lista o que faria; repetir é no-op.
+
+**Master copy leva bloco, não leva UDT nem tabela de tag.** `PlcType`/`PlcTagTable` *são*
+`IMasterCopySource` (ajuda oficial, `85077725323.htm`), mas a master copy de uma *pasta de blocos*
+carrega só os blocos — sem os UDTs o compile acusa `Data type 'X' no longer exists`. Continuam vindo
+de XML (`import-type` de `library/blocks/<UDT>.xml`, `import-tags`), como já era com o `DB GLOBAL`:
+quem o DB precisa sai do próprio SCL composto (`: "MotorDados"` etc., regex no `install-lib`), o
+resto é `types[]` no `packages.json`. A tabela `MOTOR_AREA_01 (MOTOR_01)` (29 tags do motor) foi pra
+`library/tags/`.
+
+**Nome de pasta pode conter `/`** (`3. Alarmes/Eventos/Falhas`, `4. Motores/Bombas`,
+`5. Instrumentação / Atuadores`): `Ops.ResolveFolder` fatiava o caminho por `/` e nunca achava
+(`Block folder not found: '3. Alarmes'`). Agora casa o **prefixo mais longo** primeiro em cada
+nível — só na leitura (`create=false`); criar continua um segmento por vez.
+
+**Master copy de pasta leva os iDBs junto** — a dúvida que fechava a fatia. `Motor 1 (MOTOR_01)`
+(5 iDBs + 1 FC) importou os 6 num PLC de teste; chegam inconsistentes até os FBs-base existirem.
+
 ## Bugs abertos (smoke 2026-07-27)
 
 - ~~**`import-block` dry-run dá falso positivo em XML que não é bloco.**~~ ✅ corrigido

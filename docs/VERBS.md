@@ -1,6 +1,6 @@
 # Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao)
 
-`tia <verb> [--plc NAME] [--portal PROJETO|PID] [--apply]  (--portal obrigat├│rio se houver mais de um TIA Portal aberto)`
+`tia <verb> [--plc NAME] [--portal PROJETO|PID] [--apply]  (--portal obrigatório se houver mais de um TIA Portal aberto)`
 
 ## session
 - `open-project --file X.ap21 [--no-ui]`
@@ -11,29 +11,29 @@
 ## read
 - `info`
 - `list-devices`
-- `list-blocks [--folder A/B] [--type FB|FC|OB|GlobalDB|InstanceDB] [--count]  (sem filtro = ~500 blocos num projeto real; --count = s├│ o total por pasta)`
+- `list-blocks [--folder A/B] [--type FB|FC|OB|GlobalDB|InstanceDB] [--count]  (sem filtro = ~500 blocos num projeto real; --count = só o total por pasta)`
 - `list-tags`
 - `list-types`
-- `tree [--out DIR]  ÔåÉ COMECE AQUI: outline do PLC inteiro (blocos + tabelas de tag + UDTs) em plc-navi.md, ~26 KB num projeto de 476 blocos (o mesmo em JSON: 117 KB)`
+- `tree [--out DIR]  ← COMECE AQUI: outline do PLC inteiro (blocos + tabelas de tag + UDTs) em plc-navi.md, ~26 KB num projeto de 476 blocos (o mesmo em JSON: 117 KB)`
 - `find --pattern P* [--kind block|table|tag|type]`
-- `xref --name X  (bloco, tag, tabela ou UDT ÔåÆ o que ele usa)`
-- `trace --equipment AG-01  (s├¡mbolos do equipamento + quem referencia; ~9s em projeto grande)`
+- `xref --name X  (bloco, tag, tabela ou UDT → o que ele usa)`
+- `trace --equipment AG-01  (símbolos do equipamento + quem referencia; ~9s em projeto grande)`
 - `list-hmi [--device X]  (WinCC Unified: telas + tag tables)`
 - `export-block --name X [--out DIR]`
 - `export-tags --table X [--out DIR]`
-- `explain-block --name X | --file F.xml  (LAD/FBD ÔåÆ texto compacto; --file roda sem TIA)`
+- `explain-block --name X | --file F.xml  (LAD/FBD → texto compacto; --file roda sem TIA)`
 - `export-type --name X [--out DIR]`
-- `free-memory [--bytes N] [--from B] [--count K]  (buracos livres na ├írea %M; length -1 = at├® o fim)`
+- `free-memory [--bytes N] [--from B] [--count K]  (buracos livres na área %M; length -1 = até o fim)`
 
 ## structure
 - `create-folder --path A/B [--tags|--types] [--apply]`
 - `delete-folder --path A/B [--tags|--types] [--apply]`
 - `delete-block --name X [--apply]`
-- `create-instance-db --name X --of FB [--folder A/B] [--apply]  (molde importado por XML chega sem iDB ÔåÆ 'Missing instance DB')`
-- `move-block --name X | --pattern P* --folder A/B [--out DIR] [--apply]  (exportÔåÆdeleteÔåÆimport; o Openness n├úo move bloco)`
+- `create-instance-db --name X --of FB [--folder A/B] [--apply]  (molde importado por XML chega sem iDB → 'Missing instance DB')`
+- `move-block --name X | --pattern P* --folder A/B [--out DIR] [--apply]  (export→delete→import; o Openness não move bloco)`
 - `delete-type --name X [--apply]  (UDT)`
 - `import-type --file F.xml [--apply]`
-- `scaffold --manifest F.json [--replace OLD=NEW ...] [--apply] [--force]  (├írvore da lei + moldes num projeto novo; --replace troca no XML e nas pastas antes do import)`
+- `scaffold --manifest F.json [--replace OLD=NEW ...] [--apply] [--force]  (árvore da lei + moldes num projeto novo; --replace troca no XML e nas pastas antes do import)`
 
 ## hardware
 - `add-device --mlfb "6ES7 ..." --name X [--station S] [--group G] [--apply]`
@@ -46,38 +46,38 @@
 ## write
 - `import-block --file F [--folder A/B] [--replace OLD=NEW ...] [--apply]`
 - `import-source --file F.scl [--apply]`
-- `import-ladder --file F.scl [--name N] [--folder A/B] [--apply]  (SCL subset ÔåÆ LAD; dry-run works without TIA)`
+- `import-ladder --file F.scl [--name N] [--folder A/B] [--apply]  (SCL subset → LAD; dry-run works without TIA)`
 - `import-tags --file F [--folder A/B] [--apply]`
 - `clone --block N | --table T --replace OLD=NEW [--replace ...] [--at %M432.0] [--folder A/B] [--apply]`
 - `add-db-member --db X --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]`
-- `compile [--block X | --folder A/B] [--errors] [--apply]  (--errors = lista plana {where,message,count} em vez da ├írvore)`
+- `compile [--block X | --folder A/B] [--errors] [--apply]  (--errors = lista plana {where,message,count} em vez da árvore)`
 - `diff-block --file F.xml [--name X]  (read-only, normalized compare)`
 - `doctor [--verb V] [--config F]  (read-only preflight dos verbos geradores)`
-- `audit [--plc N] [--max 50]  (read-only: projeto ├ù lei de nomenclatura do PADRAO)`
+- `audit [--plc N] [--max 50]  (read-only: projeto × lei de nomenclatura do PADRAO)`
 - `gen-profinet --config F [--apply]`
 - `standardize-tags [--config F] [--apply]`
 - `gen-fault-ob [--config F] [--out DIR] [--apply]`
-- `replicate-fc --config F [--out DIR] [--apply] [--force]  (--force: sobrescreve pasta j├í populada)`
+- `replicate-fc --config F [--out DIR] [--apply] [--force]  (--force: sobrescreve pasta já populada)`
 - `gen-alarm-fc [--config F] [--out DIR] [--apply]`
 - `replicate-instruments --config F [--out DIR] [--apply]`
 
 ## library
 - `list-library --file X.al19`
 - `import-master-copy --file X.al19 --name M [--folder A/B] [--apply]`
-- `add-master-copy --file X.al21 (--name BLOCO | --folder A/B) [--lib-folder L] [--apply]  (PLC ÔåÆ library; --folder = pasta inteira = pacote; substitui se j├í existir)`
+- `add-master-copy --file X.al21 (--name BLOCO | --folder A/B) [--lib-folder L] [--apply]  (PLC → library; --folder = pasta inteira = pacote; substitui se já existir)`
 - `delete-master-copy --file X.al21 --name M [--apply]`
 
 ## multiuser
-- `list-server-projects --server HOST [--port N] [--http] [--keep-connection]  (read-only: projetos do TIA Project Server, lock e sess├Áes locais)`
+- `list-server-projects --server HOST [--port N] [--http] [--keep-connection]  (read-only: projetos do TIA Project Server, lock e sessões locais)`
 
 ## bulk
-- `snapshot  (invent├írio completo: devices + blocos + tabelas + UDTs de todo PLC)`
+- `snapshot  (inventário completo: devices + blocos + tabelas + UDTs de todo PLC)`
 - `find --pattern "*" --kind tag  (todas as tags)`
-- `ÔåÆ sa├¡da na casa das centenas de KB (snapshot = 251 KB, find de tag = 821 KB num projeto real). SEMPRE com --out-file, depois grep no arquivo. N├úo ├® leitura de orienta├º├úo: pra isso ├® `tree``
+- `→ saída na casa das centenas de KB (snapshot = 251 KB, find de tag = 821 KB num projeto real). SEMPRE com --out-file, depois grep no arquivo. Não é leitura de orientação: pra isso é `tree``
 
 ## batch
-- `run --script ops.json [--summary]  (JSON array de arg-arrays, uma sess├úo s├│; step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou. --summary = s├│ {steps,failed,errors[]}, sem o resultado de cada step)`
+- `run --script ops.json [--summary]  (JSON array de arg-arrays, uma sessão só; step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou. --summary = só {steps,failed,errors[]}, sem o resultado de cada step)`
 
 ## notas
-write verbs are dry-run unless --apply; default --out is .\workspace\exports; --out-file F.json (qualquer verbo: JSON completo no arquivo, stdout s├│ {file,bytes,count,head} ÔÇö use em find/snapshot/list-*/xref, que d├úo centenas de KB); --retry N (busy, default 3) --timeout SEC; exit: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA, 5 timeout
+write verbs are dry-run unless --apply; default --out is .\workspace\exports; --out-file F.json (qualquer verbo: JSON completo no arquivo, stdout só {file,bytes,count,head} — use em find/snapshot/list-*/xref, que dão centenas de KB); --retry N (busy, default 3) --timeout SEC; exit: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA, 5 timeout
 

@@ -1,0 +1,30 @@
+{
+  "_doc": "Metadados por master copy da .al21 — o que o import sozinho não traz: dependência entre pacotes, ramo do DB GLOBAL, tabelas de tag e iDBs de molde. Pacote sem entrada aqui = importa e pronto.",
+  "0 Moldes": {
+    "target": "",
+    "requires": ["1.1 Acionamento", "1.3 Instrumentação", "1.4 Alarmes e Falhas", "1.5 Diagnóstico"],
+    "db": ["afericao", "instrumentacao"],
+    "tags": [{ "file": "library/tags/Genericos.xml", "folder": "1. I/OS" }],
+    "instances": [
+      { "name": "FB FILTRO DE AMOSTRAGEM  ANALITICA_INSTR_01", "of": "FB FILTRO DE AMOSTRAGEM  ANALÍTICA", "folder": "0 Moldes" },
+      { "name": "FB AFERIÇÃO INSTRUMENTOS_INSTR_01", "of": "FB AFERIÇÃO INSTRUMENTOS", "folder": "0 Moldes" },
+      { "name": "FB LIMITES OPERACAO SENSOR_INSTR_01", "of": "FB LIMITES_OPERACAO_SENSOR", "folder": "0 Moldes" },
+      { "name": "FB TOTALIZADOR INSTR_01", "of": "FB TOTALIZADOR", "folder": "0 Moldes" }
+    ]
+  },
+  "Motor 1 (MOTOR_01)": {
+    "target": "4. Motores/Bombas/4.1 Inversores_CCM_01/4.1.1 AREA_01",
+    "requires": ["1.1 Acionamento"],
+    "db": ["motores"],
+    "tags": [{ "file": "library/tags/MOTOR_AREA_01 (MOTOR_01).xml", "folder": "3. Partidas" }]
+  },
+  "3.1.0 Modelo": {
+    "target": "3. Alarmes/Eventos/Falhas/3.1 Alarmes Words",
+    "requires": ["1.4 Alarmes e Falhas"]
+  },
+  "3.5 Barramento de Módulos": {
+    "target": "3. Alarmes/Eventos/Falhas",
+    "requires": ["1.5 Diagnóstico"],
+    "types": ["Diag_Hardware"]
+  }
+}

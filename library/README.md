@@ -43,6 +43,9 @@ Dois detalhes que mordem:
   ([Ops.cs:245](../src/Tia.Core/Ops.cs#L245)): o bloco `FB_LIGA/DESLIGA MODO AUTO` vira
   `FB_LIGA_DESLIGA MODO AUTO.xml`. O manifesto usa o nome do **arquivo**, o batch usa o nome do
   **objeto** — por isso os dois não são idênticos nesse item.
+- **Hash muda todo export.** Cada XML carrega `<DocumentInfo><Created>` com o timestamp da
+  exportação, então os 66 arquivos mudam de hash a cada rodada mesmo sem mudança no projeto.
+  Para comparar duas exportações, ignore essa linha (`(Get-Content f) -notmatch '<Created>'`).
 
 ## Como instalar num projeto
 

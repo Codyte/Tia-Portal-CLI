@@ -205,7 +205,7 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
     scaffoldado dá 26 erros de ambiente ausente (system/clock memory bits, tags de IO, iDB dos
     moldes) — nada de import; detalhe e pendência em `docs/PADRAO.md`.
 
-## Biblioteca de blocos ("arsenal") — 🔄 fatia 1 fechada 2026-07-28 (`library/`)
+## Biblioteca de blocos ("arsenal") — 🔄 fatia 1 fechada + testada no Portal 2026-07-28 (`library/`)
 
 Problema que resolve: os 4 geradores só rodam se o projeto do cliente **já tiver** os moldes e a
 lei de pastas (`doctor` checa `FC_Modelo`, `OB_MOLDE_ALARMES`, `DB GLOBAL`, `2. Alarmes`,
@@ -242,8 +242,12 @@ a anotação anterior de "falta ordenar UDT antes de DB/FC" estava obsoleta, `Ra
   o que cada gerador exige, como repor, como instalar, limitação do `Folder` de UDT, e as duas
   pegadinhas do export (compile antes; `ExportPath` troca `/` do nome por `_` no arquivo, caso
   `FB_LIGA/DESLIGA MODO AUTO`).
-- Não testado contra Portal (track offline). Teste pendente: `scaffold --manifest
-  library/library.json` dry contra o projeto de referência → esperado 66/66 `skip (exists)`.
+- **Testado contra o Portal ✅ 2026-07-28** (projeto `Software de ETE Insular_Inicial_V21`):
+  `scaffold --manifest library/library.json` dry = 26 pastas `none (exists)` + **66/66
+  `skip (exists)`**, zero item não encontrado (manifesto casa 1:1 com o payload e com o projeto);
+  `run --script library/export-all.json` = **66/66 `ok`** num attach. Duas rodadas de export
+  seguidas dão 66 arquivos byte-idênticos exceto `<DocumentInfo><Created>` (timestamp) — hash muda
+  sempre, conteúdo não; anotado no README pra ninguém caçar diff fantasma.
 
 **Gap real do `scaffold`** (backlog, exige rebuild): item UDT ignora `Folder` —
 [`Scaffold.cs:126`](../src/Tia.Core/Scaffold.cs#L126) importa todo `SW.Types.*` em

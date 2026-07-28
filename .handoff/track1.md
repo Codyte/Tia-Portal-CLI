@@ -13,7 +13,7 @@ contra projeto scaffoldado (PLANO F3). Tudo já está preparado em disco — exe
   do verbo, não herdado. Confirmar com `pwsh scripts/tia.ps1 info` (3s) antes de começar.
 - Escrita fora de `ClaudeTest/` **autorizada** para os passos abaixo (decisão do user, 2026-07-28).
 
-## Passos (cada um com critério de aceite)
+## Next steps (cada um com critério de aceite)
 1. **Dry** — `replicate-fc-soprador.json` é *config*, não script de batch:
    ```
    pwsh scripts/tia.ps1 replicate-fc --config docs/examples/replicate-fc-soprador.json --out-file workspace/rep-dry.json
@@ -33,7 +33,7 @@ contra projeto scaffoldado (PLANO F3). Tudo já está preparado em disco — exe
 5. Fechar F8: atualizar **só a linha F8** da tabela de fases em `docs/PLANO.md` com o resultado.
    Se o track 2 estiver editando o PLANO, esperar — reler o arquivo imediatamente antes do Edit.
 
-## Se der errado
+## Open / blockers — se der errado
 - `Inconsistent blocks ... cannot be exported` → faltou compilar: `compile --apply` e repetir.
   (Todo import deixa o alvo e quem o referencia inconsistente — regra dura do CLAUDE.md.)
 - Chamada pendurada com `tia.exe` vivo e CPU ~0 → diálogo de aceite do Openness na tela.

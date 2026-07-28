@@ -15,7 +15,7 @@ de tag e **66 itens**, aplicáveis por `tia scaffold --manifest ... --apply`. Do
    `DB GLOBAL.xml` com **869 KB** da planta real do cliente (equipamentos, tags, estrutura).
    Commitar isso publica IP de engenharia de cliente — irreversível na prática (fork, cache, índice).
 
-## Passos
+## Next steps
 1. **`library/` na raiz**, payload local, manifesto versionado:
    - mover `workspace/padrao/*.xml` → `library/blocks/`;
    - `library/library.json` = cópia do `scaffold-padrao.json` com `Source` apontando p/ `blocks`;

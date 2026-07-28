@@ -298,8 +298,14 @@ falta a camada de dependência. Num S7-1200 o import morre em `The property 'Dis
 supported for this instruction by the CPU used`: **molde é dependente da família da CPU**, exige
 1500. Orçamento de erro no 1500: só os 4 moldes = 65 erros → + biblioteca (51 blocos, `library.json`,
 árvore de pastas) = 33 → + `set-memory-bytes` = **25**, todos de tag de projeto e iDB de molde.
-`scaffold --force` não resolve colisão (não apaga antes; falha com *"already exists in this CPU"*) —
-pra reinstalar por cima, `delete-block`/`delete-type` primeiro.
+~~`scaffold --force` não resolve colisão (não apaga antes; falha com *"already exists in this CPU"*)~~
+✅ **corrigido 2026-07-28**: `ImportOptions.Override` só sobrescreve **na mesma pasta**, e nome de
+bloco é único no PLC — o mesmo nome noutra pasta faz o import recusar. `--force` agora tenta o
+import e, só se a exceção for *"already exists"*, apaga o objeto antigo e importa no lugar pedido
+(`action: "deleted+imported"`). O caminho comum (mesma pasta) continua no `Override`, que preserva
+o vínculo chamada↔iDB. Medido no `PLC_ZERO`: `move-block` de `FB BITS TO WORD` pra `ZZ Force` →
+`scaffold --force --apply` → bloco de volta em `1. FB Bilbiotecas`, `ZZ Force` vazia, compile nos
+mesmos 4 erros (sem cicatriz).
 
 **Núcleo genérico (fatia 2, autoral e publicável — desenho original)**. Os 66 itens de
 hoje são exports do cliente e nunca vão pro Git; o que fecha `doctor` verde num projeto qualquer

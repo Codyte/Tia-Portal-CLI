@@ -145,26 +145,42 @@ namespace Tia.Core
             {
                 bool isTag = item.RootType == "SW.Tags.PlcTagTable";
                 bool isType = item.RootType != null && item.RootType.StartsWith("SW.Types", StringComparison.Ordinal);
-                bool exists = item.Name != null && (isTag
-                    ? Ops.FindTagTable(plc.TagTableGroup, item.Name) != null
+                IEngineeringObject existing = item.Name == null ? null : (isTag
+                    ? (IEngineeringObject)Ops.FindTagTable(plc.TagTableGroup, item.Name)
                     : isType
-                        ? Ops.FindType(plc.TypeGroup, item.Name) != null
-                        : Ops.FindBlock(plc, item.Name) != null);
+                        ? (IEngineeringObject)Ops.FindType(plc.TypeGroup, item.Name)
+                        : Ops.FindBlock(plc, item.Name));
+                bool exists = existing != null;
                 bool write = !exists || force;
+                string action = exists ? (force ? "override" : "skip (exists)") : "create";
 
                 if (apply && write)
                 {
-                    var file = new FileInfo(item.File);
-                    if (isTag) ResolveTagPath(plc, item.Folder, true).TagTables.Import(file, ImportOptions.Override);
-                    else if (isType) ResolveTypePath(plc, item.Folder, true).Types.Import(file, ImportOptions.Override);
-                    else ResolveBlockPath(plc, item.Folder, true).Blocks.Import(file, ImportOptions.Override);
+                    Action import = () =>
+                    {
+                        var file = new FileInfo(item.File);
+                        if (isTag) ResolveTagPath(plc, item.Folder, true).TagTables.Import(file, ImportOptions.Override);
+                        else if (isType) ResolveTypePath(plc, item.Folder, true).Types.Import(file, ImportOptions.Override);
+                        else ResolveBlockPath(plc, item.Folder, true).Blocks.Import(file, ImportOptions.Override);
+                    };
+                    try { import(); }
+                    catch (Exception ex) when (force && exists && AlreadyInAnotherFolder(ex))
+                    {
+                        // Override só sobrescreve na mesma pasta; nome de bloco é único no PLC, então
+                        // o mesmo nome noutra pasta faz o import recusar. --force = reinstalar por
+                        // cima: apaga o antigo e importa no lugar pedido. Quebra o vínculo
+                        // chamada↔iDB de quem chamava — reimportar o chamador depois (PLANO).
+                        DeleteObject(existing);
+                        import();
+                        action = "deleted+imported";
+                    }
                 }
                 items.Add(new Dictionary<string, object>
                 {
                     { "name", item.Name },
                     { "kind", item.RootType },
                     { "folder", string.Join(" > ", item.Folder) },
-                    { "action", exists ? (force ? "override" : "skip (exists)") : "create" },
+                    { "action", action },
                 });
             }
             return new Dictionary<string, object>
@@ -175,6 +191,26 @@ namespace Tia.Core
                 { "created", items.Count(i => (string)((Dictionary<string, object>)i)["action"] == "create") },
                 { "applied", apply },
             };
+        }
+
+        /// <summary>"already exists in this CPU" — o objeto está no projeto, mas noutra pasta.</summary>
+        private static bool AlreadyInAnotherFolder(Exception ex)
+        {
+            for (Exception e = ex; e != null; e = e.InnerException)
+                if (e.Message.IndexOf("already exist", StringComparison.OrdinalIgnoreCase) >= 0)
+                    return true;
+            return false;
+        }
+
+        private static void DeleteObject(IEngineeringObject obj)
+        {
+            var block = obj as PlcBlock;
+            if (block != null) { block.Delete(); return; }
+            var type = obj as PlcType;
+            if (type != null) { type.Delete(); return; }
+            var table = obj as PlcTagTable;
+            if (table != null) { table.Delete(); return; }
+            throw new InvalidOperationException("--force não sabe apagar " + obj.GetType().Name + ".");
         }
 
         private static object FolderAction(PlcSoftware plc, List<string> segments, bool tags, bool apply)

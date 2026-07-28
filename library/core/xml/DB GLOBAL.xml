@@ -1,0 +1,323 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V21" />
+  <DocumentInfo>
+    <Created>2026-07-28T16:54:16.2898592Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, G200, G220, S200, S210, S220, Innomotics MVD</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>Tech WebApplication</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Professional</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.GlobalDB ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface>
+        <Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+          <Section Name="Static">
+            <Member Name="AREA_01" Datatype="Struct" Remanence="NonRetain" Accessibility="Public">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+              <Member Name="ALARMES" Datatype="Struct">
+                <AttributeList>
+                  <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                  <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                  <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                  <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                </AttributeList>
+                <Member Name="WORD_ALARMES_1" Datatype="Word">
+                  <AttributeList>
+                    <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                  </AttributeList>
+                </Member>
+                <Member Name="WORD_ALARMES_2" Datatype="Word">
+                  <AttributeList>
+                    <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                  </AttributeList>
+                </Member>
+                <Member Name="WORD_ALARMES_3" Datatype="Word">
+                  <AttributeList>
+                    <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                  </AttributeList>
+                </Member>
+                <Member Name="WORD_ALARMES_4" Datatype="Word">
+                  <AttributeList>
+                    <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                  </AttributeList>
+                </Member>
+                <Member Name="WORD_ALARMES_5" Datatype="Word">
+                  <AttributeList>
+                    <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                  </AttributeList>
+                </Member>
+                <Member Name="WORD_ALARMES_6" Datatype="Word">
+                  <AttributeList>
+                    <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                  </AttributeList>
+                </Member>
+                <Member Name="WORD_ALARMES_7" Datatype="Word">
+                  <AttributeList>
+                    <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                  </AttributeList>
+                </Member>
+                <Member Name="WORD_ALARMES_8" Datatype="Word">
+                  <AttributeList>
+                    <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                  </AttributeList>
+                  <Comment>
+                    <MultiLanguageText Lang="en-US">equipamentos da area -- o gerador de FC de alarme casa o nome do tag com o nome do membro pra descobrir a que area o alarme pertence</MultiLanguageText>
+                  </Comment>
+                </Member>
+              </Member>
+              <Member Name="BOMBA_01" Datatype="&quot;MotorDados&quot;">
+                <AttributeList>
+                  <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                  <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                  <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                  <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+                </AttributeList>
+                <Sections>
+                  <Section Name="None">
+                    <Member Name="STS_STATUS_MOTOR" Datatype="Byte" />
+                    <Member Name="STS_MODO_OPERACAO" Datatype="Byte" />
+                    <Member Name="STS_VELOCIDADE" Datatype="Int" />
+                    <Member Name="STS_CORRENTE" Datatype="Real" />
+                    <Member Name="STS_HORIMETRO" Datatype="UInt" />
+                    <Member Name="STS_LIGADO" Datatype="Bool" />
+                    <Member Name="STS_FALHA" Datatype="Bool" />
+                    <Member Name="STS_DISPONIVEL" Datatype="Bool" />
+                    <Member Name="STS_INTERTRAVAMENTO_AUTOMATICO" Datatype="Bool" />
+                    <Member Name="CMD_LIGA" Datatype="Bool" />
+                    <Member Name="CMD_DESLIGA" Datatype="Bool" />
+                    <Member Name="CMD_RESET_FALHA" Datatype="Bool" />
+                    <Member Name="CMD_RESET_HORIMETRO" Datatype="Bool" />
+                    <Member Name="CMD_MANUAL" Datatype="Bool" />
+                    <Member Name="CMD_MANUTENCAO" Datatype="Bool" />
+                    <Member Name="CMD_HABILITA_AUTO" Datatype="Bool" />
+                    <Member Name="CMD_HABILITA_ALTERNANCIA" Datatype="Bool" />
+                    <Member Name="CMD_SETPOINT_MANUAL" Datatype="Int" />
+                    <Member Name="CMD_SETPOINT_AUTO" Datatype="Int" />
+                    <Member Name="SP_TEMPO_LIGADO_AUTO" Datatype="Real" />
+                    <Member Name="SP_TEMPO_DESLIGADO_AUTO" Datatype="Real" />
+                    <Member Name="SP_TEMPO_ROTATIVIDADE" Datatype="Real" />
+                    <Member Name="SP_TEMPO_ESPERA_PARTIDA" Datatype="Real" />
+                    <Member Name="RESERVA_BOOL_01" Datatype="Bool" />
+                    <Member Name="RESERVA_BOOL_02" Datatype="Bool" />
+                    <Member Name="RESERVA_INT_01" Datatype="Int" />
+                    <Member Name="RESERVA_REAL_01" Datatype="Real" />
+                  </Section>
+                </Sections>
+              </Member>
+              <Member Name="VALVULA_01" Datatype="&quot;ValvDados&quot;">
+                <AttributeList>
+                  <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                  <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                  <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                  <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+                </AttributeList>
+                <Sections>
+                  <Section Name="None">
+                    <Member Name="STS_VALVULA_ABERTA" Datatype="Bool" />
+                    <Member Name="STS_VALVULA_FECHADA" Datatype="Bool" />
+                    <Member Name="STS_MODO_LOCAL" Datatype="Bool" />
+                    <Member Name="STS_MODO_REMOTO" Datatype="Bool" />
+                    <Member Name="STS_VALVULA_AUTOMATICO" Datatype="Bool" />
+                    <Member Name="STS_FALHA_TORQUE_ABERTURA" Datatype="Bool" />
+                    <Member Name="STS_FALHA_TORQUE_FECHAMENTO" Datatype="Bool" />
+                    <Member Name="STS_FALHA_TEMPO_CURSO" Datatype="Bool" />
+                    <Member Name="STS_VALVULA_FEEDBACK_POSICAO" Datatype="Int" />
+                    <Member Name="CMD_VALVULA_ABRE" Datatype="Bool" />
+                    <Member Name="CMD_VALVULA_FECHA" Datatype="Bool" />
+                    <Member Name="CMD_MANUAL" Datatype="Bool" />
+                    <Member Name="CMD_RESET_FALHA" Datatype="Bool" />
+                    <Member Name="SP_SETPOINT_MANUAL" Datatype="Real" />
+                    <Member Name="SP_SETPOINT_AUTO" Datatype="Real" />
+                    <Member Name="SP_TEMPO_CURSO" Datatype="Real" />
+                    <Member Name="RESERVA_BOOL_01" Datatype="Bool" />
+                    <Member Name="RESERVA_BOOL_02" Datatype="Bool" />
+                    <Member Name="RESERVA_INT_01" Datatype="Int" />
+                    <Member Name="RESERVA_REAL_01" Datatype="Real" />
+                  </Section>
+                </Sections>
+              </Member>
+            </Member>
+            <Member Name="HARDWARE_INTERRUPT" Datatype="Struct" Remanence="NonRetain" Accessibility="Public">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+              <Member Name="ALARMES_MODULOS" Datatype="Struct">
+                <AttributeList>
+                  <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                  <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                  <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                  <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                </AttributeList>
+                <Member Name="QA-00" Datatype="Struct">
+                  <AttributeList>
+                    <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                  </AttributeList>
+                  <Comment>
+                    <MultiLanguageText Lang="en-US">um struct por painel/rack de I/O</MultiLanguageText>
+                  </Comment>
+                  <Member Name="WORD_1" Datatype="Word">
+                    <AttributeList>
+                      <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                      <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                      <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                      <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                    </AttributeList>
+                  </Member>
+                  <Member Name="WORD_2" Datatype="Word">
+                    <AttributeList>
+                      <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                      <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                      <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                      <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                    </AttributeList>
+                  </Member>
+                </Member>
+                <Member Name="QA-01" Datatype="Struct">
+                  <AttributeList>
+                    <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                    <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                  </AttributeList>
+                  <Member Name="WORD_1" Datatype="Word">
+                    <AttributeList>
+                      <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                      <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                      <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                      <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                    </AttributeList>
+                  </Member>
+                  <Member Name="WORD_2" Datatype="Word">
+                    <AttributeList>
+                      <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                      <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                      <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                      <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+                    </AttributeList>
+                  </Member>
+                </Member>
+              </Member>
+            </Member>
+          </Section>
+        </Sections>
+      </Interface>
+      <IsOnlyStoredInLoadMemory>false</IsOnlyStoredInLoadMemory>
+      <IsWriteProtectedInAS>false</IsWriteProtectedInAS>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <Name>DB GLOBAL</Name>
+      <Namespace />
+      <Number>1</Number>
+      <ProgrammingLanguage>DB</ProgrammingLanguage>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text> Esqueleto -- so a forma que os geradores exigem, nenhum dado de projeto.
+ Importar DEPOIS de MotorDados/ValvDados (referencia os dois).
+
+ Contrato consumido pelos geradores:
+   gen-alarm-fc  -&gt; "DB GLOBAL".&lt;AREA&gt;.ALARMES.WORD_ALARMES_&lt;n&gt;, n a partir de 1
+                    (AlarmFc.cs:282; a area e achada por nome em AlarmFc.FindParentStruct)
+   gen-fault-ob  -&gt; "DB GLOBAL".HARDWARE_INTERRUPT.ALARMES_MODULOS.&lt;QA-xx&gt;.WORD_&lt;n&gt;.%X&lt;bit&gt;
+                    (FaultOb.cs:23, uma word por 16 modulos do rack)
+ Uma area por secao da planta; duplicar o bloco AREA_01 e renomear.</Text>
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.GlobalDB>
+</Document>

@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V21" />
+  <DocumentInfo>
+    <Created>2026-07-28T16:54:16.2567819Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, G200, G220, S200, S210, S220, Innomotics MVD</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>Tech WebApplication</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Professional</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V21</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Types.PlcStruct ID="0">
+    <AttributeList>
+      <Interface>
+        <Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+          <Section Name="None">
+            <Member Name="PRINCIPAL" Datatype="&quot;MotorDados&quot;">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+              </AttributeList>
+              <Sections>
+                <Section Name="None">
+                  <Member Name="STS_STATUS_MOTOR" Datatype="Byte" />
+                  <Member Name="STS_MODO_OPERACAO" Datatype="Byte" />
+                  <Member Name="STS_VELOCIDADE" Datatype="Int" />
+                  <Member Name="STS_CORRENTE" Datatype="Real" />
+                  <Member Name="STS_HORIMETRO" Datatype="UInt" />
+                  <Member Name="STS_LIGADO" Datatype="Bool" />
+                  <Member Name="STS_FALHA" Datatype="Bool" />
+                  <Member Name="STS_DISPONIVEL" Datatype="Bool" />
+                  <Member Name="STS_INTERTRAVAMENTO_AUTOMATICO" Datatype="Bool" />
+                  <Member Name="CMD_LIGA" Datatype="Bool" />
+                  <Member Name="CMD_DESLIGA" Datatype="Bool" />
+                  <Member Name="CMD_RESET_FALHA" Datatype="Bool" />
+                  <Member Name="CMD_RESET_HORIMETRO" Datatype="Bool" />
+                  <Member Name="CMD_MANUAL" Datatype="Bool" />
+                  <Member Name="CMD_MANUTENCAO" Datatype="Bool" />
+                  <Member Name="CMD_HABILITA_AUTO" Datatype="Bool" />
+                  <Member Name="CMD_HABILITA_ALTERNANCIA" Datatype="Bool" />
+                  <Member Name="CMD_SETPOINT_MANUAL" Datatype="Int" />
+                  <Member Name="CMD_SETPOINT_AUTO" Datatype="Int" />
+                  <Member Name="SP_TEMPO_LIGADO_AUTO" Datatype="Real" />
+                  <Member Name="SP_TEMPO_DESLIGADO_AUTO" Datatype="Real" />
+                  <Member Name="SP_TEMPO_ROTATIVIDADE" Datatype="Real" />
+                  <Member Name="SP_TEMPO_ESPERA_PARTIDA" Datatype="Real" />
+                  <Member Name="RESERVA_BOOL_01" Datatype="Bool" />
+                  <Member Name="RESERVA_BOOL_02" Datatype="Bool" />
+                  <Member Name="RESERVA_INT_01" Datatype="Int" />
+                  <Member Name="RESERVA_REAL_01" Datatype="Real" />
+                </Section>
+              </Sections>
+            </Member>
+            <Member Name="RESERVA" Datatype="&quot;MotorDados&quot;">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+              </AttributeList>
+              <Comment>
+                <MultiLanguageText Lang="en-US">--- comando do par (IHM) ---</MultiLanguageText>
+              </Comment>
+              <Sections>
+                <Section Name="None">
+                  <Member Name="STS_STATUS_MOTOR" Datatype="Byte" />
+                  <Member Name="STS_MODO_OPERACAO" Datatype="Byte" />
+                  <Member Name="STS_VELOCIDADE" Datatype="Int" />
+                  <Member Name="STS_CORRENTE" Datatype="Real" />
+                  <Member Name="STS_HORIMETRO" Datatype="UInt" />
+                  <Member Name="STS_LIGADO" Datatype="Bool" />
+                  <Member Name="STS_FALHA" Datatype="Bool" />
+                  <Member Name="STS_DISPONIVEL" Datatype="Bool" />
+                  <Member Name="STS_INTERTRAVAMENTO_AUTOMATICO" Datatype="Bool" />
+                  <Member Name="CMD_LIGA" Datatype="Bool" />
+                  <Member Name="CMD_DESLIGA" Datatype="Bool" />
+                  <Member Name="CMD_RESET_FALHA" Datatype="Bool" />
+                  <Member Name="CMD_RESET_HORIMETRO" Datatype="Bool" />
+                  <Member Name="CMD_MANUAL" Datatype="Bool" />
+                  <Member Name="CMD_MANUTENCAO" Datatype="Bool" />
+                  <Member Name="CMD_HABILITA_AUTO" Datatype="Bool" />
+                  <Member Name="CMD_HABILITA_ALTERNANCIA" Datatype="Bool" />
+                  <Member Name="CMD_SETPOINT_MANUAL" Datatype="Int" />
+                  <Member Name="CMD_SETPOINT_AUTO" Datatype="Int" />
+                  <Member Name="SP_TEMPO_LIGADO_AUTO" Datatype="Real" />
+                  <Member Name="SP_TEMPO_DESLIGADO_AUTO" Datatype="Real" />
+                  <Member Name="SP_TEMPO_ROTATIVIDADE" Datatype="Real" />
+                  <Member Name="SP_TEMPO_ESPERA_PARTIDA" Datatype="Real" />
+                  <Member Name="RESERVA_BOOL_01" Datatype="Bool" />
+                  <Member Name="RESERVA_BOOL_02" Datatype="Bool" />
+                  <Member Name="RESERVA_INT_01" Datatype="Int" />
+                  <Member Name="RESERVA_REAL_01" Datatype="Real" />
+                </Section>
+              </Sections>
+            </Member>
+            <Member Name="CMD_CHAVE_SELECAO_IHM" Datatype="Byte">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+              <Comment>
+                <MultiLanguageText Lang="en-US">0=alternancia 1=forca principal 2=forca reserva</MultiLanguageText>
+              </Comment>
+            </Member>
+            <Member Name="CMD_HABILITA_ALTERNANCIA" Datatype="Bool">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+            </Member>
+            <Member Name="CMD_APLICAR_CADASTRO" Datatype="Bool">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+              <Comment>
+                <MultiLanguageText Lang="en-US">copia SP_* do par pros dois motores</MultiLanguageText>
+              </Comment>
+            </Member>
+            <Member Name="CMD_RESET_FALHA_PAR" Datatype="Bool">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+              <Comment>
+                <MultiLanguageText Lang="en-US">--- status do par ---</MultiLanguageText>
+              </Comment>
+            </Member>
+            <Member Name="STS_ATIVO_E_RESERVA" Datatype="Bool">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+              <Comment>
+                <MultiLanguageText Lang="en-US">TRUE = o RESERVA esta assumindo o servico</MultiLanguageText>
+              </Comment>
+            </Member>
+            <Member Name="STS_PAR_DISPONIVEL" Datatype="Bool">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+              <Comment>
+                <MultiLanguageText Lang="en-US">pelo menos um dos dois apto a partir</MultiLanguageText>
+              </Comment>
+            </Member>
+            <Member Name="STS_PAR_EM_FALHA" Datatype="Bool">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+              <Comment>
+                <MultiLanguageText Lang="en-US">os dois indisponiveis</MultiLanguageText>
+              </Comment>
+            </Member>
+            <Member Name="STS_TEMPO_PARA_ALTERNAR" Datatype="Real">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+              <Comment>
+                <MultiLanguageText Lang="en-US">[h] restante ate o proximo rodizio --- parametros do par ---</MultiLanguageText>
+              </Comment>
+            </Member>
+            <Member Name="SP_TEMPO_ROTATIVIDADE" Datatype="Real">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+              <Comment>
+                <MultiLanguageText Lang="en-US">[h] intervalo de alternancia</MultiLanguageText>
+              </Comment>
+            </Member>
+            <Member Name="SP_TEMPO_SOBREPOSICAO" Datatype="Real">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+              <Comment>
+                <MultiLanguageText Lang="en-US">[s] marcha simultanea na troca --- reserva ---</MultiLanguageText>
+              </Comment>
+            </Member>
+            <Member Name="RESERVA_BOOL_01" Datatype="Bool">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+            </Member>
+            <Member Name="RESERVA_INT_01" Datatype="Int">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+            </Member>
+            <Member Name="RESERVA_REAL_01" Datatype="Real">
+              <AttributeList>
+                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+                <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+              </AttributeList>
+            </Member>
+          </Section>
+        </Sections>
+      </Interface>
+      <IsFailsafeCompliant>false</IsFailsafeCompliant>
+      <Name>MotorPrincipal</Name>
+      <Namespace />
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text> Par principal/reserva com alternancia. Composicao em vez de campos duplicados:
+ os dois motores sao "MotorDados", e so o que e do PAR mora aqui.
+ Importar DEPOIS de MotorDados (o compilador exige o tipo referenciado ja existir).</Text>
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Types.PlcStruct>
+</Document>

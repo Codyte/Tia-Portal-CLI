@@ -1,0 +1,13 @@
+[
+  ["import-source", "--file", "library/core/MotorDados.scl", "--apply"],
+  ["import-source", "--file", "library/core/ValvDados.scl", "--apply"],
+  ["import-source", "--file", "library/core/MotorPrincipal.scl", "--apply"],
+  ["import-source", "--file", "library/core/DB GLOBAL.scl", "--apply"],
+  ["import-source", "--file", "library/core/FB BITS TO WORD.scl", "--apply"],
+  ["compile", "--apply"],
+  ["export-type", "--name", "MotorDados", "--out", "library/core/xml"],
+  ["export-type", "--name", "ValvDados", "--out", "library/core/xml"],
+  ["export-type", "--name", "MotorPrincipal", "--out", "library/core/xml"],
+  ["export-block", "--name", "DB GLOBAL", "--out", "library/core/xml"],
+  ["export-block", "--name", "FB BITS TO WORD", "--out", "library/core/xml"]
+]

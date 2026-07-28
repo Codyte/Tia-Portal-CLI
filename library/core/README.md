@@ -31,10 +31,21 @@ pwsh scripts/tia.ps1 compile --apply
 Validado 2026-07-28 nessa ordem, **0 erros / 0 warnings** (rodado com nomes sufixados `_T` pra não
 colidir com os blocos homônimos do projeto de referência).
 
-## Por que não entra no `scaffold` ainda
+## Instalação: `xml/` + `core.json`
 
 `Scaffold.Plan` lê o tipo do objeto do XML ([Scaffold.cs:84](../../src/Tia.Core/Scaffold.cs#L84)) —
-não conhece `.scl`. E `import-source` não tem `--folder`: bloco nasce na raiz. Os dois juntos
-significam que o caminho de instalação do núcleo é assar o `.scl` em `.xml` uma vez
-(`import-source` → `compile --apply` → `export-block`) e versionar o XML ao lado do `.scl`, com um
-manifesto próprio. O `.scl` continua sendo a fonte da verdade — é ele que se lê e se diffa.
+não conhece `.scl`. E `import-source` não tem `--folder`: bloco nasce na raiz. Por isso o `.scl` é
+**assado** uma vez em XML e o XML é versionado ao lado dele. O `.scl` continua sendo a fonte da
+verdade — é ele que se lê e se diffa.
+
+```powershell
+pwsh scripts/tia.ps1 run --script library/core/bake.json --summary   # .scl → xml/ (só ao mudar o .scl)
+pwsh scripts/tia.ps1 scaffold --manifest library/core/core.json --apply   # instala num projeto novo
+```
+
+`bake.json` = os 5 `import-source` na ordem obrigatória + `compile --apply` + `export-type`/
+`export-block` pra `xml/`. `core.json` = manifesto do `scaffold` (a ordem de import sai do `Rank`,
+UDT antes de FB antes de GlobalDB — a ordem do manifesto não importa).
+
+Validado 2026-07-28 em projeto novo (`Project1`, S7-1200): delete dos 5 → `scaffold --apply`
+= 5 created → `compile --apply` = **0 erros / 0 warnings**. Sem `Folder`: tudo nasce na raiz.

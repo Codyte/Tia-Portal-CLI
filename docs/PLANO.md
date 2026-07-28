@@ -205,6 +205,18 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
     scaffoldado dá 26 erros de ambiente ausente (system/clock memory bits, tags de IO, iDB dos
     moldes) — nada de import; detalhe e pendência em `docs/PADRAO.md`.
 
+12. ~~**Edição pontual (fechar a superfície de escrita)**~~ ✅ 2026-07-28:
+    `set-tag --table T --name N [--type] [--address] [--comment] [--rename]` (PlcTag tem esses
+    atributos RW; `Name` só V20+ — dry mostra o antes→depois, nada a mudar = `skip (no change)`),
+    `rename-block --name X --to NEW` (bloco **ou** UDT via `SetAttribute("Name", …)` — mesmo
+    caminho do GUI: xref do iDB antes e depois mostra o mesmo caller, **sem** export/delete/import
+    e sem cicatriz no vínculo chamada↔iDB), `edit-db-member --db X --name M [--type] [--rename]`
+    (membro de DB não é atributo: export → XML → import Override, núcleo `ChangeInXml` testado
+    offline; troca de tipo remove o `<Sections>` da instância antiga; **dois edits seguidos exigem
+    `compile --apply` no meio**, o export recusa DB inconsistente; rename **não** corrige quem
+    referencia o membro — o resultado carrega o aviso). Smoke ida-e-volta no `PLC_ZERO`
+    (`Genericos`, `FB FALHA_MOTOR_01`, `DB_DUMMY`), tudo revertido.
+
 ## Otimização de tokens do CLI — ✅ 2026-07-28
 
 Levantada pelo custo real da reorganização da `1. FB Bilbiotecas` (6 chamadas de ferramenta e um

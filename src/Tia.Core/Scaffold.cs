@@ -30,6 +30,9 @@ namespace Tia.Core
         /// <summary>Tag table folders to create, same segment form.</summary>
         public List<List<string>> TagFolders { get; set; }
 
+        /// <summary>Pares OLD=NEW da própria biblioteca (o `--replace` da linha de comando soma a estes).</summary>
+        public List<string> Replace { get; set; }
+
         public List<ScaffoldItem> Items { get; set; }
     }
 
@@ -76,6 +79,7 @@ namespace Tia.Core
             IList<KeyValuePair<string, string>> replaces = null, string outDir = null)
         {
             if (manifest == null) throw new ArgumentException("Manifest is empty.");
+            replaces = Merge(manifest, replaces);
             var source = manifest.Source ?? "";
             if (!Path.IsPathRooted(source)) source = Path.Combine(baseDir ?? ".", source);
 
@@ -101,6 +105,16 @@ namespace Tia.Core
             return items.OrderBy(i => i.Rank).ToList(); // stable: manifest order kept inside a rank
         }
 
+        /// <summary>Pares do manifesto primeiro; os da linha de comando só entram se a chave for nova.</summary>
+        internal static List<KeyValuePair<string, string>> Merge(ScaffoldManifest manifest,
+            IList<KeyValuePair<string, string>> extra)
+        {
+            var list = Clone.ParseReplaces(manifest == null ? null : manifest.Replace);
+            foreach (var pair in extra ?? new List<KeyValuePair<string, string>>())
+                if (!list.Any(x => x.Key == pair.Key)) list.Add(pair);
+            return list;
+        }
+
         /// <summary>Aplica os pares nos segmentos de pasta — o nome do cliente também mora na árvore.</summary>
         internal static List<string> Apply(IList<string> segments, IList<KeyValuePair<string, string>> replaces)
         {
@@ -115,6 +129,7 @@ namespace Tia.Core
             string baseDir, bool apply, bool force,
             IList<KeyValuePair<string, string>> replaces = null, string outDir = null)
         {
+            replaces = Merge(manifest, replaces);
             var plan = Plan(manifest, baseDir, replaces, outDir);
             // projeto novo só tem a cultura de instalação do TIA; sem ativar as do XML, todo import falha
             var languages = Ops.EnsureCultures(session.Project,

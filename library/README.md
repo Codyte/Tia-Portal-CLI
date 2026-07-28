@@ -88,20 +88,27 @@ Por tipo: 33 FB · 13 UDT (`SW.Types.PlcStruct`) · 8 instance DB · 4 FC · 3 g
 `Diag_Hardware` · `Tlg_20_Out` · `Tlg_20_In` · `HACH_DataType` · `MotorPrincipal` · `MotorDados` ·
 `SULZER_Compressor_Comando` · `SULZER_Compressor_Status`
 
-### `1. FB Bilbiotecas` — 33 FBs + 1 iDB (todos os FBs do manifesto estão aqui)
-Acionamento: `FB CONDIÇÃO DE PARTIDA` · `FB_PARTIDA_INVERSOR` · `FB FALHA` ·
-`FB_LIGA_DESLIGA MODO AUTO` · `FB MODOS DE OPERAÇÃO` · `FB INTERTRAVAMENTO_PAINEL` ·
-`FB SUCÇÃO OK` · `FB VALVULA` · `FB_HORÍMETRO` · `FB CONTADOR`.
-Inversor/telegrama: `FB INVERSOR SIEMENS` · `SINA_SPEED_TLG20` · `FB AFERIÇÃO INVERSORES` ·
-`FB STATUS ECSX`.
-Instrumentação: `FB AFERIÇÃO INSTRUMENTOS` · `FB LIMITES_OPERACAO_SENSOR` ·
-`FB FILTRO DE AMOSTRAGEM  ANALÍTICA` (dois espaços no nome) · `FB SETPOINT MANUAL` ·
-`FB SETPOINT ESCALONAMENTO` · `FB TOTALIZADOR` · `AUX_PID`.
-Alarme/diagnóstico: `FB ALARME DIGITAL` · `FB BITS TO WORD` · `FB BITS TO DOUBLE WORD` ·
-`FB DIAG MODULES` · `DIAG to STRING` + `DIAG to STRING_DB` (iDB) · `PROFINET_DEVICE_STATES` ·
-`FB PROFINET DEVICE STATES to BIT` · `FB PROFINET DEVICE STATES to Word`.
-Modbus: `FB MODBUS MASTER BLOCK` · `FB MODBUS MASTER BLOCK MMW` · `FB MODBUS SCAN DRIVERS V1` ·
-`FB MODBUS SCAN DRIVERS V2`.
+### `1. FB Bilbiotecas` — 33 FBs + 1 iDB, em 7 subpastas por função
+Reorganizada em 2026-07-28 (era plana): move = `export-block` → `delete-block` → `import-block
+--folder` → `compile --apply`, nessa ordem. Importar antes de apagar falha com *"A program element
+with this fully qualified name already exists in this CPU"* — o Openness não move bloco, e não
+existe verbo `move-block`.
+
+- **`1.1 Acionamento`** (7): `FB_LIGA/DESLIGA MODO AUTO` · `FB_PARTIDA_INVERSOR` ·
+  `FB CONDIÇÃO DE PARTIDA` · `FB MODOS DE OPERAÇÃO` · `FB VALVULA` · `FB INTERTRAVAMENTO_PAINEL` ·
+  `FB SUCÇÃO OK`
+- **`1.2 Inversores`** (4): `FB INVERSOR SIEMENS` · `SINA_SPEED_TLG20` · `FB AFERIÇÃO INVERSORES` ·
+  `FB STATUS ECSX`
+- **`1.3 Instrumentação`** (6): `FB AFERIÇÃO INSTRUMENTOS` · `FB LIMITES_OPERACAO_SENSOR` ·
+  `FB FILTRO DE AMOSTRAGEM  ANALÍTICA` (dois espaços no nome) · `FB SETPOINT ESCALONAMENTO` ·
+  `FB SETPOINT MANUAL` · `AUX_PID`
+- **`1.4 Alarmes e Falhas`** (2): `FB FALHA` · `FB ALARME DIGITAL`
+- **`1.5 Diagnóstico`** (6): `FB DIAG MODULES` · `DIAG to STRING` + `DIAG to STRING_DB` (iDB) ·
+  `PROFINET_DEVICE_STATES` · `FB PROFINET DEVICE STATES to BIT` · `FB PROFINET DEVICE STATES to Word`
+- **`1.6 Comunicação Modbus`** (4): `FB MODBUS MASTER BLOCK` · `FB MODBUS MASTER BLOCK MMW` ·
+  `FB MODBUS SCAN DRIVERS V1` · `FB MODBUS SCAN DRIVERS V2`
+- **`1.7 Utilitários`** (5): `FB BITS TO WORD` · `FB BITS TO DOUBLE WORD` · `FB CONTADOR` ·
+  `FB TOTALIZADOR` · `FB_HORÍMETRO`
 
 ### moldes dos geradores
 | pasta | itens |

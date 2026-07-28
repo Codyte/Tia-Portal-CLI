@@ -29,7 +29,8 @@
     ],
     [
       "1. FB Bilbiotecas",
-      "1.2 Inversores"
+      "1.1 Acionamento",
+      "1.1.1 Inversores"
     ],
     [
       "1. FB Bilbiotecas",
@@ -46,10 +47,6 @@
     [
       "1. FB Bilbiotecas",
       "1.6 Comunicação Modbus"
-    ],
-    [
-      "1. FB Bilbiotecas",
-      "1.7 Utilitários"
     ],
     [
       "2. Fluxo de Controle"
@@ -197,15 +194,15 @@
     {
       "File": "FB BITS TO WORD.xml",
       "Folder": [
-        "1. FB Bilbiotecas",
-        "1.7 Utilitários"
+        "1. FB Bilbiotecas"
       ]
     },
     {
       "File": "FB AFERIÇÃO INVERSORES.xml",
       "Folder": [
         "1. FB Bilbiotecas",
-        "1.2 Inversores"
+        "1.1 Acionamento",
+        "1.1.1 Inversores"
       ]
     },
     {
@@ -219,21 +216,22 @@
       "File": "FB INVERSOR SIEMENS.xml",
       "Folder": [
         "1. FB Bilbiotecas",
-        "1.2 Inversores"
+        "1.1 Acionamento",
+        "1.1.1 Inversores"
       ]
     },
     {
       "File": "FB CONTADOR.xml",
       "Folder": [
-        "1. FB Bilbiotecas",
-        "1.7 Utilitários"
+        "1. FB Bilbiotecas"
       ]
     },
     {
       "File": "SINA_SPEED_TLG20.xml",
       "Folder": [
         "1. FB Bilbiotecas",
-        "1.2 Inversores"
+        "1.1 Acionamento",
+        "1.1.1 Inversores"
       ]
     },
     {
@@ -254,7 +252,8 @@
       "File": "FB STATUS ECSX.xml",
       "Folder": [
         "1. FB Bilbiotecas",
-        "1.2 Inversores"
+        "1.1 Acionamento",
+        "1.1.1 Inversores"
       ]
     },
     {
@@ -316,8 +315,7 @@
     {
       "File": "FB BITS TO DOUBLE WORD.xml",
       "Folder": [
-        "1. FB Bilbiotecas",
-        "1.7 Utilitários"
+        "1. FB Bilbiotecas"
       ]
     },
     {
@@ -330,8 +328,7 @@
     {
       "File": "FB_HORÍMETRO.xml",
       "Folder": [
-        "1. FB Bilbiotecas",
-        "1.7 Utilitários"
+        "1. FB Bilbiotecas"
       ]
     },
     {
@@ -358,8 +355,7 @@
     {
       "File": "FB TOTALIZADOR.xml",
       "Folder": [
-        "1. FB Bilbiotecas",
-        "1.7 Utilitários"
+        "1. FB Bilbiotecas"
       ]
     },
     {

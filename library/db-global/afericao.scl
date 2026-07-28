@@ -1,0 +1,4 @@
+// Ramo exigido pela aferição analogica (MOLDE_ANALOGS / MOLDE TOT1).
+AFERICAO : STRUCT
+   AFERICAO_ANALOGICA : "Aferição CMD";
+END_STRUCT;

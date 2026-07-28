@@ -29,6 +29,7 @@
 - `create-folder --path A/B [--tags|--types] [--apply]`
 - `delete-folder --path A/B [--tags|--types] [--apply]`
 - `delete-block --name X [--apply]`
+- `create-instance-db --name X --of FB [--folder A/B] [--apply]  (molde importado por XML chega sem iDB ÔåÆ 'Missing instance DB')`
 - `move-block --name X | --pattern P* --folder A/B [--out DIR] [--apply]  (exportÔåÆdeleteÔåÆimport; o Openness n├úo move bloco)`
 - `delete-type --name X [--apply]  (UDT)`
 - `import-type --file F.xml [--apply]`

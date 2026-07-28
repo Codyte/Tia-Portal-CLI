@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V21" />
+  <SW.Tags.PlcTagTable ID="0">
+    <AttributeList>
+      <Name>Genericos</Name>
+    </AttributeList>
+    <ObjectList>
+      <SW.Tags.PlcTag ID="2" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <ExternalAccessible>true</ExternalAccessible>
+          <ExternalVisible>true</ExternalVisible>
+          <ExternalWritable>true</ExternalWritable>
+          <LogicalAddress>%M5520.0</LogicalAddress>
+          <Name>INSTR_01_STS_SEM_4mA</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="3" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <ExternalAccessible>true</ExternalAccessible>
+          <ExternalVisible>true</ExternalVisible>
+          <ExternalWritable>true</ExternalWritable>
+          <LogicalAddress>%M5520.1</LogicalAddress>
+          <Name>INSTR_01_STS_LEITURA_ALTA</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="4" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <ExternalAccessible>true</ExternalAccessible>
+          <ExternalVisible>true</ExternalVisible>
+          <ExternalWritable>true</ExternalWritable>
+          <LogicalAddress>%M5520.2</LogicalAddress>
+          <Name>INSTR_01_STS_LEITURA_BAIXA</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="5" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <ExternalAccessible>true</ExternalAccessible>
+          <ExternalVisible>true</ExternalVisible>
+          <ExternalWritable>true</ExternalWritable>
+          <LogicalAddress>%M5520.3</LogicalAddress>
+          <Name>INSTR_01_STS_LEITURA_MUITO_ALTA</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="6" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <ExternalAccessible>true</ExternalAccessible>
+          <ExternalVisible>true</ExternalVisible>
+          <ExternalWritable>true</ExternalWritable>
+          <LogicalAddress>%M5520.4</LogicalAddress>
+          <Name>INSTR_01_STS_LEITURA_MUITO_BAIXA</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="7" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <ExternalAccessible>true</ExternalAccessible>
+          <ExternalVisible>true</ExternalVisible>
+          <ExternalWritable>true</ExternalWritable>
+          <LogicalAddress>%M5520.5</LogicalAddress>
+          <Name>MOTOR_01_STS_MOTOR_DESANERADOR_MODO_LOCAL_1</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="8" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <ExternalAccessible>true</ExternalAccessible>
+          <ExternalVisible>true</ExternalVisible>
+          <ExternalWritable>true</ExternalWritable>
+          <LogicalAddress>%M5520.6</LogicalAddress>
+          <Name>MOTOR_01_STS_MOTOR_DESANERADOR_MODO_REMOTO_1</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="9" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <ExternalAccessible>true</ExternalAccessible>
+          <ExternalVisible>true</ExternalVisible>
+          <ExternalWritable>true</ExternalWritable>
+          <LogicalAddress>%M5520.7</LogicalAddress>
+          <Name>QA_01_CMD_RESET_REMOTA</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="10" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <ExternalAccessible>true</ExternalAccessible>
+          <ExternalVisible>true</ExternalVisible>
+          <ExternalWritable>true</ExternalWritable>
+          <LogicalAddress>%M5521.0</LogicalAddress>
+          <Name>CCM_01_STS_PAINEL_OK</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="11" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Real</DataTypeName>
+          <ExternalAccessible>true</ExternalAccessible>
+          <ExternalVisible>true</ExternalVisible>
+          <ExternalWritable>true</ExternalWritable>
+          <LogicalAddress>%MD5522</LogicalAddress>
+          <Name>INSTR_01_PV_MACRO_MEDIDOR_VAZAO_INSTANTANEA</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+      <SW.Tags.PlcTag ID="12" CompositionName="Tags">
+        <AttributeList>
+          <DataTypeName>Bool</DataTypeName>
+          <ExternalAccessible>true</ExternalAccessible>
+          <ExternalVisible>true</ExternalVisible>
+          <ExternalWritable>true</ExternalWritable>
+          <LogicalAddress>%M5521.2</LogicalAddress>
+          <Name>INSTR_01_TOTALIZACAO_MEDIDOR_VAZAO</Name>
+        </AttributeList>
+      </SW.Tags.PlcTag>
+    </ObjectList>
+  </SW.Tags.PlcTagTable>
+</Document>

@@ -1,0 +1,7 @@
+// Ramo exigido pelo molde de instrumento (MOLDE_ANALOGS). Um membro por instrumento.
+// PRELIMINAR = nome de area herdado do molde; renomear exige reimportar o molde.
+PRELIMINAR : STRUCT
+   INSTRUMENTACAO : STRUCT
+      INSTR_01_MEDIDOR_DE_VAZAO_ULTRASSONICO : "SensorDados";
+   END_STRUCT;
+END_STRUCT;

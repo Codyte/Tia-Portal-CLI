@@ -46,6 +46,8 @@ namespace Tia.Cli
                     { "structure", new[] { "create-folder --path A/B [--tags|--types] [--apply]",
                         "delete-folder --path A/B [--tags|--types] [--apply]",
                         "delete-block --name X [--apply]",
+                        "create-instance-db --name X --of FB [--folder A/B] [--apply]" +
+                        "  (molde importado por XML chega sem iDB → 'Missing instance DB')",
                         "move-block --name X | --pattern P* --folder A/B [--out DIR] [--apply]  "
                             + "(export→delete→import; o Openness não move bloco)",
                         "delete-type --name X [--apply]  (UDT)",
@@ -430,6 +432,11 @@ namespace Tia.Cli
                             result = Core.Library.AddMasterCopy(session, session.GetPlc(plcName),
                                 Require(args, "--file"), OptionValue(args, "--name"),
                                 OptionValue(args, "--folder"), OptionValue(args, "--lib-folder"), apply);
+                        break;
+                    case "create-instance-db":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Ops.CreateInstanceDb(session.GetPlc(plcName), Require(args, "--name"),
+                                Require(args, "--of"), OptionValue(args, "--folder"), apply);
                         break;
                     case "delete-master-copy":
                         using (WriteLock(session, apply, verb))

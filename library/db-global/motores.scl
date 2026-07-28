@@ -1,0 +1,6 @@
+// Ramo exigido pelo molde de partida (PARTIDA_MOTOR_1). Um membro por motor.
+CASA_DE_MOTORES : STRUCT
+   MOTORES_AREA_01 : STRUCT
+      MOTOR_AREA_01_MOTOR_01 : "MotorDados";
+   END_STRUCT;
+END_STRUCT;

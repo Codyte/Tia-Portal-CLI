@@ -235,6 +235,30 @@ namespace Tia.Core
             return group.TagTables.Count + group.Groups.Cast<PlcTagTableUserGroup>().Sum(g => CountTables(g));
         }
 
+        /// <summary>
+        /// Cria o DB de instância de uma chamada de FB. Molde importado por XML chega sem os iDBs
+        /// (o Portal os cria no editor, o export não os leva) → "Missing instance DB" no compile.
+        /// </summary>
+        public static object CreateInstanceDb(PlcSoftware plc, string name, string ofBlock,
+            string folderPath, bool apply)
+        {
+            var fb = FindBlock(plc, ofBlock) as FB;
+            if (fb == null)
+                throw new InvalidOperationException("FB '" + ofBlock + "' not found (instance DB needs an FB).");
+            var existing = FindBlock(plc, name);
+            var result = new Dictionary<string, object>
+            {
+                { "name", name }, { "instanceOf", fb.Name }, { "folder", folderPath ?? "" },
+                { "action", existing == null ? "create" : "skip (exists)" }, { "applied", apply },
+            };
+            if (!apply || existing != null) return result;
+            var group = ResolveFolder(plc, folderPath, true);
+            var db = group.Blocks.CreateInstanceDB(name, true, 1, fb.Name);
+            result["created"] = db.Name;
+            result["number"] = db.Number;
+            return result;
+        }
+
         public static object DeleteBlock(PlcSoftware plc, string name, bool apply)
         {
             var block = FindBlock(plc, name);

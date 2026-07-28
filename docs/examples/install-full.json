@@ -1,0 +1,11 @@
+[
+  ["scaffold", "--manifest", "library/generic.json", "--apply"],
+  ["compile", "--apply"],
+  ["import-source", "--file", "workspace/db-global.scl", "--apply"],
+  ["import-tags", "--file", "library/tags/Genericos.xml", "--folder", "1. I/OS", "--apply"],
+  ["create-instance-db", "--name", "FB FILTRO DE AMOSTRAGEM  ANALITICA_INSTR_01", "--of", "FB FILTRO DE AMOSTRAGEM  ANALÍTICA", "--folder", "0 Moldes", "--apply"],
+  ["create-instance-db", "--name", "FB AFERIÇÃO INSTRUMENTOS_INSTR_01", "--of", "FB AFERIÇÃO INSTRUMENTOS", "--folder", "0 Moldes", "--apply"],
+  ["create-instance-db", "--name", "FB LIMITES OPERACAO SENSOR_INSTR_01", "--of", "FB LIMITES_OPERACAO_SENSOR", "--folder", "0 Moldes", "--apply"],
+  ["create-instance-db", "--name", "FB TOTALIZADOR INSTR_01", "--of", "FB TOTALIZADOR", "--folder", "0 Moldes", "--apply"],
+  ["compile", "--apply", "--errors"]
+]

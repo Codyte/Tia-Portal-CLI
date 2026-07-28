@@ -398,6 +398,44 @@ acaso, inclusive o do cliente. Agora: 1 instância → attacha; mais de uma sem 
 listando `PID:projeto`; `--portal` casa por substring (nome do projeto ou PID) e recusa ambíguo.
 Vale pra `open-project`/`create-project` também.
 
+### `DB GLOBAL` composto + tags genéricas + iDBs — ✅ 2026-07-28: 87 erros → 2
+
+O que sobrava depois dos pacotes 1.x zerarem era **a planta**, não os blocos. Três peças, medidas
+numa CPU virgem (`PLC_FULL`, manifesto inteiro via `scaffold`):
+
+| passo | erros |
+|---|---|
+| `scaffold --manifest library/generic.json` | 81 |
+| `+ DB GLOBAL` composto (`import-source`) | 18 |
+| `+ library/tags/Genericos.xml` (`import-tags`) | 7 → 6 |
+| `+ 4 `create-instance-db`` | **2** |
+
+Os 2 finais são `Tag "INVERSOR_MOTOR_01_CCM_01~PROFINET_interface~Standard_telegram_20" not defined`
+— exige o G120 no hardware do projeto, não tem lado de software. Receita reproduzível em
+[`docs/examples/install-full.json`](examples/install-full.json) (`tia run --script`).
+
+**`DB GLOBAL` por fragmentos.** SCL não tem include e o DB é um arquivo só, então a composição é
+textual: `scripts/compose-db.ps1 motores,instrumentacao,afericao` = cabeçalho + `00-core.scl`
+(sempre) + os ramos pedidos + rodapé → `workspace/db-global.scl`. Fragmentos em
+`library/db-global/`; o ramo é do *molde* que o consome (`motores` ← `PARTIDA_MOTOR_1`,
+`instrumentacao`/`afericao` ← `MOLDE_ANALOGS`/`MOLDE TOT1`), e cada um é meia dúzia de linhas
+porque o tipo já existe como UDT (`"MotorDados"`, `"SensorDados"`, `"Aferição CMD"`).
+
+**`import-source` exige UTF-8 com BOM.** Sem BOM o acento chega corrompido, a referência a
+`"Aferição CMD"` não resolve e o erro é só
+`Error when calling method 'GenerateBlocksFromSource'` — nada sobre encoding. `compose-db.ps1`
+grava com BOM por isso.
+
+**`create-instance-db --name X --of FB [--folder A/B]`.** Molde exportado em XML chega sem os DBs de
+instância das suas chamadas (o Portal os cria no editor; o export não os leva) → `Missing instance
+DB`. O nome esperado está no próprio XML do molde, em `<Instance Scope="GlobalVariable"><Component
+Name="...">`, já com o mapa `Replace` aplicado (`FQIT-01` → `INSTR_01`).
+
+`library/tags/Genericos.xml` = 11 tags que os moldes usam e nenhuma tabela do manifesto trazia,
+alocadas em `%M` a partir de 5520 (`free-memory` achou o buraco). Tipo errado aparece como
+`The data type Real of the actual parameter does not match ... Bool` — foi assim que
+`INSTR_01_TOTALIZACAO_MEDIDOR_VAZAO` virou `Bool`.
+
 **Movida da árvore feita** (manifesto = fonte, `library/generic.json`): `1.7 Utilitários` dissolvida
 (5 blocos soltos em `1. FB Bilbiotecas`), `1.2 Inversores` → `1. FB Bilbiotecas/1.1 Acionamento/
 1.1.1 Inversores`. `move-block` refletiu no `PLC_GEN` (9 blocos).

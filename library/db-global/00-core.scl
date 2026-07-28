@@ -1,0 +1,34 @@
+// Tronco do DB GLOBAL: o que todo projeto tem. Contrato dos geradores:
+//   gen-alarm-fc -> "DB GLOBAL".<AREA>.ALARMES.WORD_ALARMES_<n>
+//   gen-fault-ob -> "DB GLOBAL".HARDWARE_INTERRUPT.ALARMES_MODULOS.<QA_xx>.WORD_<n>.%X<bit>
+AREA_01 : STRUCT
+   ALARMES : STRUCT
+      WORD_ALARMES_1 : Word;
+      WORD_ALARMES_2 : Word;
+      WORD_ALARMES_3 : Word;
+      WORD_ALARMES_4 : Word;
+      WORD_ALARMES_5 : Word;
+      WORD_ALARMES_6 : Word;
+      WORD_ALARMES_7 : Word;
+      WORD_ALARMES_8 : Word;
+   END_STRUCT;
+   BOMBA_01 : "MotorDados";
+   VALVULA_01 : "ValvDados";
+END_STRUCT;
+
+HARDWARE_INTERRUPT : STRUCT
+   ALARMES_MODULOS : STRUCT
+      QA_00 : STRUCT               // um struct por painel/rack de I/O
+         WORD_1 : Word;
+         WORD_2 : Word;
+      END_STRUCT;
+      QA_01 : STRUCT
+         WORD_1 : Word;
+         WORD_2 : Word;
+      END_STRUCT;
+   END_STRUCT;
+   ALARMES_PROFINET : STRUCT
+      ALARMES_CONEXAO_PROFINET_WORD1 : Word;
+      ALARMES_DISPOSITIVOS_PROFINET_WORD1 : Word;
+   END_STRUCT;
+END_STRUCT;

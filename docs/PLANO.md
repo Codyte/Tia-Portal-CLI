@@ -204,6 +204,44 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
     scaffoldado dá 26 erros de ambiente ausente (system/clock memory bits, tags de IO, iDB dos
     moldes) — nada de import; detalhe e pendência em `docs/PADRAO.md`.
 
+## Biblioteca de blocos ("arsenal") — proposta 2026-07-28, análise feita, execução não começou
+
+Problema que resolve: os 4 geradores só rodam se o projeto do cliente **já tiver** os moldes e a
+lei de pastas (`doctor` checa `FC_Modelo`, `OB_MOLDE_ALARMES`, `DB GLOBAL`, `2. Alarmes`,
+`3. Partidas`, UDTs `MotorDados`/`ValvDados`). Sem isso, `doctor` vermelho e acabou. Com biblioteca
+instalável, vira um comando.
+
+**Empacotamento decidido**: `.scl` como padrão, `.xml` só pro que precisa nascer em LAD.
+- `.scl` via `import-source` — texto diffável, **linguagem SCL inteira** (compilador da Siemens),
+  gera FC/FB/OB/DB/UDT ([Ops.cs:311](../src/Tia.Core/Ops.cs#L311) faz `GenerateBlocksFromSource` e
+  apaga a fonte). Imune à versão do Engineering. Limitação: bloco nasce na raiz (verbo não tem
+  `--folder`); contorno com verbos já validados = `export-block` → `import-block --folder` →
+  `delete-block`.
+- `.xml` via `import-block --folder` — escolhe pasta, preserva LAD e comentários multilíngues.
+  Custo: `<Number>` colide (foi preciso reescrever no teste de 2026-07-28) e o `<Engineering
+  version="V21">` prende à versão.
+- `.al19` via `import-master-copy` — **descartado**: binário, não diffa, só se produz na mão.
+- `import-ladder` (subset nosso) **não serve** pra escrever a biblioteca: sem timer nem aritmética.
+
+**Instalação**: `tia scaffold --manifest library/library.json --apply` — sem verbo novo,
+`scaffold` já é "árvore de pastas + moldes num projeto"; `scaffold-padrao.json` (505 ln) já é um
+manifesto de biblioteca. Falta o `scaffold` ordenar UDT antes de DB/FC/OB (hoje ordena
+tabela → FC → OB).
+
+**Conteúdo, por valor**: (1) os pré-requisitos dos geradores — é onde está o retorno;
+(2) utilitários genéricos (escala raw↔EU + clamp, debounce de falha, borda + selo com falha/reset,
+horímetro, contador de partidas, bits→word e inverso, first-out, watchdog de comunicação, rampa de
+setpoint); (3) diagnóstico (OB de erro de módulo já existe em `ModuleErrorMolde.xml`).
+
+**Procedência — resolver antes de publicar**: os XMLs de `docs/examples/` saíram de projeto real de
+cliente (nomes de equipamento, tags, estrutura de DB) e o repo é MIT/publicável. Sanitizar com
+`clone --replace OLD=NEW`, que já faz reescrita de símbolo.
+
+**Fatia 1 sugerida**: `library/` na raiz + `library.json` no formato `ScaffoldManifest`; teste =
+instalar em `ClaudeTest/` e `compile` 0 erros (mesma bateria de 2026-07-28, um `run --script`).
+Pergunta aberta ao user: fatia 1 = 3 utilitários (escala, debounce, bits→word) ou os moldes dos
+geradores?
+
 ## Bugs abertos (smoke 2026-07-27)
 
 - ~~**`import-block` dry-run dá falso positivo em XML que não é bloco.**~~ ✅ corrigido

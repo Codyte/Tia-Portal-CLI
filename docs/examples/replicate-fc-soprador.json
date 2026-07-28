@@ -1,0 +1,9 @@
+{
+  "_comment": "replicate-fc escopado a UM tipo de equipamento (Soprador) — raio de acao minimo para o primeiro --apply contra dados reais. Igual a replicate-fc.json, so que EquipmentTypes tem 1 item. Alvos esperados: Soprador 2..6 (S-01B..S-01F), 6 blocos cada, todos irmaos do molde Soprador 1 (S-01A).",
+  "BlocksFolder": "4. Motores/Bombas",
+  "EquipmentTypes": ["Soprador"],
+  "UdtNames": ["MotorDados", "MotorPrincipal", "ValvDados"],
+  "SourceNumbersToReplace": ["100", "300", "303"],
+  "GlobalDb": "DB GLOBAL",
+  "StartNumber": 300
+}

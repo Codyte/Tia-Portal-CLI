@@ -1,12 +1,12 @@
 // NAV INDEX
-// 29-77    Info / Devices (device items recursivos)
-// 78-157   Blocks e Tree (outline navindex dos Program blocks → plc-navi.md)
-// 158-197  TagTables / Types
-// 198-254  find — wildcard sobre nomes de bloco, tabela, tag e UDT
-// 255-275  snapshot — inventário completo
-// 276-310  ResolveSymbol / FindTag — resolve nome → bloco, tag, tabela ou UDT
-// 311-349  xref — cross-references de um símbolo (o que ele usa)
-// 350-427  trace — símbolos de um equipamento + quem referencia (xref reverso)
+// 29-78    Info / Devices (device items recursivos)
+// 79-108   Blocks
+// 109-180  Tree — outline do PLC (blocos + tabelas + UDTs) → plc-navi.md; leitura de orientação
+// 181-223  TagTables / Types
+// 224-280  find — wildcard sobre nomes de bloco, tabela, tag e UDT
+// 281-333  snapshot — inventário completo (volume bruto, usar com --out-file)
+// 334-381  ResolveSymbol / FindTag / xref — resolve nome → símbolo, cross-references
+// 382-445  trace — símbolos de um equipamento + quem referencia (xref reverso)
 using System;
 using System.Collections.Generic;
 using System.IO;

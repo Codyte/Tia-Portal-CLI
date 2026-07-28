@@ -42,6 +42,7 @@ namespace Tia.Cli
                     { "structure", new[] { "create-folder --path A/B [--tags] [--apply]",
                         "delete-folder --path A/B [--tags] [--apply]",
                         "delete-block --name X [--apply]",
+                        "delete-type --name X [--apply]  (UDT)",
                         "import-type --file F.xml [--apply]",
                         "scaffold --manifest F.json [--apply] [--force]  (árvore da lei + moldes num projeto novo)" } },
                     { "hardware", new[] { "add-device --mlfb \"6ES7 ...\" --name X [--station S] [--group G] [--apply]",
@@ -340,6 +341,10 @@ namespace Tia.Cli
                     case "delete-block":
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.DeleteBlock(session.GetPlc(plcName), Require(args, "--name"), apply);
+                        break;
+                    case "delete-type":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Ops.DeleteType(session.GetPlc(plcName), Require(args, "--name"), apply);
                         break;
                     case "export-type":
                         result = Core.Ops.ExportType(session.GetPlc(plcName), Require(args, "--name"), outDir);

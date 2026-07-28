@@ -202,6 +202,20 @@ namespace Tia.Core
             return result;
         }
 
+        public static object DeleteType(PlcSoftware plc, string name, bool apply)
+        {
+            var type = FindType(plc.TypeGroup, name);
+            if (type == null)
+                throw new InvalidOperationException("UDT '" + name + "' not found.");
+            var result = new Dictionary<string, object>
+            {
+                { "type", name },
+                { "applied", apply },
+            };
+            if (apply) type.Delete();
+            return result;
+        }
+
         // ---------- export ----------
 
         public static object ExportBlock(PlcSoftware plc, string name, string outDir)

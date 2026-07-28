@@ -254,6 +254,10 @@ na raiz do `TypeGroup`). Agora passa por [`ResolveTypePath`](../src/Tia.Core/Sca
 análogo a `ResolveBlockPath`/`ResolveTagPath` — cria a subpasta de tipo se faltar. Validado no
 Portal: manifesto com `"Folder": ["ClaudeTest","Tipos"]` e `--apply` → `find --kind type` mostra o
 UDT em `ClaudeTest/Tipos`. `rebuild.ps1` ALL PASS.
+Junto veio **`delete-type --name X [--apply]`** ([Ops.cs:205](../src/Tia.Core/Ops.cs#L205)) — não
+existia jeito de tirar UDT pela CLI, e teste de biblioteca cria UDT descartável. Os 4 UDTs de teste
+(`*_T`, `MotorDados_LIB`) foram apagados com ele, compile 0 erros. Sobra: `delete-folder` não
+apaga pasta de **tipo** (só bloco e tag) — `ClaudeTest/Tipos` ficou vazia no projeto de teste.
 
 **Fatia 2 — parte SCL ✅ 2026-07-28** (`library/core/`, autoral e versionado, com README próprio):
 `MotorDados.scl`, `ValvDados.scl`, `MotorPrincipal.scl` (composto de dois `MotorDados`, não campos

@@ -502,6 +502,22 @@ projeto. O que a arqueologia dos AML já responde, sem sondar a API:
   (`CanPlugNew`) — é como se confirma um identificador de catálogo antes de escrever.
 - `delete-device --name X [--apply]` — `Project1` acumulou ~15 CPUs de teste; limpar era manual.
 
+### Lint de camada no `audit` — ✅ 2026-07-28
+
+Sexto check: **`1. FB Bilbiotecas` não pode depender de bloco de área**. Se um FB de biblioteca
+chama bloco de área, a biblioteca deixa de ser instalável sozinha — é exatamente o que o
+`install-lib` sofre. Camada = 1º segmento da pasta; nome de bloco é único no PLC, então o mapa
+nome → pasta resolve a camada do chamado, e o xref dá a chamada (`Inventory.AllSources`).
+
+**O xref traz os dois sentidos no mesmo saco.** Sem filtrar, o check acusou 21 falsos positivos no
+`PLC_ZERO` (`FB FALHA → PARTIDA_MOTOR_1` — é o contrário, o FC é que chama o FB). A direção está em
+`Location.ReferenceType`: `Uses` = src chama r, `UsedBy` = o inverso (a ajuda lista a propriedade em
+`148785557643.htm`, sem dizer os valores). Com o filtro: **0 no `PLC_ZERO` e 0 no projeto de
+referência** (`CPU1.0 CCO`), que é a régua.
+
+**Achado de brinde**: o projeto do cliente tem uma pasta `ClaudeTest/Sub` (cicatriz de teste antigo)
+— só o `audit` a pegou, no check do `(TAG)`. Apagar exige o OK do usuário (projeto de produção).
+
 **Diálogo de aceite volta depois do `rebuild.ps1`**: hash novo do `tia.exe` → o Portal *já aberto*
 mostra `Openness access (0033:000666)` e a chamada fica pendurada com CPU ~0. Achar a janela:
 `EnumWindows` filtrando pelo PID do portal (título `Openness access`). Só o clique resolve.

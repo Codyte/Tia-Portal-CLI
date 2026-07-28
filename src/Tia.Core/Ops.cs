@@ -515,6 +515,49 @@ namespace Tia.Core
             return result;
         }
 
+        /// <summary>
+        /// Edita uma tag existente: tipo, endereço, comentário, nome. Todos os campos são opcionais —
+        /// o que vier null fica como está. Sem `--apply` só mostra o antes/depois.
+        /// (PlcTag: DataTypeName/LogicalAddress/Name são Read+Write; Name só a partir do Openness V20.)
+        /// </summary>
+        public static object SetTag(PlcSoftware plc, string tableName, string name, string dataType,
+            string address, string comment, string rename, bool apply)
+        {
+            var table = FindTagTable(plc.TagTableGroup, tableName);
+            if (table == null)
+                throw new InvalidOperationException("Tag table '" + tableName + "' not found.");
+            var tag = table.Tags.Find(name);
+            if (tag == null)
+                throw new InvalidOperationException("Tag '" + name + "' not found in '" + table.Name + "'.");
+            if (dataType == null && address == null && comment == null && rename == null)
+                throw new ArgumentException("Nothing to change: pass --type, --address, --comment or --rename.");
+
+            var changes = new Dictionary<string, object>();
+            if (dataType != null && dataType != tag.DataTypeName) changes["type"] = tag.DataTypeName + " -> " + dataType;
+            if (address != null && address != tag.LogicalAddress) changes["address"] = tag.LogicalAddress + " -> " + address;
+            if (comment != null) changes["comment"] = tag.Comment.Items[0].Text + " -> " + comment;
+            if (rename != null && rename != tag.Name) changes["name"] = tag.Name + " -> " + rename;
+
+            var result = new Dictionary<string, object>
+            {
+                { "table", table.Name }, { "tag", tag.Name },
+                { "changes", changes },
+                { "action", changes.Count == 0 ? "skip (no change)" : "update" },
+                { "applied", apply && changes.Count > 0 },
+            };
+            if (!apply || changes.Count == 0) return result;
+
+            if (changes.ContainsKey("type")) tag.DataTypeName = dataType;
+            if (changes.ContainsKey("address")) tag.LogicalAddress = address;
+            if (changes.ContainsKey("comment")) tag.Comment.Items[0].Text = comment;
+            if (changes.ContainsKey("name")) tag.Name = rename;
+            result["now"] = new Dictionary<string, object>
+            {
+                { "name", tag.Name }, { "type", tag.DataTypeName }, { "address", tag.LogicalAddress },
+            };
+            return result;
+        }
+
         public static object ImportType(PlcSoftware plc, string file, bool apply)
         {
             var full = RequireFile(file);

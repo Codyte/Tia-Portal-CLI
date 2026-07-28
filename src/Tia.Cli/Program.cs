@@ -72,6 +72,8 @@ namespace Tia.Cli
                         "add-tag --table T --name N --type Bool --address %M10.0 [--comment C] [--apply]  "
                             + "(uma tag em tabela existente; endereço livre em %M sai do free-memory)",
                         "delete-tag --table T --name N [--apply]",
+                        "set-tag --table T --name N [--type T] [--address %M10.0] [--comment C] [--rename NEW] [--apply]  "
+                            + "(só o que for passado muda; --rename exige Openness V20+)",
                         "clone --block N | --table T --replace OLD=NEW [--replace ...] [--at %M432.0] [--folder A/B] [--apply]",
                         "add-db-member --db X --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]",
                         "compile [--block X | --folder A/B] [--errors] [--apply]  (--errors = lista plana {where,message,count} em vez da árvore)",
@@ -471,6 +473,13 @@ namespace Tia.Cli
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.DeleteTag(session.GetPlc(plcName), Require(args, "--table"),
                                 Require(args, "--name"), apply);
+                        break;
+                    case "set-tag":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Ops.SetTag(session.GetPlc(plcName), Require(args, "--table"),
+                                Require(args, "--name"), OptionValue(args, "--type"),
+                                OptionValue(args, "--address"), OptionValue(args, "--comment"),
+                                OptionValue(args, "--rename"), apply);
                         break;
                     case "set-attr":
                         using (WriteLock(session, apply, verb))

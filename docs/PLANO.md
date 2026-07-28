@@ -383,6 +383,12 @@ manifesto, não do desenho: `DIAG to STRING_DB.xml` existia em `library/blocks/`
 itens e o pacote foi re-bakeado. Esse mesmo erro estava entre os 88 do `PLC_GEN` desde sempre —
 o teste por pacote é que o isolou.
 
+`scripts/install-lib.ps1 "<Pacote>[,<Pacote>]" -Plc X [-Apply]` faz a instalação inteira (base +
+pacotes + clock byte + compile) e devolve o compile já resumido; sem pacote, lista o que a library
+oferece. "Já instalado" = existe bloco com esse nome ou a pasta do pacote existe — repetir é no-op
+(medido: 6 pulados, `Success`), e 3 pacotes de uma vez numa CPU virgem também deram
+`Success, 0 erros`.
+
 `delete-master-copy --file X.al21 --name M [--apply]`: rebake deixa lixo quando o master copy muda
 de nome (o primeiro probe ficou como `Copy of Function blocks in ...`).
 

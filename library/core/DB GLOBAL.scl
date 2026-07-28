@@ -1,0 +1,48 @@
+DATA_BLOCK "DB GLOBAL"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+// Esqueleto -- so a forma que os geradores exigem, nenhum dado de projeto.
+// Importar DEPOIS de MotorDados/ValvDados (referencia os dois).
+//
+// Contrato consumido pelos geradores:
+//   gen-alarm-fc  -> "DB GLOBAL".<AREA>.ALARMES.WORD_ALARMES_<n>, n a partir de 1
+//                    (AlarmFc.cs:282; a area e achada por nome em AlarmFc.FindParentStruct)
+//   gen-fault-ob  -> "DB GLOBAL".HARDWARE_INTERRUPT.ALARMES_MODULOS.<QA-xx>.WORD_<n>.%X<bit>
+//                    (FaultOb.cs:23, uma word por 16 modulos do rack)
+// Uma area por secao da planta; duplicar o bloco AREA_01 e renomear.
+NON_RETAIN
+   STRUCT
+      AREA_01 : STRUCT
+         ALARMES : STRUCT
+            WORD_ALARMES_1 : Word;
+            WORD_ALARMES_2 : Word;
+            WORD_ALARMES_3 : Word;
+            WORD_ALARMES_4 : Word;
+            WORD_ALARMES_5 : Word;
+            WORD_ALARMES_6 : Word;
+            WORD_ALARMES_7 : Word;
+            WORD_ALARMES_8 : Word;
+         END_STRUCT;
+         // equipamentos da area -- o gerador de FC de alarme casa o nome do tag
+         // com o nome do membro pra descobrir a que area o alarme pertence
+         BOMBA_01 : "MotorDados";
+         VALVULA_01 : "ValvDados";
+      END_STRUCT;
+
+      HARDWARE_INTERRUPT : STRUCT
+         ALARMES_MODULOS : STRUCT
+            "QA-00" : STRUCT               // um struct por painel/rack de I/O
+               WORD_1 : Word;
+               WORD_2 : Word;
+            END_STRUCT;
+            "QA-01" : STRUCT
+               WORD_1 : Word;
+               WORD_2 : Word;
+            END_STRUCT;
+         END_STRUCT;
+      END_STRUCT;
+   END_STRUCT;
+
+BEGIN
+
+END_DATA_BLOCK

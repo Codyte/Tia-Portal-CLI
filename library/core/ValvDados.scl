@@ -1,0 +1,29 @@
+TYPE "ValvDados"
+VERSION : 0.1
+   STRUCT
+      // --- status vindo do campo ---
+      STS_VALVULA_ABERTA : Bool;                       // fim de curso aberto
+      STS_VALVULA_FECHADA : Bool;                      // fim de curso fechado
+      STS_MODO_LOCAL : Bool;                           // chave do atuador em local
+      STS_MODO_REMOTO : Bool;                          // chave do atuador em remoto
+      STS_VALVULA_AUTOMATICO : Bool;                   // remoto + habilitada pelo processo
+      STS_FALHA_TORQUE_ABERTURA : Bool;
+      STS_FALHA_TORQUE_FECHAMENTO : Bool;
+      STS_FALHA_TEMPO_CURSO : Bool;                    // nao chegou ao fim de curso no tempo
+      STS_VALVULA_FEEDBACK_POSICAO : Int;              // posicao 0..27648 (raw) em valvula proporcional
+      // --- comandos ---
+      CMD_VALVULA_ABRE : Bool;
+      CMD_VALVULA_FECHA : Bool;
+      CMD_MANUAL : Bool;
+      CMD_RESET_FALHA : Bool;
+      SP_SETPOINT_MANUAL : Real;                       // posicao desejada em manual [%]
+      SP_SETPOINT_AUTO : Real;                         // posicao desejada em automatico [%]
+      // --- parametros de cadastro ---
+      SP_TEMPO_CURSO : Real;                           // [s] tempo nominal de abertura/fechamento
+      // --- reserva ---
+      RESERVA_BOOL_01 : Bool;
+      RESERVA_BOOL_02 : Bool;
+      RESERVA_INT_01 : Int;
+      RESERVA_REAL_01 : Real;
+   END_STRUCT;
+END_TYPE

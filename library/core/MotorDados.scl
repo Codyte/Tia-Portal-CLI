@@ -1,0 +1,36 @@
+TYPE "MotorDados"
+VERSION : 0.1
+   STRUCT
+      // --- status vindo do campo / inversor ---
+      STS_STATUS_MOTOR : Byte;                  // 0=parado 1=partindo 2=rodando 3=falha
+      STS_MODO_OPERACAO : Byte;                 // 0=local 1=manual 2=automatico 3=manutencao
+      STS_VELOCIDADE : Int;                     // rotacao atual, 0..27648 (raw) ou % x100
+      STS_CORRENTE : Real;                      // corrente do motor [A]
+      STS_HORIMETRO : UInt;                     // horas acumuladas de operacao
+      STS_LIGADO : Bool;                        // contator/inversor confirmou marcha
+      STS_FALHA : Bool;                         // falha ativa (selada ate reset)
+      STS_DISPONIVEL : Bool;                    // sem falha, sem manutencao, apto a partir
+      STS_INTERTRAVAMENTO_AUTOMATICO : Bool;    // permissivo do processo satisfeito
+      // --- comandos vindos da IHM / logica ---
+      CMD_LIGA : Bool;
+      CMD_DESLIGA : Bool;
+      CMD_RESET_FALHA : Bool;
+      CMD_RESET_HORIMETRO : Bool;
+      CMD_MANUAL : Bool;                        // pulso: leva o equipamento pro modo manual
+      CMD_MANUTENCAO : Bool;                    // bloqueia partida (cadeado logico)
+      CMD_HABILITA_AUTO : Bool;                 // pulso: leva o equipamento pro modo automatico
+      CMD_HABILITA_ALTERNANCIA : Bool;          // participa do rodizio principal/reserva
+      CMD_SETPOINT_MANUAL : Int;                // referencia de velocidade em manual
+      CMD_SETPOINT_AUTO : Int;                  // referencia de velocidade em automatico
+      // --- parametros de cadastro (persistentes, editaveis na IHM) ---
+      SP_TEMPO_LIGADO_AUTO : Real;              // [s] tempo de marcha no ciclo automatico
+      SP_TEMPO_DESLIGADO_AUTO : Real;           // [s] tempo de parada no ciclo automatico
+      SP_TEMPO_ROTATIVIDADE : Real;             // [h] intervalo de alternancia
+      SP_TEMPO_ESPERA_PARTIDA : Real;           // [s] timeout de confirmacao de marcha
+      // --- reserva: cresce sem remapear a DB global ---
+      RESERVA_BOOL_01 : Bool;
+      RESERVA_BOOL_02 : Bool;
+      RESERVA_INT_01 : Int;
+      RESERVA_REAL_01 : Real;
+   END_STRUCT;
+END_TYPE

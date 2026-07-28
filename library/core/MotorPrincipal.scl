@@ -1,0 +1,27 @@
+TYPE "MotorPrincipal"
+VERSION : 0.1
+// Par principal/reserva com alternancia. Composicao em vez de campos duplicados:
+// os dois motores sao "MotorDados", e so o que e do PAR mora aqui.
+// Importar DEPOIS de MotorDados (o compilador exige o tipo referenciado ja existir).
+   STRUCT
+      PRINCIPAL : "MotorDados";
+      RESERVA : "MotorDados";
+      // --- comando do par (IHM) ---
+      CMD_CHAVE_SELECAO_IHM : Byte;             // 0=alternancia 1=forca principal 2=forca reserva
+      CMD_HABILITA_ALTERNANCIA : Bool;
+      CMD_APLICAR_CADASTRO : Bool;              // copia SP_* do par pros dois motores
+      CMD_RESET_FALHA_PAR : Bool;
+      // --- status do par ---
+      STS_ATIVO_E_RESERVA : Bool;               // TRUE = o RESERVA esta assumindo o servico
+      STS_PAR_DISPONIVEL : Bool;                // pelo menos um dos dois apto a partir
+      STS_PAR_EM_FALHA : Bool;                  // os dois indisponiveis
+      STS_TEMPO_PARA_ALTERNAR : Real;           // [h] restante ate o proximo rodizio
+      // --- parametros do par ---
+      SP_TEMPO_ROTATIVIDADE : Real;             // [h] intervalo de alternancia
+      SP_TEMPO_SOBREPOSICAO : Real;             // [s] marcha simultanea na troca
+      // --- reserva ---
+      RESERVA_BOOL_01 : Bool;
+      RESERVA_INT_01 : Int;
+      RESERVA_REAL_01 : Real;
+   END_STRUCT;
+END_TYPE

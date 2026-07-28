@@ -255,7 +255,18 @@ a anotação anterior de "falta ordenar UDT antes de DB/FC" estava obsoleta, `Ra
 `ResolveTagPath`. Inofensivo hoje (os 13 UDTs do manifesto têm `"Folder": []`); vira bug quando a
 biblioteca quiser UDT em subpasta. Correção = `ResolveTypePath` análogo aos outros dois.
 
-**Núcleo genérico (fatia 2, autoral e publicável — só o desenho, não escrito)**. Os 66 itens de
+**Fatia 2 — parte SCL ✅ 2026-07-28** (`library/core/`, autoral e versionado, com README próprio):
+`MotorDados.scl`, `ValvDados.scl`, `MotorPrincipal.scl` (composto de dois `MotorDados`, não campos
+`CMD_&_*` duplicados), `DB GLOBAL.scl` (esqueleto: `AREA_01.ALARMES.WORD_ALARMES_1..8`,
+`HARDWARE_INTERRUPT.ALARMES_MODULOS.QA-00/QA-01.WORD_1..2`) e `FB BITS TO WORD.scl` (slice access
+`#BITS_TO_WORD.%X0..15`, pinos `SIGNAL_Bit0..15`). Importados na ordem UDT → DB/FB no projeto de
+referência com nomes sufixados `_T` (pra não sobrescrever os homônimos do cliente) — **compile
+0 erros / 0 warnings**. Os 2 blocos de teste foram apagados; os 3 UDTs `*_T` ficaram (não existe
+verbo `delete-type`). Falta: os 4 moldes em LAD e assar `.scl` → `.xml` num projeto vazio pra
+instalar via `scaffold` (`Scaffold.Plan` lê o tipo do XML, [:84](../src/Tia.Core/Scaffold.cs#L84),
+e `import-source` não tem `--folder`).
+
+**Núcleo genérico (fatia 2, autoral e publicável — desenho original)**. Os 66 itens de
 hoje são exports do cliente e nunca vão pro Git; o que fecha `doctor` verde num projeto qualquer
 são ~10 itens, escritos do zero:
 

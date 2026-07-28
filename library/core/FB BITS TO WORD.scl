@@ -1,0 +1,49 @@
+FUNCTION_BLOCK "FB BITS TO WORD"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+// Empacota 16 bools numa Word. Contrato consumido por gen-alarm-fc:
+// pinos de entrada SIGNAL_Bit0..SIGNAL_Bit15 e saida BITS_TO_WORD --
+// AlarmFc.RewireWordNetwork procura esses nomes exatos (AlarmFc.cs:313 e :348).
+// Renomear pino aqui quebra o gerador.
+   VAR_INPUT
+      SIGNAL_Bit0 : Bool;
+      SIGNAL_Bit1 : Bool;
+      SIGNAL_Bit2 : Bool;
+      SIGNAL_Bit3 : Bool;
+      SIGNAL_Bit4 : Bool;
+      SIGNAL_Bit5 : Bool;
+      SIGNAL_Bit6 : Bool;
+      SIGNAL_Bit7 : Bool;
+      SIGNAL_Bit8 : Bool;
+      SIGNAL_Bit9 : Bool;
+      SIGNAL_Bit10 : Bool;
+      SIGNAL_Bit11 : Bool;
+      SIGNAL_Bit12 : Bool;
+      SIGNAL_Bit13 : Bool;
+      SIGNAL_Bit14 : Bool;
+      SIGNAL_Bit15 : Bool;
+   END_VAR
+
+   VAR_OUTPUT
+      BITS_TO_WORD : Word;
+   END_VAR
+
+BEGIN
+   // slice access: %X0 e o bit menos significativo da Word
+   #BITS_TO_WORD.%X0 := #SIGNAL_Bit0;
+   #BITS_TO_WORD.%X1 := #SIGNAL_Bit1;
+   #BITS_TO_WORD.%X2 := #SIGNAL_Bit2;
+   #BITS_TO_WORD.%X3 := #SIGNAL_Bit3;
+   #BITS_TO_WORD.%X4 := #SIGNAL_Bit4;
+   #BITS_TO_WORD.%X5 := #SIGNAL_Bit5;
+   #BITS_TO_WORD.%X6 := #SIGNAL_Bit6;
+   #BITS_TO_WORD.%X7 := #SIGNAL_Bit7;
+   #BITS_TO_WORD.%X8 := #SIGNAL_Bit8;
+   #BITS_TO_WORD.%X9 := #SIGNAL_Bit9;
+   #BITS_TO_WORD.%X10 := #SIGNAL_Bit10;
+   #BITS_TO_WORD.%X11 := #SIGNAL_Bit11;
+   #BITS_TO_WORD.%X12 := #SIGNAL_Bit12;
+   #BITS_TO_WORD.%X13 := #SIGNAL_Bit13;
+   #BITS_TO_WORD.%X14 := #SIGNAL_Bit14;
+   #BITS_TO_WORD.%X15 := #SIGNAL_Bit15;
+END_FUNCTION_BLOCK

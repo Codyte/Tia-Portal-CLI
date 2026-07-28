@@ -76,11 +76,42 @@ namespace Tia.Core
             }
         }
 
-        public static object Blocks(PlcSoftware plc)
+        /// <summary>
+        /// folder = prefixo da pasta ("1. FB Bilbiotecas" pega as subpastas também), type = FB/FC/OB/
+        /// GlobalDB/InstanceDB. Sem filtro, um PLC real devolve ~500 blocos: é o dump que estoura contexto.
+        /// </summary>
+        public static object Blocks(PlcSoftware plc, string folder = null, string type = null, bool countOnly = false)
         {
-            var result = new List<object>();
-            CollectBlocks(plc.BlockGroup, "", result);
-            return result;
+            var all = new List<object>();
+            CollectBlocks(plc.BlockGroup, "", all);
+            IEnumerable<object> hits = all;
+            if (!string.IsNullOrEmpty(folder))
+            {
+                var prefix = folder.Trim('/');
+                hits = hits.Where(o =>
+                {
+                    var f = (string)((Dictionary<string, object>)o)["folder"];
+                    return f.Equals(prefix, StringComparison.OrdinalIgnoreCase)
+                        || f.StartsWith(prefix + "/", StringComparison.OrdinalIgnoreCase);
+                });
+            }
+            if (!string.IsNullOrEmpty(type))
+                hits = hits.Where(o => ((string)((Dictionary<string, object>)o)["type"])
+                    .IndexOf(type, StringComparison.OrdinalIgnoreCase) >= 0);
+            var list = hits.ToList();
+            if (!countOnly && string.IsNullOrEmpty(folder) && string.IsNullOrEmpty(type)) return list;
+            if (countOnly)
+                return new Dictionary<string, object>
+                {
+                    { "count", list.Count },
+                    { "byFolder", list.GroupBy(o => (string)((Dictionary<string, object>)o)["folder"])
+                        .OrderBy(g => g.Key, StringComparer.Ordinal)
+                        .ToDictionary(g => g.Key.Length == 0 ? "(raiz)" : g.Key, g => g.Count()) },
+                };
+            return new Dictionary<string, object>
+            {
+                { "folder", folder }, { "type", type }, { "count", list.Count }, { "blocks", list },
+            };
         }
 
         private static void CollectBlocks(PlcBlockGroup group, string folder, List<object> into)

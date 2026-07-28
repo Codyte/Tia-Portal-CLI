@@ -40,6 +40,15 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
     completo em dry: `tia run --script docs/examples/gen-all.json`.
     **Isola steps**: step que falha vira `{ok:false,error,type}` e o batch segue; `exit 1` se algum
     falhou. Bateria onde falha é esperada roda de uma vez só.
+  - **Assinatura de verbo → `docs/VERBS.md`** (gerado do help pelo `rebuild.ps1`). Uma leitura de
+    ~80 linhas em vez de grep em `Program.cs`.
+  - **Nunca `list-blocks` sem filtro** — são ~480 blocos. `--folder A/B` (pega subpastas),
+    `--type FB|FC|OB|GlobalDB|InstanceDB`, `--count` (só o total por pasta, ~10 linhas).
+  - **`move-block --name X | --pattern P* --folder A/B [--apply]`** — o Openness não move bloco; o
+    verbo faz `export` (de todos primeiro) → `delete` → `import --folder`. Fazer isso na mão custa
+    3 chamadas por bloco e falha se a ordem inverter.
+  - **`run --script ops.json --summary`** = `{steps,failed,errors[]}` em vez do resultado de cada
+    step (98 steps × JSON completo é dump de contexto).
   - **`--out-file F.json` em verbo de leitura** (`find`/`snapshot`/`list-*`/`xref`/`trace`): JSON
     completo no arquivo, stdout devolve só `{file,bytes,count,head}`. `find --pattern "*" --kind tag`
     num projeto real = 821 KB (~200k tokens) — sem a opção, isso cai no contexto inteiro.

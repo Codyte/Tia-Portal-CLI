@@ -28,7 +28,10 @@ namespace Tia.Cli
                     { "session", new[] { "open-project --file X.ap21 [--no-ui]",
                         "create-project --dir D --name N [--no-ui]",
                         "save-project", "close-project [--save]" } },
-                    { "read", new[] { "info", "list-devices", "list-blocks", "list-tags", "list-types",
+                    { "read", new[] { "info", "list-devices",
+                        "list-blocks [--folder A/B] [--type FB|FC|OB|GlobalDB|InstanceDB] [--count]  "
+                            + "(sem filtro = ~500 blocos num projeto real; --count = só o total por pasta)",
+                        "list-tags", "list-types",
                         "tree [--out DIR]  ← COMECE AQUI: outline do PLC inteiro (blocos + tabelas de tag + UDTs) "
                             + "em plc-navi.md, ~26 KB num projeto de 476 blocos (o mesmo em JSON: 117 KB)",
                         "find --pattern P* [--kind block|table|tag|type]",
@@ -39,9 +42,11 @@ namespace Tia.Cli
                         "explain-block --name X | --file F.xml  (LAD/FBD → texto compacto; --file roda sem TIA)",
                         "export-type --name X [--out DIR]",
                         "free-memory [--bytes N] [--from B] [--count K]  (buracos livres na área %M; length -1 = até o fim)" } },
-                    { "structure", new[] { "create-folder --path A/B [--tags] [--apply]",
-                        "delete-folder --path A/B [--tags] [--apply]",
+                    { "structure", new[] { "create-folder --path A/B [--tags|--types] [--apply]",
+                        "delete-folder --path A/B [--tags|--types] [--apply]",
                         "delete-block --name X [--apply]",
+                        "move-block --name X | --pattern P* --folder A/B [--out DIR] [--apply]  "
+                            + "(export→delete→import; o Openness não move bloco)",
                         "delete-type --name X [--apply]  (UDT)",
                         "import-type --file F.xml [--apply]",
                         "scaffold --manifest F.json [--apply] [--force]  (árvore da lei + moldes num projeto novo)" } },
@@ -74,8 +79,9 @@ namespace Tia.Cli
                         "→ saída na casa das centenas de KB (snapshot = 251 KB, find de tag = 821 KB num projeto " +
                         "real). SEMPRE com --out-file, depois grep no arquivo. Não é leitura de orientação: " +
                         "pra isso é `tree`" } },
-                    { "batch", new[] { "run --script ops.json  (JSON array de arg-arrays, uma sessão só; " +
-                        "step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou)" } },
+                    { "batch", new[] { "run --script ops.json [--summary]  (JSON array de arg-arrays, uma sessão só; " +
+                        "step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou. " +
+                        "--summary = só {steps,failed,errors[]}, sem o resultado de cada step)" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports; " +
                         "--out-file F.json (qualquer verbo: JSON completo no arquivo, stdout só {file,bytes,count,head} " +
                         "— use em find/snapshot/list-*/xref, que dão centenas de KB); " +
@@ -213,8 +219,23 @@ namespace Tia.Cli
                         }
                         results.Add(entry);
                     }
-                    Print(new Dictionary<string, object>
-                        { { "steps", results.Count }, { "failed", failed }, { "results", results } });
+                    // --summary: 98 steps × resultado completo é o dump que estoura contexto do agente.
+                    // Só o que muda decisão: contagem, e o erro dos que falharam.
+                    if (args.Contains("--summary"))
+                        Print(new Dictionary<string, object>
+                        {
+                            { "steps", results.Count },
+                            { "failed", failed },
+                            { "errors", results.Cast<Dictionary<string, object>>()
+                                .Select((e, i) => new { e, i })
+                                .Where(x => !(bool)x.e["ok"])
+                                .Select(x => new Dictionary<string, object>
+                                    { { "step", x.i }, { "verb", x.e["verb"] }, { "error", x.e["error"] } })
+                                .ToList() },
+                        });
+                    else
+                        Print(new Dictionary<string, object>
+                            { { "steps", results.Count }, { "failed", failed }, { "results", results } });
                     return failed > 0 ? 1 : 0;
                 }
                 Print(DispatchWithRetry(session, args, args));
@@ -266,7 +287,8 @@ namespace Tia.Cli
                         result = Core.Inventory.Devices(session);
                         break;
                     case "list-blocks":
-                        result = Core.Inventory.Blocks(session.GetPlc(plcName));
+                        result = Core.Inventory.Blocks(session.GetPlc(plcName), OptionValue(args, "--folder"),
+                            OptionValue(args, "--type"), args.Contains("--count"));
                         break;
                     case "list-tags":
                         result = Core.Inventory.TagTables(session.GetPlc(plcName));
@@ -331,16 +353,21 @@ namespace Tia.Cli
                     case "create-folder":
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.CreateFolder(session.GetPlc(plcName), Require(args, "--path"),
-                                args.Contains("--tags"), apply);
+                                args.Contains("--tags"), apply, args.Contains("--types"));
                         break;
                     case "delete-folder":
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.DeleteFolder(session.GetPlc(plcName), Require(args, "--path"),
-                                args.Contains("--tags"), apply);
+                                args.Contains("--tags"), apply, args.Contains("--types"));
                         break;
                     case "delete-block":
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.DeleteBlock(session.GetPlc(plcName), Require(args, "--name"), apply);
+                        break;
+                    case "move-block":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Ops.MoveBlock(session.GetPlc(plcName), OptionValue(args, "--name"),
+                                OptionValue(args, "--pattern"), Require(args, "--folder"), outDir, apply);
                         break;
                     case "delete-type":
                         using (WriteLock(session, apply, verb))

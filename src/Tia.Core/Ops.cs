@@ -113,6 +113,25 @@ namespace Tia.Core
             return current;
         }
 
+        /// <summary>Pasta de UDT "A/B" sob PLC data types. Espelha ResolveFolder/ResolveTagFolder.</summary>
+        public static PlcTypeGroup ResolveTypeFolder(PlcSoftware plc, string path, bool create)
+        {
+            PlcTypeGroup current = plc.TypeGroup;
+            if (string.IsNullOrEmpty(path)) return current;
+            foreach (var part in path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var next = current.Groups.Find(part);
+                if (next == null)
+                {
+                    if (!create)
+                        throw new InvalidOperationException("Type folder not found: '" + part + "' (in '" + path + "').");
+                    next = current.Groups.Create(part);
+                }
+                current = next;
+            }
+            return current;
+        }
+
         internal static PlcType FindType(PlcTypeGroup group, string name)
         {
             var hit = group.Types.Find(name);
@@ -127,10 +146,11 @@ namespace Tia.Core
 
         // ---------- structure ----------
 
-        public static object CreateFolder(PlcSoftware plc, string path, bool tags, bool apply)
+        public static object CreateFolder(PlcSoftware plc, string path, bool tags, bool apply, bool types = false)
         {
             if (string.IsNullOrEmpty(path))
                 throw new InvalidOperationException("--path required.");
+            if (types) return TypeFolderAction(plc, path, apply, false);
             bool exists;
             try
             {
@@ -152,10 +172,11 @@ namespace Tia.Core
             return result;
         }
 
-        public static object DeleteFolder(PlcSoftware plc, string path, bool tags, bool apply)
+        public static object DeleteFolder(PlcSoftware plc, string path, bool tags, bool apply, bool types = false)
         {
             if (string.IsNullOrEmpty(path))
                 throw new InvalidOperationException("--path required (refusing to delete root).");
+            if (types) return TypeFolderAction(plc, path, apply, true);
             var result = new Dictionary<string, object>
             {
                 { "path", path },
@@ -175,6 +196,33 @@ namespace Tia.Core
                 if (apply) group.Delete();
             }
             return result;
+        }
+
+        // create-folder/delete-folder --types: pasta de UDT era o único dos três tipos de pasta sem verbo.
+        private static object TypeFolderAction(PlcSoftware plc, string path, bool apply, bool delete)
+        {
+            bool exists;
+            try { ResolveTypeFolder(plc, path, false); exists = true; }
+            catch (InvalidOperationException) { if (delete) throw; exists = false; }
+            var result = new Dictionary<string, object>
+            {
+                { "path", path }, { "kind", "type-folder" },
+                { "action", delete ? "delete" : (exists ? "none (exists)" : "create") },
+                { "applied", apply },
+            };
+            if (delete)
+            {
+                var group = (PlcTypeUserGroup)ResolveTypeFolder(plc, path, false);
+                result["types"] = CountTypes(group);
+                if (apply) group.Delete();
+            }
+            else if (apply && !exists) ResolveTypeFolder(plc, path, true);
+            return result;
+        }
+
+        private static int CountTypes(PlcTypeGroup group)
+        {
+            return group.Types.Count + group.Groups.Cast<PlcTypeUserGroup>().Sum(g => CountTypes(g));
         }
 
         private static int CountBlocks(PlcBlockGroup group)
@@ -283,6 +331,77 @@ namespace Tia.Core
                 var group = ResolveFolder(plc, folderPath, true);
                 group.Blocks.Import(new FileInfo(full), ImportOptions.Override);
             }
+            return result;
+        }
+
+        /// <summary>
+        /// Move bloco(s) de pasta. O Openness não tem move: é export → delete → import --folder,
+        /// e nessa ordem — importar com o original ainda no lugar falha com "A program element with
+        /// this fully qualified name already exists in this CPU". Exporta TODOS antes de apagar o
+        /// primeiro: o delete deixa quem referencia inconsistente, e bloco inconsistente não exporta.
+        /// Os XMLs ficam em outDir (default %TEMP%\tia-move) — se um import falhar, o bloco está lá.
+        /// </summary>
+        public static object MoveBlock(PlcSoftware plc, string name, string pattern, string folderPath,
+            string outDir, bool apply)
+        {
+            if (string.IsNullOrEmpty(folderPath))
+                throw new InvalidOperationException("--folder required (destino do move).");
+            if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(pattern))
+                throw new InvalidOperationException("--name X or --pattern P* required.");
+            var target = folderPath.Trim('/');
+            var rx = new Regex("^" + Regex.Escape(name ?? pattern).Replace(@"\*", ".*").Replace(@"\?", ".") + "$",
+                RegexOptions.IgnoreCase);
+
+            var hits = ((List<object>)Inventory.Blocks(plc)).Cast<Dictionary<string, object>>()
+                .Where(b => rx.IsMatch((string)b["name"]))
+                .ToList();
+            if (hits.Count == 0)
+                throw new InvalidOperationException("No block matches '" + (name ?? pattern) + "'.");
+            var todo = hits.Where(b => !string.Equals((string)b["folder"], target, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            var dir = string.IsNullOrEmpty(outDir) ? Path.Combine(Path.GetTempPath(), "tia-move") : outDir;
+            var moves = todo.Select(b => new Dictionary<string, object>
+            {
+                { "block", b["name"] }, { "from", b["folder"] }, { "to", target },
+            }).ToList();
+            var result = new Dictionary<string, object>
+            {
+                { "matched", hits.Count },
+                { "alreadyThere", hits.Count - todo.Count },
+                { "moves", moves },
+                { "xmlDir", dir },
+                { "applied", apply },
+            };
+            if (!apply || todo.Count == 0) return result;
+
+            // 1) exporta tudo primeiro — depois do primeiro delete, quem referencia fica inconsistente
+            var files = new List<string>();
+            foreach (var b in todo)
+                files.Add((string)((Dictionary<string, object>)ExportBlock(plc, (string)b["name"], dir))["file"]);
+
+            // 2) só então apaga e reimporta no destino
+            var failed = new List<object>();
+            for (int i = 0; i < todo.Count; i++)
+            {
+                var blockName = (string)todo[i]["name"];
+                try
+                {
+                    DeleteBlock(plc, blockName, true);
+                    ImportBlock(plc, files[i], target, true);
+                }
+                catch (Exception ex)
+                {
+                    failed.Add(new Dictionary<string, object>
+                    {
+                        { "block", blockName }, { "xml", files[i] }, { "error", ex.Message },
+                    });
+                }
+            }
+            result["moved"] = todo.Count - failed.Count;
+            result["failed"] = failed;
+            if (failed.Count > 0)
+                result["recover"] = "reimportar à mão: tia import-block --file <xml> --folder \"" + target + "\" --apply";
             return result;
         }
 

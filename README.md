@@ -67,8 +67,9 @@ Run `tia --help` for the full, always-current list.
 | Group | Verbs |
 |-------|-------|
 | 🔌 Session | `open-project` · `create-project` · `save-project` · `close-project` |
-| 🔍 Read | `info` · `list-devices` · `list-blocks` · `list-tags` · `list-types` · `list-hmi` · `find` · `snapshot` · `xref` · `tree` · `export-block` · `export-tags` · `export-type` |
-| 🗂️ Structure | `create-folder` · `delete-folder` · `delete-block` · `delete-type` · `import-type` · `scaffold` (folder tree + template blocks from a manifest, idempotent) |
+| 🔍 Read | `info` · `list-devices` · `list-blocks` (`--folder` · `--type` · `--count`) · `list-tags` · `list-types` · `list-hmi` · `find` · `snapshot` · `xref` · `tree` · `export-block` · `export-tags` · `export-type` |
+| 🗂️ Structure | `create-folder` · `delete-folder` (`--tags`/`--types`) · `delete-block` · `delete-type` ·
+`move-block` (export→delete→import, o Openness não move) · `import-type` · `scaffold` (folder tree + template blocks from a manifest, idempotent) |
 | 🛠️ Hardware | `add-device` · `set-address` · `connect-subnet` · `export-cax` · `import-cax` (AML) |
 | ✍️ Write | `import-block` · `import-source` · `import-ladder` (SCL subset → LAD) · `import-tags` · `compile` · `diff-block` |
 | ⚙️ Generators | `gen-profinet` · `standardize-tags` · `gen-fault-ob` · `replicate-fc` · `gen-alarm-fc` · `replicate-instruments` — plus `doctor`, a read-only preflight that checks every template/folder they need |

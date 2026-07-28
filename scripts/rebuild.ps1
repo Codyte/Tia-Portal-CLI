@@ -42,6 +42,9 @@ if (-not $SkipTests) {
     Write-Host '  ok  Cli.--out-file (stdout vira stub, JSON completo no arquivo)'
 }
 
+# referencia de verbo derivada do proprio help — evita grep em Program.cs pra achar assinatura
+& (Join-Path $PSScriptRoot 'gen-verbs.ps1')
+
 if (Test-WhitelistStale) {
     # Task TiaWhitelist roda como SYSTEM/Highest: sem UAC, disparavel por qualquer sessao.
     if (Get-ScheduledTask -TaskName TiaWhitelist -ErrorAction SilentlyContinue) {

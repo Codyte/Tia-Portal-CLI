@@ -22,6 +22,10 @@ else { $id = $null; $tiaArgs = @($raw) }
 $sfx = if ($id) { "-$id" } else { '' }   # sem id = uso manual (cmd.json array), nomes antigos
 
 Set-Location $repo
+# tia.exe escreve UTF-8 (Console.OutputEncoding no Program.Main). Se o host decodifica em
+# codepage OEM, "Elevatória" chega "Elevat?ria" no out-<id>.txt e o cliente nunca recupera.
+[Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
+$OutputEncoding = [Text.UTF8Encoding]::new($false)
 try {
     if ($tiaArgs[0] -eq '--script-ps1') {
         # macro-verbo (raio-x/prep-project/...) precisa rodar INTEIRO na sessao 1: chama tia varias vezes

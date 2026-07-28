@@ -205,6 +205,27 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
     scaffoldado dá 26 erros de ambiente ausente (system/clock memory bits, tags de IO, iDB dos
     moldes) — nada de import; detalhe e pendência em `docs/PADRAO.md`.
 
+## Otimização de tokens do CLI — ✅ 2026-07-28
+
+Levantada pelo custo real da reorganização da `1. FB Bilbiotecas` (6 chamadas de ferramenta e um
+gerador de batch em PowerShell pro que devia ser uma linha). Seis pontos, todos fechados:
+
+| ponto | antes | agora |
+|---|---|---|
+| `list-blocks` sem filtro | dump de ~480 blocos | `--folder A/B` (inclui subpastas) · `--type FB\|FC\|OB\|GlobalDB\|InstanceDB` · `--count` (total por pasta, ~10 linhas) |
+| não existia move | `export`+`delete`+`import` por bloco, na ordem certa | `move-block --name X \| --pattern P* --folder A/B [--apply]` ([Ops.cs:290](../src/Tia.Core/Ops.cs#L290)) |
+| regra do nome de arquivo (`/` → `_`) reimplementada fora | PowerShell replicando `ExportPath` | interno ao `move-block` |
+| acento virava `?` na rota da task | round-trip por arquivo pra qualquer saída com acento | `[Console]::OutputEncoding` UTF-8 em `taskrun.ps1` e `_common.ps1` |
+| assinatura de verbo | ~5 greps em `Program.cs` por sessão | `docs/VERBS.md`, gerado do help por `scripts/gen-verbs.ps1` dentro do `rebuild.ps1` |
+| `run --script` | resultado completo de cada step (98 steps = dump) | `--summary` → `{steps,failed,errors[]}` |
+
+Junto: `create-folder`/`delete-folder --types` (pasta de UDT era o único dos três tipos de pasta
+sem verbo) e `delete-type`. Smoke no projeto de referência: `move-block --apply` + `compile` +
+`create/delete-folder --types` + `list-blocks --count` num batch, `{steps:6, failed:0}`.
+
+**Regra do `move-block`, que o verbo agora encapsula**: exporta **todos** os alvos antes de apagar
+o primeiro. O `delete` deixa quem referencia inconsistente, e bloco inconsistente não exporta.
+
 ## Biblioteca de blocos ("arsenal") — 🔄 fatia 1 fechada + testada no Portal 2026-07-28 (`library/`)
 
 Problema que resolve: os 4 geradores só rodam se o projeto do cliente **já tiver** os moldes e a

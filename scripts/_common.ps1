@@ -21,6 +21,10 @@ function Invoke-Tia {
     $tiaArgs = @($args)
     if (-not $tiaArgs) { throw 'Invoke-Tia: sem argumentos' }
 
+    # mesma razao do taskrun.ps1: tia.exe fala UTF-8; sem isto acento vira '?' na rota direta
+    [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
+    $OutputEncoding = [Text.UTF8Encoding]::new($false)
+
     # TIA_VIA_TASK=1 força a rota da task mesmo da sessao 1 (unico jeito de testar esse ramo
     # quando o shell do agente nasce interativo)
     if ((Get-Process -Id $PID).SessionId -ne 0 -and -not $env:TIA_VIA_TASK) {

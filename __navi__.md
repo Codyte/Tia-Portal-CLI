@@ -21,8 +21,8 @@ PADRAO.md(191)  PLANO.md(367)  projeto-real-fase-A.md(76)
 ## `docs/examples/` (5 files) → __navi__.md
 batch.json(6)  gen-all.json(8)  profinet.json(10)  replicate-fc.json(8)  replicate-instruments.json(9)
 
-## `library/` (2 files) — biblioteca instalável; payload `blocks/` é gitignored
-README.md(65)  library.json(504)
+## `library/` (3 files) — biblioteca instalável; payload `blocks/` é gitignored
+README.md(138)  export-all.json(68)  library.json(504)
 
 ## `proj/Automação ETE SG AsBuilt_1_V21/` (1 files)
 ProjectInfo.txt(26)
@@ -51,8 +51,8 @@ options.json(1)
 ## `proj/Software de ETE Insular_Inicial_V21/Logs/` (4 files)
 IHMAlarms_insularCCM1 (1) Log.html(30)  IHMAlarms_insularCCM1 (1) Log_1.html(30)  IHMAlarms_insularCCM2 (1) Log.html(30)  PLC text.html(25)
 
-## `scripts/` (14 files) → __navi__.md
-_common.ps1(66)  clone-hw.ps1(28)  export-fixtures.ps1(38)  init.ps1(81)  navi-cs.ps1(22)  prep-project.ps1(18)  raio-x.ps1(29)  rebuild.ps1(51)  setup-tasks.ps1(45)  smokeloop.ps1(45)  taskrun.ps1(41)  tia.ps1(8)  use-project.ps1(23)  whitelist.ps1(25)
+## `scripts/` (13 files) → __navi__.md
+_common.ps1(66)  clone-hw.ps1(28)  init.ps1(81)  navi-cs.ps1(22)  prep-project.ps1(18)  raio-x.ps1(29)  rebuild.ps1(51)  setup-tasks.ps1(45)  smokeloop.ps1(45)  taskrun.ps1(41)  tia.ps1(8)  use-project.ps1(23)  whitelist.ps1(25)
 
 ## `src/Tia.Cli/obj/` (2 files) → __navi__.md
 Tia.Cli.csproj.nuget.dgspec.json(119)  project.assets.json(579)

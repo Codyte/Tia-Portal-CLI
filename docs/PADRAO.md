@@ -108,13 +108,14 @@ na pasta e 58 com contagem de blocos ≠ 6.
 árvore de pastas (blocos e tags) + lista de XMLs exportados deste projeto. Sem `--force`, objeto
 que já existe é `skip (exists)` — rodar de novo não sobrescreve nada.
 
-Fonte dos XMLs: `library/blocks/` (gitignored — conteúdo da casa, não vai pro repo público;
-ver [`library/README.md`](../library/README.md)).
-66 itens: 13 UDTs, 34 FBs de `1. FB Bilbiotecas`, `DB GLOBAL`, os 6 moldes
+Fonte dos XMLs: `library/blocks/` (gitignored — conteúdo da casa, não vai pro repo público).
+66 itens (inventário completo em [`library/README.md`](../library/README.md)): 13 UDTs,
+33 FBs + 1 iDB de `1. FB Bilbiotecas`, `DB GLOBAL`, os 6 moldes
 (`FC_Modelo`+`FB BITS TO WORD MODELO`+`DB_DUMMY`, `OB_MOLDE_ALARMES`, `OB_MOLDE_PARTIDAS`,
 `MODULE_ERROR_MOLDE`+`FB DIAG MODULES_DB`+`DB DIAGNOSTICO DISPOSITIVOS`, `MOLDE_ANALOGS`,
 `MOLDE TOT1`), o acionamento-modelo `Soprador 1 (S-01A)` (6 blocos) e 2 tabelas de tags.
-Regenerar: `tia run --script workspace/export-padrao.json` (51 export-block/export-type).
+Regenerar o payload: `tia run --script library/export-all.json` (66 exports, 1 attach) — exige
+o PLC compilado antes, bloco inconsistente não exporta.
 
 Ordem de import é por tipo de objeto, não pela ordem do manifesto: UDT → tabela de tags → FB →
 DB global → iDB → FC → OB. Sem isso o iDB entra antes do FB que ele instancia.

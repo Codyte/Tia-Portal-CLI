@@ -235,9 +235,13 @@ a anotação anterior de "falta ordenar UDT antes de DB/FC" estava obsoleta, `Ra
   `Source: "blocks"` (relativo ao manifesto, então manifesto + payload viajam juntos pra
   qualquer pasta). 20 pastas de bloco, 6 de tag, 66 itens.
 - `library/blocks/` (gitignored) = o antigo `workspace/padrao/`, 66 XMLs / 3,3 MB.
-- `library/README.md` (versionado) = por que o payload não viaja, como repor
-  (`scripts/export-fixtures.ps1` cobre 13 blocos + 2 tabelas; o resto item a item por
-  `export-block`/`export-tags`/`export-type`), como instalar, limitação do `Folder` de UDT.
+- `library/export-all.json` (versionado) = batch inverso, gerado do manifesto: 66 exports com o
+  verbo certo por tipo, `--out library/blocks`, 1 attach. Substituiu `scripts/export-fixtures.ps1`
+  (cobria 15 dos 66) e o `workspace/export-padrao.json` (gitignored, caminho absoluto da máquina).
+- `library/README.md` (versionado) = por que o payload não viaja, inventário dos 66 por pasta,
+  o que cada gerador exige, como repor, como instalar, limitação do `Folder` de UDT, e as duas
+  pegadinhas do export (compile antes; `ExportPath` troca `/` do nome por `_` no arquivo, caso
+  `FB_LIGA/DESLIGA MODO AUTO`).
 - Não testado contra Portal (track offline). Teste pendente: `scaffold --manifest
   library/library.json` dry contra o projeto de referência → esperado 66/66 `skip (exists)`.
 

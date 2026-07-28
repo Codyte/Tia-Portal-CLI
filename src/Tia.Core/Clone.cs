@@ -129,7 +129,26 @@ namespace Tia.Core
             return assigned;
         }
 
-        internal static List<KeyValuePair<string, string>> ParseReplaces(IEnumerable<string> args)
+        /// <summary>
+        /// Aplica os pares num XML de export *antes* do import (offline) e grava a cópia em outDir.
+        /// Sem pares, devolve o próprio arquivo — nada é copiado.
+        /// </summary>
+        public static string RewriteFile(string file, IList<KeyValuePair<string, string>> replaces, string outDir)
+        {
+            if (replaces == null || replaces.Count == 0) return file;
+            var doc = XDocument.Load(file);
+            Rewrite(doc, replaces);
+            Directory.CreateDirectory(outDir);
+            var name = Path.GetFileName(file);
+            foreach (var pair in replaces) name = name.Replace(pair.Key, pair.Value);
+            var target = Path.GetFullPath(Path.Combine(outDir, name));
+            if (string.Equals(target, Path.GetFullPath(file), StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("--replace would overwrite the source XML: " + file);
+            doc.Save(target);
+            return target;
+        }
+
+        public static List<KeyValuePair<string, string>> ParseReplaces(IEnumerable<string> args)
         {
             var pairs = new List<KeyValuePair<string, string>>();
             foreach (var raw in args ?? Enumerable.Empty<string>())

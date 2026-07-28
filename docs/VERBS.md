@@ -32,7 +32,7 @@
 - `move-block --name X | --pattern P* --folder A/B [--out DIR] [--apply]  (export→delete→import; o Openness não move bloco)`
 - `delete-type --name X [--apply]  (UDT)`
 - `import-type --file F.xml [--apply]`
-- `scaffold --manifest F.json [--apply] [--force]  (árvore da lei + moldes num projeto novo)`
+- `scaffold --manifest F.json [--replace OLD=NEW ...] [--apply] [--force]  (árvore da lei + moldes num projeto novo; --replace troca no XML e nas pastas antes do import)`
 
 ## hardware
 - `add-device --mlfb "6ES7 ..." --name X [--station S] [--group G] [--apply]`
@@ -43,7 +43,7 @@
 - `import-cax --file F.aml [--apply]`
 
 ## write
-- `import-block --file F [--folder A/B] [--apply]`
+- `import-block --file F [--folder A/B] [--replace OLD=NEW ...] [--apply]`
 - `import-source --file F.scl [--apply]`
 - `import-ladder --file F.scl [--name N] [--folder A/B] [--apply]  (SCL subset → LAD; dry-run works without TIA)`
 - `import-tags --file F [--folder A/B] [--apply]`

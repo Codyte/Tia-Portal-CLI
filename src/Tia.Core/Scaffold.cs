@@ -72,7 +72,8 @@ namespace Tia.Core
         }
 
         /// <summary>Resolves and orders the manifest. Pure: no TIA session, so it runs offline.</summary>
-        public static List<ScaffoldPlanItem> Plan(ScaffoldManifest manifest, string baseDir)
+        public static List<ScaffoldPlanItem> Plan(ScaffoldManifest manifest, string baseDir,
+            IList<KeyValuePair<string, string>> replaces = null, string outDir = null)
         {
             if (manifest == null) throw new ArgumentException("Manifest is empty.");
             var source = manifest.Source ?? "";
@@ -84,31 +85,45 @@ namespace Tia.Core
                 if (string.IsNullOrEmpty(item.File)) throw new ArgumentException("Manifest item without 'File'.");
                 var full = Path.GetFullPath(Path.Combine(source, item.File));
                 if (!File.Exists(full)) throw new FileNotFoundException("Scaffold item not found: " + full);
+                // reescreve offline antes do import: é o que torna a biblioteca genérica
+                full = Clone.RewriteFile(full, replaces,
+                    outDir ?? Path.Combine(Path.GetTempPath(), "tia-scaffold"));
                 var root = Ops.XmlRootType(full);
                 items.Add(new ScaffoldPlanItem
                 {
                     File = full,
                     Name = Ops.XmlObjectName(full),
                     RootType = root,
-                    Folder = item.Folder ?? new List<string>(),
+                    Folder = Apply(item.Folder, replaces),
                     Rank = Rank(root),
                 });
             }
             return items.OrderBy(i => i.Rank).ToList(); // stable: manifest order kept inside a rank
         }
 
-        public static object Run(TiaSession session, PlcSoftware plc, ScaffoldManifest manifest,
-            string baseDir, bool apply, bool force)
+        /// <summary>Aplica os pares nos segmentos de pasta — o nome do cliente também mora na árvore.</summary>
+        internal static List<string> Apply(IList<string> segments, IList<KeyValuePair<string, string>> replaces)
         {
-            var plan = Plan(manifest, baseDir);
+            var list = (segments ?? new List<string>()).ToList();
+            if (replaces == null) return list;
+            for (int i = 0; i < list.Count; i++)
+                foreach (var pair in replaces) list[i] = list[i].Replace(pair.Key, pair.Value);
+            return list;
+        }
+
+        public static object Run(TiaSession session, PlcSoftware plc, ScaffoldManifest manifest,
+            string baseDir, bool apply, bool force,
+            IList<KeyValuePair<string, string>> replaces = null, string outDir = null)
+        {
+            var plan = Plan(manifest, baseDir, replaces, outDir);
             // projeto novo só tem a cultura de instalação do TIA; sem ativar as do XML, todo import falha
             var languages = Ops.EnsureCultures(session.Project,
                 plan.SelectMany(i => Ops.XmlCultures(i.File)), apply);
             var folders = new List<object>();
             foreach (var segments in manifest.Folders ?? new List<List<string>>())
-                folders.Add(FolderAction(plc, segments, false, apply));
+                folders.Add(FolderAction(plc, Apply(segments, replaces), false, apply));
             foreach (var segments in manifest.TagFolders ?? new List<List<string>>())
-                folders.Add(FolderAction(plc, segments, true, apply));
+                folders.Add(FolderAction(plc, Apply(segments, replaces), true, apply));
 
             var items = new List<object>();
             foreach (var item in plan)

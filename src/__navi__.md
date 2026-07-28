@@ -1,8 +1,8 @@
 # __navi__ · src/ (C#) — símbolos públicos por arquivo
 <!-- gerado por scripts/navi-cs.ps1 · regenerar após refatorar -->
 
-## `Tia.Cli/Program.cs` (621 linhas)
-Program(16)  save-project(277)  close-project(280)  info(283)  list-devices(286)  list-blocks(289)  list-tags(293)  tree(296)  list-types(300)  find(303)  snapshot(307)  xref(310)  trace(313)  list-hmi(316)  free-memory(319)  export-block(325)  explain-block(328)  export-tags(333)  import-block(336)  import-ladder(341)  import-source(349)  create-folder(353)  delete-folder(358)  delete-block(363)  move-block(367)  delete-type(372)  export-type(376)  import-type(379)  scaffold(383)  clone(391)  add-db-member(397)  import-tags(403)  list-library(407)  import-master-copy(410)  add-device(416)  set-address(421)  connect-subnet(427)  export-cax(432)  import-cax(435)  compile(439)  diff-block(453)  audit(457)  doctor(461)  gen-profinet(469)  standardize-tags(475)  gen-fault-ob(483)  replicate-fc(491)  gen-alarm-fc(498)  replicate-instruments(506)
+## `Tia.Cli/Program.cs` (639 linhas)
+Program(16)  save-project(279)  close-project(282)  info(285)  list-devices(288)  list-blocks(291)  list-tags(295)  tree(298)  list-types(302)  find(305)  snapshot(309)  xref(312)  trace(315)  list-hmi(318)  free-memory(321)  export-block(327)  explain-block(330)  export-tags(335)  import-block(338)  import-ladder(345)  import-source(353)  create-folder(357)  delete-folder(362)  delete-block(367)  move-block(371)  delete-type(376)  export-type(380)  import-type(383)  scaffold(387)  clone(396)  add-db-member(402)  import-tags(408)  list-library(412)  import-master-copy(415)  add-device(421)  set-address(426)  set-memory-bytes(432)  connect-subnet(438)  export-cax(443)  import-cax(446)  compile(450)  diff-block(464)  audit(468)  doctor(472)  gen-profinet(480)  standardize-tags(486)  gen-fault-ob(494)  replicate-fc(502)  gen-alarm-fc(509)  replicate-instruments(517)
 
 ## `Tia.Core/AlarmFc.cs` (649 linhas)
 AlarmFcConfig(17)  AlarmFc(39)  Generate(55)  LEITURA_MUITO_ALTA(610)  LEITURA_ALTA(611)  LEITURA_BAIXA(612)  LEITURA_MUITO_BAIXA(613)  SEM_4MA(614)
@@ -16,8 +16,8 @@ Audit(19)  TagOf(37)  CarriesTag(44)  NormalizeArea(51)  Run(61)
 ## `Tia.Core/BlockExplain.cs` (361 linhas)
 BlockExplain(22)  Explain(24)  Statements(184)  Coil(207)  SCoil(208)  RCoil(209)  Move(210)  Contact(301)  Eq(304)  O(311)  A(313)  Call(315)
 
-## `Tia.Core/Clone.cs` (155 linhas)
-Clone(24)  Run(26)
+## `Tia.Core/Clone.cs` (174 linhas)
+Clone(24)  Run(26)  RewriteFile(136)  ParseReplaces(151)
 
 ## `Tia.Core/DbMember.cs` (161 linhas)
 DbMember(21)  Add(30)  Edit(62)
@@ -28,8 +28,8 @@ Doctor(14)  Run(23)  gen-profinet(67)  standardize-tags(84)  gen-fault-ob(93)  r
 ## `Tia.Core/FaultOb.cs` (323 linhas)
 FaultObConfig(15)  FaultOb(35)  Module(42)  Generate(49)
 
-## `Tia.Core/Hardware.cs` (203 linhas)
-Hardware(13)  FindDevice(15)  AddDevice(48)  SetAddress(75)  ConnectSubnet(116)  CaxExport(174)  CaxImport(187)
+## `Tia.Core/Hardware.cs` (280 linhas)
+Hardware(13)  FindDevice(15)  AddDevice(48)  SetAddress(75)  SetMemoryBytes(119)  ConnectSubnet(193)  CaxExport(251)  CaxImport(264)
 
 ## `Tia.Core/Hmi.cs` (43 linhas)
 Hmi(10)  Targets(12)  List(23)
@@ -61,8 +61,8 @@ ProfinetConfig(12)  ProfinetMapping(20)  Profinet(28)  Generate(30)  BoolAddress
 ## `Tia.Core/Replicate.cs` (457 linhas)
 ReplicateFcConfig(15)  ReplicateFc(35)  Run(37)
 
-## `Tia.Core/Scaffold.cs` (222 linhas)
-ScaffoldManifest(22)  ScaffoldItem(36)  ScaffoldPlanItem(45)  Scaffold(58)  Plan(75)  Run(100)
+## `Tia.Core/Scaffold.cs` (237 linhas)
+ScaffoldManifest(22)  ScaffoldItem(36)  ScaffoldPlanItem(45)  Scaffold(58)  Plan(75)  Run(114)
 
 ## `Tia.Core/Standardize.cs` (605 linhas)
 StandardizeConfig(14)  PrefixMapping(128)  TagTemplate(134)  NaturalStringComparer(141)  Compare(143)  AlarmTagComparer(170)  Compare(180)  AddressAllocator(199)  Next(212)  BYTE(227)  WORD(228)  DWORD(229)  MemoryManager(238)  AllocateBlock(247)  Standardize(272)  Run(274)
@@ -70,6 +70,6 @@ StandardizeConfig(14)  PrefixMapping(128)  TagTemplate(134)  NaturalStringCompar
 ## `Tia.Core/TiaSession.cs` (190 linhas)
 TiaSession(12)  Attach(23)  OpenProject(48)  CreateProject(78)  Save(113)  CloseProject(120)  AllDevices(130)  ExclusiveAccess(147)  Plcs(153)  GetPlc(165)  Dispose(185)
 
-## `Tia.Tests/Program.cs` (424 linhas)
+## `Tia.Tests/Program.cs` (435 linhas)
 Program(25)
 

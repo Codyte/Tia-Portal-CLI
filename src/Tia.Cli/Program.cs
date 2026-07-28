@@ -49,13 +49,14 @@ namespace Tia.Cli
                             + "(export→delete→import; o Openness não move bloco)",
                         "delete-type --name X [--apply]  (UDT)",
                         "import-type --file F.xml [--apply]",
-                        "scaffold --manifest F.json [--apply] [--force]  (árvore da lei + moldes num projeto novo)" } },
+                        "scaffold --manifest F.json [--replace OLD=NEW ...] [--apply] [--force]  "
+                            + "(árvore da lei + moldes num projeto novo; --replace troca no XML e nas pastas antes do import)" } },
                     { "hardware", new[] { "add-device --mlfb \"6ES7 ...\" --name X [--station S] [--group G] [--apply]",
                         "set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]",
                         "connect-subnet --device X --subnet S [--io-system IO] [--apply]",
                         "set-memory-bytes --device X [--system 1] [--clock 0] [--apply]  (habilita FirstScan/AlwaysTRUE/Clock_1Hz na CPU)",
                         "export-cax [--out DIR]", "import-cax --file F.aml [--apply]" } },
-                    { "write", new[] { "import-block --file F [--folder A/B] [--apply]",
+                    { "write", new[] { "import-block --file F [--folder A/B] [--replace OLD=NEW ...] [--apply]",
                         "import-source --file F.scl [--apply]",
                         "import-ladder --file F.scl [--name N] [--folder A/B] [--apply]  (SCL subset → LAD; dry-run works without TIA)",
                         "import-tags --file F [--folder A/B] [--apply]",
@@ -336,7 +337,9 @@ namespace Tia.Cli
                         break;
                     case "import-block":
                         using (WriteLock(session, apply, verb))
-                            result = Core.Ops.ImportBlock(session.GetPlc(plcName), Require(args, "--file"),
+                            result = Core.Ops.ImportBlock(session.GetPlc(plcName),
+                                Core.Clone.RewriteFile(Require(args, "--file"),
+                                    Core.Clone.ParseReplaces(OptionValues(args, "--replace")), outDir),
                                 OptionValue(args, "--folder"), apply);
                         break;
                     case "import-ladder":
@@ -387,7 +390,8 @@ namespace Tia.Cli
                             File.ReadAllText(manifestFile));
                         using (WriteLock(session, apply, verb))
                             result = Core.Scaffold.Run(session, session.GetPlc(plcName), manifest,
-                                Path.GetDirectoryName(manifestFile), apply, args.Contains("--force"));
+                                Path.GetDirectoryName(manifestFile), apply, args.Contains("--force"),
+                                Core.Clone.ParseReplaces(OptionValues(args, "--replace")), outDir);
                         break;
                     case "clone":
                         using (WriteLock(session, apply, verb))

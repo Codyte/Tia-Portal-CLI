@@ -409,6 +409,17 @@ namespace Tia.Tests
             Check(cultures.Contains("pt-BR") && cultures.Contains("en-US"),
                 "culturas lidas do XML (" + string.Join(", ", cultures) + ")");
 
+            // --replace: sanitiza o XML e os segmentos de pasta antes do import (offline)
+            var reps = Clone.ParseReplaces(new[] { "Modelo=Generico", "3. Alarmes=3 Alarmes" });
+            var tmp = Path.Combine(Path.GetTempPath(), "tia-tests-scaffold");
+            var planR = Scaffold.Plan(manifest, Path.Combine(RepoRoot(), "docs", "examples"), reps, tmp);
+            Check(planR[2].Folder[0] == "3 Alarmes/Eventos/Falhas", "--replace troca segmento de pasta");
+            Check(planR.All(p => p.File.StartsWith(tmp, StringComparison.OrdinalIgnoreCase)),
+                "--replace importa a cópia reescrita, não o XML de origem");
+            Check(!File.ReadAllText(planR[1].File).Contains("Modelo"), "token trocado no XML reescrito");
+            Check(plan[1].File != planR[1].File && File.ReadAllText(plan[1].File).Contains("Modelo"),
+                "XML de origem intacto");
+
             Check(Throws(() => Scaffold.Plan(new ScaffoldManifest
                 {
                     Items = new List<ScaffoldItem> { new ScaffoldItem { File = "nao-existe.xml" } },

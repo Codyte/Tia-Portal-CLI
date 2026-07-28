@@ -25,3 +25,6 @@ Scripts_Siemens/
 # payload da biblioteca = exports de projeto de cliente (IP de engenharia).
 # Versionados só o manifesto e o README; cada clone repõe o proprio payload.
 library/blocks/
+
+# global library = artefato de build (binário opaco, sem diff/merge). Fonte = .scl/.xml.
+src/Tia.Lib/

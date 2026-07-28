@@ -1,8 +1,8 @@
 [
   ["save-project"],
-  ["replicate-fc", "--config", "docs/examples/replicate-fc-soprador.json", "--apply"],
+  ["replicate-fc", "--config", "docs/examples/replicate-fc-soprador.json", "--apply", "--force"],
   ["compile", "--apply"],
-  ["replicate-fc", "--config", "docs/examples/replicate-fc-soprador.json", "--apply"],
+  ["replicate-fc", "--config", "docs/examples/replicate-fc-soprador.json", "--apply", "--force"],
   ["compile", "--apply"],
   ["save-project"]
 ]

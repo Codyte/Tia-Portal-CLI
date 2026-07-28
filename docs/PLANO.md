@@ -249,11 +249,11 @@ a anotação anterior de "falta ordenar UDT antes de DB/FC" estava obsoleta, `Ra
   seguidas dão 66 arquivos byte-idênticos exceto `<DocumentInfo><Created>` (timestamp) — hash muda
   sempre, conteúdo não; anotado no README pra ninguém caçar diff fantasma.
 
-**Gap real do `scaffold`** (backlog, exige rebuild): item UDT ignora `Folder` —
-[`Scaffold.cs:126`](../src/Tia.Core/Scaffold.cs#L126) importa todo `SW.Types.*` em
-`plc.TypeGroup.Types` (raiz), enquanto bloco e tabela passam por `ResolveBlockPath`/
-`ResolveTagPath`. Inofensivo hoje (os 13 UDTs do manifesto têm `"Folder": []`); vira bug quando a
-biblioteca quiser UDT em subpasta. Correção = `ResolveTypePath` análogo aos outros dois.
+**Gap do `scaffold` — corrigido ✅ 2026-07-28**: item UDT ignorava `Folder` (todo `SW.Types.*` caía
+na raiz do `TypeGroup`). Agora passa por [`ResolveTypePath`](../src/Tia.Core/Scaffold.cs#L188),
+análogo a `ResolveBlockPath`/`ResolveTagPath` — cria a subpasta de tipo se faltar. Validado no
+Portal: manifesto com `"Folder": ["ClaudeTest","Tipos"]` e `--apply` → `find --kind type` mostra o
+UDT em `ClaudeTest/Tipos`. `rebuild.ps1` ALL PASS.
 
 **Fatia 2 — parte SCL ✅ 2026-07-28** (`library/core/`, autoral e versionado, com README próprio):
 `MotorDados.scl`, `ValvDados.scl`, `MotorPrincipal.scl` (composto de dois `MotorDados`, não campos

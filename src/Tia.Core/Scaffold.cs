@@ -1,9 +1,11 @@
 // NAV INDEX
-// 20-40    ScaffoldManifest / ScaffoldItem / ScaffoldPlanItem (config do verbo scaffold)
-// 42-58    Scaffold — Rank (ordem de import por tipo de objeto)
-// 60-88    Plan — puro, sem TIA: resolve arquivos, lê root/nome do XML, ordena
-// 90-145   Run — ativa culturas do XML, cria pastas, importa o que falta (skip se existe)
-// 142-176  ResolveBlockPath / ResolveTagPath — caminho por segmentos ('/' é literal em nome de pasta)
+// 20-50    ScaffoldManifest / ScaffoldItem / ScaffoldPlanItem (config do verbo scaffold)
+// 56-70    Scaffold — Rank (ordem de import por tipo de objeto)
+// 73-96    Plan — puro, sem TIA: resolve arquivos, lê root/nome do XML, ordena
+// 98-146   Run — ativa culturas do XML, cria pastas, importa o que falta (skip se existe)
+// 148-167  FolderAction — cria/reporta pasta de bloco ou de tag
+// 171-219  ResolveBlockPath / ResolveTypePath / ResolveTagPath — caminho por segmentos
+//          ('/' é literal em nome de pasta)
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +14,7 @@ using Siemens.Engineering;
 using Siemens.Engineering.SW;
 using Siemens.Engineering.SW.Blocks;
 using Siemens.Engineering.SW.Tags;
+using Siemens.Engineering.SW.Types;
 
 namespace Tia.Core
 {
@@ -123,7 +126,7 @@ namespace Tia.Core
                 {
                     var file = new FileInfo(item.File);
                     if (isTag) ResolveTagPath(plc, item.Folder, true).TagTables.Import(file, ImportOptions.Override);
-                    else if (isType) plc.TypeGroup.Types.Import(file, ImportOptions.Override);
+                    else if (isType) ResolveTypePath(plc, item.Folder, true).Types.Import(file, ImportOptions.Override);
                     else ResolveBlockPath(plc, item.Folder, true).Blocks.Import(file, ImportOptions.Override);
                 }
                 items.Add(new Dictionary<string, object>
@@ -176,6 +179,23 @@ namespace Tia.Core
                 if (next == null)
                 {
                     if (!create) throw new InvalidOperationException("Block folder not found: '" + name + "'.");
+                    next = current.Groups.Create(name);
+                }
+                current = next;
+            }
+            return current;
+        }
+
+        // UDT em subpasta: sem isto todo SW.Types.* caía na raiz do TypeGroup, ignorando o Folder do manifesto.
+        private static PlcTypeGroup ResolveTypePath(PlcSoftware plc, IList<string> segments, bool create)
+        {
+            PlcTypeGroup current = plc.TypeGroup;
+            foreach (var name in segments ?? new List<string>())
+            {
+                var next = current.Groups.Find(name);
+                if (next == null)
+                {
+                    if (!create) throw new InvalidOperationException("Type folder not found: '" + name + "'.");
                     next = current.Groups.Create(name);
                 }
                 current = next;

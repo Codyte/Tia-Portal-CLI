@@ -61,8 +61,8 @@ ProfinetConfig(12)  ProfinetMapping(20)  Profinet(28)  Generate(30)  BoolAddress
 ## `Tia.Core/Replicate.cs` (457 linhas)
 ReplicateFcConfig(15)  ReplicateFc(35)  Run(37)
 
-## `Tia.Core/Scaffold.cs` (202 linhas)
-ScaffoldManifest(19)  ScaffoldItem(33)  ScaffoldPlanItem(42)  Scaffold(55)  Plan(72)  Run(97)
+## `Tia.Core/Scaffold.cs` (222 linhas)
+ScaffoldManifest(22)  ScaffoldItem(36)  ScaffoldPlanItem(45)  Scaffold(58)  Plan(75)  Run(100)
 
 ## `Tia.Core/Standardize.cs` (605 linhas)
 StandardizeConfig(14)  PrefixMapping(128)  TagTemplate(134)  NaturalStringComparer(141)  Compare(143)  AlarmTagComparer(170)  Compare(180)  AddressAllocator(199)  Next(212)  BYTE(227)  WORD(228)  DWORD(229)  MemoryManager(238)  AllocateBlock(247)  Standardize(272)  Run(274)

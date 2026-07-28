@@ -292,9 +292,19 @@ setpoint); (3) diagnóstico (OB de erro de módulo já existe em `ModuleErrorMol
 
 **Procedência** — resolvida pelo gate de publicação da F4: payload de cliente fica gitignored
 (`library/blocks/`), o que for pro Git é autoral ou sanitizado com `clone --replace OLD=NEW`.
-Vale também pros XMLs de `docs/examples/`, que ainda são fixtures de projeto real **e estão
-versionados** — pendência: sanitizar ou trocar por fixtures sintéticas antes de tornar o repo
-visível de fato.
+Vale também pros XMLs de `docs/examples/`: **sanitizados ✅ 2026-07-28** por substituição de texto
+(não deu pra usar `clone --replace`, que exige o bloco no projeto) — `CASA_DE_SOPRADORES` → `AREA_01`,
+`SOPRADORES_DESARENADOR` → `AREA_01_MOTORES`, `SOPRADOR_DESARENADOR_S-01A` → `MOTOR_S-01A`,
+`PARTIDA_SOPRADOR_1` → `PARTIDA_MOTOR_1`, e as duas tags `..._STS_SOPRADOR_DESANERADOR_MODO_*`.
+Tocou `BombaTemplateFc.xml`, `StdBombaA.xml` e as asserções de `Tia.Tests/Program.cs` que citavam
+esses nomes; `rebuild.ps1` **ALL PASS**. Sobra proposital: `library/library.json` e
+`library/export-all.json` citam `SOPRADOR_DESARENADOR (S-01A)` porque o nome tem que casar com o
+objeto no projeto do cliente pra repor o payload — nome de objeto, não payload.
+
+**Ainda por resolver antes de tornar o repo visível de fato**: nome de projeto de cliente em prosa
+(`Insular`, `ETE SG`, `AsBuilt`) aparece em `docs/PLANO.md`, `docs/PADRAO.md`,
+`docs/projeto-real-fase-A.md`, `library/README.md`, `scripts/raio-x.ps1`, `__navi__.md` e em todo
+o histórico de `.handoff/` — sanitizar isso é reescrever histórico já commitado, decisão do user.
 
 **Fatia 3** (utilitários genéricos: escala raw↔EU + clamp, debounce, bits→word e inverso,
 first-out, watchdog, rampa de setpoint) só depois da fatia 2. Teste das fatias 2/3 = instalar em

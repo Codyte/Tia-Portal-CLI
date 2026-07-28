@@ -224,14 +224,14 @@ namespace Tia.Tests
             Check((int)r["networks"] == 11, "11 redes (" + r["networks"] + ")");
             Check((int)r["chars"] < new FileInfo(xml).Length / 10, "texto < 10% do XML ("
                 + r["chars"] + " de " + new FileInfo(xml).Length + ")");
-            Check(text.Contains("\"S-01A_STS_MODO_LOCAL\" := \"S-01A_STS_SOPRADOR_DESANERADOR_MODO_LOCAL_1\""),
+            Check(text.Contains("\"S-01A_STS_MODO_LOCAL\" := \"S-01A_STS_MOTOR_MODO_LOCAL_1\""),
                 "bobina simples com a tag que a alimenta");
             Check(text.Contains("CALL FB \"FB FALHA\" inst \"FB FALHA_S-01A\""), "chamada de FB com instância");
             Check(text.Contains("INPUT_FALHA := NOT \"S-01A_STS_FALHA_PROFINET\""), "parâmetro com contato negado");
             Check(text.Contains("FALHA => \"S-01A_FALHA\""), "saída da chamada ligada na tag");
             Check(Regex.IsMatch(text, @"INPUT_RESET_FALHA := \(""[^""]+""(\.[^ ]+)? OR ""[^""]+""\)"),
                 "paralelo vira OR");
-            Check(text.Contains("\"DB GLOBAL\".CASA_DE_SOPRADORES"), "path de DB global preservado");
+            Check(text.Contains("\"DB GLOBAL\".AREA_01"), "path de DB global preservado");
             Check(text.Contains("IF \"DB GLOBAL\".AFERICAO.AFERICAO_ANALOGICA.COMANDO = 300 THEN"),
                 "comparador com in1/in2 resolvidos");
             Check(!text.Contains("GlobalConstant") && text.Contains("HWIDSTW := \"INVERSOR_S-01A"),
@@ -276,7 +276,7 @@ namespace Tia.Tests
             Check(Audit.TagOf("Soprador 1 (S-01A)") == "S-01A", "TAG da pasta de equipamento");
             Check(Audit.TagOf("4.1.2 Dosagem Sistema Alcalinizante (RA-01)") == "RA-01", "TAG da pasta de área");
             Check(Audit.TagOf("3.1.4 Elevatória de Gordura") == null, "pasta sem (TAG)");
-            Check(Audit.CarriesTag("PARTIDA_SOPRADOR_1 (S-01A)", "S-01A"), "TAG entre parênteses");
+            Check(Audit.CarriesTag("PARTIDA_MOTOR_1 (S-01A)", "S-01A"), "TAG entre parênteses");
             Check(Audit.CarriesTag("FB FALHA_S-01A", "S-01A"), "TAG como sufixo _TAG");
             Check(Audit.CarriesTag("FB SETPOINT MANUAL S-01A", "S-01A"), "TAG separado por espaço");
             Check(!Audit.CarriesTag("FB FALHA_S-01B", "S-01A"), "bloco de outro equipamento reprova");

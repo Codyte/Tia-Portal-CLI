@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Document>
   <Engineering version="V21" />
   <DocumentInfo>
@@ -68,7 +68,7 @@
       </Interface>
       <IsIECCheckEnabled>false</IsIECCheckEnabled>
       <MemoryLayout>Optimized</MemoryLayout>
-      <Name>PARTIDA_SOPRADOR_1 (S-01A)</Name>
+      <Name>PARTIDA_MOTOR_1 (S-01A)</Name>
       <Namespace />
       <Number>148</Number>
       <ProgrammingLanguage>LAD</ProgrammingLanguage>
@@ -121,7 +121,7 @@ Network 12: Function Block HORÍMETRO - Tempo de bomba ligada em horas</Text>
               <Parts>
                 <Access Scope="GlobalVariable" UId="21">
                   <Symbol>
-                    <Component Name="S-01A_STS_SOPRADOR_DESANERADOR_MODO_LOCAL_1" />
+                    <Component Name="S-01A_STS_MOTOR_MODO_LOCAL_1" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="22">
@@ -131,7 +131,7 @@ Network 12: Function Block HORÍMETRO - Tempo de bomba ligada em horas</Text>
                 </Access>
                 <Access Scope="GlobalVariable" UId="23">
                   <Symbol>
-                    <Component Name="S-01A_STS_SOPRADOR_DESANERADOR_MODO_REMOTO_1" />
+                    <Component Name="S-01A_STS_MOTOR_MODO_REMOTO_1" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="24">
@@ -262,9 +262,9 @@ FALHA: Sinal de Falha </Text>
                 <Access Scope="GlobalVariable" UId="22">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_RESET_FALHA" />
                   </Symbol>
                 </Access>
@@ -317,9 +317,9 @@ FALHA: Sinal de Falha </Text>
                 <Access Scope="GlobalVariable" UId="32">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_MANUTENCAO" />
                   </Symbol>
                 </Access>
@@ -637,36 +637,36 @@ INPUT_RESET_FALHA: Resetar a falha manualmente caso o sinal de INPUT_FALHA estej
                 <Access Scope="GlobalVariable" UId="28">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_LIGA" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="29">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_MANUTENCAO" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="30">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_MODO_OPERACAO" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="31">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_RESET_HORIMETRO" />
                   </Symbol>
                 </Access>
@@ -678,9 +678,9 @@ INPUT_RESET_FALHA: Resetar a falha manualmente caso o sinal de INPUT_FALHA estej
                 <Access Scope="GlobalVariable" UId="33">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="STS_STATUS_MOTOR" />
                   </Symbol>
                 </Access>
@@ -692,18 +692,18 @@ INPUT_RESET_FALHA: Resetar a falha manualmente caso o sinal de INPUT_FALHA estej
                 <Access Scope="GlobalVariable" UId="35">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="STS_MODO_OPERACAO" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="36">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="STS_HORIMETRO" />
                   </Symbol>
                 </Access>
@@ -715,9 +715,9 @@ INPUT_RESET_FALHA: Resetar a falha manualmente caso o sinal de INPUT_FALHA estej
                 <Access Scope="GlobalVariable" UId="38">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="STS_INTERTRAVAMENTO_AUTOMATICO" />
                   </Symbol>
                 </Access>
@@ -934,9 +934,9 @@ LOCAL_MAN: Saída indica que o motor/bomba está em modo Local Manual</Text>
                 <Access Scope="GlobalVariable" UId="24">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_CADASTRO_MIN_LEITURA" />
                   </Symbol>
                 </Access>
@@ -951,54 +951,54 @@ LOCAL_MAN: Saída indica que o motor/bomba está em modo Local Manual</Text>
                 <Access Scope="GlobalVariable" UId="26">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_CADASTRO_MAX_LEITURA" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="27">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_CADASTRO_MAX_LEITURA" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="28">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_CADASTRO_MAX_LEITURA" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="29">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_CADASTRO_MAX_LEITURA" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="30">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_CADASTRO_MIN_LEITURA" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="31">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_SETPOINT_MANUAL" />
                   </Symbol>
                 </Access>
@@ -1010,9 +1010,9 @@ LOCAL_MAN: Saída indica que o motor/bomba está em modo Local Manual</Text>
                 <Access Scope="GlobalVariable" UId="33">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_REF_VELOCIDADE" />
                   </Symbol>
                 </Access>
@@ -1187,9 +1187,9 @@ VALOR_SAIDA: Valor do setpoint interpretado dentro da escala do CLP corresponden
                 <Access Scope="GlobalVariable" UId="23">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_LIGA" />
                   </Symbol>
                 </Access>
@@ -1201,9 +1201,9 @@ VALOR_SAIDA: Valor do setpoint interpretado dentro da escala do CLP corresponden
                 <Access Scope="GlobalVariable" UId="25">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_MODO_OPERACAO" />
                   </Symbol>
                 </Access>
@@ -1321,9 +1321,9 @@ Caso o Modo Automático, Falha no motor/bomba ou Modo Manutenção sejam acionad
                 <Access Scope="GlobalVariable" UId="23">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_LIGA" />
                   </Symbol>
                 </Access>
@@ -1466,9 +1466,9 @@ Habilita Intertravamento Botão IHM de Conjunto Bomba</Text>
                 <Access Scope="GlobalVariable" UId="27">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_INTERTRAVAMENTO_LIGA" />
                   </Symbol>
                 </Access>
@@ -1618,36 +1618,36 @@ Habilita botão para ligar manualmente pela IHM.</Text>
                 <Access Scope="GlobalVariable" UId="24">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_REF_VELOCIDADE" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="25">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_REF_CORRENTE" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="26">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_REF_TORQUE" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="27">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="CMD_REF_POTENCIA" />
                   </Symbol>
                 </Access>
@@ -1665,36 +1665,36 @@ Habilita botão para ligar manualmente pela IHM.</Text>
                 <Access Scope="GlobalVariable" UId="31">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="STS_VELOCIDADE" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="32">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="STS_CORRENTE" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="33">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="STS_TORQUE" />
                   </Symbol>
                 </Access>
                 <Access Scope="GlobalVariable" UId="34">
                   <Symbol>
                     <Component Name="DB GLOBAL" />
-                    <Component Name="CASA_DE_SOPRADORES" />
-                    <Component Name="SOPRADORES_DESARENADOR" />
-                    <Component Name="SOPRADOR_DESARENADOR_S-01A" />
+                    <Component Name="AREA_01" />
+                    <Component Name="AREA_01_MOTORES" />
+                    <Component Name="MOTOR_S-01A" />
                     <Component Name="STS_POTENCIA" />
                   </Symbol>
                 </Access>

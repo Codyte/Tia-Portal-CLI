@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Document>
   <Engineering version="V21" />
   <DocumentInfo>
@@ -49,7 +49,7 @@
   </DocumentInfo>
   <SW.Tags.PlcTagTable ID="0">
     <AttributeList>
-      <Name>SOPRADOR_DESARENADOR (S-01A)</Name>
+      <Name>MOTOR (S-01A)</Name>
     </AttributeList>
     <ObjectList>
       <SW.Tags.PlcTag ID="1" CompositionName="Tags">

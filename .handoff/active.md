@@ -1,59 +1,65 @@
-# Handoff · TIA Portal Openness API · 2026-07-28
+# Handoff · TIA Portal Openness API · 2026-07-28 (2ª sessão do dia)
 
 ## Goal
-**F7 — camada de compreensão.** IA lê o projeto dentro do orçamento de contexto para diagnosticar
-("problema no acionamento BH-01A") e criar projeto a partir de documentos. Item 1 (`explain-block`)
-fechado; item 2 (`trace --equipment`) implementado mas **sem smoke válido** — ver blocker.
+Fechar as pontas soltas do F7 item 2 e atacar o **gargalo de consumo** da camada de leitura:
+verbos que despejam JSON gigante em stdout queimam o contexto do agente que deveriam economizar.
+F7 existe pra caber no orçamento de contexto — hoje `find`/`snapshot`/`list-devices` trabalham
+contra isso.
 
 ## State
-- HEAD: cd4bb14 — working tree limpo (só `.handoff/`).
+- HEAD: c92f68c — working tree limpo.
 - Portal aberto na sessão 1 com **Software de ETE Insular_Inicial_V21** (CPU1.0 CCO, 62 devices,
-  476 blocos / 123 LAD). `doctor` ok. Nenhum `tia.exe` vivo (o travado foi morto).
-- Done nesta sessão:
-  - **Item 1 fechado** — smoke do `explain-block --name` em projeto real: `Resets` 58KB → 4,6KB,
-    `Paineis Intertravamento` 53KB → 4,9KB, `FC_ALARMES_PRELIMINAR_P_GM_01` 26KB → 2,2KB (~12x).
-    Expressões série/paralelo, CALL de FB com pinos e comentário pt-BR saíram corretos.
-  - **`trace --equipment X`** implementado (`Inventory.Trace`, verbo no CLI, help). Reusa
-    `Find("*X*")` para tags/blocos/tabelas/UDTs e varre cross-references para o lado reverso.
-    `rebuild.ps1` ALL PASS.
-  - **Navegação**: `src/__navi__.md` (símbolos públicos por `.cs` + os 47 `case "verbo"` do CLI com
-    linha) gerado por `scripts/navi-cs.ps1`; 13 maps + árvore raiz regenerados; NAV INDEX no topo de
-    `Inventory.cs`; ponteiro no CLAUDE.md.
+  476 blocos / 131 com lógica, 4372 tags). Saudável, `info` em 3,2s.
+- **F7 item 2 fechado** (`dd37d70`): `trace --equipment AG-01` = 39 símbolos + 39 usos em 10
+  blocos, **10,1s total / 3,3s de xref**. Cobertura conferida contra `xref --name Resets`
+  independente. `xref` agora resolve bloco → tag → tabela → UDT (`ResolveSymbol`).
+- **O blocker do handoff anterior era falso.** "Xref inviável, 476 chamadas > 600s, BlockGroup 18
+  min" = diálogo de autorização Openness pendurado na tela desde o rebuild. Nada a ver com API.
+- Plano B (export dos 476 blocos + índice invertido + cache) **descartado** — não há problema de
+  performance pra resolver. Item 3 (`index`) deixou de ser pré-requisito de qualquer coisa.
 - In progress: nada rodando.
 
 ## Decisions (and why)
-- **D8 mantida integral** (user, hoje): otimizar tudo offline primeiro; testes online (diagnostic
-  buffer, compare online×offline, watch) só quando a camada offline estiver bem mais avançada.
-- **Item 2 (`trace`) escolhido como próximo passo** (user, hoje), antes de index/checkpoint.
-- `trace` reusa `Find` em vez de reimplementar match — pattern `*X*` pega `BH-01A_CMD_LIGA`.
-- `navi-cs.ps1` próprio porque `navindex.py` não lê C#; regenerar após refatorar.
+- **Medir antes de construir** (user pediu avaliação ponytail): a medição derrubou o plano B
+  inteiro. Custo da medição: 4 chamadas. Custo do plano B: parser + índice + cache + verbo novo.
+- **`tia info` é o teste de ambiente**: chamada mais barata que existe. Se ela trava, é ambiente,
+  nunca custo do verbo. Documentado no PLANO e na memória do projeto.
+- Deletado o branch `BlockGroup.GetService<CrossReferenceService>()` — V21 devolve null sempre,
+  nunca rodou. Deleção > código morto especulativo.
+- `index`/cache adiado sem data: só faz sentido se `trace` passar a rodar em loop.
 
 ## Next steps (ordered)
-1. **Trocar a fonte do xref reverso do `trace`.** O caminho Openness está descartado na prática
-   (blocker abaixo). Plano B = índice invertido a partir do **export XML** (`Ops.ExportBlock` +
-   parse dos `<Access>`/`Symbol`), que é o que o plano original dizia: offline, testável em
-   `Tia.Tests`, e naturalmente cacheável no `workspace/<proj>/index.json` (item 3 vira pré-requisito
-   do 2, não sucessor).
-2. Medir o custo do export de 476 blocos uma vez — se for aceitável, `index` popula o cache e
-   `trace` só lê JSON (milissegundos por equipamento).
-3. `checkpoint` / `restore` via export-block/import-block por escopo.
-4. `apply-spec --file plant.json` — orquestrador + schema sobre verbos existentes.
+1. **Gargalo #1 — output de leitura sem teto.** Medido nesta sessão: `find --pattern "*" --kind
+   tag` = **821 KB / 4372 hits** em stdout (~200k tokens se cair no contexto). `snapshot` do mesmo
+   projeto = 7967 linhas, `list-devices` = 3109. Um agente que rode qualquer um deles sem pensar
+   perde a sessão. Correção proposta: `--out FILE` (escreve no workspace, stdout devolve só
+   `{count, file, sample}`) + `--limit N`. `tree` já faz isso — é o precedente a copiar, não um
+   design novo. Vale pra `find`, `snapshot`, `list-devices`, `list-tags`, `list-blocks`, `xref`.
+2. **Gargalo #2 — attach de ~7s por chamada.** `trace` = 10,1s dos quais só 3,3s são trabalho;
+   o resto é attach. Qualquer bateria de N verbos paga N×7s. `tia run --script` já amortiza
+   (attach 1x) mas **aborta o batch inteiro na 1ª exceção** e descarta os resultados já obtidos
+   (CLAUDE.md registra isso). Correção: try/catch por step, resultado por item com `ok/error`.
+   Isso é o que torna `run` utilizável de verdade e mata o gargalo sem verbo novo.
+3. **Ponta solta cosmética:** `xref` devolve a chave `"block"` mesmo quando o alvo é tag/tabela/UDT
+   (tem `"kind"` ao lado). Renomear pra `"symbol"` quebra `raio-x.ps1`/`xref-obs.json` — decidir
+   se renomeia com fallback ou deixa.
+4. **Sem cobertura offline pra `ResolveSymbol`/`Trace`** — dependem de projeto TIA, `Tia.Tests` é
+   offline. Aceito; se virar problema, extrair a montagem do `usedBy` pra função pura.
+5. Só então F7 itens 4-5: `checkpoint`/`restore` por escopo, `apply-spec --file plant.json`.
 
-Backlog anterior: `import-ladder --apply` contra `PARTIDA_*` real (pinos de comparador, ver PLANO
-item 1b); `replicate-fc --apply` no ScaffoldTest; bytes de system/clock memory no `scaffold`/
-`add-device` (8 dos 26 erros de compile); multiuser 3b/3c.
+Backlog anterior intacto: `import-ladder --apply` contra `PARTIDA_*` real (pinos `in1`/`in2` de
+comparador, PLANO item 1b); `replicate-fc --apply` no ScaffoldTest; bytes de system/clock memory
+no `scaffold`/`add-device` (8 dos 26 erros de compile); multiuser 3b/3c.
 
 ## Key files
-- `src/Tia.Core/Inventory.cs:316` — `Trace`; `AllSources` logo abaixo = a parte a substituir.
-- `src/Tia.Cli/Program.cs:258` — `case "trace"`; help na linha 33.
-- `src/Tia.Core/BlockExplain.cs` — parser XML offline, molde para o índice invertido.
-- `src/__navi__.md` — mapa C#; regen: `pwsh scripts/navi-cs.ps1`.
-- `docs/PLANO.md` — linha F7 com as medições do item 1.
+- `src/Tia.Core/Inventory.cs:276` — `ResolveSymbol`/`FindTag`; `Xref` em 311, `Trace` em 359.
+- `src/Tia.Cli/Program.cs:30` — bloco de help "read" (onde o `--out`/`--limit` seria anunciado).
+- `src/Tia.Core/Inventory.cs:106` — `Tree`, o precedente de verbo que escreve em arquivo.
+- `docs/PLANO.md` — F7 na tabela de fases; "Openness pede aceite na tela" na seção Ambiente.
+- `src/__navi__.md` — mapa C#; regen obrigatório após mexer no CLI (`pwsh scripts/navi-cs.ps1`).
 
 ## Open / blockers
-- **Xref do Openness inviável por chamada** (medido hoje, 2 tentativas): 1 chamada por bloco (476)
-  estourou 600s; a versão com uma única chamada em `plc.BlockGroup.GetService<CrossReferenceService>()`
-  ficou **18 min sem retornar, com CPU ~0,2s** (bloqueado no Portal, não computando) — processo
-  morto à mão. Conclusão: `trace` como está não fecha; seguir para o passo 1.
-- Aceite do plano B (índice via export XML) ainda não confirmado pelo user.
+- Nenhum blocker técnico. O anterior era ambiental e está documentado.
+- **Rebuild com Portal aberto → primeira chamada abre diálogo na tela e pendura.** Se uma chamada
+  não retorna com `tia.exe` vivo e CPU ~0, pedir o clique ao usuário antes de investigar código.
 - Falta host/porta do TIA Project Server + projeto de teste lá (nunca produção) — trava multiuser.

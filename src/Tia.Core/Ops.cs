@@ -209,6 +209,11 @@ namespace Tia.Core
             var block = FindBlock(plc, name);
             if (block == null)
                 throw new InvalidOperationException("Block '" + name + "' not found.");
+            // export-block, explain-block, diff-block e clone passam por aqui; sem o guard o Openness
+            // devolve só "Inconsistent blocks and PLC data types (UDT) cannot be exported."
+            if (!block.IsConsistent)
+                throw new InvalidOperationException("Block '" + name + "' is inconsistent (imported or edited, "
+                    + "never compiled). Run: tia compile --block \"" + name + "\" --apply");
             var file = ExportPath(outDir, name);
             block.Export(new FileInfo(file), ExportOptions.WithDefaults);
             return new Dictionary<string, object> { { "exported", name }, { "file", file } };

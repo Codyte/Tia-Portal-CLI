@@ -91,7 +91,8 @@ namespace Tia.Cli
                         "gen-alarm-fc [--config F] [--out DIR] [--apply]",
                         "replicate-instruments --config F [--out DIR] [--apply]" } },
                     { "library", new[] { "list-library --file X.al19",
-                        "import-master-copy --file X.al19 --name M [--folder A/B] [--apply]",
+                        "import-master-copy --file X.al19 --name M [--folder A/B] [--apply] [--force]" +
+                        "  (--force: apaga o de mesmo nome e recria — é como se atualiza pacote já instalado)",
                         "add-master-copy --file X.al21 (--name BLOCO | --folder A/B) [--lib-folder L] [--apply]" +
                         "  (PLC → library; --folder = pasta inteira = pacote; substitui se já existir)",
                         "delete-master-copy --file X.al21 --name M [--apply]" } },
@@ -445,7 +446,7 @@ namespace Tia.Cli
                         using (WriteLock(session, apply, verb))
                             result = Core.Library.ImportMasterCopy(session, session.GetPlc(plcName),
                                 Require(args, "--file"), Require(args, "--name"),
-                                OptionValue(args, "--folder"), apply);
+                                OptionValue(args, "--folder"), apply, args.Contains("--force"));
                         break;
                     case "add-master-copy":
                         using (WriteLock(session, apply, verb))

@@ -12,12 +12,22 @@ param(
     [string]$File = 'src/Tia.Lib/tia_cli/tia_cli.al21',
     [string]$Root = '1. FB Bilbiotecas',
     [string]$Portal,
+    # -Update reinstala o que já está lá (import-master-copy --force apaga e recria). Sem isto,
+    # "já instalado" = existe bloco com esse nome, e corrigir uma FC na library nunca chegava no PLC.
+    # Cuidado: apagar bloco chamado quebra o vínculo chamada↔iDB — o chamador precisa ser
+    # reimportado depois (em CPU virgem não existe o problema).
+    [switch]$Update,
     [switch]$Apply
 )
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot '_common.ps1')
 
 $portalArgs = if ($Portal) { @('--portal', $Portal) } else { @() }
+# .al21 e library/blocks/ sao gitignored (artefato de build / payload de cliente): clone limpo nao
+# tem nenhum dos dois. Sem isto o erro sai como ConvertFrom-Json vazio, que nao diz o que fazer.
+if (-not (Test-Path (Join-Path $script:Repo $File))) {
+    throw "global library ausente: $File — assar a partir de um PLC que ja tenha a arvore: pwsh scripts/bake-lib.ps1 -Plc <PLC> -Apply"
+}
 $lib = Invoke-Tia list-library --file $File @portalArgs | ConvertFrom-Json
 $packages = $lib.masterCopies | Where-Object { $_.contentType -like '*PlcBlockUserGroup' } |
     Select-Object -ExpandProperty name
@@ -70,11 +80,11 @@ function Get-Existing($folder) {
 
 $have = Get-Existing $Root
 $todo = @()
-$todo += $base | Where-Object { $_ -notin $have.names }
+$todo += $base | Where-Object { $Update -or $_ -notin $have.names }
 foreach ($p in $want) {
     $t = Get-Target $p
     $path = if ($t) { "$t/$p" } else { $p }
-    if ($path -notin (Get-Existing $t).folders) { $todo += $p }
+    if ($Update -or $path -notin (Get-Existing $t).folders) { $todo += $p }
 }
 $skipped = $base.Count + $want.Count - $todo.Count
 
@@ -86,7 +96,8 @@ $tags = @($want | ForEach-Object { if ($meta.ContainsKey($_)) { $meta[$_].tags }
 $types = @($want | ForEach-Object { if ($meta.ContainsKey($_)) { $meta[$_].types } } | Where-Object { $_ })
 $instances = @($want | ForEach-Object { if ($meta.ContainsKey($_)) { $meta[$_].instances } }) | Where-Object { $_ }
 
-Write-Host "instalar em ${Plc}: $($todo -join ', ')"
+Write-Host "$(if ($Update) { 'atualizar' } else { 'instalar' }) em ${Plc}: $($todo -join ', ')"
+if ($Update) { Write-Host 'MODO UPDATE: o que já existe é apagado e recriado (chamador de bloco apagado fica inconsistente — reimportar depois)' }
 if ($skipped) { Write-Host "já presentes (pulados): $skipped" }
 if ($fragments) { Write-Host "DB GLOBAL: 00-core + $($fragments -join ', ')" }
 if ($instances) { Write-Host "iDBs de molde: $($instances.Count)" }
@@ -97,6 +108,7 @@ foreach ($n in $todo) {
     $t = if ($n -in $base) { $Root } else { Get-Target $n }
     $op = @('import-master-copy', '--plc', $Plc, '--file', $File, '--name', $n)
     if ($t) { $op += @('--folder', $t) }
+    if ($Update) { $op += '--force' }
     $ops += , ($op + '--apply')
 }
 # import deixa o alvo (e quem o referencia) inconsistente: compilar antes de gerar iDB em cima

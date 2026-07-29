@@ -227,7 +227,7 @@ namespace Tia.Core
         }
 
         /// <summary>"already exists in this CPU" — o objeto está no projeto, mas noutra pasta.</summary>
-        private static bool AlreadyInAnotherFolder(Exception ex)
+        internal static bool AlreadyInAnotherFolder(Exception ex)
         {
             for (Exception e = ex; e != null; e = e.InnerException)
                 if (e.Message.IndexOf("already exist", StringComparison.OrdinalIgnoreCase) >= 0)

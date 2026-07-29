@@ -1,12 +1,15 @@
 # Macro "bake-lib": grava a biblioteca do PLC numa global library (.al21) como master copies.
 # Pacote = pasta: cada subpasta de $Root vira 1 master copy (com suas subpastas); cada bloco
 # solto na raiz de $Root vira 1 master copy avulso (é o que todo pacote depende — instalar sempre).
-# Uso: pwsh scripts/bake-lib.ps1 [-Plc PLC_GEN] [-Portal Project1] [-Apply]
+# -Prune apaga da .al21 o que nao existe mais no PLC (master copy renomeado vira orfao no rebake).
+# Opt-in porque a .al21 pode ter pacote assado de outro PLC — bake so enxerga o -Plc desta rodada.
+# Uso: pwsh scripts/bake-lib.ps1 [-Plc PLC_GEN] [-Portal Project1] [-Prune] [-Apply]
 param(
     [string]$Plc = 'PLC_GEN',
     [string]$File = 'src/Tia.Lib/tia_cli/tia_cli.al21',
     [string]$Root = '1. FB Bilbiotecas',
     [string]$Portal,
+    [switch]$Prune,
     [switch]$Apply
 )
 $ErrorActionPreference = 'Stop'
@@ -28,8 +31,18 @@ foreach ($p in $packages) { $ops += , @('add-master-copy', '--plc', $Plc, '--fil
 foreach ($b in $loose)    { $ops += , @('add-master-copy', '--plc', $Plc, '--file', $File,
     '--name', $b, '--lib-folder', $Root, '--apply') }
 
+$orphans = @()
+if ($Prune -and (Test-Path (Join-Path $script:Repo $File))) {
+    $want = @($packages) + @($loose)
+    $orphans = @((Invoke-Tia list-library --file $File @portalArgs | ConvertFrom-Json).masterCopies |
+        Where-Object { $_.folder -eq $Root -and $_.name -notin $want } |
+        Select-Object -ExpandProperty name)
+    foreach ($o in $orphans) { $ops += , @('delete-master-copy', '--file', $File, '--name', $o, '--apply') }
+}
+
 Write-Host "pacotes: $($packages -join ', ')"
 Write-Host "blocos soltos (nível 1): $($loose -join ', ')"
+if ($orphans) { Write-Host "órfãos a apagar da library: $($orphans -join ', ')" }
 if (-not $Apply) { Write-Host "dry-run — repita com -Apply para gravar em $File"; exit 0 }
 
 $script = Join-Path $script:Repo 'workspace\bake-lib.json'

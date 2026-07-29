@@ -67,9 +67,14 @@ namespace Tia.Core
                 CollectTypes(sub, path.Length == 0 ? sub.Name : path + "/" + sub.Name, into);
         }
 
-        /// <summary>Instantiates a block master copy into the PLC (--folder A/B optional).</summary>
+        /// <summary>Instantiates a block master copy into the PLC (--folder A/B optional).
+        /// --force = reinstalar por cima: CreateFrom recusa nome que já existe no PLC (não tem
+        /// Override como o import de XML), então apaga o objeto de mesmo nome e cria de novo.
+        /// Num pacote isso apaga a pasta inteira com seus blocos. Quebra o vínculo chamada↔iDB de
+        /// quem chamava o bloco — em CPU virgem não custa nada, num PLC populado o chamador precisa
+        /// ser reimportado depois (mesma cicatriz do move-block, PLANO).</summary>
         public static object ImportMasterCopy(TiaSession session, PlcSoftware plc, string file,
-            string copyName, string folderPath, bool apply)
+            string copyName, string folderPath, bool apply, bool force = false)
         {
             var lib = Open(session, file);
             var copy = FindMasterCopy(lib.MasterCopyFolder, copyName);
@@ -88,9 +93,29 @@ namespace Tia.Core
                 var group = Ops.ResolveFolder(plc, folderPath, true);
                 var isFolder = copy.ContentDescriptions
                     .Any(d => d.ContentType == typeof(PlcBlockUserGroup));
-                result["created"] = isFolder
+                Func<string> create = () => isFolder
                     ? group.Groups.CreateFrom(copy).Name   // master copy de pasta = pacote inteiro
                     : group.Blocks.CreateFrom(copy).Name;
+                result["action"] = "created";
+                try { result["created"] = create(); }
+                catch (Exception ex) when (force && Scaffold.AlreadyInAnotherFolder(ex))
+                {
+                    // colisão de nome: o alvo de mesmo nome sai da frente e o pacote entra inteiro.
+                    // Se o que colide for outro objeto (bloco do pacote parado noutra pasta), não há
+                    // o que apagar aqui e o retry levanta o mesmo erro — que é o certo a mostrar.
+                    if (isFolder)
+                    {
+                        var old = group.Groups.Find(copyName);
+                        if (old != null) old.Delete();
+                    }
+                    else
+                    {
+                        var old = Ops.FindBlock(plc, copyName);
+                        if (old != null) old.Delete();
+                    }
+                    result["created"] = create();
+                    result["action"] = "deleted+created";
+                }
             }
             return result;
         }

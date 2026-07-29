@@ -14,6 +14,17 @@ $script:Repo   = Split-Path $PSScriptRoot
 $script:Exe    = Join-Path $script:Repo 'src\Tia.Cli\bin\Debug\net48\tia.exe'
 $script:TaskIo = Join-Path $script:Repo 'workspace\taskio'
 
+function Resolve-LibFile {
+    # A .al21 é artefato de build e o Portal renomeia a pasta junto com a library (tia_cli ->
+    # tia-cli quebrou todos os macros de uma vez). Caminho fixo em dois scripts era um rename de
+    # distância; o glob acha a única .al21 sob src/Tia.Lib.
+    $hits = @(Get-ChildItem (Join-Path $script:Repo 'src\Tia.Lib') -Recurse -Filter '*.al2?' -File -ErrorAction SilentlyContinue)
+    if (-not $hits) { throw 'nenhuma .al21 em src/Tia.Lib — assar com: pwsh scripts/bake-lib.ps1 -Plc <PLC> -Apply' }
+    if ($hits.Count -gt 1) { throw "mais de uma .al21 em src/Tia.Lib ($($hits.Name -join ', ')) — passar -File" }
+    # relativo ao repo (nao ao cwd): e assim que os macros passam --file e montam Test-Path
+    $hits[0].FullName.Substring($script:Repo.Length + 1)
+}
+
 function Invoke-Tia {
     # Sem param block de proposito: qualquer parametro faz o PS tentar casar --name/--out com
     # parametros da funcao ("parameter name 'out' is ambiguous"). $args passa tudo cru.

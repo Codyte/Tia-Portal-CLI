@@ -6,7 +6,7 @@
 # Uso: pwsh scripts/bake-lib.ps1 [-Plc PLC_GEN] [-Portal Project1] [-Prune] [-Apply]
 param(
     [string]$Plc = 'PLC_GEN',
-    [string]$File = 'src/Tia.Lib/tia_cli/tia_cli.al21',
+    [string]$File,   # default = a única .al21 sob src/Tia.Lib (Resolve-LibFile)
     [string]$Root = '1. FB Bilbiotecas',
     [string]$Portal,
     [switch]$Prune,
@@ -16,6 +16,7 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot '_common.ps1')
 
 $portalArgs = if ($Portal) { @('--portal', $Portal) } else { @() }
+if (-not $File) { $File = Resolve-LibFile }
 $blocks = (Invoke-Tia list-blocks --plc $Plc --folder $Root @portalArgs | ConvertFrom-Json).blocks
 if (-not $blocks) { throw "nenhum bloco em '$Root' (plc $Plc)" }
 

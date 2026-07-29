@@ -9,7 +9,7 @@ param(
     # posicional, mas nomeado: com ValueFromRemainingArguments o PS engole -Portal como "resto"
     [Parameter(Position = 0)][string[]]$Package,
     [string]$Plc = 'PLC_GEN',
-    [string]$File = 'src/Tia.Lib/tia_cli/tia_cli.al21',
+    [string]$File,   # default = a única .al21 sob src/Tia.Lib (Resolve-LibFile)
     [string]$Root = '1. FB Bilbiotecas',
     [string]$Portal,
     # -Update reinstala o que já está lá (import-master-copy --force apaga e recria). Sem isto,
@@ -25,7 +25,8 @@ $ErrorActionPreference = 'Stop'
 $portalArgs = if ($Portal) { @('--portal', $Portal) } else { @() }
 # .al21 e library/blocks/ sao gitignored (artefato de build / payload de cliente): clone limpo nao
 # tem nenhum dos dois. Sem isto o erro sai como ConvertFrom-Json vazio, que nao diz o que fazer.
-if (-not (Test-Path (Join-Path $script:Repo $File))) {
+if (-not $File) { $File = Resolve-LibFile }
+elseif (-not (Test-Path (Join-Path $script:Repo $File))) {
     throw "global library ausente: $File — assar a partir de um PLC que ja tenha a arvore: pwsh scripts/bake-lib.ps1 -Plc <PLC> -Apply"
 }
 $lib = Invoke-Tia list-library --file $File @portalArgs | ConvertFrom-Json

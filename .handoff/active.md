@@ -1,100 +1,109 @@
 # Handoff · TIA Portal Openness API · 2026-07-29
 
 ## Goal
-Fechar o ciclo da biblioteca: **projeto base** (cópia do atual, só arsenal de funções e moldes) →
-`bake-lib` gera a `.al21` a partir dele → `install-lib` instala o arsenal completo em qualquer PLC
-virgem. Hoje a biblioteca mora na máquina (`.al21` e `library/blocks/` gitignored), não no repo.
+Fechar o ciclo da biblioteca **contra o Portal**, não em dry: `bake-lib` (PLC → `.al21`) →
+`install-lib`/`new-plc` (`.al21` → CPU virgem) → medir contra a régua conhecida da F8
+(**4 erros, todos o G120 ausente**). É a única espinha da ferramenta sem medição real.
 
 ## State
-- HEAD: `5444a21`. Working tree limpo (só o archive novo em `.handoff/`).
-- **Live state**: 1 TIA Portal aberto, projeto `Software de ETE Insular_Inicial_V21`
-  (`proj/`, 1 PLC `CPU1.0 CCO`, 62 devices) — **não é produção**, confirmado pelo user. Esse projeto
-  tem a árvore **antiga** (`1.2 Inversores`, `1.7 Utilitários`). O user está montando a global
-  library **à mão pela GUI** em `src/Tia.Lib/tia-cli/tia-cli.al21`: o conteúdo mudou a cada leitura
-  (1 → 8 → 5 → 7 master copies), e a última bake tem a árvore **nova** (`1.1/1.1.1 Inversores`),
-  fonte não identificada. `Project1` (tinha `PLC_GEN`/`PLC_ZERO`) está fechado.
-- Done nesta sessão (3 commits, todos com `rebuild.ps1` ALL PASS + smoke dry real):
-  `import-master-copy --force`, `install-lib -Update`, `bake-lib -Prune`, `new-plc.ps1`,
-  `Resolve-LibFile` (glob da `.al21`), roteamento por `ContentType` (UDT/tabela de tag) e recusa de
-  nome ambíguo entre níveis da library.
+- HEAD: `048c118`. Working tree limpo (só o archive novo em `.handoff/`).
+- **Live state**: 1 TIA Portal aberto, projeto **`Base_tia_cli`** (o user salvou o
+  `Software de ETE Insular_Inicial_V21` com esse nome — é o projeto base). 1 PLC `CPU1.0 CCO`,
+  476 blocos, **compila 0 erros**, salvo. O user já apagou os devices duplicados (1 exemplar cada).
+- **A `.al21` está VAZIA** — `src/Tia.Lib/tia-cli/tia-cli.al21`, o user deletou todo o conteúdo à
+  mão. Não há trabalho manual a preservar; `bake-lib -Apply` pode sobrescrever à vontade. O aviso
+  de "fazer backup antes de assar" do handoff anterior **caducou**.
+- Done nesta sessão: `1. FB Bibliotecas` reorganizada e commitada (`refactor(lib)`, 9 arquivos).
 - In progress: nada mid-flight.
 
 ## Decisions (and why)
-- **Atualizar biblioteca instalada = apagar e recriar.** `CreateFrom` não tem `Override` (ao
-  contrário do `Blocks.Import`): nome repetido é recusado. `--force` apaga o de mesmo nome e recria
-  (`action: deleted+created`), mesmo desenho do `scaffold --force`. Custo: quem chamava o bloco
-  apagado fica `Block call was invalid...` — cicatriz do `move-block`, o chamador precisa ser
-  reimportado. Em CPU virgem não existe.
-- **`.al21` achada por glob** (`Resolve-LibFile` em `_common.ps1`): o Portal renomeou
-  `tia_cli` → `tia-cli` (pasta e arquivo) e o caminho fixo nos dois macros quebrou tudo de uma vez.
-- **`bake-lib -Prune` é opt-in.** A `.al21` pode ter pacote assado de outro PLC; bake só enxerga o
-  `-Plc` da rodada. Provado no dry: assar do `CPU1.0 CCO` acusaria os 5 blocos base como órfãos.
-- **UDT e tabela de tag são master copy válido** (`PlcStruct "Aferição CMD"` apareceu na library).
-  Cada um mora na sua composition — `Types.CreateFrom` / `TagTables.CreateFrom`, nunca
-  `Blocks.CreateFrom`. **Isso mata a dependência de `library/blocks/<UDT>.xml`** (payload gitignored)
-  que hoje impede um clone limpo de instalar.
-- **Nome ambíguo recusa, não escolhe.** Mesmo nome em níveis diferentes da library era resolvido
-  pelo 1º achado, em silêncio, e o de baixo ficava inalcançável. Agora lista as pastas e exige
-  `--name "PASTA/NOME"`. Mesma política do `--portal`.
+- **`move-block` em bloco chamado NÃO deixa cicatriz** — medido, não deduzido: movi
+  `FB STATUS ECSX` (5 refs) e o compile deu **0 erros**. Contraria a nota do `PLANO.md:478`
+  (`Block call was invalid because interface was changed`). O que morde de verdade é a
+  **inconsistência do vizinho durante o batch**: 4 de 41 steps falharam com
+  `Block 'X' is inconsistent (imported or edited, never compiled)` e passaram com
+  `compile --apply` no meio. Padrão: rodar o batch → compilar → re-rodar (move é idempotente,
+  `alreadyThere`); precisou de 2 rodadas porque mover o iDB reinconsistencia o FB dono.
+  **Isso libera reorganizar em projeto povoado, não só em CPU virgem.**
+- **Layout final da `1. FB Bibliotecas`** (typo corrigido no projeto e em 9 arquivos do repo,
+  inclusive os `-Root` de `install-lib.ps1` e `bake-lib.ps1`):
+  raiz 5 (**camada base**: BITS TO WORD, BITS TO DOUBLE WORD, CONTADOR, TOTALIZADOR, HORÍMETRO —
+  a `1.7 Utilitários` dissolvida) · `1.1 Acionamento` 3 · `1.1 Acionamento/1.1.1 Inversores` 7 ·
+  `1.3 Instrumentação` 6 · `1.4 Alarmes e Falhas` 3 (ganhou `FB INTERTRAVAMENTO_PAINEL`) ·
+  `1.5 Diagnóstico` 6 · `1.6 Comunicação Modbus` 4. Total 34. `1.2` vazio de propósito
+  (Inversores virou `1.1.1`). `generic.json`/`packages.json` batem — nenhum `requires` quebrado.
+- **Terceiro nível (`x.x.x`) só quando o pacote passar de ~10 blocos E o subgrupo nunca for
+  instalado sozinho.** `x.x.x` não renomeia pacote (o `requires` aponta pro nível 1), então é
+  barato — mas os clusters de hoje têm 2-3 blocos cada, e pasta pra 3 blocos é ruído. Candidatos
+  se a biblioteca crescer: `1.5 Diagnóstico` (Profinet × Módulos), `1.3 Instrumentação`
+  (medida × setpoint).
+- **A poda NÃO é pré-requisito do bake** — eu tinha assumido que sim; é falso. O bake só leva o
+  que é nomeado. Dá pra validar o ciclo inteiro com o `Base_tia_cli` cheio (476 blocos) e podar
+  depois, sem pressa e sem risco.
 
 ### Tentado e descartado (não repetir)
-- **Preflight de UDT ausente no `install-lib` era falso alarme**: todo o `$ops` é montado antes do
-  único `run`, então o `throw` acontece com zero escrita. O buraco real era só a `.al21` ausente.
-- **Bake manual pela GUI não substitui `bake-lib`**: o Portal batiza `Copy of Function blocks in X`
-  (o script renomeia pro nome da fonte) e o arrasto não cria os master copies dos blocos soltos do
-  nível 1 — os 5 FBs de que **todo** pacote depende (instalá-los junto foi o que levou 9 erros → 0).
-- Anteriores: telegrama do G120 não é atributo nem plug location · master copy de *pasta de blocos*
+- **Renomear `FB_LIGA/DESLIGA MODO AUTO` (tem `/`) e `FB FILTRO DE AMOSTRAGEM  ANALÍTICA`
+  (espaço duplo)**: os dois nomes estão gravados nos XML de `library/blocks/`, em `generic.json`,
+  `packages.json`, `library.json`, `export-all.json` e nos moldes — 9 arquivos desincronizam, e o
+  nome precisa sobreviver ao `import-master-copy --force` da atualização futura. São bombas
+  latentes, não bugs ativos. **Deixar como está.**
+- **Renumerar pra fechar o `1.2`, renomear `1.3`→"Instrumentação e Controle" (por causa do
+  `AUX_PID`), separar `SINA_SPEED_TLG20` numa pasta Siemens**: cada um renomeia um **nome de
+  pacote** já gravado em `packages.json`/`generic.json`/`.al21`. Custo > estética.
+- **`rebuild.ps1` não foi rodado**: a mudança em `Audit.cs`/`Inventory.cs` é só comentário
+  (zero delta de comportamento) e custaria um UAC pra rewhitelist. Rodar só se mexer em código.
+- Anteriores: bake manual pela GUI não substitui `bake-lib` · master copy de *pasta de blocos*
   não leva UDT nem tabela (mas UDT solto **é** master copy) · `import-source` exige UTF-8 com BOM ·
-  `--out-file`/`--plc` do processo não descem pros steps do `run`.
+  `--out-file`/`--plc` do processo não descem pros steps do `run` · telegrama do G120 não é
+  atributo nem plug location · preflight de UDT no `install-lib` era falso alarme (todo o `$ops`
+  é montado antes do único `run`).
 
 ## Next steps (ordered)
-1. **Decidir a fonte da árvore** antes de copiar: o projeto aberto tem a árvore antiga
-   (`1.2 Inversores`, `1.7 Utilitários`); o PLANO registra a movida para `1.1/1.1.1 Inversores` +
-   `1.7` dissolvida, feita no `PLC_GEN` (projeto fechado). O base deve nascer com a árvore **nova**,
-   ou re-aplicar a movida com `move-block` depois de copiar.
-2. **Copiar o projeto com o Portal fechado** (cópia da pasta `.ap21` no disco). O CLI não tem
-   `save-as`; `use-project.ps1` só abre/fecha.
-3. **Podar** até sobrar só arsenal + moldes: `tree` → `plc-navi.md` para inventariar, depois batch de
-   `delete-block`/`delete-folder` via `run --script` (`delete-block` não tem `--pattern`; montar a
-   lista do `list-blocks --folder`). Guardar `1. FB Bilbiotecas`, `0 Moldes`, os 4 moldes LAD, UDTs,
-   `DB GLOBAL` esqueleto e as tabelas de tag genéricas.
-4. `compile --apply` até 0 erros → `save-project` → **sanitizar nome de equipamento de cliente**
-   (mesmo gate da F4: `AREA_01`, `Motor 1 (MOTOR_01)` — `clone --replace OLD=NEW`).
-5. `bake-lib -Plc <PLC do base> -Prune -Apply` → `.al21` com nomes certos, 1 master copy por pacote +
-   os blocos soltos. **Acrescentar UDTs e tabelas de tag como master copy** (`add-master-copy
-   --name`), agora que o import sabe instalá-los.
-6. Validar: `new-plc.ps1 PLC_TESTE "<pacotes>" -Apply` numa CPU virgem → medir contra a régua
-   conhecida (4 erros, todos o G120 ausente).
-7. Só então: `install-lib` ler o layout final (hoje "base" = bloco solto cuja pasta é exatamente
-   `-Root`; master copy na raiz é ignorado) e `packages.json` refletir os nomes novos.
+1. **`pwsh scripts/bake-lib.ps1 -Plc "CPU1.0 CCO" -Prune`** (dry) → conferir a lista → repetir com
+   `-Apply`. Sai a `.al21` com os nomes novos: 5 base soltos + 6 pacotes `1.x`. A `.al21` está
+   vazia, então `-Prune` não tem órfão a acusar.
+2. **Acrescentar UDTs e tabelas de tag como master copy** (`add-master-copy --name`) — o import já
+   sabe roteá-los por `ContentType` (`Types.CreateFrom`/`TagTables.CreateFrom`). Isso mata a
+   dependência de `library/blocks/<UDT>.xml` (payload gitignored) que impede um clone limpo.
+3. **`pwsh scripts/new-plc.ps1 PLC_TESTE "<pacotes>" -Apply`** numa CPU virgem → comparar com a
+   régua da F8: **4 erros, todos
+   `INVERSOR_MOTOR_01_CCM_01~PROFINET_interface~Standard_telegram_20`**. Igual = ciclo validado
+   (fecha `import-master-copy` real e `--force --apply` real, os dois buracos que a F8 registra).
+   Diferente = o bug apareceu agora, não daqui a três fases.
+4. Só então a poda do `Base_tia_cli` (442 blocos fora da biblioteca) — inventário já gerado em
+   `workspace/base-inventory.json` (93 pastas com contagem) + keep/delete conferido com o user.
+   **Irreversível**, e "o que é arsenal" ainda não está escrito em lugar nenhum.
+5. Atualizar a tabela de fases do PLANO (F8: fechar os 2 buracos) e o `packages.json` se o bake
+   mudar algum nome.
 
 ## Key files
-- `src/Tia.Core/Library.cs` — `ImportMasterCopy` (roteamento por ContentType + `--force`),
-  `FindMasterCopy`/`Collect` (ambiguidade), `AddMasterCopy`, `DeleteMasterCopy`.
-- `scripts/install-lib.ps1` — `-Update`, classificação pacote × base (~60-85).
-- `scripts/bake-lib.ps1` — `-Prune`. `scripts/new-plc.ps1` — add-device + install-lib + save.
-- `scripts/_common.ps1` — `Resolve-LibFile`, `Invoke-Tia`.
+- `workspace/base-inventory.json` — 93 pastas × contagem do `Base_tia_cli` (a base da poda).
+- `workspace/lib-deps.md` — xref das 34 da biblioteca: 5 arestas internas, nenhum bloco órfão.
+- `workspace/lib-reorg.json` / `lib-reorg-dry.json` — o batch de 41 ops que reorganizou; modelo
+  reusável (`create-folder` × 7 + `move-block --name` × 34).
+- `scripts/bake-lib.ps1` (`-Prune`) · `scripts/install-lib.ps1` (`-Update`, `-Root` já corrigido) ·
+  `scripts/new-plc.ps1` · `scripts/_common.ps1` (`Resolve-LibFile` acha a `.al21` por glob).
 - `library/packages.json` — `requires`/`db`/`tags`/`types`/`instances` por master copy.
-- `docs/PLANO.md:259-556` — biblioteca (medições por pacote, DB GLOBAL, G120).
-- `library/core/README.md` — o padrão `.scl` → `xml/` → `scaffold`, que só cobre 5 itens.
+- `src/Tia.Core/Library.cs` — `ImportMasterCopy` (roteamento por ContentType + `--force`),
+  `FindMasterCopy`/`Collect` (recusa nome ambíguo entre níveis).
+- `docs/PLANO.md:71` (F8, os 2 buracos) · `:259-556` (biblioteca) · `:484` (a régua dos 4 erros).
 
 ## Open / blockers
-- **Quais dos 51 blocos de `1. FB Bilbiotecas` são autorais** e podem ser versionados como
-  `.scl`/`.xml`? Decide se o arsenal viaja no Git ou só na `.al21` local.
-- **Layout final da library** (UDT na raiz? pacotes dentro de `1. FB Bilbiotecas`?) — o user estava
-  testando níveis; `install-lib` precisa do layout decidido para ler certo.
-- `--force --apply` **nunca foi exercitado contra o Portal**, só dry. Exige projeto descartável.
+- **A biblioteca vai ser atualizada a partir de outro projeto** (ordem do user). Por isso nome de
+  pacote tem que ficar estável — é o que ancora o `import-master-copy --force`.
+- **Quais dos 33 FBs são autorais** e podem virar `.scl`/`.xml` versionado? Decide se o arsenal
+  viaja no Git ou só na `.al21` local. `SINA_SPEED_TLG20` (FB38003) é da Siemens, não autoral.
 - Telegrama do G120 segue parado no clique do user (device view do `SINAMICS G_ZERO`) — são os 4
-  erros residuais da CPU virgem. Item 9 (*online*) segue parado no aval (revoga D8).
+  erros residuais da régua. Item 9 (*online*) segue parado no aval (revoga D8).
 - Nunca `git add -A` (trilha paralela do `scripts/tia-help.py` no mesmo repo).
 - `rebuild.ps1` pode derrubar a 1ª chamada seguinte (`Openness access (0033:000666)` no Portal
   aberto — só o clique resolve). Nesta sessão não bateu.
 - `--out-file` em `$env:TEMP` dá caminho 8.3 (`CARLOS~1`) que o Python não abre — usar `workspace/`.
 
 ## Effort
-**Médio** para os passos 1-3. Raciocínio não é difícil, mas a poda é irreversível no projeto copiado
-e "o que é arsenal" não está escrito em lugar nenhum — ler o `plc-navi.md` inteiro e conferir com o
-user **é** o trabalho. **Alto** se a poda quebrar dependência que só o compile revela (bloco de área
-chamando FB de biblioteca e vice-versa; o lint de camada do `audit` cobre um sentido só). O gargalo
-aqui não é pensar: `rebuild.ps1` ~1 min, attach 3-7 s, compile de projeto real em minutos — juntar
-operação em `run --script` rende mais que pensar mais.
+**Baixo** para o passo 1, com Opus 5. `bake-lib` é sequência documentada, o layout está decidido e
+commitado, a `.al21` está vazia (nada a preservar) e o dry mostra tudo antes de escrever. O gargalo
+não é raciocínio: é attach (~3s), compile de projeto real (minutos) e o `-Apply` — juntar operação
+em `run --script` rende mais que pensar mais. **Sobe pra alto no passo 3** se a contagem da CPU
+virgem divergir dos 4 erros da régua: aí a `.al21` gerada difere do que o `install-lib` espera ler,
+e o layout ("base" = bloco solto cuja pasta é exatamente `-Root`) volta pra mesa.

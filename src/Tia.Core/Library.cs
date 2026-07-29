@@ -8,6 +8,8 @@ using Siemens.Engineering.Library.MasterCopies;
 using Siemens.Engineering.Library.Types;
 using Siemens.Engineering.SW;
 using Siemens.Engineering.SW.Blocks;
+using Siemens.Engineering.SW.Tags;
+using Siemens.Engineering.SW.Types;
 
 namespace Tia.Core
 {
@@ -88,14 +90,57 @@ namespace Tia.Core
                 { "folder", folderPath ?? "" },
                 { "applied", apply },
             };
+            var content = copy.ContentDescriptions.Select(d => d.ContentType).FirstOrDefault();
+            var isFolder = content == typeof(PlcBlockUserGroup);
+            var isType = content != null && typeof(PlcType).IsAssignableFrom(content);
+            var isTable = content != null && typeof(PlcTagTable).IsAssignableFrom(content);
+            result["contentType"] = content == null ? "" : content.Name;
             if (apply)
             {
-                var group = Ops.ResolveFolder(plc, folderPath, true);
-                var isFolder = copy.ContentDescriptions
-                    .Any(d => d.ContentType == typeof(PlcBlockUserGroup));
-                Func<string> create = () => isFolder
-                    ? group.Groups.CreateFrom(copy).Name   // master copy de pasta = pacote inteiro
-                    : group.Blocks.CreateFrom(copy).Name;
+                // UDT e tabela de tag também são IMasterCopySource e podem estar soltos na library
+                // (foi assim que "Aferição CMD" apareceu). Cada um mora na sua composition — mandar
+                // tudo pra Blocks.CreateFrom só dá erro de cast.
+                var segments = string.IsNullOrEmpty(folderPath)
+                    ? new List<string>() : folderPath.Trim('/').Split('/').ToList();
+                var group = isType || isTable ? null : Ops.ResolveFolder(plc, folderPath, true);
+                Func<string> create;
+                Action deleteExisting;
+                if (isType)
+                {
+                    create = () => Scaffold.ResolveTypePath(plc, segments, true).Types.CreateFrom(copy).Name;
+                    deleteExisting = () =>
+                    {
+                        var old = Ops.FindType(plc.TypeGroup, copyName);
+                        if (old != null) old.Delete();
+                    };
+                }
+                else if (isTable)
+                {
+                    create = () => Scaffold.ResolveTagPath(plc, segments, true).TagTables.CreateFrom(copy).Name;
+                    deleteExisting = () =>
+                    {
+                        var old = Ops.FindTagTable(plc.TagTableGroup, copyName);
+                        if (old != null) old.Delete();
+                    };
+                }
+                else if (isFolder)
+                {
+                    create = () => group.Groups.CreateFrom(copy).Name;   // pasta = pacote inteiro
+                    deleteExisting = () =>
+                    {
+                        var old = group.Groups.Find(copyName);
+                        if (old != null) old.Delete();
+                    };
+                }
+                else
+                {
+                    create = () => group.Blocks.CreateFrom(copy).Name;
+                    deleteExisting = () =>
+                    {
+                        var old = Ops.FindBlock(plc, copyName);
+                        if (old != null) old.Delete();
+                    };
+                }
                 result["action"] = "created";
                 try { result["created"] = create(); }
                 catch (Exception ex) when (force && Scaffold.AlreadyInAnotherFolder(ex))
@@ -103,16 +148,7 @@ namespace Tia.Core
                     // colisão de nome: o alvo de mesmo nome sai da frente e o pacote entra inteiro.
                     // Se o que colide for outro objeto (bloco do pacote parado noutra pasta), não há
                     // o que apagar aqui e o retry levanta o mesmo erro — que é o certo a mostrar.
-                    if (isFolder)
-                    {
-                        var old = group.Groups.Find(copyName);
-                        if (old != null) old.Delete();
-                    }
-                    else
-                    {
-                        var old = Ops.FindBlock(plc, copyName);
-                        if (old != null) old.Delete();
-                    }
+                    deleteExisting();
                     result["created"] = create();
                     result["action"] = "deleted+created";
                 }
@@ -202,16 +238,35 @@ namespace Tia.Core
             return folder;
         }
 
-        private static MasterCopy FindMasterCopy(MasterCopyFolder folder, string name)
+        /// <summary>Busca por nome em toda a library. Aceita "PASTA/NOME" pra desempatar: o mesmo
+        /// nome pode existir em níveis diferentes (arrastar o bloco pra raiz e pra dentro de uma
+        /// pasta cria dois master copies homônimos), e devolver o primeiro achado escolheria em
+        /// silêncio. Mesma política do --portal: ambíguo recusa e lista.</summary>
+        private static MasterCopy FindMasterCopy(MasterCopyFolder root, string name)
+        {
+            var slash = name.LastIndexOf('/');
+            var wantFolder = slash < 0 ? null : name.Substring(0, slash);
+            var wantName = slash < 0 ? name : name.Substring(slash + 1);
+
+            var hits = new List<KeyValuePair<string, MasterCopy>>();
+            Collect(root, "", wantName, hits);
+            if (wantFolder != null)
+                hits = hits.Where(h => string.Equals(h.Key, wantFolder, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (hits.Count == 0) return null;
+            if (hits.Count > 1)
+                throw new InvalidOperationException("Master copy '" + wantName + "' existe em "
+                    + hits.Count + " pastas da library (" + string.Join(", ",
+                        hits.Select(h => h.Key.Length == 0 ? "(raiz)" : h.Key)) + "). Passe --name \"PASTA/NOME\".");
+            return hits[0].Value;
+        }
+
+        private static void Collect(MasterCopyFolder folder, string path, string name,
+            List<KeyValuePair<string, MasterCopy>> into)
         {
             var hit = folder.MasterCopies.Find(name);
-            if (hit != null) return hit;
+            if (hit != null) into.Add(new KeyValuePair<string, MasterCopy>(path, hit));
             foreach (MasterCopyUserFolder sub in folder.Folders)
-            {
-                hit = FindMasterCopy(sub, name);
-                if (hit != null) return hit;
-            }
-            return null;
+                Collect(sub, path.Length == 0 ? sub.Name : path + "/" + sub.Name, name, into);
         }
     }
 }

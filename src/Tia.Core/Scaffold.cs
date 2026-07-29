@@ -286,7 +286,7 @@ namespace Tia.Core
         }
 
         // UDT em subpasta: sem isto todo SW.Types.* caía na raiz do TypeGroup, ignorando o Folder do manifesto.
-        private static PlcTypeGroup ResolveTypePath(PlcSoftware plc, IList<string> segments, bool create)
+        internal static PlcTypeGroup ResolveTypePath(PlcSoftware plc, IList<string> segments, bool create)
         {
             PlcTypeGroup current = plc.TypeGroup;
             foreach (var name in segments ?? new List<string>())
@@ -302,7 +302,7 @@ namespace Tia.Core
             return current;
         }
 
-        private static PlcTagTableGroup ResolveTagPath(PlcSoftware plc, IList<string> segments, bool create)
+        internal static PlcTagTableGroup ResolveTagPath(PlcSoftware plc, IList<string> segments, bool create)
         {
             PlcTagTableGroup current = plc.TagTableGroup;
             foreach (var name in segments ?? new List<string>())

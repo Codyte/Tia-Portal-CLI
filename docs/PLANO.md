@@ -237,7 +237,7 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
 
 ## Otimização de tokens do CLI — ✅ 2026-07-28
 
-Levantada pelo custo real da reorganização da `1. FB Bilbiotecas` (6 chamadas de ferramenta e um
+Levantada pelo custo real da reorganização da `1. FB Bibliotecas` (6 chamadas de ferramenta e um
 gerador de batch em PowerShell pro que devia ser uma linha). Seis pontos, todos fechados:
 
 | ponto | antes | agora |
@@ -334,7 +334,7 @@ bloco é único no PLC — o mesmo nome noutra pasta faz o import recusar. `--fo
 import e, só se a exceção for *"already exists"*, apaga o objeto antigo e importa no lugar pedido
 (`action: "deleted+imported"`). O caminho comum (mesma pasta) continua no `Override`, que preserva
 o vínculo chamada↔iDB. Medido no `PLC_ZERO`: `move-block` de `FB BITS TO WORD` pra `ZZ Force` →
-`scaffold --force --apply` → bloco de volta em `1. FB Bilbiotecas`, `ZZ Force` vazia, compile nos
+`scaffold --force --apply` → bloco de volta em `1. FB Bibliotecas`, `ZZ Force` vazia, compile nos
 mesmos 4 erros (sem cicatriz).
 
 **Núcleo genérico (fatia 2, autoral e publicável — desenho original)**. Os 66 itens de
@@ -401,13 +401,13 @@ com hierarquia, sem os 63 imports do manifesto.
 **Medição em CPU virgem** (`PLC_LIBT`, `6ES7 515-2AM02-0AB0/V2.9`, criada por `add-device`):
 `import-master-copy "1.1 Acionamento"` = 12 blocos (7 + 4 na subpasta `1.1.1 Inversores`) →
 **9 erros**, todos dependência de `FB CONTADOR`/`FB_HORÍMETRO` (nível 1). Somando os 5 utilitários
-soltos de `1. FB Bilbiotecas` → **2 erros**, ambos `Tag "Clock_1Hz" not defined`;
+soltos de `1. FB Bibliotecas` → **2 erros**, ambos `Tag "Clock_1Hz" not defined`;
 `set-memory-bytes --clock 0 --apply` → **compile Success, 0 erros**. Contra 82–88 erros da
 instalação do manifesto inteiro. Confirma a lei de escopo: dependência de pacote só aponta pra
 cima, e clock/system memory byte é parte do core (não é bloco).
 
 **Critério de aceite batido — cada pacote sozinho numa CPU virgem = 0 erros.** `scripts/bake-lib.ps1`
-grava a biblioteca do PLC na `.al21` (1 master copy por subpasta de `1. FB Bilbiotecas` + 1 por bloco
+grava a biblioteca do PLC na `.al21` (1 master copy por subpasta de `1. FB Bibliotecas` + 1 por bloco
 solto do nível 1; `-Apply` pra valer, dry-run mostra o que faria). Instalação de um pacote = os 5
 blocos de nível 1 + o pacote + `set-memory-bytes --clock 0`. Medido em 5 CPUs `6ES7 515-2AM02-0AB0`
 recém-criadas: `1.1 Acionamento`, `1.3 Instrumentação`, `1.4 Alarmes e Falhas`,
@@ -473,7 +473,7 @@ alocadas em `%M` a partir de 5520 (`free-memory` achou o buraco). Tipo errado ap
 `INSTR_01_TOTALIZACAO_MEDIDOR_VAZAO` virou `Bool`.
 
 **Movida da árvore feita** (manifesto = fonte, `library/generic.json`): `1.7 Utilitários` dissolvida
-(5 blocos soltos em `1. FB Bilbiotecas`), `1.2 Inversores` → `1. FB Bilbiotecas/1.1 Acionamento/
+(5 blocos soltos em `1. FB Bibliotecas`), `1.2 Inversores` → `1. FB Bibliotecas/1.1 Acionamento/
 1.1.1 Inversores`. `move-block` refletiu no `PLC_GEN` (9 blocos).
 **Cicatriz do move in-place**: mover bloco *chamado* deixa +6 erros nos chamadores
 (`Block call was invalid because interface was changed`, `The block call or the associated instance
@@ -556,7 +556,7 @@ projeto. O que a arqueologia dos AML já responde, sem sondar a API:
 
 ### Lint de camada no `audit` — ✅ 2026-07-28
 
-Sexto check: **`1. FB Bilbiotecas` não pode depender de bloco de área**. Se um FB de biblioteca
+Sexto check: **`1. FB Bibliotecas` não pode depender de bloco de área**. Se um FB de biblioteca
 chama bloco de área, a biblioteca deixa de ser instalável sozinha — é exatamente o que o
 `install-lib` sofre. Camada = 1º segmento da pasta; nome de bloco é único no PLC, então o mapa
 nome → pasta resolve a camada do chamado, e o xref dá a chamada (`Inventory.AllSources`).

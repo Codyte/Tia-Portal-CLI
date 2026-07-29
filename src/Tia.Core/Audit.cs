@@ -115,7 +115,7 @@ namespace Tia.Core
         }
 
         /// <summary>
-        /// Camada 1 ("1. FB Bilbiotecas") é biblioteca: seus blocos podem chamar uns aos outros, mas
+        /// Camada 1 ("1. FB Bibliotecas") é biblioteca: seus blocos podem chamar uns aos outros, mas
         /// não um bloco de área — se chamarem, a biblioteca deixa de ser instalável sozinha (é
         /// exatamente o que o `install-lib` sofre). Xref é o único jeito de ver a chamada; nome de
         /// bloco é único no PLC, então o mapa nome → pasta resolve a camada do chamado.

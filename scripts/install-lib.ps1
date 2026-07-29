@@ -10,7 +10,7 @@ param(
     [Parameter(Position = 0)][string[]]$Package,
     [string]$Plc = 'PLC_GEN',
     [string]$File,   # default = a única .al21 sob src/Tia.Lib (Resolve-LibFile)
-    [string]$Root = '1. FB Bilbiotecas',
+    [string]$Root = '1. FB Bibliotecas',
     [string]$Portal,
     # -Update reinstala o que já está lá (import-master-copy --force apaga e recria). Sem isto,
     # "já instalado" = existe bloco com esse nome, e corrigir uma FC na library nunca chegava no PLC.

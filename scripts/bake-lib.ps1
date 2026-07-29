@@ -7,7 +7,7 @@
 param(
     [string]$Plc = 'PLC_GEN',
     [string]$File,   # default = a única .al21 sob src/Tia.Lib (Resolve-LibFile)
-    [string]$Root = '1. FB Bilbiotecas',
+    [string]$Root = '1. FB Bibliotecas',
     [string]$Portal,
     [switch]$Prune,
     [switch]$Apply

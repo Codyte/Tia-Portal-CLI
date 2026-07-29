@@ -77,7 +77,7 @@ namespace Tia.Core
         }
 
         /// <summary>
-        /// folder = prefixo da pasta ("1. FB Bilbiotecas" pega as subpastas também), type = FB/FC/OB/
+        /// folder = prefixo da pasta ("1. FB Bibliotecas" pega as subpastas também), type = FB/FC/OB/
         /// GlobalDB/InstanceDB. Sem filtro, um PLC real devolve ~500 blocos: é o dump que estoura contexto.
         /// </summary>
         public static object Blocks(PlcSoftware plc, string folder = null, string type = null, bool countOnly = false)

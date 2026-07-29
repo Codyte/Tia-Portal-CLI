@@ -87,7 +87,7 @@ Por tipo: 33 FB · 13 UDT (`SW.Types.PlcStruct`) · 8 instance DB · 4 FC · 3 g
 `Diag_Hardware` · `Tlg_20_Out` · `Tlg_20_In` · `HACH_DataType` · `MotorPrincipal` · `MotorDados` ·
 `SULZER_Compressor_Comando` · `SULZER_Compressor_Status`
 
-### `1. FB Bilbiotecas` — 33 FBs em 7 subpastas por função
+### `1. FB Bibliotecas` — 33 FBs em 7 subpastas por função
 Reorganizada em 2026-07-28 (era plana). O Openness não move bloco: é `export` → `delete` →
 `import --folder`, nessa ordem (importar com o original no lugar falha com *"A program element with
 this fully qualified name already exists in this CPU"*). Hoje isso está encapsulado em

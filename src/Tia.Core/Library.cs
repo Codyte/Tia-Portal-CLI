@@ -142,6 +142,11 @@ namespace Tia.Core
                     };
                 }
                 result["action"] = "created";
+                // --force apaga ANTES de criar: CreateFrom de pasta/bloco que já existe no alvo não
+                // levanta — o Portal batiza "1.5 Diagnóstico_1" em silêncio e o PLC fica com o pacote
+                // duplicado (medido: 34 → 68 blocos, compile Error). O catch abaixo nunca disparava
+                // nesse caso; segue valendo pra colisão de nome em OUTRA pasta, que aí sim levanta.
+                if (force) { deleteExisting(); result["action"] = "deleted+created"; }
                 try { result["created"] = create(); }
                 catch (Exception ex) when (force && Scaffold.AlreadyInAnotherFolder(ex))
                 {

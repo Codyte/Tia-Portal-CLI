@@ -6,7 +6,7 @@ O repo inteiro vira a skill. Depois disso, retomar o ciclo da biblioteca (re-tes
 `--force` numa CPU virgem contra a régua dos 4 erros do G120).
 
 ## State
-- HEAD: `3f6d4d3` (o commit deste handoff). **5 commits à frente do `origin/main`, NÃO pushados —
+- HEAD: `d6bfbe7` + o commit deste ajuste. **~7 commits à frente do `origin/main`, NÃO pushados —
   bloqueio real, ver Open**. O submódulo do passo 3 clona do remote: sem push, ele nasce em
   `a0df2f7` e perde tudo o que foi feito hoje.
 - Live state: nenhum TIA Portal aberto; shell do agente na sessão 0. `init.ps1 -Check` = 9/9 ok.

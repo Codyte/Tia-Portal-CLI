@@ -15,5 +15,8 @@ aqui.
 - **Não renomear `FB_LIGA/DESLIGA MODO AUTO` (tem `/`) nem `FB FILTRO DE AMOSTRAGEM  ANALÍTICA`
   (espaço duplo)** — os nomes estão gravados em 9 arquivos + moldes. São bombas latentes, não bugs
   ativos. Tentado e descartado; o custo é maior que a estética.
+- **A skill em `~/.claude/skills/tia` é uma cópia.** A fonte é `skills/tia/SKILL.md` no repo —
+  editar lá e rodar `pwsh scripts/init.ps1` pra propagar (gate 6). Editar o instalado direto
+  perde na próxima instalação e o `-Check` acusa divergência.
 - **`--out-file` nunca em `$env:TEMP`** — vira caminho 8.3 (`CARLOS~1`) que o Python não abre.
   Usar `workspace/`.

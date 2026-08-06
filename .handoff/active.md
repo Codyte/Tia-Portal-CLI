@@ -6,7 +6,9 @@ O repo inteiro vira a skill. Depois disso, retomar o ciclo da biblioteca (re-tes
 `--force` numa CPU virgem contra a régua dos 4 erros do G120).
 
 ## State
-- HEAD: `1274e2b` + o commit deste handoff. **Pushado** — o submódulo precisa do remote em dia.
+- HEAD: `3f6d4d3` (o commit deste handoff). **5 commits à frente do `origin/main`, NÃO pushados —
+  bloqueio real, ver Open**. O submódulo do passo 3 clona do remote: sem push, ele nasce em
+  `a0df2f7` e perde tudo o que foi feito hoje.
 - Live state: nenhum TIA Portal aberto; shell do agente na sessão 0. `init.ps1 -Check` = 9/9 ok.
   `.al21` de 148 KB assada. `~/.claude/skills/tia` existe hoje como **cópia untracked** (feita
   pelo gate 6) dentro do repo `Codyte/skills` — é ela que o submódulo substitui.
@@ -38,7 +40,8 @@ O repo inteiro vira a skill. Depois disso, retomar o ciclo da biblioteca (re-tes
    não for `~/.claude/skills/tia`. E **gate 4 passa a re-registrar a task quando o caminho gravado
    nela diverge do repo atual** (`(Get-ScheduledTask TiaSmokeRun).Actions.Arguments`), senão a
    migração deixa a sessão 0 morta. Commit + push.
-3. **Submódulo**: em `~/.claude/skills/`, `Remove-Item tia -Recurse` (é cópia untracked, nada a
+3. **Push primeiro** (o user autentica — ver Open), conferir `git status -sb` limpo contra
+   `origin/main`. **Submódulo**: em `~/.claude/skills/`, `Remove-Item tia -Recurse` (é cópia untracked, nada a
    perder) → `git submodule add https://github.com/Codyte/TIA-Portal.git tia` → clona os 1,36 MB
    limpos. Commit no repo `Codyte/skills`.
 4. **Mover só o untracked** de `c:\Scripts\TIA Portal` pro clone novo: `lib/`, `workspace/`,
@@ -63,6 +66,11 @@ O repo inteiro vira a skill. Depois disso, retomar o ciclo da biblioteca (re-tes
 - `.handoff/` é versionado → viaja no clone; por isso o push antes de migrar.
 
 ## Open / blockers
+- **BLOQUEIO: o agente não consegue pushar.** `credential.helper=manager` exige TTY/GUI e o shell
+  do agente não tem (`/dev/tty: No such device`), então o push **pendura pra sempre**; `gh auth
+  status` diz `The token in default is invalid`. Leitura do remote funciona (anônima). **O user
+  precisa rodar `gh auth login -h github.com` (ou `git push` num terminal dele) antes do passo 3.**
+  Não insistir no `git push` daqui sem isso — trava o turno.
 - **`proj/` = 1,9 GB** vai ou fica? Só decidir depois de conferir a resolução de caminho.
 - Repo remoto é `Codyte/TIA-Portal.git`; o user citou `Tia-Portal-CLI.git`. Renomear no GitHub é
   1 linha em 2 arquivos — decidir antes do `submodule add`, que grava a URL.

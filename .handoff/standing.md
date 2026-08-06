@@ -15,8 +15,10 @@ aqui.
 - **Não renomear `FB_LIGA/DESLIGA MODO AUTO` (tem `/`) nem `FB FILTRO DE AMOSTRAGEM  ANALÍTICA`
   (espaço duplo)** — os nomes estão gravados em 9 arquivos + moldes. São bombas latentes, não bugs
   ativos. Tentado e descartado; o custo é maior que a estética.
-- **A skill em `~/.claude/skills/tia` é uma cópia.** A fonte é `skills/tia/SKILL.md` no repo —
-  editar lá e rodar `pwsh scripts/init.ps1` pra propagar (gate 6). Editar o instalado direto
-  perde na próxima instalação e o `-Check` acusa divergência.
+- **O repo é a skill e mora em `~/.claude/skills/tia`** (submódulo de `Codyte/skills`, desde
+  2026-08-06). `SKILL.md` na raiz, nada é copiado. **Um checkout só**: a whitelist do Openness é
+  gravada por caminho do exe e a task `TiaSmokeRun` guarda o caminho absoluto do `taskrun.ps1`.
+  Mover o checkout exige `pwsh scripts/init.ps1` de novo (re-registra a task e refaz a whitelist);
+  sem isso a rota da sessão 0 devolve `No running TIA Portal instance found` com o Portal aberto.
 - **`--out-file` nunca em `$env:TEMP`** — vira caminho 8.3 (`CARLOS~1`) que o Python não abre.
   Usar `workspace/`.

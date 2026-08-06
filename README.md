@@ -90,10 +90,18 @@ tia run --script docs/examples/gen-all.json
 ## Quick start
 
 ```powershell
-git clone https://github.com/Codyte/tia-cli.git && cd tia-cli
+git clone https://github.com/Codyte/TIA-Portal.git tia-cli && cd tia-cli
 pwsh scripts/init.ps1    # checks the 3 gates below, copies lib/ DLLs from your TIA install,
-                          # builds, runs offline tests, whitelists — one shot for a new machine
+                          # builds, runs offline tests, whitelists, puts `tia` on PATH
+                          # and installs the Claude Code skill — one shot for a new machine
+pwsh scripts/init.ps1 -Check    # read-only: what is installed, what is missing (exit 1 if any)
 ```
+
+`init.ps1` is idempotent — re-run it after `git pull`. Besides the build it sets the `TIA_CLI_HOME`
+user variable, adds `scripts/` to your user PATH (so `tia <verb>` works from any directory, always
+through the session-routing shim — never call `tia.exe` directly) and copies
+[`skills/tia/`](skills/tia/SKILL.md) into `~/.claude/skills/tia`, which teaches any Claude Code
+session how to drive this CLI, from any project folder.
 
 `init.ps1` reports and stops if a gate needs a human (Windows group membership, .NET SDK, or a
 TIA Portal V21+ install to source the Openness DLLs from) — fix what it flags and re-run. Once it

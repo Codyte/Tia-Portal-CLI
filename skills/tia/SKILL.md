@@ -17,11 +17,18 @@ description: >-
 Nesta ordem, pare no primeiro que responder:
 
 ```powershell
-$env:TIA_CLI_HOME                                    # variável de usuário, gravada pelo init
-Get-Command tia -ErrorAction SilentlyContinue        # shim tia.cmd no PATH
+$env:TIA_CLI_HOME                                          # variável de usuário, gravada pelo init
+[Environment]::GetEnvironmentVariable('TIA_CLI_HOME','User')   # shell velho não vê a de cima
+Get-Command tia -ErrorAction SilentlyContinue              # shim tia.cmd no PATH
 ```
 
-Achou → `$repo = $env:TIA_CLI_HOME`. Não achou → seção 2.
+Achou → `$repo = ...`. Não achou → seção 2.
+
+**A 2ª linha não é redundância.** `init.ps1` grava a variável no perfil do usuário, e processo já
+rodando **não recebe** — o shell persistente do agente (e qualquer terminal aberto antes da
+instalação) enxerga `$env:TIA_CLI_HOME` vazio e `tia` fora do PATH, com tudo instalado
+corretamente. Ler o escopo `User` direto resolve sem reiniciar nada; chamar pelo caminho completo
+(`& "$repo\scripts\tia.cmd" <verbo>`) sempre funciona.
 
 ## 2. Instalar numa máquina nova
 

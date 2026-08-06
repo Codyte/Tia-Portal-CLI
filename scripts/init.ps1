@@ -1,33 +1,34 @@
 # ====================== BEGIN NAV INDEX ======================
 # NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-#   L35    Get-ExeHash
-#   L40    Test-Whitelisted
-#   L52    Test-SkillInstalled
-#   L61    Show
+#   L40    Get-ExeHash
+#   L45    Test-Whitelisted
+#   L57    Test-SkillInstalled
+#   L63    Test-TasksCurrent
+#   L77    Show
 # ======================= END NAV INDEX =======================
 
 # NAV INDEX
-# 21-33   header / caminhos / descoberta do Portal instalado
-# 35-56   helpers de verificacao (hash do exe, whitelist do registro, skill instalada)
-# 58-93   -Check: relatorio read-only dos 9 pontos + estado vivo, exit 1 se faltar algo
-# 95-101  gate 1: grupo Windows Siemens TIA Openness (nao automatizavel — admin + logoff/logon)
-# 103-109 gate 2: .NET SDK presente
-# 111-128 gate 3: lib/*.dll (build-time) — copia da instalacao local do TIA Portal
-# 130-133 gates falharam -> para com instrucoes
-# 135-148 gate 4: tasks TiaWhitelist/TiaSmokeRun (setup-tasks elevado, 1 UAC) — idempotente
-# 150-151 rebuild.ps1 (build + testes offline + whitelist)
-# 153-165 gate 5: shim tia no PATH do usuario + TIA_CLI_HOME
-# 167-174 gate 6: skill do agente copiada pra ~/.claude/skills/tia
+# 26-38   header / caminhos / descoberta do Portal instalado
+# 40-72   helpers (hash do exe, whitelist do registro, repo==skill, task apontando pro repo)
+# 74-109  -Check: relatorio read-only dos 9 pontos + estado vivo, exit 1 se faltar algo
+# 111-116 gate 1: grupo Windows Siemens TIA Openness (nao automatizavel — admin + logoff/logon)
+# 118-124 gate 2: .NET SDK presente
+# 126-143 gate 3: lib/*.dll (build-time) — copia da instalacao local do TIA Portal
+# 146-149 gates falharam -> para com instrucoes
+# 151-163 gate 4: tasks TiaWhitelist/TiaSmokeRun (setup-tasks elevado, 1 UAC) — re-registra se o
+#         caminho gravado na task diverge deste repo (repo movido mata a rota da sessao 0)
+# 165-166 rebuild.ps1 (build + testes offline + whitelist)
+# 168-180 gate 5: shim tia no PATH do usuario + TIA_CLI_HOME
+# 182-188 gate 6: o repo *e* a skill (~/.claude/skills/tia) — so verifica, nao copia
 #
 # Macro "init": bootstrap de 1a vez numa maquina nova. Verifica os 2 gates que so um humano
 # resolve (grupo + logon, TIA Portal instalado) e automatiza o resto (lib/, build, whitelist,
-# PATH, skill). Idempotente — re-rodar depois de git pull.
+# PATH). Idempotente — re-rodar depois de git pull.
 # Uso: pwsh scripts/init.ps1  |  pwsh scripts/init.ps1 -Check
 param([switch]$Check)
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path $PSScriptRoot
 $exe = Join-Path $repo 'src\Tia.Cli\bin\Debug\net48\tia.exe'
-$skillSrc = Join-Path $repo 'skills\tia'
 $skillDst = Join-Path $HOME '.claude\skills\tia'
 $ok = $true
 
@@ -55,9 +56,20 @@ function Test-Whitelisted {
 }
 
 function Test-SkillInstalled {
-    $dst = Join-Path $skillDst 'SKILL.md'
-    if (-not (Test-Path $dst)) { return $false }
-    (Get-FileHash $dst).Hash -eq (Get-FileHash (Join-Path $skillSrc 'SKILL.md')).Hash
+    # O repo *e* a skill (submodulo de Codyte/skills): Claude Code le ~/.claude/skills/tia/SKILL.md.
+    # Nada e copiado — checkout fora desse caminho deixa a skill desatualizada em silencio.
+    $repo.TrimEnd('\') -ieq $skillDst.TrimEnd('\')
+}
+
+function Test-TasksCurrent {
+    # A task grava o caminho absoluto do taskrun.ps1. Mover o repo mata a rota da sessao 0
+    # ("No running TIA Portal instance found") ate re-registrar — sintoma identico ao de portal fechado.
+    foreach ($n in 'TiaWhitelist', 'TiaSmokeRun') {
+        $t = Get-ScheduledTask -TaskName $n -ErrorAction SilentlyContinue
+        if (-not $t) { return $false }
+        if ($t.Actions.Arguments -notlike "*$PSScriptRoot*") { return $false }
+    }
+    return $true
 }
 
 if ($Check) {
@@ -77,13 +89,13 @@ if ($Check) {
     Show "tia.exe$(if (Test-Path $exe) { ' (' + (Get-Item $exe).LastWriteTime.ToString('yyyy-MM-dd HH:mm') + ')' })" `
         (Test-Path $exe) 'pwsh scripts/rebuild.ps1'
     Show 'whitelist do registro bate com o hash atual' (Test-Whitelisted) 'Start-ScheduledTask -TaskName TiaWhitelist'
-    Show 'tasks TiaWhitelist/TiaSmokeRun' `
-        (-not (@('TiaWhitelist', 'TiaSmokeRun') | Where-Object { -not (Get-ScheduledTask -TaskName $_ -ErrorAction SilentlyContinue) })) `
+    Show 'tasks TiaWhitelist/TiaSmokeRun apontando pra este repo' (Test-TasksCurrent) `
         'rodar init.ps1 sem -Check (1 UAC)'
     Show 'shim tia no PATH do usuario' `
         (([Environment]::GetEnvironmentVariable('Path', 'User') -split ';') -contains $PSScriptRoot) `
         'rodar init.ps1 sem -Check'
-    Show 'skill em ~/.claude/skills/tia' (Test-SkillInstalled) 'rodar init.ps1 sem -Check (copia/atualiza)'
+    Show 'repo esta em ~/.claude/skills/tia (= a skill)' (Test-SkillInstalled) `
+        "mover este checkout pra $skillDst (submodulo de Codyte/skills) e rodar init.ps1 la"
 
     Write-Host ""
     Write-Host "estado vivo (nao e gate):"
@@ -139,10 +151,9 @@ if (-not $ok) {
 
 # tasks TiaWhitelist/TiaSmokeRun: unico passo que exige elevacao (HKLM + registro de task).
 # rebuild.ps1 depende da TiaWhitelist; sem ela cai no fallback RunAs, que da sessao 0 nao mostra UAC.
-$tasks = @('TiaWhitelist', 'TiaSmokeRun') | Where-Object {
-    -not (Get-ScheduledTask -TaskName $_ -ErrorAction SilentlyContinue) }
-if ($tasks) {
-    Write-Host "registrando tasks ($($tasks -join ', ')) — vai pedir UAC uma vez"
+# Re-registra tambem quando a task aponta pro caminho de um checkout antigo (repo movido).
+if (-not (Test-TasksCurrent)) {
+    Write-Host "registrando tasks TiaWhitelist/TiaSmokeRun para $PSScriptRoot — vai pedir UAC uma vez"
     Start-Process pwsh -Verb RunAs -Wait -ArgumentList `
         '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $PSScriptRoot 'setup-tasks.ps1')
     if (-not (Get-ScheduledTask -TaskName TiaWhitelist -ErrorAction SilentlyContinue)) {
@@ -169,14 +180,13 @@ if ([Environment]::GetEnvironmentVariable('TIA_CLI_HOME', 'User') -ne $repo) {
 $env:TIA_CLI_HOME = $repo
 Write-Host "gate 5 ok: shim tia no PATH"
 
-# gate 6: skill do agente. Copia (nao symlink: exige admin/dev mode no Windows) -> re-rodar
-# init depois de um git pull atualiza. -Check acusa quando o instalado difere do repo.
-if (-not (Test-SkillInstalled)) {
-    New-Item -ItemType Directory -Force -Path $skillDst | Out-Null
-    Copy-Item (Join-Path $skillSrc '*') $skillDst -Recurse -Force
-    Write-Host "skill: instalada em $skillDst (vale na proxima sessao do Claude Code)"
+# gate 6: o repo *e* a skill — nada a copiar, so verificar o lugar.
+if (Test-SkillInstalled) {
+    Write-Host "gate 6 ok: repo em $skillDst = skill tia"
+} else {
+    Write-Warning "repo esta em $repo, nao em $skillDst -- o Claude Code nao vai carregar a skill deste checkout."
+    Write-Host "  mover: git clone/submodule add em ~/.claude/skills/tia e rodar init.ps1 la (1 checkout so: a whitelist e por caminho do exe)."
 }
-Write-Host "gate 6 ok: skill tia instalada"
 
 Write-Host ""
 Write-Host "init ok. Abra TIA Portal com um projeto (sessao interativa) e rode: tia doctor" -ForegroundColor Green

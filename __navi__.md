@@ -1,10 +1,10 @@
-# __navi__ · repo tree — 260 files in 45 folders
+# __navi__ · repo tree — 263 files in 44 folders
 <!-- navindex · 2026-08-06 · DO NOT EDIT BY HAND; regen via navindex skill -->
 
 Universal index: every folder below -> the files it holds (names only). A `→ __navi__.md` marker means that folder has a symbol map — open `<that path>/__navi__.md` for exact line numbers (2 reads total: this tree -> folder map).
 
-## `./` (2 files)
-CLAUDE.md(116)  README.md(188)
+## `./` (3 files)
+CLAUDE.md(122)  README.md(189)  SKILL.md(107)
 
 ## `Scripts_Siemens/FINAIS/` (10 files) → __navi__.md
 Gerador de Conexão Profinet FINAL- config.json.txt(219)  Gerador de Conexão Profinet FINAL.txt(259)  Gerador de OB Falha Módulos FINAL.txt(612)  Padronizador de Variável-FINAL.txt(664)  Replicador de FC Acionamentos-FINAL-Config.json.txt(19)  Replicador de FC Acionamentos-FINAL-Program.txt(398)  Replicador de FC AcionamentosV3-FINAL-Program.txt(917)  Replicador de FC Alarmes-FINAL.txt(1028)  Replicador de FC Instrumentos-FINAL-Config.json.txt(17)  Replicador de FC Instrumentos-FINAL-Program.txt(1087)
@@ -70,10 +70,7 @@ options.json(1)
 IHMAlarms_insularCCM1 (1) Log.html(30)  IHMAlarms_insularCCM1 (1) Log_1.html(30)  IHMAlarms_insularCCM2 (1) Log.html(30)  PLC text.html(25)
 
 ## `scripts/` (19 files) → __navi__.md
-_common.ps1(81)  bake-lib.ps1(52)  clone-hw.ps1(28)  compose-db.ps1(44)  gen-verbs.ps1(30)  init.ps1(178)  install-lib.ps1(147)  navi-cs.ps1(22)  new-plc.ps1(42)  prep-project.ps1(18)  raio-x.ps1(66)  rebuild.ps1(65)  setup-tasks.ps1(45)  smokeloop.ps1(45)  taskrun.ps1(45)  tia-help.py(189)  tia.ps1(8)  use-project.ps1(23)  whitelist.ps1(25)
-
-## `skills/tia/` (1 files)
-SKILL.md(93)
+_common.ps1(81)  bake-lib.ps1(52)  clone-hw.ps1(28)  compose-db.ps1(44)  gen-verbs.ps1(30)  init.ps1(193)  install-lib.ps1(147)  navi-cs.ps1(22)  new-plc.ps1(42)  prep-project.ps1(18)  raio-x.ps1(66)  rebuild.ps1(65)  setup-tasks.ps1(45)  smokeloop.ps1(45)  taskrun.ps1(45)  tia-help.py(189)  tia.ps1(8)  use-project.ps1(23)  whitelist.ps1(25)
 
 ## `src/Tia.Cli/obj/` (2 files) → __navi__.md
 Tia.Cli.csproj.nuget.dgspec.json(119)  project.assets.json(579)
@@ -135,6 +132,6 @@ devices.json(1263)  hmi.json(5)  plc-navi.md(488)  rep-dry.json(10)  tags.json(7
 ## `workspace/sandbox/` (12 files) → __navi__.md
 doctor.json(93)  full-compile.json(1344)  gen-import.json(6)  gen-import.out.json(201)  gen.out.json(1934)  gen2.out.json(2949)  prims.json(13)  prims.out.json(193)  prims2.json(6)  prims2.out.json(97)  probe.json(5)  probe.out.json(104)
 
-## `workspace/taskio/` (8 files)
-err-e6ec30d0.txt(0)  err.txt(0)  exit-e6ec30d0.txt(1)  exit.txt(1)  out-e6ec30d0.txt(89)  out.txt(11)  result-err.txt(0)  result.txt(5)
+## `workspace/taskio/` (11 files)
+err-e6ec30d0.txt(0)  err-ed5ba1d0.txt(0)  err.txt(0)  exit-e6ec30d0.txt(1)  exit-ed5ba1d0.txt(1)  exit.txt(1)  out-e6ec30d0.txt(89)  out-ed5ba1d0.txt(5)  out.txt(11)  result-err.txt(0)  result.txt(5)
 

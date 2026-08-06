@@ -32,16 +32,23 @@ corretamente. Ler o escopo `User` direto resolve sem reiniciar nada; chamar pelo
 
 ## 2. Instalar numa máquina nova
 
+Este repo **é** a skill: o checkout tem que ficar em `~/.claude/skills/tia`, como submódulo do
+repo de skills.
+
 ```powershell
-git clone https://github.com/Codyte/TIA-Portal.git "$HOME\Scripts\tia-cli"
-pwsh "$HOME\Scripts\tia-cli\scripts\init.ps1"
+cd "$HOME\.claude\skills"
+git submodule add https://github.com/Codyte/TIA-Portal.git tia   # ou git clone, se não for repo
+pwsh "$HOME\.claude\skills\tia\scripts\init.ps1"
 ```
 
 `init.ps1` é idempotente e faz tudo: confere os gates que só um humano resolve (grupo Windows
 `Siemens TIA Openness` + logoff/logon, .NET SDK 8, TIA Portal instalado), copia as DLLs do
-Openness da instalação local, registra as tasks (**1 UAC**), builda, whitelista o `tia.exe`,
-põe o shim no PATH e instala esta skill em `~/.claude/skills/tia`. Rodar de novo depois de
-`git pull` — reinstala o que mudou e não mexe no resto.
+Openness da instalação local, registra as tasks (**1 UAC**), builda, whitelista o `tia.exe` e
+põe o shim no PATH. Rodar de novo depois de `git pull` — reinstala o que mudou e não mexe no resto.
+
+**Um checkout só.** A whitelist do Openness é gravada por caminho do exe e a task `TiaSmokeRun`
+guarda o caminho absoluto do `taskrun.ps1`: dois clones brigam pela whitelist, e mover o clone
+mata a rota da sessão 0 até rodar `init.ps1` de novo (ele detecta e re-registra a task).
 
 **Verificar o que está instalado** (read-only, não escreve nada):
 
@@ -50,7 +57,7 @@ pwsh "$env:TIA_CLI_HOME\scripts\init.ps1" -Check
 ```
 
 Sai a lista dos 9 pontos (grupo, dotnet, Portal, `lib/`, `tia.exe`, whitelist, tasks, PATH,
-skill) + o estado vivo (sessão do shell, Portal rodando, `.al21` presente). Exit 1 se faltar algo.
+lugar do checkout) + o estado vivo (sessão do shell, Portal rodando, `.al21` presente). Exit 1 se faltar algo.
 
 O que **não** vem no clone (gitignored, cada máquina repõe o seu): `lib/*.dll` (licença Siemens,
 o `init` copia da instalação local), `library/blocks/` e `src/Tia.Lib/*.al21` (payload de projeto

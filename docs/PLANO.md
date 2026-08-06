@@ -660,6 +660,30 @@ cobre só %M; endereço físico continua manual, de propósito.
   `Scripts_Siemens/` excluído do público — removido do tracking + scrubado do histórico
   via `git-filter-repo` (verificado: clone fresh sem o diretório em working tree ou histórico).
 - Smoke F1 na máquina do TIA (user leva o exe; primeira execução dispara popup Openness — permitir).
+- **`totally-integrated-claude`** (https://github.com/Czarnak/totally-integrated-claude) — repo de
+  terceiro sobre TIA Portal + Claude. **Decisão (2026-08-06): só registrar agora, avaliar depois.**
+  Não foi lido nem clonado nesta sessão; nada dele entra no CLI enquanto não houver leitura da
+  licença e do que ele resolve que o `tia` ainda não resolve. Ver quando o ciclo da biblioteca
+  fechar, não antes.
+
+## Migração do repo para skill (2026-08-06)
+
+O repo inteiro vira a skill `tia`: `SKILL.md` na raiz e o checkout em `~/.claude/skills/tia`,
+como submódulo de `Codyte/skills` (que já carrega `navindex`, `caveman`, `handoff`, `ponytail`).
+
+Por quê: `~/.claude/skills/` já é um repo com submódulos; a cópia que o gate 6 fazia vivia lá
+como pasta untracked, divergindo em silêncio. O *tracked* do repo são 1,36 MB / 159 arquivos e
+nenhum caminho fixo `C:\Scripts` no código — cabe. O pesado é untracked e não viaja
+(`proj/` 1,9 GB, `workspace/` 36 MB, `src/Tia.Lib` 8,1 MB).
+
+Invariantes que a migração encosta:
+- **Um checkout só** — a whitelist do Openness é gravada por caminho do exe; dois clones brigam.
+- **A task `TiaSmokeRun` grava o caminho absoluto do `taskrun.ps1`** — mover o repo mata a rota da
+  sessão 0 com o sintoma `No running TIA Portal instance found`, idêntico ao de portal fechado.
+  `init.ps1` gate 4 agora compara e re-registra sozinho (1 UAC).
+- **Teto do padrão**: "tudo vira skill" vale enquanto o tracked for pequeno e a instalação couber
+  num script. Projeto que versione payload pesado volta pro padrão skill fina + repo separado,
+  ligados por `TIA_CLI_HOME`.
 
 ## F6 — Endurecer os scripts PS (✅ executada 2026-07-27)
 

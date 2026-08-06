@@ -1,80 +1,63 @@
 # Handoff · TIA Portal Openness API · 2026-08-06
 
 ## Goal
-**Migrar o repo pra dentro de `~/.claude/skills/tia`, como submódulo** — aprovado pelo user.
-O repo inteiro vira a skill. Depois disso, retomar o ciclo da biblioteca (re-testar o fix do
-`--force` numa CPU virgem contra a régua dos 4 erros do G120).
+**Migração do repo para skill: FEITA.** O repo agora *é* a skill `tia` e mora em
+`~/.claude/skills/tia`, como submódulo de `Codyte/skills`. Resta o push (bloqueado por
+autenticação) e o ciclo da biblioteca.
 
 ## State
-- HEAD: `d6bfbe7` + o commit deste ajuste. **~7 commits à frente do `origin/main`, NÃO pushados —
-  bloqueio real, ver Open**. O submódulo do passo 3 clona do remote: sem push, ele nasce em
-  `a0df2f7` e perde tudo o que foi feito hoje.
-- Live state: nenhum TIA Portal aberto; shell do agente na sessão 0. `init.ps1 -Check` = 9/9 ok.
-  `.al21` de 148 KB assada. `~/.claude/skills/tia` existe hoje como **cópia untracked** (feita
-  pelo gate 6) dentro do repo `Codyte/skills` — é ela que o submódulo substitui.
-- Done: docs sincronizados com o disco; `init.ps1` virou instalador completo (`-Check`, PATH,
-  skill); skill `tia` criada, instalada e smoked; plano de migração aprovado.
-- In progress: nada mid-flight. Nenhuma chamada ao Portal nesta sessão.
+- HEAD: `f5209ea` — **9 commits à frente do `origin/main`, NÃO pushados** (bloqueio, ver Open).
+- **O repo mudou de lugar**: `c:\Scripts\TIA Portal` → `C:\Users\Carlos_Ortiz\.claude\skills\tia`.
+  Abrir sessão nova já nesse diretório. A pasta antiga ficou **vazia** (não deu pra apagar: era o
+  cwd do shell desta sessão) — apagar depois com `Remove-Item "C:\Scripts\TIA Portal"`.
+- Live state: nenhum TIA Portal aberto; shell da sessão nasceu na **sessão 1**.
+  `init.ps1 -Check` = **9/9 ok** no caminho novo (whitelist refeita, tasks re-registradas,
+  `TIA_CLI_HOME` e PATH apontando pro novo, entrada velha do PATH removida).
+  `proj/` (1,82 GB), `workspace/`, `lib/`, `src/Tia.Lib`, `library/blocks/`, `Scripts_Siemens/`
+  vieram junto — todos gitignored.
+- Done: `SKILL.md` na raiz (`skills/` morreu); `init.ps1` gate 6 = verificação, gate 4 re-registra
+  task quando o caminho diverge; README/CLAUDE/SKILL/PLANO atualizados; submódulo registrado e
+  commitado em `Codyte/skills` (`b5b8fd5`); `standing.md` atualizado.
+- In progress: nada mid-flight.
 
 ## Decisions (and why)
-- **Migração = submódulo, não cópia.** `~/.claude/skills/` **já é o repo `Codyte/skills`** com 4
-  submódulos (`navindex`, `caveman`, `handoff`, `ponytail`), cada um seu repo. A `tia` entra igual.
-  A cópia de hoje está lá como pasta untracked — fora do padrão e divergindo em silêncio.
-- **Os números aprovam**: repo *tracked* = **1,36 MB / 159 arquivos**; zero caminho fixo
-  `C:\Scripts` no código (tudo sai de `$PSScriptRoot`). O pesado é untracked e não viaja:
-  `proj/` = **1,9 GB**, `workspace/` 36 MB, `src/Tia.Lib` 8,1 MB.
-- **Um checkout só.** A whitelist do Openness é gravada **por caminho do exe** — dois checkouts =
-  dois `tia.exe` = whitelist brigando. Por isso é mover, não clonar ao lado.
-- **Trap medida, não deduzida**: a task `TiaSmokeRun` aponta pra
-  `c:\Scripts\TIA Portal\scripts\taskrun.ps1` — **caminho absoluto**. Mover o repo **quebra a rota
-  da sessão 0** até re-registrar as tasks (1 UAC). É o passo mais fácil de esquecer.
-- **Teto do padrão** (dito ao user): "tudo vira skill" funciona enquanto o *tracked* for pequeno e
-  a instalação couber num script. Se um projeto futuro versionar payload pesado, volta o padrão de
-  hoje — skill fina + repo separado, ligados por `TIA_CLI_HOME`.
+- **Mover o checkout em vez de clonar do remote.** O plano previa `git submodule add` clonando —
+  mas com o push bloqueado o clone nasceria em `a0df2f7` e perderia 9 commits. Mover preserva
+  commits + payload untracked numa operação, não apaga nada e é reversível.
+  `git submodule add <url> tia` com o diretório já existente responde
+  `Adding existing repo at 'tia' to the index` — registra sem clonar.
+- **`Move-Item` da pasta inteira falha** (`being used by another process`): o shell do agente tem
+  cwd lá e o harness reseta o cwd a cada chamada. Mover os **filhos** um a um funciona (17/17) e
+  deixa só o diretório vazio pra trás.
+- **`proj/` (1,82 GB) foi junto.** Move no mesmo volume é rename, custo zero, e mantém qualquer
+  resolução relativa de caminho intacta. Se incomodar em `~/.claude`, é `Move-Item` de novo.
+- **URL do submódulo = `https://github.com/Codyte/TIA-Portal.git`** (o remote real). Se renomear
+  pro `tia-cli` no GitHub, corrigir em `~/.claude/skills/.gitmodules` + `git remote set-url`.
+- **`totally-integrated-claude` (Czarnak): só registrado, não avaliado** — decisão do user.
+  Está em `docs/PLANO.md` § Pendências. Não foi lido nem clonado.
 
 ## Next steps (ordered)
-1. **`SKILL.md` pra raiz do repo** (`git mv skills/tia/SKILL.md SKILL.md`, apaga `skills/`) — o
-   Claude Code lê `~/.claude/skills/<nome>/SKILL.md`, então a raiz do repo tem que ser a skill.
-   Ajustar `$skillSrc`/gate 6 do `init.ps1`, o link no `README.md` e o `CLAUDE.md`.
-2. **`init.ps1`: gate 6 deixa de copiar.** Vira verificação — o repo *é* a skill; avisa se a raiz
-   não for `~/.claude/skills/tia`. E **gate 4 passa a re-registrar a task quando o caminho gravado
-   nela diverge do repo atual** (`(Get-ScheduledTask TiaSmokeRun).Actions.Arguments`), senão a
-   migração deixa a sessão 0 morta. Commit + push.
-3. **Push primeiro** (o user autentica — ver Open), conferir `git status -sb` limpo contra
-   `origin/main`. **Submódulo**: em `~/.claude/skills/`, `Remove-Item tia -Recurse` (é cópia untracked, nada a
-   perder) → `git submodule add https://github.com/Codyte/TIA-Portal.git tia` → clona os 1,36 MB
-   limpos. Commit no repo `Codyte/skills`.
-4. **Mover só o untracked** de `c:\Scripts\TIA Portal` pro clone novo: `lib/`, `workspace/`,
-   `src/Tia.Lib/`, `library/blocks/`, `Scripts_Siemens/`, `bin/`+`obj/` (ou deixa o rebuild
-   refazer). **`proj/` (1,9 GB): decidir** — checar antes se algum script resolve caminho de
-   projeto por `proj/` (`use-project.ps1` parece resolver por nome via Portal); se não resolver,
-   pode ficar onde está.
-5. **`pwsh scripts/init.ps1` no destino novo** → refaz whitelist (caminho do exe mudou), PATH,
-   `TIA_CLI_HOME`, tasks. Depois `-Check` tem que dar 9/9 e `tia --help` tem que voltar pela rota
-   da task. **Só então** apagar `c:\Scripts\TIA Portal` (irreversível — confirmar com o user).
-6. **Retirar a entrada do `standing.md`** que diz "a skill é uma cópia" — deixa de valer.
-7. Só então voltar ao ciclo da biblioteca: apagar o `PLC_TESTE` velho (68 blocos duplicados),
-   `new-plc.ps1 PLC_TESTE "<pacotes>" -Apply` numa CPU virgem, comparar com a régua — **4 erros,
-   todos `INVERSOR_MOTOR_01_CCM_01~PROFINET_interface~Standard_telegram_20`**.
+1. **User roda `gh auth login -h github.com`** (ou `git push` num terminal dele). Depois:
+   `git -C "$HOME\.claude\skills\tia" push origin main` e o push do repo `Codyte/skills`.
+   Enquanto não pushar, o gitlink do submódulo aponta pra commit que só existe nesta máquina.
+2. `Remove-Item "C:\Scripts\TIA Portal"` (vazia) de uma sessão cujo cwd não seja ela.
+3. Voltar ao ciclo da biblioteca: apagar o `PLC_TESTE` velho (68 blocos duplicados),
+   `new-plc.ps1 PLC_TESTE "<pacotes>" -Apply` numa CPU virgem, comparar com a régua —
+   **4 erros, todos `INVERSOR_MOTOR_01_CCM_01~PROFINET_interface~Standard_telegram_20`**.
 
 ## Key files
-- `scripts/init.ps1` — gates 1-6 + `-Check`; `scripts/setup-tasks.ps1` — registra as tasks com
-  caminho absoluto (o que quebra na mudança); `scripts/_common.ps1` — rota da sessão 0.
-- `skills/tia/SKILL.md` — vira `SKILL.md` na raiz no passo 1.
-- `~/.claude/skills/.gitmodules` — o padrão a seguir (4 submódulos).
-- `docs/PLANO.md` — seção "Bake real da `.al21` + bug do `--force`" (o passo 7).
-- `.handoff/` é versionado → viaja no clone; por isso o push antes de migrar.
+- `scripts/init.ps1` — `Test-SkillInstalled` (repo == skill) e `Test-TasksCurrent` (caminho da
+  task) são os dois helpers novos; gates 4 e 6 mudaram.
+- `docs/PLANO.md` § "Migração do repo para skill" e § "Bake real da `.al21` + bug do `--force`".
+- `~/.claude/skills/.gitmodules` — 5 submódulos agora.
+- `scripts/__navi__.md` — mapa da pasta que o passo 3 toca.
 
 ## Open / blockers
-- **BLOQUEIO: o agente não consegue pushar.** `credential.helper=manager` exige TTY/GUI e o shell
-  do agente não tem (`/dev/tty: No such device`), então o push **pendura pra sempre**; `gh auth
-  status` diz `The token in default is invalid`. Leitura do remote funciona (anônima). **O user
-  precisa rodar `gh auth login -h github.com` (ou `git push` num terminal dele) antes do passo 3.**
-  Não insistir no `git push` daqui sem isso — trava o turno.
-- **`proj/` = 1,9 GB** vai ou fica? Só decidir depois de conferir a resolução de caminho.
-- Repo remoto é `Codyte/TIA-Portal.git`; o user citou `Tia-Portal-CLI.git`. Renomear no GitHub é
-  1 linha em 2 arquivos — decidir antes do `submodule add`, que grava a URL.
-- Telegrama do G120 parado no clique do user — são os 4 erros da régua do passo 7.
+- **Push bloqueado**: `gh auth status` = `The token in default is invalid`; `git push` morre com
+  `Cannot prompt because user interactivity has been disabled` (falha rápido, não pendura).
+  Só o user destrava.
+- Renomear o repo no GitHub (`TIA-Portal` → `tia-cli`?) — decidir antes de outra máquina clonar.
+- Telegrama do G120 parado no clique do user — são os 4 erros da régua do passo 3.
 
 ## Skills
 - tia
@@ -82,8 +65,7 @@ O repo inteiro vira a skill. Depois disso, retomar o ciclo da biblioteca (re-tes
 - caveman
 
 ## Effort
-**Médio** para o passo 1-2 — é edição mecânica, mas mexe no instalador que os 3 gates dependem, e
-um erro só aparece depois da mudança (quando não dá mais pra voltar barato). **Alto no passo 5**
-se o `-Check` não fechar 9/9 no destino: aí é whitelist ou task apontando pro caminho velho, e o
-sintoma (`No running TIA Portal instance found`) é idêntico ao de "não tem Portal aberto".
-Raciocínio não é o gargalo em nenhum deles — é UAC, rebuild e mover arquivo.
+**Baixo** para os passos 1-2 — é autenticação e apagar pasta vazia; raciocínio não é o gargalo.
+**Médio** no passo 3: é rodar sequência documentada, mas a comparação com a régua exige ler o
+diff de erros com cuidado. Subir pra alto só se o `--force` continuar não sobrescrevendo depois
+do fix — aí é comportamento de API contra a documentação.

@@ -3,11 +3,14 @@
 Lê a ajuda oficial do TIA Portal (o que o F1 abre) como texto, sem navegador.
 
 NAV INDEX
-  1-30    contrato/protocolo (por que não dá pra usar curl nem Invoke-WebRequest)
-  32-52   client() / api()      — HTTP/2 + TLS sem verificação
-  54-76   topic()               — ItemId "PKG/TOC/ID.htm" -> texto limpo
-  78-104  index()               — TOC inteiro -> arquivo "ItemId|Título" por linha (grep depois)
- 106-130  main()
+   1-46   contrato/protocolo (por que não dá pra usar curl nem Invoke-WebRequest)
+  48-57   api() / _params()     — HTTP/2 + TLS sem verificação
+  59-84   topic()               — ItemId "PKG/TOC/ID.htm" -> texto limpo
+  86-116  index()               — TOC inteiro -> arquivo "ItemId|Título" por linha (grep depois)
+ 118-166  _sdk_dirs/sdk_index/sdk_search — IntelliSense XML das assemblies (busca no corpo)
+ 168-206  ensure() / _listening()
+ 208-217  search()              — grep no índice do TOC
+ 219-249  main()
 
 Protocolo (descoberto em runtime, não documentado):
   - O viewer é um SPA em https://localhost:<porta>/ ; a API fica em /<api>/HelpViewer/...
@@ -106,6 +109,65 @@ def index(base, name, out):
     return len(seen), total
 
 
+# ---------- índice do SDK (IntelliSense XML das assemblies Openness) ----------
+#
+# Fonte diferente da ajuda do F1 e complementar a ela: `PublicAPI\V21\net48\*.xml` traz ~31 mil
+# membros documentados (assinatura + summary). Duas coisas que o índice do TOC não dá:
+#   - assinatura exata de método/propriedade, que a ajuda HTML quase nunca mostra;
+#   - busca **no corpo** — o índice do TOC só tem título, então termo que não está no título
+#     dá 0 hits lá e acha aqui.
+# É tudo local (arquivo em disco), não precisa do serviço nem de rede.
+
+def _sdk_dirs():
+    import glob
+    pf = os.environ.get("ProgramFiles", r"C:\Program Files")
+    for pattern in (r"Siemens\Automation\Portal V*\PublicAPI\V*\net48",
+                    r"Siemens\Automation\Portal V*\PublicAPI\V*"):
+        hits = sorted(glob.glob(os.path.join(pf, pattern)), reverse=True)
+        if any(glob.glob(os.path.join(h, "*.xml")) for h in hits):
+            return hits
+    return []
+
+
+def sdk_index(out):
+    """Cada <member> vira "Assembly|Nome|summary" numa linha. Grep depois, como o índice do TOC."""
+    import glob
+    import xml.etree.ElementTree as ET
+    dirs = _sdk_dirs()
+    if not dirs:
+        raise SystemExit("nenhum PublicAPI\\V*\\*.xml encontrado — TIA Portal com Openness instalado?")
+    seen, files = set(), 0
+    with open(out, "w", encoding="utf-8") as fh:
+        for d in dirs:
+            for path in sorted(glob.glob(os.path.join(d, "*.xml"))):
+                asm = os.path.splitext(os.path.basename(path))[0]
+                try:
+                    root = ET.parse(path).getroot()
+                except ET.ParseError:
+                    continue
+                files += 1
+                for member in root.iter("member"):
+                    name = member.get("name")
+                    if not name:
+                        continue
+                    body = " ".join("".join(member.itertext()).split())[:500]
+                    line = "{}|{}|{}".format(asm, name, body)
+                    if line not in seen:
+                        seen.add(line)
+                        fh.write(line + "\n")
+    return len(seen), files
+
+
+def sdk_search(out, term, limit):
+    """AND de palavras sobre nome **e** summary — a diferença para o --search do TOC."""
+    if not os.path.exists(out) or os.path.getsize(out) == 0:
+        sdk_index(out)
+    words = [re.compile(re.escape(w), re.I) for w in term.split()]
+    hits = [l.rstrip("\n") for l in open(out, encoding="utf-8")
+            if all(w.search(l) for w in words)]
+    return hits[:limit], len(hits)
+
+
 SERVICE = "Siemens TIA Help Viewer Service"
 
 
@@ -167,9 +229,21 @@ def main():
     p.add_argument("--index", action="store_true", help="(re)gera o índice pesquisável")
     p.add_argument("--ensure", action="store_true", help="preflight: serviço no ar + índice")
     p.add_argument("--out", default=os.path.join("workspace", "help-index.txt"))
+    p.add_argument("--sdk", help="busca no IntelliSense XML das assemblies Openness "
+                                 "(assinatura + summary, casa no corpo; local, sem serviço)")
+    p.add_argument("--sdk-index", action="store_true", help="(re)gera o índice do SDK")
+    p.add_argument("--sdk-out", default=os.path.join("workspace", "sdk-index.txt"))
     a = p.parse_args()
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # ajuda tem CJK; console é cp1252
-    if a.search:
+    if a.sdk:
+        hits, total = sdk_search(a.sdk_out, a.sdk, a.limit)
+        print(json.dumps({"term": a.sdk, "hits": total, "shown": len(hits)}, ensure_ascii=False))
+        for h in hits:
+            print(h)
+    elif a.sdk_index:
+        n, files = sdk_index(a.sdk_out)
+        print(json.dumps({"file": a.sdk_out, "members": n, "assemblies": files}))
+    elif a.search:
         hits, total = search(a.base, a.api, a.out, a.search, a.limit)
         print(json.dumps({"term": a.search, "hits": total, "shown": len(hits)}, ensure_ascii=False))
         for h in hits:

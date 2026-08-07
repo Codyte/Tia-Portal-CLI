@@ -857,6 +857,24 @@ entram. A engine para no `run --script`.**
 Fronteira declarada: **verbos + `run --script` + macros PS**. Reconciliação declarativa mora nos
 macros, por domínio.
 
+### `delete-db-member` — o contrário que faltava (2026-08-07)
+
+`add-db-member` e `edit-db-member` existiam sem inverso: tirar um membro era trabalho manual no
+GUI. Mesma coreografia dos dois (export → edição do XML → import Override), mesma idempotência
+(membro ausente = `missing (no-op)`), e o mesmo aviso do rename — **apagar não corrige quem
+referencia o membro**, o `xref --name DB` mostra quem é.
+
+**Bug de raiz que o teste do delete achou**: `ResolveSection` decidia "isto é um struct?" contando
+membros aninhados. Struct esvaziado pelo delete deixava de ser navegável — e o `add-db-member` não
+conseguia mais repor nada nele. Agora pergunta se o membro expande em `<Sections><Section>` ou
+declara `Datatype="Struct"`. O caso "path através de membro não-struct falha" continua reprovando.
+
+Régua real no `PLC_TESTE`/`DB_DUMMY`, batch de 6 steps, `failed: 0`: no-op ×2, create, compile
+Success/0, delete `--apply`, compile Success/0 — DB de volta ao estado original.
+A primeira rodada teve 2 falhas que **não** eram do verbo: faltou `compile --apply` entre o import
+e o export seguinte, e o Openness devolveu `Inconsistent blocks ... cannot be exported`. É a regra
+"compile entre etapas" do CLAUDE.md cobrando, num verbo novo.
+
 ## D8 fechada — sem superfície online, e não é adiamento (2026-08-07)
 
 Decisão do user, tomada com a engine offline já fechada: **`go-online`, `download` e `compare

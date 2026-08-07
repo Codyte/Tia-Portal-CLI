@@ -14,11 +14,13 @@ numa CPU virgem até compilar 0 erros, incluindo o G120 e seu telegrama.
   **Há um diálogo modal `Openness access` pendente na tela** — o último `rebuild.ps1` mudou o hash
   do `tia.exe` e o Portal já aberto pede autorização de novo. Enquanto ninguém clicar, todo verbo
   pendura com CPU ~0 e morre no timeout (foi assim que o dry-run do `bake-lib` gastou 1800s).
-  Primeiro passo da retomada é clicar.
+  **Já clicado** — o Portal voltou a responder (`doctor` ok).
 - Done nesta sessão: `insert-telegram --change` (ramo que escreve, fechado e smoke verde);
   validação do fix do `--force` do `install-lib` contra o Portal; `add-master-copy` aceitando UDT e
   tabela de tag + `bake-lib` assando os dois.
-- In progress: nada mid-flight. O `bake-lib` novo **compila mas nunca rodou contra o Portal**.
+- In progress: nada mid-flight. O `bake-lib` novo já rodou em **dry** contra o Portal e lista
+  `UDT/tabelas do packages.json: Diag_Hardware, Genericos, MOTOR_AREA_01 (MOTOR_01)` — o `$extras`
+  funciona. O `-Apply` (que é quem chama `add-master-copy` de UDT/tabela de verdade) **ainda não**.
 
 ## Decisions (and why)
 - **Telegrama Main não se insere, se troca.** Um G120-2 recém-criado já vem com `MainTelegram #1`,
@@ -39,11 +41,19 @@ numa CPU virgem até compilar 0 erros, incluindo o G120 e seu telegrama.
   (payload gitignored) e clone limpo não instala molde nenhum.
 
 ## Next steps (ordered)
-1. **Clicar o diálogo `Openness access`** na tela do Portal (senão tudo pendura).
-2. `pwsh scripts/bake-lib.ps1 -Plc "CPU1.0 CCO"` em dry — conferir se ele lista os UDT/tabelas do
-   `packages.json` (`Diag_Hardware`, `Genericos`, `MOTOR_AREA_01 (MOTOR_01)`) além dos pacotes.
-   Se o PLC do `Base_tia_cli` não tiver os moldes, abrir o projeto de referência
-   (`proj/Software de ETE Insular_Inicial_V21`) com `use-project.ps1`.
+1. **Achar as pastas-fonte dos moldes.** `bake-lib` só varre `$Root = '1. FB Bibliotecas'`, então
+   os moldes do `packages.json` (`0 Moldes`, `Motor 1 (MOTOR_01)`, `3.1.0 Modelo`,
+   `3.5 Barramento de Módulos`) **não entram no bake** — é isso que falta pra régua dos 4 erros.
+   Medido no `CPU1.0 CCO` do `Base_tia_cli` (`list-blocks --folder X --count`):
+   `3. Alarmes/Eventos/Falhas/3.1 Alarmes Words/3.1.0 Modelo` = 3 blocos e
+   `3. Alarmes/Eventos/Falhas/3.5 Barramento de Módulos` = 7, mas `0 Moldes` e
+   `4. Motores/Bombas/4.1 Inversores_CCM_01/4.1.1 AREA_01/Motor 1 (MOTOR_01)` = **0** — caminho
+   errado ou esse PLC não tem os moldes. Localizar com `tia tree --out-file` + grep (nunca leitura
+   direta) ou abrir o projeto de referência `proj/Software de ETE Insular_Inicial_V21` com
+   `use-project.ps1`. A fonte de cada molde é `<target>/<nome>` do `packages.json` (target vazio =
+   raiz), mas isso é hipótese, não medida.
+2. Estender o `bake-lib` para assar essas pastas (`add-master-copy --folder <path>`), somando os
+   nomes ao `$want` do `-Prune` igual ao `$extras`.
 3. Reassar completo (**sem `-Prune`**, para os moldes entrarem) com `-Apply`.
 4. `install-lib.ps1 -Plc PLC_TESTE <pacotes + moldes> -Apply` → esperar a régua: **4 erros**, todos
    a constante de hardware do G120 ausente.
@@ -60,9 +70,10 @@ numa CPU virgem até compilar 0 erros, incluindo o G120 e seu telegrama.
 - `scripts/__navi__.md` e `src/__navi__.md` — mapas das duas pastas que os passos tocam.
 
 ## Open / blockers
-- **Diálogo modal do Portal** (passo 1) — só clique resolve; não é bug de API.
-- Se o `CPU1.0 CCO` do `Base_tia_cli` não tiver os moldes, o passo 2 exige trocar de projeto
-  (open leva 2-4 min → background).
+- **Onde estão os moldes** (passo 1). Se o `CPU1.0 CCO` do `Base_tia_cli` não os tiver, trocar pro
+  projeto de referência (open leva 2-4 min → background).
+- Diálogo modal `Openness access` volta a cada `rebuild.ps1` com o Portal aberto: chamada pendurada
+  com CPU ~0 = alguém precisa clicar, não é bug de API.
 
 ## Skills
 - tia

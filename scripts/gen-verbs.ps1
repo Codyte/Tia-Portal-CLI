@@ -10,6 +10,9 @@ $repo = Split-Path $PSScriptRoot
 $exe  = Join-Path $repo 'src\Tia.Cli\bin\Debug\net48\tia.exe'
 if (-not (Test-Path $exe)) { throw "tia.exe ausente: $exe (rodar rebuild.ps1)" }
 
+# mesma razao do _common.ps1: tia.exe fala UTF-8, e sem isto o help volta decodificado na
+# codepage OEM do host — todo acento do VERBS.md vira mojibake na regeracao seguinte.
+[Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
 $help = & $exe --help | ConvertFrom-Json
 $sb = [Text.StringBuilder]::new()
 [void]$sb.AppendLine('# Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao)')

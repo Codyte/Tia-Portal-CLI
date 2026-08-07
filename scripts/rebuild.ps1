@@ -40,6 +40,18 @@ if (-not $SkipTests) {
         Write-Host 'FAIL --out-file: stub nao resumiu (bytes <= head)' -ForegroundColor Red; exit 1
     }
     Write-Host '  ok  Cli.--out-file (stdout vira stub, JSON completo no arquivo)'
+
+    # Resolve-RealPath sustenta 3 gates do init -Check. Se ele passar a devolver tudo igual, os
+    # gates viram sempre-ok e param de detectar checkout no lugar errado — falso positivo silencioso.
+    . (Join-Path $PSScriptRoot 'init.ps1') -Check:$false -DotSourceOnly
+    $plain = Join-Path $repo 'scripts'
+    if ((Resolve-RealPath $plain) -ine [IO.Path]::GetFullPath($plain)) {
+        Write-Host 'FAIL Resolve-RealPath alterou caminho sem link' -ForegroundColor Red; exit 1
+    }
+    if ((Resolve-RealPath $plain) -ieq (Resolve-RealPath $repo)) {
+        Write-Host 'FAIL Resolve-RealPath achatou caminhos diferentes' -ForegroundColor Red; exit 1
+    }
+    Write-Host '  ok  init.Resolve-RealPath (sem link: identidade; caminhos distintos seguem distintos)'
 }
 
 # referencia de verbo derivada do proprio help — evita grep em Program.cs pra achar assinatura

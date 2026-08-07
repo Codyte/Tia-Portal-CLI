@@ -1,69 +1,59 @@
 # Handoff · TIA Portal Openness API · 2026-08-07
 
 ## Goal
-Provar a engine num teste cego ponta a ponta: um caderno de especificação fictício (máquina, CPU,
-sensores, I/O, narrativa de controle) entra numa sessão sem contexto, e ela tem que sair com um
-projeto TIA que compila. É o mesmo que a Siemens vai perguntar — "um agente consegue mesmo?".
+Provar a engine ponta a ponta com o caderno fictício FP-01. Esta rodada entregou o item 9 (projeto
+compilando), mas **não foi cega** — a sessão herdou o handoff. Falta a rodada cega de verdade.
 
 ## State
-- HEAD: `7afab95` + 1 commit local de benchmarks (todos pushados).
-- Live state: **TIA Portal aberto na sessão 1, 2 processos**, projeto `Base_tia_cli` com dois PLCs
-  (`CPU1.0 CCO`, `PLC_TESTE`). `DB_DUMMY` do `PLC_TESTE` foi mexido e voltou ao original (compile
-  Success/0); projeto **não foi salvo**. Shell do agente na sessão 0 (rota da task). Diálogo de
-  autorização Openness já foi aceito pro hash atual do `tia.exe` — novo `rebuild.ps1` traz ele de
-  volta.
-- Done nesta sessão: gate de máquina limpa exercitado (clone local em temp) + 2 hints corrigidos;
-  D8 fechada como definitiva (sem superfície online, item 9 do backlog v2 descartado);
-  `delete-db-member` implementado, testado offline e com régua real (`failed: 0`); bug de raiz no
-  `ResolveSection` (struct esvaziado deixava de ser navegável); README atualizado (69 verbos, IP em
-  seção própria no topo, alegação de versão estreitada pra V21); `docs/BENCHMARKS.md` novo.
+- HEAD: `381f331` (commit local, não pushado).
+- Live state: **TIA Portal aberto na sessão 1**, projeto `workspace/blind/FP01/FP01.ap21` aberto e
+  **salvo** (compile Success / 0 erros / 0 warnings). Shell do agente na sessão 0 (rota da task).
+  `tia.exe` rebuildado 3x nesta sessão, whitelist refeita, **sem** diálogo modal de autorização.
+- Done: hardware completo (CPU 1515-2 PN, ET200SP com DI16/DQ16/AI8/servidor, G120 com telegrama
+  20, subnet + IO system), 35 tags em 4 tabelas (27 pontos do caderno conferidos, 0 divergências),
+  22 blocos autorais em 13 pastas (SCL via `import-source`), `Main (OB1)` →
+  `CICLO_FILTRO_PRENSA (FP-01)` → `FB SEQUENCIA_FP-01`. Relatório em
+  `docs/teste-cego/resultado-2026-08-07.md`. 3 correções de CLI commitadas.
 - In progress: nada mid-flight.
 
 ## Decisions (and why)
-- **Gravação de tela fica pra depois** (decisão do user nesta virada). O que entra agora é o teste
-  cego; o vídeo vira subproduto dele, com roteiro já validado.
-- **Baseline manual não será refeito por inteiro** — amostra de **um** pacote/instrumento
-  cronometrada à mão, reportada por unidade, nunca extrapolada. Tabela em `docs/BENCHMARKS.md`
-  espera esses números; extrapolar mataria a credibilidade do benchmark.
-- **Alegação de versão estreitada de propósito**: era "V19+", virou "exercised against V21 only".
-  V19/V20 nunca rodaram ponta a ponta.
-- **`-Check` não reprova mais checkout fora de `~/.claude/skills/tia`** — o `init.ps1` só avisa e
-  instala; ter os dois discordando fazia quem clonava pra avaliar instalar com sucesso e ouvir
-  "init incompleto". Lugar do checkout virou estado vivo, não gate (agora são 8 gates).
-- **Caminho até a Siemens é local, não HQ** — representante Siemens DI Brasil via relacionamento de
-  integrador. Enquadrar como complemento do TIA Portal, não concorrente. Duas perguntas a esperar:
-  redistribuição de DLL (respondida no README) e uso da marca no nome `tia-cli` (pode virar pedido
-  de renomear).
+- **Programa 100% autoral em SCL**, sem `install-lib`/`replicate-fc` — o caderno foi desenhado pra
+  não cair na biblioteca, e usar os geradores anularia o teste. Consequência assumida: `audit` fecha
+  3/5 (acionamento com 2 blocos em vez de 6, sem tabela de tag por acionamento).
+- **`import-cax` descartado como caminho de endereço de módulo** — aceita o AML com `StartAddress`
+  editado e ignora em silêncio. Virou o verbo `set-io-address`.
+- **Endereço do telegrama do G120 achado por sonda de conflito** (mover o AI da ET200SP pelo mapa
+  até `set_StartAddress` recusar): `%IB256..267` / `%QB256..259`. Nem `DeviceItem.Addresses`, nem os
+  atributos do `Telegram`, nem o CAx expõem isso. 18 chamadas pro que o Portal mostra num clique.
+- **Pastas de tag saíram como `1. I-OS`**, não `1. I/OS` da lei — `create-folder --path` usa `/`
+  como separador e não expressa nome com barra (o `scaffold` resolve com lista de segmentos).
+- `TITLE` em bloco SCL **aborta o lote inteiro** do `import-source` — virou comentário.
+- `move-block` em lote só funciona intercalado com `compile --apply` (17 moves + 17 compiles).
 
 ## Next steps (ordered)
-1. **Escrever o caderno de especificação fictício** — como se um cliente tivesse jogado documentos
-   na mesa: máquina com função clara, CPU S7-1500 com MLFB real, lista de sensores/atuadores,
-   tabela de I/O (~20-30 pontos), narrativa de controle (intertravamentos, modos, alarmes). Vale
-   escolher uma máquina que **não** seja resolvida só com `install-lib`, senão o teste vira
-   demonstração da biblioteca. Salvar em `docs/teste-cego/` (fictício, pode ir pro Git).
-2. **Definir os critérios de aprovação ANTES de rodar** — compile Success/0, hardware presente,
-   tags endereçadas, blocos na lei de pastas, `audit` limpo. Escrever junto com o caderno.
-3. **Rodar cego**: `/clear`, sessão nova recebe só os documentos + "se vira". **Quem escreveu o
-   caderno não pode ser quem executa** — senão é corrigir a própria prova.
-4. **Registrar cada tropeço** — onde a sessão travou, o que teve que adivinhar, que verbo faltou.
-   Os tropeços são o produto do teste, mais que o resultado final.
-5. Depois: números manuais (item 1 do BENCHMARKS) e gravação.
+1. **Rodar o teste cego de verdade**: `/clear`, sessão nova recebe só `caderno-FP-01.md` + a skill
+   `tia`, sem handoff. Projeto novo (`create-project`), nunca o `FP01` já pronto. Registrar em
+   `docs/teste-cego/resultado-<data>.md` — o produto são os tropeços, não o veredito.
+2. Antes disso, considerar tapar o buraco que mais custou: um `list-io-map` (ou endereço no
+   `list-telegrams`) e uma nota no `CLAUDE.md` sobre `plug-module --item Rack_0` + sufixo de
+   firmware obrigatório em módulo de ET200SP.
+3. `git push` do `381f331`.
+4. Depois: números manuais (item 1 do `BENCHMARKS.md`) e gravação de tela.
 
 ## Key files
-- `docs/BENCHMARKS.md` — números medidos + tabela de baseline manual em branco esperando cronômetro.
-- `README.md` — seção "What this project does not touch" (IP) e Requirements (claim de versão).
-- `docs/PLANO.md` — "D8 fechada", "delete-db-member", "Gate de máquina limpa exercitado" (todas de
-  2026-08-07); "Fronteira da engine" define o que a engine **não** vai virar.
-- `docs/VERBS.md` — 69 assinaturas; é o que a sessão cega vai ler pra se orientar.
-- `scripts/__navi__.md`, `src/__navi__.md` — atualizados.
-- `SKILL.md` — o que a sessão cega recebe automaticamente; se ela travar, o defeito provavelmente
-  está aqui.
+- `docs/teste-cego/resultado-2026-08-07.md` — os 9 tropeços, com o que é defeito de ferramenta e o
+  que é falta de documentação.
+- `docs/teste-cego/criterios.md` — a régua; **não** vai para a sessão cega.
+- `workspace/blind/*.scl`, `workspace/blind/tags/*.xml`, `workspace/blind/ops-*.json` — todo o
+  material da rodada (gitignored).
+- `src/Tia.Core/Hardware.cs` — `SetIoAddress`; `src/Tia.Core/Ops.cs` — `ProjectOf` + `EnsureCultures`
+  nos dois imports.
+- `src/__navi__.md` — **desatualizado** (verbo novo não entrou); regenerar com `pwsh scripts/navi-cs.ps1`.
 
 ## Open / blockers
-- Nada bloqueia o passo 1 (escrever caderno é offline, não precisa do Portal).
-- O passo 3 precisa de projeto TIA novo ou vazio, e de confirmar com o user antes de escrever.
-- `rebuild.ps1` com o Portal aberto reabre o modal de autorização Openness: chamada pendurada com
-  CPU ~0 = alguém precisa clicar.
+- Os 21 warnings da 1ª compilação nunca foram lidos um a um — depois dos moves o Portal fecha 0/0 e
+  não reemite a lista. Sem caminho conhecido pra forçar rebuild-all por Openness.
+- O projeto `FP01` fica aberto no Portal; a rodada cega precisa dele fechado ou de um Portal só.
 
 ## Skills
 - tia
@@ -71,8 +61,6 @@ projeto TIA que compila. É o mesmo que a Siemens vai perguntar — "um agente c
 - caveman
 
 ## Effort
-**Médio** para o passo 1 — não é código, é projeto de experimento: o caderno tem que ser realista o
-bastante pra valer e enxuto o bastante pra caber numa sessão, e os critérios de aprovação precisam
-ser falseáveis antes de a prova rodar. Raciocínio é o gargalo aqui, não o relógio (nada de Portal
-envolvido). Sobe pra **alto** só se decidir também a arquitetura de controle da máquina em vez de
-só especificá-la. O passo 3, quando chegar, é **alto** por natureza — é a prova.
+**Alto** para o passo 1 — é a prova, e a sessão cega vai encontrar API se comportando fora do
+documentado (foi o que dominou esta rodada). Não é o relógio que manda: os `compile`/`move-block`
+custam segundos, o gargalo é decidir sem documentação. Se o passo 2 for feito antes, cai pra médio.

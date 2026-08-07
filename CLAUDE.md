@@ -9,6 +9,10 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
 ## Regras duras
 
 - Decisões D1–D9 do PLANO valem — não rediscutir sem motivo novo.
+- **Escrever programa de PLC = seguir `docs/BOAS-PRATICAS.md`** (R1–R9: UDT obrigatório, DB global
+  como agregado de UDTs, ≤8 parâmetros escalares por FB, nome auto-descritivo sem prefixo de tipo,
+  bloco nasce na pasta certa, numeração de pasta é a do molde, chamada em LAD e lógica pesada em
+  SCL dentro de FB). Compilar não é o aceite — o aceite é `audit` + R1–R9.
 - `Scripts_Siemens/FINAIS/` = referência read-only. `Scripts_Siemens/OLD/` = não tocar.
 - Verbos de escrita: dry-run por padrão, `--apply` explícito.
 - **Compile entre etapas**: todo import deixa o alvo (e quem o referencia) inconsistente, e o

@@ -1,59 +1,73 @@
 # Handoff · TIA Portal Openness API · 2026-08-07
 
 ## Goal
-Provar a engine ponta a ponta com o caderno fictício FP-01. Esta rodada entregou o item 9 (projeto
-compilando), mas **não foi cega** — a sessão herdou o handoff. Falta a rodada cega de verdade.
+Lapidar o modo operante: o FP-01 compila e cumpre o memorial, mas carrega dívida de engenharia.
+Auditado, virou lei escrita. Próxima meta = a rodada que produz mais defeito por hora.
 
 ## State
-- HEAD: `381f331` (commit local, não pushado).
-- Live state: **TIA Portal aberto na sessão 1**, projeto `workspace/blind/FP01/FP01.ap21` aberto e
-  **salvo** (compile Success / 0 erros / 0 warnings). Shell do agente na sessão 0 (rota da task).
-  `tia.exe` rebuildado 3x nesta sessão, whitelist refeita, **sem** diálogo modal de autorização.
-- Done: hardware completo (CPU 1515-2 PN, ET200SP com DI16/DQ16/AI8/servidor, G120 com telegrama
-  20, subnet + IO system), 35 tags em 4 tabelas (27 pontos do caderno conferidos, 0 divergências),
-  22 blocos autorais em 13 pastas (SCL via `import-source`), `Main (OB1)` →
-  `CICLO_FILTRO_PRENSA (FP-01)` → `FB SEQUENCIA_FP-01`. Relatório em
-  `docs/teste-cego/resultado-2026-08-07.md`. 3 correções de CLI commitadas.
+- HEAD: `0928744` (2 commits locais nesta sessão, **não pushados**; `381f331` da anterior também não).
+- Live state: **TIA Portal aberto na sessão 1**, projeto `workspace/blind/FP01/FP01.ap21` aberto.
+  Probes de teste criados e deletados, `compile` limpo, **projeto não salvo** — o `.ap21` em disco
+  segue igual ao entregue. Shell do agente na sessão 0 (rota da task). `tia.exe` rebuildado 2x,
+  whitelist refeita, sem diálogo modal.
+- Done: auditoria de engenharia do FP-01 (`docs/BOAS-PRATICAS.md`, 8 achados + lei R1–R9 + fila de
+  gaps), ponteiro obrigatório no `CLAUDE.md`, e os gaps 1 e 2 corrigidos e provados no projeto vivo.
 - In progress: nada mid-flight.
 
 ## Decisions (and why)
-- **Programa 100% autoral em SCL**, sem `install-lib`/`replicate-fc` — o caderno foi desenhado pra
-  não cair na biblioteca, e usar os geradores anularia o teste. Consequência assumida: `audit` fecha
-  3/5 (acionamento com 2 blocos em vez de 6, sem tabela de tag por acionamento).
-- **`import-cax` descartado como caminho de endereço de módulo** — aceita o AML com `StartAddress`
-  editado e ignora em silêncio. Virou o verbo `set-io-address`.
-- **Endereço do telegrama do G120 achado por sonda de conflito** (mover o AI da ET200SP pelo mapa
-  até `set_StartAddress` recusar): `%IB256..267` / `%QB256..259`. Nem `DeviceItem.Addresses`, nem os
-  atributos do `Telegram`, nem o CAx expõem isso. 18 chamadas pro que o Portal mostra num clique.
-- **Pastas de tag saíram como `1. I-OS`**, não `1. I/OS` da lei — `create-folder --path` usa `/`
-  como separador e não expressa nome com barra (o `scaffold` resolve com lista de segmentos).
-- `TITLE` em bloco SCL **aborta o lote inteiro** do `import-source` — virou comentário.
-- `move-block` em lote só funciona intercalado com `compile --apply` (17 moves + 17 compiles).
+- **`import-source` passou a usar os overloads que já existiam**
+  (`GenerateBlocksFromSource(PlcBlockUserGroup|PlcTypeUserGroup, GenerateBlockOption)`): `--folder`
+  faz o bloco nascer na pasta (fim dos 17 `move-block`+`compile`) e fonte só de `TYPE` vai pra pasta
+  de UDT — **é isto que torna UDT alcançável por fonte SCL**, sem GUI. Fonte mista com `--folder`
+  é recusada: um caminho não endereça os dois grupos.
+- **`KeepOnError` não rejeita bloco inválido — ele entra inconsistente.** Medido: a fonte com
+  `TITLE` que antes abortava o lote agora gera **as duas** FCs. Contraria o tropeço 5 do relatório
+  anterior. Consequência: `import-source ok` **não** significa "compila"; quem acusa é o `compile`
+  seguinte.
+- **Chamada em LAD é regra (R8) por motivo objetivo, não estético**: `replicate-fc`, `gen-alarm-fc`
+  e `gen-fault-ob` reescrevem `FlgNet`. Bloco de chamada em SCL fica fora do alcance dos geradores
+  da própria CLI.
+- **Descartada** a ideia de outra rodada autoral em SCL: mesmo terreno, rendimento baixo — o que ela
+  acharia já está no `BOAS-PRATICAS.md`.
+- **Rodada cega adiada de propósito.** Continua pendente, mas hoje ela prova o *protocolo*, não caça
+  defeito. Vale mais depois da FP-02 e com o caderno FP-02.
+- `WebFetch` no support.industry.siemens.com dá **403** — a documentação usável é a ajuda local
+  (`scripts/tia-help.py`), que tem o pacote `ProgTIATIPPS1215enUS` ("Programming recommendations").
 
 ## Next steps (ordered)
-1. **Rodar o teste cego de verdade**: `/clear`, sessão nova recebe só `caderno-FP-01.md` + a skill
-   `tia`, sem handoff. Projeto novo (`create-project`), nunca o `FP01` já pronto. Registrar em
-   `docs/teste-cego/resultado-<data>.md` — o produto são os tropeços, não o veredito.
-2. Antes disso, considerar tapar o buraco que mais custou: um `list-io-map` (ou endereço no
-   `list-telegrams`) e uma nota no `CLAUDE.md` sobre `plug-module --item Rack_0` + sufixo de
-   firmware obrigatório em módulo de ET200SP.
-3. `git push` do `381f331`.
-4. Depois: números manuais (item 1 do `BENCHMARKS.md`) e gravação de tela.
+1. **`bake-lib.ps1`**: gerar a `.al21` a partir do projeto molde (`src/Tia.Lib/*.al21` **não existe**
+   nesta máquina; `library/blocks/` tem os 66 XMLs). Caminho PLC→library nunca provado — o teste
+   começa aí.
+2. **Varredura dry dos 69 verbos** contra os 2 projetos reais, 1 `run --script --summary` (~80
+   steps, 1 attach). Melhor achado/token do repo: erro besta, mensagem críptica, verbo que engasga
+   em projeto de 476 blocos.
+3. **FP-02 pelo caminho da casa, zero SCL autoral**: `scaffold --apply` → `install-lib` →
+   `replicate-fc --apply` → `gen-alarm-fc` → `replicate-instruments` → `gen-fault-ob` →
+   `standardize-tags`. É a metade da CLI que **nunca construiu planta nenhuma** (7 verbos `--apply`,
+   só dry até hoje; `replicate-fc --apply` nunca exercitado). Oráculo automático: `audit` **5/5** +
+   `compile` 0/0. Caderno deve forçar o que o FP-01 não tocou: válvula motorizada (17 tags),
+   totalizador, diagnóstico de módulo, e **duas áreas** (aí a numeração cruzada `2.N`/`3.N`/`3.1.N`/
+   `5.1.N` vira check de verdade).
+4. Rodada cega de verdade, com o caderno FP-02.
+5. `git push` dos 3 commits locais.
 
 ## Key files
-- `docs/teste-cego/resultado-2026-08-07.md` — os 9 tropeços, com o que é defeito de ferramenta e o
-  que é falta de documentação.
-- `docs/teste-cego/criterios.md` — a régua; **não** vai para a sessão cega.
-- `workspace/blind/*.scl`, `workspace/blind/tags/*.xml`, `workspace/blind/ops-*.json` — todo o
-  material da rodada (gitignored).
-- `src/Tia.Core/Hardware.cs` — `SetIoAddress`; `src/Tia.Core/Ops.cs` — `ProjectOf` + `EnsureCultures`
-  nos dois imports.
-- `src/__navi__.md` — **desatualizado** (verbo novo não entrou); regenerar com `pwsh scripts/navi-cs.ps1`.
+- `docs/BOAS-PRATICAS.md` — a auditoria (8 achados com evidência + citação da ajuda oficial), a lei
+  R1–R9 e a fila de gaps §3 (itens 1-2 feitos; sobram `import-ladder` sem chamada de bloco,
+  `create-folder` por segmentos, checks novos no `audit`, `list-io-map`).
+- `docs/PADRAO.md` — o molde da casa; é a régua de pasta/nome/6-blocos.
+- `src/Tia.Core/Ops.cs:613` — `ImportSource` novo (folder + KeepOnError + `SourceDeclNames`).
+- `src/Tia.Core/LadConverter.cs:11-15` — o subset que o `import-ladder` aceita (booleano puro, sem
+  chamada de bloco); é o gap 3.
+- `docs/teste-cego/resultado-2026-08-07.md` — os 9 tropeços da run anterior.
+- `src/__navi__.md` — **desatualizado** (`set-io-address` e as mudanças desta sessão não entraram);
+  regenerar com `pwsh scripts/navi-cs.ps1`.
 
 ## Open / blockers
-- Os 21 warnings da 1ª compilação nunca foram lidos um a um — depois dos moves o Portal fecha 0/0 e
-  não reemite a lista. Sem caminho conhecido pra forçar rebuild-all por Openness.
-- O projeto `FP01` fica aberto no Portal; a rodada cega precisa dele fechado ou de um Portal só.
+- Nada bloqueia. O `FP01` fica aberto no Portal — a FP-02 precisa dele fechado ou de um Portal só.
+- Pergunta em aberto para o agente da run anterior (opcional): por que nunca criou UDT? O
+  `import-source` já aceitava `TYPE` no dry-run, então parece omissão de especificação, não
+  bloqueio técnico — se for, a correção é a regra R1, não código.
 
 ## Skills
 - tia
@@ -61,6 +75,6 @@ compilando), mas **não foi cega** — a sessão herdou o handoff. Falta a rodad
 - caveman
 
 ## Effort
-**Alto** para o passo 1 — é a prova, e a sessão cega vai encontrar API se comportando fora do
-documentado (foi o que dominou esta rodada). Não é o relógio que manda: os `compile`/`move-block`
-custam segundos, o gargalo é decidir sem documentação. Se o passo 2 for feito antes, cai pra médio.
+**Baixo** para o passo 1 — `bake-lib.ps1` é sequência documentada; se falhar, o erro do Openness
+diz o quê. Sobe pra **médio** no passo 3 (7 verbos `--apply` nunca exercitados juntos, e o `audit`
+5/5 é régua dura). O gargalo do passo 3 não é raciocínio: é `compile` e attach do Portal.

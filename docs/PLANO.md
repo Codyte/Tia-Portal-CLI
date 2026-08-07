@@ -20,7 +20,7 @@ Extraído dos scripts provados em `Scripts_Siemens/FINAIS/`.
 | D5 | **Código e CLI em inglês; docs em PT** | Publicação GitHub futura. Decidido agora pra evitar rework. |
 | D6 | **XML roundtrip = primitiva central** | Export → transformar → import. Todo verbo de alto nível constrói sobre isso. |
 | D7 | **Read/write separados; write com `--apply`** | Verbos de leitura livres. Verbos de escrita rodam dry-run por padrão e só executam com `--apply`. Agente não estraga projeto por ruído. |
-| D8 | **Sem operações online no v1** | Nada de download/go-online/commit Multiuser via API. Projeto offline + compile apenas. Humano faz check-in no TIA. |
+| D8 | **Sem operações online — definitivo (fechado 2026-08-07)** | Nada de download/go-online/compare online/commit Multiuser via API. Projeto offline + compile apenas. Humano faz check-in e download no TIA. Não é "adiado pro v2": ver "D8 fechada" abaixo. |
 | D9 | **1 chamada por vez** | Openness não é thread-safe pra esse uso. Nunca paralelizar chamadas `tia` (nem via agentes). |
 
 ## Delimitações — o que a API NÃO é
@@ -184,8 +184,8 @@ read-only — nunca editar lá; extrair pra `src/` e pronto.
    `import-master-copy --file X.al19 --name M [--folder A/B]` via Blocks.CreateFrom;
    read-only Open a cada verbo). Fora do V1: instanciar library *types* (workflow de
    versão/instância bem mais complexo — adicionar se precisar).
-9. **Online (revoga D8 — só com decisão explícita)**: go-online, download, compare online/offline,
-   start/stop CPU, watch tables.
+9. ~~**Online**~~ ❌ **descartado 2026-08-07** (go-online, download, compare online/offline,
+   start/stop CPU, watch tables). D8 fechada como definitiva — ver "D8 fechada" abaixo.
 10. ~~**HMI Unified**~~ ✅ parcial (`list-hmi [--device X]` — telas + tag tables; API HmiUnified
     compilou contra DLL real). **Limite de plataforma**: Openness V19 não exporta/importa telas
     Unified como XML (sem SimaticML pra Unified) — export/import de telas fica fora até a Siemens
@@ -856,6 +856,25 @@ entram. A engine para no `run --script`.**
 
 Fronteira declarada: **verbos + `run --script` + macros PS**. Reconciliação declarativa mora nos
 macros, por domínio.
+
+## D8 fechada — sem superfície online, e não é adiamento (2026-08-07)
+
+Decisão do user, tomada com a engine offline já fechada: **`go-online`, `download` e `compare
+online/offline` não entram**. Sai do backlog v2 (item 9 some junto).
+
+Por quê, na ordem que pesou:
+- **Download é risco operacional que um CLI não deve carregar.** O objeto do verbo seria escrever
+  num PLC em campo; `--apply` protege projeto, não protege processo. O humano faz download no TIA,
+  vendo a tela, com a planta na frente.
+- **`go-online` + `compare` sem download têm valor baixo** e custo de teste alto: exigiriam PLC
+  real ou PLCSIM dedicado, que hoje não existe no ambiente de teste. Ficaria superfície sem régua.
+- **A engine não fica capenga sem isso.** O que o agente precisa — ler, gerar, importar, compilar,
+  instalar biblioteca — está fechado offline. Online é outro produto, com outro perfil de risco.
+
+Consequências já registradas: `apply-spec` continua fora (metade do argumento dele era o `compare`
+online), e as Delimitações seguem valendo — "não controla PLC online (D8)" agora é permanente, não
+"no v1". **Sinal para reabrir:** um PLC/PLCSIM de teste dedicado *e* um caso de uso que não seja
+download.
 
 ## Pendências / decisões futuras
 

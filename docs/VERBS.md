@@ -61,6 +61,7 @@
 - `clone --block N | --table T --replace OLD=NEW [--replace ...] [--at %M432.0] [--folder A/B] [--apply]`
 - `add-db-member --db X --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]`
 - `edit-db-member --db X --name M [--path A.B] [--type T] [--rename NEW] [--out DIR] [--apply]  (rename não corrige quem referencia o membro)`
+- `delete-db-member --db X --name M [--path A.B] [--out DIR] [--apply]  (não corrige quem referencia o membro)`
 - `compile [--block X | --folder A/B] [--errors] [--apply]  (--errors = lista plana {where,message,count} em vez da árvore)`
 - `diff-block --file F.xml [--name X]  (read-only, normalized compare)`
 - `doctor [--verb V] [--config F]  (read-only preflight dos verbos geradores)`

@@ -85,6 +85,8 @@ namespace Tia.Cli
                         "add-db-member --db X --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]",
                         "edit-db-member --db X --name M [--path A.B] [--type T] [--rename NEW] [--out DIR] [--apply]  "
                             + "(rename não corrige quem referencia o membro)",
+                        "delete-db-member --db X --name M [--path A.B] [--out DIR] [--apply]  "
+                            + "(não corrige quem referencia o membro)",
                         "compile [--block X | --folder A/B] [--errors] [--apply]  (--errors = lista plana {where,message,count} em vez da árvore)",
                         "diff-block --file F.xml [--name X]  (read-only, normalized compare)",
                         "doctor [--verb V] [--config F]  (read-only preflight dos verbos geradores)",
@@ -494,6 +496,11 @@ namespace Tia.Cli
                             result = Core.DbMember.Change(session.GetPlc(plcName), Require(args, "--db"),
                                 OptionValue(args, "--path"), Require(args, "--name"),
                                 OptionValue(args, "--type"), OptionValue(args, "--rename"), outDir, apply);
+                        break;
+                    case "delete-db-member":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.DbMember.Remove(session.GetPlc(plcName), Require(args, "--db"),
+                                OptionValue(args, "--path"), Require(args, "--name"), outDir, apply);
                         break;
                     case "rename-block":
                         using (WriteLock(session, apply, verb))

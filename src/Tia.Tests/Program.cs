@@ -342,6 +342,17 @@ namespace Tia.Tests
                 "membro inexistente falha");
             Check(DbMember.ChangeInXml(db(), "AREA", "BOMBA_A", null, "BOMBA_A").Action == "skip (no change)",
                 "renomear pro mesmo nome = no-op");
+
+            // delete-db-member
+            var d5 = db();
+            var r1 = DbMember.RemoveFromXml(d5, "AREA", "BOMBA_A");
+            Check(r1.Action == "delete" && r1.Datatype == "\"MotorDados\"", "delete devolve o tipo removido");
+            Check(!areaMembers(d5).Any(), "membro sai do XML");
+            Check(DbMember.RemoveFromXml(d5, "AREA", "BOMBA_A").Action == "missing (no-op)",
+                "membro ausente = no-op (idempotente)");
+            Check(Throws(() => DbMember.RemoveFromXml(db(), "NAO_EXISTE", "BOMBA_A")), "--path inexistente falha");
+            Check(DbMember.AddToXml(d5, "AREA", "BOMBA_B", "Real", null).Action == "create",
+                "struct esvaziado pelo delete continua struct");
         }
 
         private static void Memory_Occupied()

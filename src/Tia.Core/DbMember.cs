@@ -99,6 +99,55 @@ namespace Tia.Core
             return result;
         }
 
+        /// <summary>
+        /// delete-db-member: tira um membro do DB. Mesma coreografia do Add/Change.
+        /// Idempotente: membro ausente é no-op. Como no rename, o código que referencia o membro
+        /// NÃO é corrigido — fica inconsistente até alguém mexer (`xref --name DB` mostra quem).
+        /// </summary>
+        public static object Remove(PlcSoftware plc, string dbName, string path, string name,
+            string outDir, bool apply)
+        {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException("--name is required.");
+
+            var db = ReplicateFc.FindDataBlock(plc.BlockGroup, dbName);
+            if (db == null)
+                throw new InvalidOperationException("Data block '" + dbName + "' not found.");
+            var dbLabel = db.Name;
+            var group = db.Parent as PlcBlockGroup ?? plc.BlockGroup;
+
+            Directory.CreateDirectory(outDir);
+            var file = Path.GetFullPath(Path.Combine(outDir, "delmember_" + Safe(dbLabel) + ".xml"));
+            if (File.Exists(file)) File.Delete(file);
+            db.Export(new FileInfo(file), ExportOptions.WithDefaults);
+
+            var doc = XDocument.Load(file);
+            var edit = RemoveFromXml(doc, path, name);
+            var result = Report(dbLabel, path, name, edit.Datatype, edit.Action, file,
+                apply && edit.Action == "delete");
+            if (edit.Action != "delete") return result;
+
+            result["warning"] = "deleting a member does not fix its references — check `xref --name " + dbLabel + "`.";
+            doc.Save(file);
+            if (apply)
+                group.Blocks.Import(new FileInfo(file), ImportOptions.Override);
+            return result;
+        }
+
+        /// <summary>Núcleo puro do delete — sem Openness, testável offline.</summary>
+        internal static Edit RemoveFromXml(XDocument doc, string path, string name)
+        {
+            var section = ResolveSection(doc, path);
+            var member = section.Elements().Where(e => e.Name.LocalName == "Member")
+                .FirstOrDefault(m => NameOf(m).Equals(name, StringComparison.OrdinalIgnoreCase));
+            if (member == null)
+                return new Edit { Action = "missing (no-op)", Datatype = null };
+
+            var datatype = member.Attribute("Datatype")?.Value;
+            member.Remove();
+            return new Edit { Action = "delete", Datatype = datatype };
+        }
+
         internal struct Delta
         {
             public string Action;
@@ -202,10 +251,13 @@ namespace Tia.Core
                         path + "'. Known members: " + string.Join(", ",
                         section.Elements().Where(e => e.Name.LocalName == "Member").Select(NameOf)));
                 // Struct nativo aninha <Member> direto; instância de UDT expande em <Sections><Section>
-                section = member.Elements().FirstOrDefault(e => e.Name.LocalName == "Sections")
-                    ?.Elements().FirstOrDefault(e => e.Name.LocalName == "Section") ?? member;
-                if (!section.Elements().Any(e => e.Name.LocalName == "Member"))
-                    throw new InvalidOperationException("Member '" + segment + "' has no nested members — not a struct.");
+                var nested = member.Elements().FirstOrDefault(e => e.Name.LocalName == "Sections")
+                    ?.Elements().FirstOrDefault(e => e.Name.LocalName == "Section");
+                // "é struct" não é "tem membro": struct esvaziado por delete continua struct
+                if (nested == null && !member.Elements().Any(e => e.Name.LocalName == "Member")
+                    && !"Struct".Equals(member.Attribute("Datatype")?.Value, StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidOperationException("Member '" + segment + "' is not a struct.");
+                section = nested ?? member;
             }
             return section;
         }

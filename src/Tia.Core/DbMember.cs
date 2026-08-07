@@ -1,8 +1,11 @@
 // NAV INDEX
-//   1-25    usings, namespace, tipos primitivos conhecidos
-//   27-75   DbMember.Add — export do DB, edição do XML, import Override
-//   77-125  AddToXml — núcleo puro (testável offline): resolve seção, clona/insere Member
-//   127-160 helpers: ResolveSection, NameOf, Datatype, Safe, Report
+//   1-31     usings, namespace, tipos primitivos conhecidos
+//   33-69    DbMember.Add — export do DB, edição do XML, import Override
+//   71-108   Change (edit-db-member) — troca tipo e/ou nome
+//   110-152  Remove (delete-db-member) + RemoveFromXml — núcleo puro
+//   154-198  ChangeInXml — núcleo puro do edit
+//   200-239  AddToXml — núcleo puro: resolve seção, clona/insere Member
+//   241-297  helpers: ResolveSection, NameOf, Datatype, Safe, Report
 using System;
 using System.Collections.Generic;
 using System.IO;

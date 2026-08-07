@@ -533,10 +533,24 @@ compila 0 erros):
   **antes** de criar (`deleted+created`). O `catch` segue valendo pra colisão de nome em *outra*
   pasta, que aí sim levanta. `rebuild.ps1` rodado (tia.exe reassinado na whitelist).
 
-**Buraco aberto: o fix nunca foi exercitado contra o Portal.** Próximo passo do ciclo é repetir
-`install-lib` numa CPU virgem e medir contra a régua da seção anterior (**4 erros, todos o G120
-ausente**). Igual = ciclo validado (fecha `import-master-copy` real e `--force --apply` real, os
-dois buracos que a F8 registra). Diferente = o bug é outro.
+**Fix validado contra o Portal — ✅ 2026-08-07.** `PLC_TESTE` apagado e recriado virgem
+(`add-device --mlfb "6ES7 515-2AN03-0AB0/V3.1"`), depois `install-lib -Apply` dos 5 pacotes:
+
+| rodada | resultado |
+|---|---|
+| 1ª instalação (CPU virgem) | 35 blocos, **nenhuma pasta `_1`**, compile Success 0 erros |
+| 2ª instalação por cima | `já presentes (pulados): 10`, nada tocado, 0 erros |
+| `-Update` em `1.5 Diagnóstico` (= `import-master-copy --force`) | 35 blocos, sem `_1`, 0 erros |
+
+Contra a régua antiga (**34 → 68 blocos, compile Error**), fecha os dois buracos que a F8 registra:
+`import-master-copy` real e `--force --apply` real. A 3ª linha é a que importa — o skip da 2ª
+rodada acontece *antes* do `--force`, então só o `-Update` exercita o `deleted+created`.
+
+**0 erros, não os 4 do G120**: a `.al21` atual foi assada com `-Prune` e só tem os 5 pacotes de
+biblioteca. Quem referencia `INVERSOR_MOTOR_01_CCM_01~PROFINET_interface~Standard_telegram_20` são
+os **moldes** (`0 Moldes`, `Motor 1 (MOTOR_01)`…), declarados no `packages.json` mas ausentes da
+`.al21`. Medir a régua dos 4 erros exige reassar incluindo os moldes — e aí o fecho é
+`add-device` do G120 + `insert-telegram --number 20 --change --apply`.
 
 **Ainda fora da `.al21`: UDT e tabela de tag.** `bake-lib.ps1` só assa bloco e pasta de bloco; o
 `packages.json` declara `types`/`tags` apontando pra `library/blocks/<UDT>.xml` e `library/tags/`,

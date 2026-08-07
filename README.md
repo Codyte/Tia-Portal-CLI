@@ -40,13 +40,28 @@ enough to hand to an AI agent, fast enough for a human in a hurry.
 ```mermaid
 flowchart LR
     A["🤖 AI agent / engineer<br/>(shell)"] -->|"tia &lt;verb&gt; --json args"| B["tia.exe<br/>(net48 x64, whitelisted)"]
-    B -->|Openness API| C["TIA Portal V19+<br/>(running instance)"]
+    B -->|Openness API| C["TIA Portal V21<br/>(running instance)"]
     B -->|SimaticML / AML / CSV| D[("workspace/<br/>exports")]
     C --> E["PLC project<br/>(offline)"]
 ```
 
 Extracted from field-proven automation scripts for water-treatment PLC projects
 (`Scripts_Siemens/FINAIS/`, kept as read-only reference).
+
+## What this project does not touch
+
+Openness is Siemens' API, under Siemens' terms. This project stays on the documented side of it:
+
+- **No Siemens binary is redistributed.** `Siemens.Engineering.dll` and its siblings are never
+  committed. `init.ps1` copies them from *your* local TIA Portal installation into a gitignored
+  `lib/`, and at runtime the exe resolves them from the installed Portal.
+- **No reverse engineering, no bypass.** Everything goes through the public Openness API. The
+  Windows `Siemens TIA Openness` group and the Openness whitelist (registry entry keyed by exe path
+  and hash) are honored, not worked around — including the consent dialog the Portal raises after
+  every rebuild.
+- **No customer data.** Exported XML/AML carries equipment names, tags and DB structure, so it is
+  gitignored by policy. What is versioned is either original or sanitized.
+- **MIT**, and not affiliated with, endorsed by, or distributed by Siemens.
 
 ## Design contract
 
@@ -136,7 +151,10 @@ checks and lib/ copy).
 <details>
 <summary><b>Requirements</b></summary>
 
-- Windows, TIA Portal **V19 or newer** with Openness installed (V21 tested).
+- Windows, TIA Portal with Openness installed. **Developed and exercised against V21 only.** The
+  API surface used is present since V19 and `init.ps1` discovers V19/V20/V21 installs, but neither
+  has been run end-to-end — treat V19/V20 as unverified, not as a promise. One verb is known to
+  need newer: `set-tag --rename` requires Openness V20+.
 - .NET Framework 4.8 (runtime) / .NET SDK 8 (build). Target is `net48` x64.
 - `Siemens.Engineering.dll` is **not** in this repo (Siemens license). At build time a local
   copy under `lib/` (gitignored) is used; at runtime the exe resolves the DLL from the installed
@@ -194,8 +212,11 @@ First run against a Portal without whitelist entry triggers the Openness consent
 
 ## Docs
 
-Project docs under [`docs/`](docs/) are in Portuguese (plan, real-project findings). Code and
-CLI are English.
+- [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md) — measured time-to-answer per verb, what one attach
+  saves, output volume, and a real captured cycle. English.
+- [`docs/VERBS.md`](docs/VERBS.md) — full signatures, generated from `--help`. English.
+- The rest of [`docs/`](docs/) is Portuguese (plan, decisions, real-project findings). Code and CLI
+  are English.
 
 ## License
 

@@ -1,63 +1,59 @@
-# Handoff · TIA Portal Openness API · 2026-08-06
+# Handoff · TIA Portal Openness API · 2026-08-07
 
 ## Goal
-**Migração do repo para skill: FEITA.** O repo agora *é* a skill `tia` e mora em
-`~/.claude/skills/tia`, como submódulo de `Codyte/skills`. Resta o push (bloqueado por
-autenticação) e o ciclo da biblioteca.
+Sessão foi manutenção de infra, não CLI: consertar o acesso remoto (VS Code Remote Tunnel) que não
+conectava. **Resolvido.** O trabalho de produto continua sendo o ciclo da biblioteca (passo 1 abaixo).
 
 ## State
-- HEAD: `f5209ea` — **9 commits à frente do `origin/main`, NÃO pushados** (bloqueio, ver Open).
-- **O repo mudou de lugar**: `c:\Scripts\TIA Portal` → `C:\Users\Carlos_Ortiz\.claude\skills\tia`.
-  Abrir sessão nova já nesse diretório. A pasta antiga ficou **vazia** (não deu pra apagar: era o
-  cwd do shell desta sessão) — apagar depois com `Remove-Item "C:\Scripts\TIA Portal"`.
-- Live state: nenhum TIA Portal aberto; shell da sessão nasceu na **sessão 1**.
-  `init.ps1 -Check` = **9/9 ok** no caminho novo (whitelist refeita, tasks re-registradas,
-  `TIA_CLI_HOME` e PATH apontando pro novo, entrada velha do PATH removida).
-  `proj/` (1,82 GB), `workspace/`, `lib/`, `src/Tia.Lib`, `library/blocks/`, `Scripts_Siemens/`
-  vieram junto — todos gitignored.
-- Done: `SKILL.md` na raiz (`skills/` morreu); `init.ps1` gate 6 = verificação, gate 4 re-registra
-  task quando o caminho diverge; README/CLAUDE/SKILL/PLANO atualizados; submódulo registrado e
-  commitado em `Codyte/skills` (`b5b8fd5`); `standing.md` atualizado.
+- HEAD: `4ab09f2` — **em sincronia com `origin/main`** (o push que estava bloqueado no handoff
+  anterior foi feito; `git status -sb` = `## main...origin/main`, sem ahead/behind).
+- `C:\Scripts\TIA Portal` (pasta velha, vazia) — **já apagada**. Pendência anterior fechada.
+- Live state: nenhum TIA Portal aberto. Shell da sessão nasceu na **sessão 1** (RDP `rdp-tcp#17`,
+  usuário `Carlos_Ortiz` ativo). Console é a sessão 3, sem usuário.
+- Túnel VS Code no ar: nome `titanxnexus`, id `joyful-hill-nlx5dr5`, cluster `brs`.
+  Acesso por `https://vscode.dev/tunnel/titanxnexus`. Dois processos `code-tunnel` na sessão 0
+  (host + agent supervisor), um lock, log sem loop de erro.
+- Done nesta sessão: diagnóstico e conserto do túnel (ver Decisions).
 - In progress: nada mid-flight.
 
 ## Decisions (and why)
-- **Mover o checkout em vez de clonar do remote.** O plano previa `git submodule add` clonando —
-  mas com o push bloqueado o clone nasceria em `a0df2f7` e perderia 9 commits. Mover preserva
-  commits + payload untracked numa operação, não apaga nada e é reversível.
-  `git submodule add <url> tia` com o diretório já existente responde
-  `Adding existing repo at 'tia' to the index` — registra sem clonar.
-- **`Move-Item` da pasta inteira falha** (`being used by another process`): o shell do agente tem
-  cwd lá e o harness reseta o cwd a cada chamada. Mover os **filhos** um a um funciona (17/17) e
-  deixa só o diretório vazio pra trás.
-- **`proj/` (1,82 GB) foi junto.** Move no mesmo volume é rename, custo zero, e mantém qualquer
-  resolução relativa de caminho intacta. Se incomodar em `~/.claude`, é `Move-Item` de novo.
-- **URL do submódulo = `https://github.com/Codyte/TIA-Portal.git`** (o remote real). Se renomear
-  pro `tia-cli` no GitHub, corrigir em `~/.claude/skills/.gitmodules` + `git remote set-url`.
-- **`totally-integrated-claude` (Czarnak): só registrado, não avaliado** — decisão do user.
-  Está em `docs/PLANO.md` § Pendências. Não foi lido nem clonado.
+- **Causa do túnel não conectar: três lançadores concorrentes** apontando pro mesmo
+  `--cli-data-dir C:\Users\Carlos_Ortiz\.vscode\cli` — Scheduled Task `VSCodeTunnel` (S4U, sessão 0),
+  chave Run `HKCU\...\Run\Visual Studio Code Tunnel`, e o botão "Remote Tunnel Access" da janela do
+  Code (`tunnel --name TITANxNEXUS --parent-process-id 5892`). Brigavam pelo singleton
+  `tunnel-stable.lock`: log em loop 1x/s com
+  `error access singleton, retrying: the process holding the singleton lock file (pid=14340) exited`
+  e `tunnel status` devolvendo `{"tunnel":null,...}` — nenhum túnel registrado.
+- **Ficou só a Scheduled Task `VSCodeTunnel`**; a chave Run foi removida. Motivo: a task é S4U
+  ("rodar esteja o usuário logado ou não") = acesso remoto de verdade, enquanto a chave Run só sobe
+  no logon do usuário. Efeito colateral cosmético: `code tunnel status` agora responde
+  `service_installed:false` porque esse flag lê a chave Run, não a task — o log é a fonte de verdade.
+- **A task estava `Ready` mas 3 processos da sessão 0 sobreviviam** segurando o lock — órfãos de uma
+  execução anterior. `Stop-ScheduledTask` e `schtasks /End` não os mataram, e `Stop-Process` deu
+  `Acesso negado`. Só morreram com `taskkill /F /IM code-tunnel.exe /T` elevado (1 UAC).
+- **Uso declarado do acesso remoto = conversar com Claude e tocar os projetos**, não pilotar o TIA
+  Portal. Por isso a sessão 0 do túnel não é problema no dia a dia.
 
 ## Next steps (ordered)
-1. **User roda `gh auth login -h github.com`** (ou `git push` num terminal dele). Depois:
-   `git -C "$HOME\.claude\skills\tia" push origin main` e o push do repo `Codyte/skills`.
-   Enquanto não pushar, o gitlink do submódulo aponta pra commit que só existe nesta máquina.
-2. `Remove-Item "C:\Scripts\TIA Portal"` (vazia) de uma sessão cujo cwd não seja ela.
-3. Voltar ao ciclo da biblioteca: apagar o `PLC_TESTE` velho (68 blocos duplicados),
-   `new-plc.ps1 PLC_TESTE "<pacotes>" -Apply` numa CPU virgem, comparar com a régua —
-   **4 erros, todos `INVERSOR_MOTOR_01_CCM_01~PROFINET_interface~Standard_telegram_20`**.
+1. **Ciclo da biblioteca** (o que sobrou do handoff anterior, nada mudou): apagar o `PLC_TESTE` velho
+   (68 blocos duplicados), rodar `new-plc.ps1 PLC_TESTE "<pacotes>" -Apply` numa CPU virgem e comparar
+   com a régua — **4 erros, todos
+   `INVERSOR_MOTOR_01_CCM_01~PROFINET_interface~Standard_telegram_20`** (telegrama do G120, parado no
+   clique do user).
+2. Decidir se o repo vira `tia-cli` no GitHub (hoje `Codyte/TIA-Portal`) — antes de outra máquina
+   clonar. Se renomear: corrigir `~/.claude/skills/.gitmodules` + `git remote set-url`.
 
 ## Key files
-- `scripts/init.ps1` — `Test-SkillInstalled` (repo == skill) e `Test-TasksCurrent` (caminho da
-  task) são os dois helpers novos; gates 4 e 6 mudaram.
-- `docs/PLANO.md` § "Migração do repo para skill" e § "Bake real da `.al21` + bug do `--force`".
-- `~/.claude/skills/.gitmodules` — 5 submódulos agora.
-- `scripts/__navi__.md` — mapa da pasta que o passo 3 toca.
+- `~/.vscode/cli/tunnel-service.log` — fonte de verdade do túnel (`tunnel status` mente sobre
+  `service_installed` desde a remoção da chave Run).
+- `~/.vscode/cli/code_tunnel.json` — `{"name":"titanxnexus","id":"joyful-hill-nlx5dr5","cluster":"brs"}`.
+- `scripts/__navi__.md` — mapa da pasta que o passo 1 toca.
+- `docs/PLANO.md` § "Bake real da `.al21` + bug do `--force`" — contexto do passo 1.
 
 ## Open / blockers
-- **Push bloqueado**: `gh auth status` = `The token in default is invalid`; `git push` morre com
-  `Cannot prompt because user interactivity has been disabled` (falha rápido, não pendura).
-  Só o user destrava.
-- Renomear o repo no GitHub (`TIA-Portal` → `tia-cli`?) — decidir antes de outra máquina clonar.
-- Telegrama do G120 parado no clique do user — são os 4 erros da régua do passo 3.
+- Telegrama do G120 (`Standard_telegram_20`) continua parado no clique do user — são os 4 erros da
+  régua do passo 1.
+- Renomear o repo no GitHub: não decidido.
 
 ## Skills
 - tia
@@ -65,7 +61,7 @@ autenticação) e o ciclo da biblioteca.
 - caveman
 
 ## Effort
-**Baixo** para os passos 1-2 — é autenticação e apagar pasta vazia; raciocínio não é o gargalo.
-**Médio** no passo 3: é rodar sequência documentada, mas a comparação com a régua exige ler o
-diff de erros com cuidado. Subir pra alto só se o `--force` continuar não sobrescrevendo depois
-do fix — aí é comportamento de API contra a documentação.
+**Médio** para o passo 1: é rodar sequência documentada, mas comparar com a régua exige ler o diff de
+erros com cuidado. Subir pra **alto** só se o `--force` continuar não sobrescrevendo depois do fix —
+aí é comportamento de API contra a documentação, não falta de raciocínio. Passo 2 é decisão de
+usuário, não trabalho.

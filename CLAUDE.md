@@ -74,6 +74,10 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
     então o caso real é trocar: `--change` (`conflict (pass --change to replace)` sem ele, e o
     Portal recusa apagar telegrama Main — a troca é in-place). Vale só pra família System (Startdrive) — o
     G120X **GSD** carrega telegrama como submódulo plugado de verdade, e aí é `plug-module`.
+    **Telegrama posto ainda não cria a constante `X~PROFINET_interface~Standard_telegram_20`**: ela
+    só nasce quando o drive é IO device daquele controlador — dois `connect-subnet` na ordem, PLC
+    (`--io-system NOME`, cria) e depois o drive (junta). Nome de IO system por PLC, senão o drive
+    entra no controlador errado quando duas CPUs dividem a subnet.
   - `tia doctor` = preflight dos 6 verbos antes de qualquer smoke.
 - Smoke test exige TIA Portal aberto com projeto de teste — confirmar com o usuário antes.
 

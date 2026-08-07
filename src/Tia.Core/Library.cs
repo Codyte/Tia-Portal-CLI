@@ -24,7 +24,17 @@ namespace Tia.Core
             // ponytail: Open a cada verbo (read-only); cache de library aberta se ficar lento
             var already = session.Portal.GlobalLibraries
                 .FirstOrDefault(l => string.Equals(l.Path.FullName, full, StringComparison.OrdinalIgnoreCase));
-            if (already != null) return already;
+            if (already != null)
+            {
+                // library ja aberta ReadOnly (list-library antes, ou a UI): reusar mata o verbo de
+                // escrita com "Cannot write to read-only libraries" — fechar e reabrir ReadWrite
+                if (!write || !already.IsReadOnly) return already;
+                var user = already as UserGlobalLibrary;
+                if (user == null)
+                    throw new InvalidOperationException("Library '" + full
+                        + "' is open read-only and is not a user library (cannot reopen for write).");
+                user.Close();
+            }
             return session.Portal.GlobalLibraries.Open(new FileInfo(full),
                 write ? OpenMode.ReadWrite : OpenMode.ReadOnly);
         }

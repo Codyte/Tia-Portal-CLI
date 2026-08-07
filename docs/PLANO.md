@@ -447,7 +447,8 @@ numa CPU virgem (`PLC_FULL`, manifesto inteiro via `scaffold`):
 | `+ 4 `create-instance-db`` | **2** |
 
 Os 2 finais são `Tag "INVERSOR_MOTOR_01_CCM_01~PROFINET_interface~Standard_telegram_20" not defined`
-— exige o G120 no hardware do projeto, não tem lado de software. Receita reproduzível em
+— exige o G120 no hardware do projeto **e ligado ao IO system do PLC** (ver "Ciclo completo da
+biblioteca fechado"), não tem lado de software. Receita reproduzível em
 [`docs/examples/install-full.json`](examples/install-full.json) (`tia run --script`).
 
 **`DB GLOBAL` por fragmentos.** SCL não tem include e o DB é um arquivo só, então a composição é
@@ -546,17 +547,50 @@ Contra a régua antiga (**34 → 68 blocos, compile Error**), fecha os dois bura
 `import-master-copy` real e `--force --apply` real. A 3ª linha é a que importa — o skip da 2ª
 rodada acontece *antes* do `--force`, então só o `-Update` exercita o `deleted+created`.
 
-**0 erros, não os 4 do G120**: a `.al21` atual foi assada com `-Prune` e só tem os 5 pacotes de
-biblioteca. Quem referencia `INVERSOR_MOTOR_01_CCM_01~PROFINET_interface~Standard_telegram_20` são
-os **moldes** (`0 Moldes`, `Motor 1 (MOTOR_01)`…), declarados no `packages.json` mas ausentes da
-`.al21`. Medir a régua dos 4 erros exige reassar incluindo os moldes — e aí o fecho é
-`add-device` do G120 + `insert-telegram --number 20 --change --apply`.
+**0 erros, não os 4 do G120**: a `.al21` daquela medição tinha só os 5 pacotes de biblioteca. Quem
+referencia `INVERSOR_MOTOR_01_CCM_01~PROFINET_interface~Standard_telegram_20` são os **moldes**
+(`0 Moldes`, `Motor 1 (MOTOR_01)`…), declarados no `packages.json` mas então ausentes da `.al21`.
+Fechado em 2026-08-07 — ver "Ciclo completo" abaixo.
 
-**Ainda fora da `.al21`: UDT e tabela de tag.** `bake-lib.ps1` só assa bloco e pasta de bloco; o
-`packages.json` declara `types`/`tags` apontando pra `library/blocks/<UDT>.xml` e `library/tags/`,
-que são **payload gitignored** — clone limpo do repo não consegue instalar a biblioteca.
-`add-master-copy --name` já sabe fazer UDT e tabela (o import roteia por `ContentType`), falta o
-macro chamar.
+### Ciclo completo da biblioteca fechado (2026-08-07)
+
+**Os moldes moram no `PLC_ZERO` do `Project1`**, não no `Base_tia_cli`. Foi o `scaffold --manifest
+library/generic.json` que os criou, com os pares `Replace` do manifesto (`S-01A`→`MOTOR_01`,
+`Desarenador`→`AREA_01`, `CCM1`→`CCM_01`) — por isso o caminho de cada molde é exatamente
+`<target>/<nome>` do `packages.json`. O `CPU1.0 CCO` do `Base_tia_cli` é CPU de cliente (475 blocos):
+tem `3.1.0 Modelo` e `3.5 Barramento de Módulos` com **nome de cliente**, e nem `0 Moldes` nem
+`Motor 1 (MOTOR_01)`. Assar dali levaria payload de cliente pra `.al21`.
+
+**`bake-lib.ps1 -MoldsOnly`** assa os 4 moldes + as UDT/tabelas do `packages.json` a partir desse
+outro PLC, sem re-assar os 5 pacotes de `$Root` com a versão velha do `PLC_ZERO`. `-Prune` é
+recusado junto com `-MoldsOnly`: a rodada só enxerga a fatia dos moldes e apagaria os pacotes como
+órfãos. As extras vão pra `--lib-folder extras`, **não** pra `$Root` — o `install-lib` trata master
+copy não-pasta em `$Root` como base e instalaria UDT/tabela como se fosse bloco.
+
+`.al21` completa = 5 pacotes + 5 blocos soltos + 4 moldes + 3 extras (`Diag_Hardware` `PlcStruct`,
+`Genericos` e `MOTOR_AREA_01 (MOTOR_01)` `PlcTagTable`).
+
+**`Library.Open` reusava a library já aberta ignorando o modo.** Se um `list-library` (ou a UI)
+tinha aberto a `.al21` `ReadOnly`, todo verbo de escrita morria com
+`Cannot write to read-only libraries` — erro do `MasterCopyComposition.Create`, que não diz nada
+sobre quem abriu antes. Agora, quando `write` e `IsReadOnly`, faz `UserGlobalLibrary.Close()` e
+reabre `ReadWrite`.
+
+**Régua final, no `PLC_TESTE`** (já com os 5 pacotes; `install-lib` pulou os 9 presentes):
+
+| passo | erros |
+|---|---|
+| `install-lib` dos 4 moldes (`-Apply`) | **4** — todos a constante do G120 |
+| `add-device 6SL3244-0BB12-1FA0/4.7.13` + `insert-telegram --number 20 --change --apply` | 4 |
+| `connect-subnet` do PLC e do drive no mesmo `--io-system` | **0 · Success** |
+
+**O telegrama sozinho não cria a constante de hardware.** Depois do `insert-telegram` o compile
+continuava nos mesmos 4 erros: `..~PROFINET_interface~Standard_telegram_20` só existe quando o drive
+é **IO device daquele controlador**. São dois `connect-subnet` na ordem — primeiro o PLC
+(`--io-system X` com `IoController` = `CreateIoSystem`), depois o drive (`IoConnector` =
+`ConnectToIoSystem`, e o verbo levanta se o IO system ainda não existir). Nome de IO system próprio
+por PLC (`PROFINET IO-System_TESTE`) evita pendurar o drive no controlador errado quando outra CPU
+divide a mesma subnet.
 
 ### Hardware do molde: o G120 (2026-07-28)
 

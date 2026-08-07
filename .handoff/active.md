@@ -1,73 +1,70 @@
 # Handoff · TIA Portal Openness API · 2026-08-07
 
 ## Goal
-Fechar a **engine** (o CLI + macros), não a biblioteca: biblioteca é conteúdo e pode ser trocada
-depois. Levantar e executar o que falta para o `tia` ser ferramenta completa.
+Fechar a engine (CLI + macros). Os 4 buracos do levantamento anterior foram executados nesta
+sessão; o que sobra é decisão do user (D8) e um gate nunca exercitado (`init.ps1 -Check` em
+máquina limpa).
 
 ## State
-- HEAD: `2d5adc7` — commit do ciclo da biblioteca.
-- Live state: **TIA Portal aberto na sessão 1, projeto `Base_tia_cli` salvo.** `PLC_TESTE` está com
-  a biblioteca **inteira** instalada (5 pacotes + 4 moldes + extras) e **compila Success / 0 erros**,
-  com o G120 `INVERSOR_MOTOR_01_CCM_01` (telegrama 20) ligado no IO system
-  `PROFINET IO-System_TESTE` da subnet `PN/IE_1`. `Project1` foi aberto e fechado sem salvar.
-  Shell do agente na **sessão 0** (rota da task `TiaSmokeRun`).
-- Done: **ciclo da biblioteca fechado ponta-a-ponta** — `bake-lib -MoldsOnly` (moldes + UDT/tabelas
-  do `packages.json`), fix do `Library.Open` (read-only), régua 4 erros → 0 com
-  `add-device` + `insert-telegram --change` + 2 × `connect-subnet`. Tudo commitado e documentado no
-  PLANO ("Ciclo completo da biblioteca fechado").
-- In progress: nada mid-flight. Próximo trabalho é o levantamento abaixo.
+- HEAD: `4f31d3f` (pushed) — "install-lib installs from the .al21 alone, hardware included".
+- Live state: **TIA Portal aberto na sessão 1 com `Base_tia_cli`**; `PLC_TESTE` restaurado
+  (drive `INVERSOR_MOTOR_01_CCM_01` de volta no `PROFINET IO-System_TESTE`, `PLC_LIB2` apagado,
+  compile Success/0, projeto salvo). O `Software de ETE Insular_Inicial_V21` foi aberto para a
+  régua da F8 e **fechado sem salvar** — o `.ap21` em disco não mudou. Shell do agente na
+  **sessão 0** (rota da task `TiaSmokeRun`). A `.al21` em disco tem 7 extras (4 UDT novos assados
+  do `PLC_TESTE` nesta sessão) — não está no Git, é payload local.
+- Done: os 4 itens do levantamento. (1) `install-lib` lê UDT/tabela da `.al21` (`extras`), não mais
+  de `library/blocks`; `bake-lib -MoldsOnly` assa também os UDT citados pelo SCL do DB GLOBAL.
+  (2) bloco `devices` no `packages.json` → hardware do molde entra no mesmo comando; régua em CPU
+  virgem deu Success/0 e reinstalar é no-op. (3) F8 fechada com `replicate-instruments --apply`
+  real. (4) F7 fechada em 2 itens; `index`/`checkpoint`/`apply-spec` descartados com motivo.
+- In progress: nada mid-flight.
 
 ## Decisions (and why)
-- **Moldes vêm do `PLC_ZERO` do `Project1`**, saída do `scaffold --manifest library/generic.json`.
-  O `CPU1.0 CCO` do `Base_tia_cli` é CPU de cliente — assar dali levaria payload de cliente pra
-  `.al21`. Por isso `-MoldsOnly` existe: fonte diferente da dos 5 pacotes.
-- **Extras (UDT/tabela) vão pra `--lib-folder extras`, nunca pra `$Root`** — o `install-lib` trata
-  master copy não-pasta em `$Root` como *base* e instalaria UDT/tabela como se fosse bloco.
-- **`-Prune` recusado junto com `-MoldsOnly`** — a rodada só enxerga a fatia dos moldes e apagaria
-  os 5 pacotes como órfãos.
-- **Telegrama posto não cria a constante de hardware.** `insert-telegram` sozinho deixou os mesmos
-  4 erros; `X~PROFINET_interface~Standard_telegram_20` só nasce quando o drive é IO device daquele
-  controlador (2 × `connect-subnet`, PLC primeiro).
-- **`--format table` (TSV) descartado** (registro antigo, continua valendo): 2x num problema que
-  precisa de 30x — o que paga é agrupar ou não devolver volume.
+- **A engine para no `run --script`** — `apply-spec` genérico seria um 2º interpretador por cima do
+  1º, e a parte com valor já existe com escopo (`packages.json` + `install-lib`). Reabrir só se um
+  3º macro repetir a reconciliação do `install-lib`. `index` morreu por medição (`trace` = 3,3 s),
+  `checkpoint` perde para cópia do `.ap21` (restauraria bloco sem restaurar hardware, que é o que
+  quebra). Registrado em "Fronteira da engine" no PLANO.
+- **`in-sync` eterno do `replicate-instruments` nunca foi bug**: o projeto de teste foi gerado pelo
+  mesmo algoritmo. Duas rotas tentadas e descartadas: deletar a FC alvo (a OB de chamada fica
+  inconsistente e o gerador precisa exportá-la — `Inconsistent blocks ... cannot be exported`) e
+  deslocar `NextCommandIds` (os números de comando não entram no XML da família TOT1, continua
+  in-sync). O que destrava é **instrumento novo**, que é o caso de uso real.
+- **`-Update` não vale para hardware**: apagar e recriar device derruba a rede. Device presente fica
+  como está; o par `connect-subnet` vai mesmo assim, porque o drive pode estar ligado noutro
+  controlador.
+- **Extras assados do `PLC_TESTE` nesta rodada**, não do `PLC_ZERO` — `Project1` estava fechado e
+  abrir custa 2-4 min. O `bake-lib -MoldsOnly` contra `PLC_ZERO` pega os mesmos 7 daqui pra frente.
 
 ## Next steps (ordered)
-O user pediu o levantamento "o que falta pra engine ficar pronta". Ordem sugerida, do que já tem
-evidência medida pro que é decisão:
-
-1. **`install-lib` consumir os extras da `.al21`, não os XML de `library/`** (linhas 123-132 de
-   `scripts/install-lib.ps1`): hoje UDT e tabela de tag saem de `library/blocks/<UDT>.xml` e
-   `library/tags/*.xml`, que são **payload gitignored** — clone limpo do repo não instala. As master
-   copies já estão na `.al21` (pasta `extras`); falta trocar `import-type`/`import-tags` por
-   `import-master-copy --name <extra>`. **É o último buraco conhecido do caminho da biblioteca.**
-2. **Dependência de hardware não é declarável.** `packages.json` declara `requires`/`db`/`tags`/
-   `types`/`instances`, mas não o inversor que o molde `Motor 1 (MOTOR_01)` exige. Hoje o
-   `add-device` + `insert-telegram` + 2 × `connect-subnet` são passo manual fora do macro. Um bloco
-   `devices` no `packages.json` fecharia o "instalar biblioteca" em um comando de verdade.
-3. **F8 fecha com `replicate-instruments --apply` real** — é o único dos geradores que nunca escreveu
-   contra projeto real (dry sempre deu `in-sync`). Todos os outros já têm `--apply` medido.
-4. **F7 itens 3-5 nunca começaram**: `index`, `checkpoint`, `apply-spec`. `explain-block` e `trace`
-   estão fechados e medidos. Decidir se `apply-spec` (escrita a partir de spec declarativa) entra
-   ou se a engine para no `run --script`.
-5. **v2 item 9 (online: go-online/download/compare)** está bloqueado pela decisão **D8**, não por
-   código. É o maior buraco de superfície da API; reabrir D8 é decisão do user.
-6. **`init.ps1 -Check` numa máquina limpa de verdade** — o gate de clone-limpo nunca foi exercitado
-   ponta-a-ponta (é o que o passo 1 destrava).
+1. **`init.ps1 -Check` numa máquina limpa de verdade** — nunca exercitado ponta a ponta. O passo 1
+   encurtou o caminho (some `library/blocks/`), mas a `.al21` continua gitignored: clone limpo ainda
+   precisa de um `bake-lib` a partir de um projeto que tenha a biblioteca. Conferir se o `-Check`
+   diz isso com clareza.
+2. **D8 (online: `go-online`/`download`/`compare`)** — decisão do user, não trabalho técnico. É o
+   maior buraco de superfície da API que sobra.
+3. Opcional: `add-db-member` não tem contrário (`delete-db-member`). Apareceu na limpeza da F8;
+   custou nada porque o projeto foi fechado sem salvar, mas num projeto salvo seria manual.
 
 ## Key files
-- `scripts/install-lib.ps1:123-132` — o `import-type`/`import-tags` que o passo 1 troca.
-- `scripts/bake-lib.ps1` — `-MoldsOnly`, `$molds`/`$extras`, guard do `-Prune`.
-- `library/packages.json` — onde entraria o bloco `devices` do passo 2.
-- `src/Tia.Core/Library.cs:19-40` — `Open` com o fix de ReadOnly→ReadWrite.
-- `docs/PLANO.md` — tabela de fases (F7/F8 🔄) + "Ciclo completo da biblioteca fechado" (2026-08-07).
-- `scripts/__navi__.md` e `src/__navi__.md` — mapas das duas pastas.
+- `scripts/install-lib.ps1` — bloco de `devices` (~linha 110), extras via `import-master-copy`
+  (~linha 140), `Get-Existing` com o fix do array cru.
+- `scripts/bake-lib.ps1:53` — regex que colhe os UDT dos `library/db-global/*.scl`.
+- `src/Tia.Core/Hardware.cs:385-420` — `connect-subnet`: IO system por controlador, compare por
+  nome, `DisconnectFromIoSystem` antes de mover.
+- `library/packages.json` — bloco `devices` + os dois `_doc`.
+- `docs/PLANO.md` — "Biblioteca em um comando", "F8 fechada", "Fronteira da engine" (todas de
+  2026-08-07); tabela de fases com F7 e F8 ✅.
+- `scripts/__navi__.md` e `src/__navi__.md` — regenerados nesta sessão.
 
 ## Open / blockers
-- **D8 (online)** é decisão do user, não trabalho técnico: enquanto ficar de pé, `go-online`,
-  `download` e `compare online/offline` não existem, e isso é o que mais falta pra "ferramenta
-  completa" no sentido amplo.
+- **D8** de pé bloqueia toda a superfície online.
 - Diálogo modal `Openness access` volta a cada `rebuild.ps1` com o Portal aberto: chamada pendurada
-  com CPU ~0 = alguém precisa clicar, não é bug de API.
+  com CPU ~0 = alguém precisa clicar.
+- `import-block --folder` **cria a árvore que faltar a partir da raiz** — caminho parcial
+  (`5.2 Totalizadores` em vez de `5. Instrumentação / Atuadores/5.2 Totalizadores`) cria pasta
+  paralela homônima e o gerador seguinte morre em colisão de nome. Sempre caminho completo.
 
 ## Skills
 - tia
@@ -75,9 +72,8 @@ evidência medida pro que é decisão:
 - caveman
 
 ## Effort
-**Baixo** para o passo 1: a troca é mecânica (`import-master-copy --name` já existe e foi exercitado
-hoje), e o que ele toca — o bloco de `$types`/`$tags` do `install-lib` — tem um caller só. Subir
-pra **médio** se `import-master-copy` de `PlcTagTable`/`PlcStruct` não aceitar `--folder` como o de
-bloco aceita (aí vira ramo novo no `Library.ImportMasterCopy`, não edição de script). O gargalo do
-relógio não é raciocínio: cada attach do Openness e o `install-lib` dominam, e o diálogo modal
-bloqueia tudo até alguém clicar.
+**Baixo** para o passo 1: é rodar `init.ps1 -Check` e ler os 9 pontos; o julgamento é sobre texto de
+mensagem, não sobre API. Sobe pra **médio** se a máquina limpa não tiver o grupo `Siemens TIA
+Openness` ou o Portal, porque aí o gate falha por ambiente e é preciso separar "o script está certo"
+de "a máquina não está pronta". Raciocínio não é o gargalo em nenhum dos dois casos — o relógio é o
+`init.ps1` e o eventual logoff/logon do grupo do Windows.

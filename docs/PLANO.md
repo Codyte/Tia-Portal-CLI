@@ -904,6 +904,22 @@ Invariantes que a migração encosta:
   num script. Projeto que versione payload pesado volta pro padrão skill fina + repo separado,
   ligados por `TIA_CLI_HOME`.
 
+### Gate de máquina limpa exercitado (2026-08-07)
+
+`init.ps1 -Check` nunca tinha rodado contra um checkout virgem. Rodado agora sem precisar de outra
+máquina: `git clone --local` do repo pra uma pasta temporária e `-Check` lá dentro — o clone não
+tem `lib/*.dll`, nem `tia.exe`, nem `.al21`, e as tasks/whitelist/PATH apontam pro repo real, que é
+exatamente o estado de máquina nova. Saem os 6 `FALTA` com o comando de correção em cada um e
+`exit 1`; o repo real continua 9/9 e `exit 0`.
+
+Dois textos corrigidos por causa disso:
+- **Whitelist sem `tia.exe`**: mandava `Start-ScheduledTask -TaskName TiaWhitelist`, que não tem o
+  que whitelistar antes do build. Agora o hint depende do exe existir — sem ele, aponta pro
+  `rebuild.ps1`, que builda e whitelista de uma vez.
+- **`.al21` ausente**: dizia só "assar com bake-lib.ps1", sem dizer que é gitignored, que só o
+  `install-lib` depende dela, nem que assar exige um projeto que **já tenha** a biblioteca. Clone
+  limpo não tem como produzir a `.al21` do nada — a linha agora diz isso.
+
 ## F6 — Endurecer os scripts PS (✅ executada 2026-07-27)
 
 **Resultado.** `scripts/_common.ps1` + `scripts/tia.ps1` entregues como planejado; `tia-task.ps1`

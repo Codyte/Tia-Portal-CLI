@@ -117,7 +117,8 @@ if ($Check) {
         'rodar init.ps1 sem -Check (copia da instalacao local)'
     Show "tia.exe$(if (Test-Path $exe) { ' (' + (Get-Item $exe).LastWriteTime.ToString('yyyy-MM-dd HH:mm') + ')' })" `
         (Test-Path $exe) 'pwsh scripts/rebuild.ps1'
-    Show 'whitelist do registro bate com o hash atual' (Test-Whitelisted) 'Start-ScheduledTask -TaskName TiaWhitelist'
+    Show 'whitelist do registro bate com o hash atual' (Test-Whitelisted) `
+        "$(if (Test-Path $exe) { 'Start-ScheduledTask -TaskName TiaWhitelist' } else { 'sai junto com o build: pwsh scripts/rebuild.ps1' })"
     Show 'tasks TiaWhitelist/TiaSmokeRun apontando pra este repo' (Test-TasksCurrent) `
         'rodar init.ps1 sem -Check (1 UAC)'
     Show 'shim tia no PATH do usuario' `
@@ -133,7 +134,7 @@ if ($Check) {
     $portal = @(Get-Process -Name 'Siemens.Automation.Portal' -ErrorAction SilentlyContinue)
     Write-Host "  TIA Portal rodando: $(if ($portal) { "$($portal.Count) (sessao $($portal.SessionId -join ','))" } else { 'nenhum' })"
     $al = @(Get-ChildItem (Join-Path $repo 'src\Tia.Lib') -Recurse -Filter '*.al2?' -File -ErrorAction SilentlyContinue)
-    Write-Host "  biblioteca .al21: $(if ($al) { "$($al[0].Name) ($([math]::Round($al[0].Length / 1KB)) KB)" } else { 'ausente -- assar com bake-lib.ps1' })"
+    Write-Host "  biblioteca .al21: $(if ($al) { "$($al[0].Name) ($([math]::Round($al[0].Length / 1KB)) KB)" } else { 'ausente (gitignored) -- so install-lib precisa dela; assar com bake-lib.ps1 -Plc X a partir de um projeto que ja tenha a biblioteca' })"
     if (-not $allOk) { Write-Host "`ninit incompleto." -ForegroundColor Yellow; exit 1 }
     Write-Host "`ninit ok. Com o TIA Portal aberto num projeto: tia doctor" -ForegroundColor Green
     exit 0

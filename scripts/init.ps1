@@ -10,7 +10,7 @@
 # NAV INDEX
 # 26-38   header / caminhos / descoberta do Portal instalado
 # 40-72   helpers (hash do exe, whitelist do registro, repo==skill, task apontando pro repo)
-# 74-109  -Check: relatorio read-only dos 9 pontos + estado vivo, exit 1 se faltar algo
+# 74-109  -Check: relatorio read-only dos 8 gates + estado vivo, exit 1 se faltar gate
 # 111-116 gate 1: grupo Windows Siemens TIA Openness (nao automatizavel — admin + logoff/logon)
 # 118-124 gate 2: .NET SDK presente
 # 126-143 gate 3: lib/*.dll (build-time) — copia da instalacao local do TIA Portal
@@ -125,11 +125,12 @@ if ($Check) {
         (([Environment]::GetEnvironmentVariable('Path', 'User') -split ';' |
             Where-Object { $_ } | ForEach-Object { Resolve-RealPath $_ }) -contains (Resolve-RealPath $PSScriptRoot)) `
         'rodar init.ps1 sem -Check'
-    Show 'repo esta em ~/.claude/skills/tia (= a skill)' (Test-SkillInstalled) `
-        "mover este checkout pra $skillDst (submodulo de Codyte/skills) e rodar init.ps1 la"
-
     Write-Host ""
     Write-Host "estado vivo (nao e gate):"
+    # Lugar do checkout nao e gate: o proprio init.ps1 so avisa e instala assim mesmo. O CLI roda
+    # de qualquer diretorio; o que depende do lugar e o Claude Code carregar a skill.
+    Write-Host "  repo em ~/.claude/skills/tia (= a skill): $(if (Test-SkillInstalled) { 'sim' } `
+        else { "nao ($repo) -- o CLI roda, mas o Claude Code nao carrega a skill deste checkout" })"
     Write-Host "  sessao do shell: $((Get-Process -Id $PID).SessionId)  (0 = roteia pela task TiaSmokeRun)"
     $portal = @(Get-Process -Name 'Siemens.Automation.Portal' -ErrorAction SilentlyContinue)
     Write-Host "  TIA Portal rodando: $(if ($portal) { "$($portal.Count) (sessao $($portal.SessionId -join ','))" } else { 'nenhum' })"

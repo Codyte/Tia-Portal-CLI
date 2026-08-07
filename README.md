@@ -22,8 +22,9 @@ who prefer a terminal over ClickOps.*
 }
 ```
 
-**40+ verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML ·
-SCL→LAD converter · 6 field-proven code generators · batch mode · one attach
+**69 verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML, catalog modules
+and SINAMICS telegrams · SCL→LAD converter · 6 field-proven code generators · installable block
+library · batch mode · one attach
 
 </div>
 
@@ -53,8 +54,9 @@ Extracted from field-proven automation scripts for water-treatment PLC projects
   project without an explicit `--apply`. An agent cannot wreck a project by accident.
 - **Attach first.** The CLI attaches to the running TIA Portal instance (opening/creating
   projects is also supported: `open-project`, `create-project`, `save-project`, `close-project`).
-- **Offline only.** No go-online, no download to PLC, no Multiuser check-in — a human does that
-  in the Portal. Compile is the only "heavy" operation exposed.
+- **Offline only — permanently, not "not yet".** No go-online, no download to PLC, no Multiuser
+  check-in. `--apply` protects a project; it cannot protect a running plant, so writing to a PLC
+  stays with a human looking at the screen. Compile is the only "heavy" operation exposed.
 - **One call at a time.** Openness is not thread-safe for this use; never run two `tia`
   processes in parallel.
 - **XML roundtrip as the core primitive.** Export SimaticML → transform → import. High-level
@@ -67,18 +69,25 @@ Run `tia --help` for the full, always-current list.
 | Group | Verbs |
 |-------|-------|
 | 🔌 Session | `open-project` · `create-project` · `save-project` · `close-project` |
-| 🔍 Read | `info` · `list-devices` · `list-blocks` (`--folder` · `--type` · `--count`) · `list-tags` · `list-types` · `list-hmi` · `find` · `snapshot` · `xref` · `tree` · `export-block` · `export-tags` · `export-type` |
-| 🗂️ Structure | `create-folder` · `delete-folder` (`--tags`/`--types`) · `delete-block` · `delete-type` ·
-`move-block` (export→delete→import, o Openness não move) · `import-type` · `scaffold` (folder tree + template blocks from a manifest, idempotent) |
-| 🛠️ Hardware | `add-device` · `set-address` · `connect-subnet` · `export-cax` · `import-cax` (AML) |
-| ✍️ Write | `import-block` · `import-source` · `import-ladder` (SCL subset → LAD) · `import-tags` · `compile` · `diff-block` |
-| ⚙️ Generators | `gen-profinet` · `standardize-tags` · `gen-fault-ob` · `replicate-fc` · `gen-alarm-fc` · `replicate-instruments` — plus `doctor`, a read-only preflight that checks every template/folder they need |
-| 📚 Library | `list-library` · `import-master-copy` — installable block library in [`library/`](library/README.md) (manifest is versioned, XML payload is not) |
-| 📦 Batch | `run --script ops.json` — array of verb calls, one attach for all |
+| 🔍 Read | **`tree`** (start here: whole-PLC outline as markdown) · `info` · `list-devices` · `list-blocks` (`--folder` · `--type` · `--count`) · `list-tags` · `list-types` · `list-hmi` · `find` · `snapshot` · `xref` · `trace` (every symbol of one equipment + who references it) · `explain-block` (LAD/FBD → compact text) · `free-memory` (free holes in `%M`) · `export-block` · `export-tags` · `export-type` |
+| 🗂️ Structure | `create-folder` · `delete-folder` (`--tags`/`--types`) · `delete-block` · `delete-type` · `create-instance-db` · `move-block` (export→delete→import; Openness has no move) · `import-type` · `scaffold` (folder tree + template blocks from a manifest, idempotent) |
+| 🛠️ Hardware | `add-device` · `delete-device` · `list-attrs` / `set-attr` (any device-item attribute) · `plug-module` (catalog submodules) · `list-telegrams` / `insert-telegram` (SINAMICS drives) · `set-address` · `connect-subnet` · `set-memory-bytes` (clock/system byte) · `export-cax` · `import-cax` (AML) |
+| ✍️ Write | `import-block` · `import-source` · `import-ladder` (SCL subset → LAD) · `import-tags` · `add-tag` / `set-tag` / `delete-tag` · `rename-block` · `clone` · `add-db-member` / `edit-db-member` / `delete-db-member` · `compile` · `diff-block` |
+| ⚙️ Generators | `gen-profinet` · `standardize-tags` · `gen-fault-ob` · `replicate-fc` · `gen-alarm-fc` · `replicate-instruments` — plus `doctor`, a read-only preflight that checks every template/folder they need, and `audit`, project × naming law |
+| 📚 Library | `list-library` · `import-master-copy` · `add-master-copy` · `delete-master-copy` — a block library that travels as a single `.al21` and installs into a bare CPU in one command (see [`library/`](library/README.md); manifest is versioned, XML payload is not) |
+| 👥 Multiuser | `list-server-projects` — read-only inventory of a TIA Project Server (locks, local sessions) |
+| 📦 Batch | `run --script ops.json [--summary]` — array of verb calls, one attach for all; a failing step becomes `{ok:false,error}` and the batch keeps going |
 
-Global options: `--plc NAME` (multi-PLC projects), `--out DIR` (default `workspace\exports`),
-`--apply`, `--retry N` (busy retry, default 3), `--timeout SEC`.
+Global options: `--plc NAME` (multi-PLC projects), `--portal PROJECT|PID` (required when more than
+one Portal is open), `--out DIR` (default `workspace\exports`), `--apply`, `--retry N` (busy retry,
+default 3), `--timeout SEC`.
+
+`--out-file F.json` works on any read verb: the full JSON goes to the file and stdout returns only
+`{file,bytes,count,head}`. That matters more than it sounds — on a real project `find --pattern "*"
+--kind tag` is 821 KB, and `tree` answers most orientation questions in 39 KB of markdown instead.
+
 Exit codes: `0` ok · `1` error · `2` usage · `3` file · `4` TIA/Openness · `5` timeout.
+Full signatures: [`docs/VERBS.md`](docs/VERBS.md), generated from `--help`.
 
 Generator configs are plain JSON — see [`docs/examples/`](docs/examples/), including
 [`gen-all.json`](docs/examples/gen-all.json), a batch that dry-runs all six generators in one attach:
@@ -94,15 +103,18 @@ git clone https://github.com/Codyte/Tia-Portal-CLI.git tia-cli && cd tia-cli
 pwsh scripts/init.ps1    # checks the 3 gates below, copies lib/ DLLs from your TIA install,
                           # builds, runs offline tests, whitelists, puts `tia` on PATH
                           # — one shot for a new machine
-pwsh scripts/init.ps1 -Check    # read-only: what is installed, what is missing (exit 1 if any)
+pwsh scripts/init.ps1 -Check    # read-only: 8 gates + live state, exit 1 if a gate is missing
 ```
 
 `init.ps1` is idempotent — re-run it after `git pull`. Besides the build it sets the `TIA_CLI_HOME`
-user variable, adds `scripts/` to your user PATH (so `tia <verb>` works from any directory, always
-through the session-routing shim — never call `tia.exe` directly) and checks that this checkout
-lives at `~/.claude/skills/tia`. The repo root *is* the Claude Code skill — [`SKILL.md`](SKILL.md)
-teaches any session how to drive this CLI, from any project folder. Clone it as a submodule of your
-skills repo; keep a single checkout (the Openness whitelist is keyed by the `tia.exe` path).
+user variable and adds `scripts/` to your user PATH, so `tia <verb>` works from any directory,
+always through the session-routing shim (never call `tia.exe` directly). Keep a **single checkout**
+— the Openness whitelist is keyed by the `tia.exe` path, so two clones fight over it.
+
+The CLI is standalone: clone it anywhere and it works. It doubles as a Claude Code skill — the repo
+root *is* the skill, and [`SKILL.md`](SKILL.md) teaches any session how to drive this CLI from any
+project folder. For that one use, and only that, the checkout has to live at `~/.claude/skills/tia`
+(clone it as a submodule of your skills repo); `init.ps1 -Check` reports where it is either way.
 
 `init.ps1` reports and stops if a gate needs a human (Windows group membership, .NET SDK, or a
 TIA Portal V21+ install to source the Openness DLLs from) — fix what it flags and re-run. Once it
@@ -111,7 +123,7 @@ instance, it doesn't launch one) and:
 
 ```powershell
 tia doctor                    # preflight: is the open project ready for the generators?
-tia snapshot                  # full inventory of the open project, as JSON
+tia tree                      # whole-PLC outline as markdown — the cheapest way to get oriented
 tia standardize-tags          # dry-run: what would change
 tia standardize-tags --apply  # do it
 ```
@@ -159,13 +171,15 @@ First run against a Portal without whitelist entry triggers the Openness consent
 | `scripts/prep-project.ps1 <Name>` | use-project + `doctor` + `compile --apply` + save — real projects often arrive uncompiled and every export dies until compiled |
 | `scripts/raio-x.ps1 <Name>` | read-only X-ray → `workspace/<project>/`: doctor, snapshot, devices, tags, types, block outline, CAx AML, xref of every OB |
 | `scripts/clone-hw.ps1 <From> <To> [-Apply]` | copy hardware between projects via CAx export/import |
+| `scripts/install-lib.ps1 "<Package>" -Plc X [-Apply]` | install library packages into a PLC from the `.al21` alone — clock byte, the package's hardware, base blocks, UDTs, tag tables, instance DBs, compile. Skips what already exists, so re-running is a no-op. No package name = list what's available |
+| `scripts/bake-lib.ps1` | the inverse: PLC → `.al21`, so a library can be re-baked from a project that already carries it |
 
 </details>
 
 <details>
 <summary><b>Limitations</b></summary>
 
-- No online operations (by design, v1).
+- No online operations — a closed decision, not a roadmap item (see *Design contract*).
 - WinCC Unified screens can't be exported/imported as XML — Openness doesn't expose SimaticML
   for Unified. `list-hmi` covers inventory only.
 - Multiuser projects: attach works single-user style; check-in stays in the Portal.

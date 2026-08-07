@@ -957,6 +957,32 @@ Dois textos corrigidos por causa disso:
   `install-lib` depende dela, nem que assar exige um projeto que **já tenha** a biblioteca. Clone
   limpo não tem como produzir a `.al21` do nada — a linha agora diz isso.
 
+## Teste cego ponta a ponta — caderno escrito (2026-08-07)
+
+A prova que a Siemens vai pedir ("um agente consegue mesmo?") virou experimento com régua escrita
+antes da rodada, em `docs/teste-cego/`:
+
+- **`caderno-FP-01.md`** — memorial fictício de um filtro prensa de sala de desidratação: máquina
+  com função clara, CPU 1515-2 PN + ET200SP + G120, 28 pontos de I/O endereçados, 9 passos de
+  sequência, 8 intertravamentos, 12 alarmes. Escolhido de propósito para **não** cair inteiro na
+  biblioteca: acionamentos e instrumentos são território de `install-lib`/`replicate-*`, mas a
+  sequência com timeout por passo e os intertravamentos de segurança têm que ser autorais. Se a
+  máquina fosse só motor e instrumento, o teste mediria a biblioteca, não a engine.
+- **`criterios.md`** — 4 portões objetivos (compila 0 erros · hardware conectado com telegrama ·
+  os 28 endereços fiéis à lista · sequência chamada por OB cíclico) e 4 pontos de inspeção
+  (lógica de fato implementada · padrão de pastas · segurança não diluída · quanto veio de gerador).
+  Os portões passam com comando, sem julgamento.
+
+MLFBs do caderno são os já exercitados neste repo (`6ES7 515-2AN03-0AB0/V3.1`,
+`6SL3244-0BB12-1FA0/4.7.13`) — falha de catálogo no meio da prova seria ruído de digitação, não
+resultado. Os módulos da ET200SP ficam **em aberto de propósito**: o caderno pede contagem de
+pontos e deixa o código pro integrador, que é como obra real chega.
+
+**Regra de condução: quem escreveu o caderno não executa.** A sessão cega recebe o caderno + a
+skill e mais nada; `criterios.md` não vai junto. **O produto do teste são os tropeços** — cada
+travada separada entre "o caderno não dizia" (esperado, obra real também não diz) e "a ferramenta
+não dizia" (defeito nosso, e provavelmente do `SKILL.md`).
+
 ## F6 — Endurecer os scripts PS (✅ executada 2026-07-27)
 
 **Resultado.** `scripts/_common.ps1` + `scripts/tia.ps1` entregues como planejado; `tia-task.ps1`

@@ -4,14 +4,14 @@
 
 - **_common.ps1** (81 ln)
   <sub>L17:Resolve-LibFile  L28:Invoke-Tia</sub>
-- **bake-lib.ps1** (52 ln)
+- **bake-lib.ps1** (94 ln)
 - **clone-hw.ps1** (28 ln)
 - **compose-db.ps1** (44 ln)
 - **gen-verbs.ps1** (33 ln)
 - **init.ps1** (223 ln)
   <sub>L43:Get-ExeHash  L48:Test-Whitelisted  L60:Resolve-RealPath  L82:Test-SkillInstalled  L88:Test-TasksCurrent  L107:Show</sub>
-- **install-lib.ps1** (147 ln)
-  <sub>L45:Get-Target  L61:Add-Package  L71:Get-Existing</sub>
+- **install-lib.ps1** (203 ln)
+  <sub>L51:Get-Target  L67:Add-Package  L77:Get-Existing</sub>
 - **navi-cs.ps1** (22 ln)
 - **new-plc.ps1** (42 ln)
 - **prep-project.ps1** (18 ln)

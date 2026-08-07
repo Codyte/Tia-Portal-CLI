@@ -31,8 +31,8 @@ Drives(17)  ListTelegrams(80)  InsertTelegram(97)
 ## `Tia.Core/FaultOb.cs` (323 linhas)
 FaultObConfig(15)  FaultOb(35)  Module(42)  Generate(49)
 
-## `Tia.Core/Hardware.cs` (449 linhas)
-Hardware(13)  FindDevice(15)  AddDevice(48)  DeleteDevice(75)  PlugModule(96)  SetAddress(169)  ListAttrs(205)  SetAttr(238)  SetMemoryBytes(288)  ConnectSubnet(362)  CaxExport(420)  CaxImport(433)
+## `Tia.Core/Hardware.cs` (473 linhas)
+Hardware(13)  FindDevice(15)  AddDevice(48)  DeleteDevice(75)  PlugModule(96)  SetAddress(169)  ListAttrs(205)  SetAttr(238)  SetMemoryBytes(288)  ConnectSubnet(362)  CaxExport(444)  CaxImport(457)
 
 ## `Tia.Core/Hmi.cs` (43 linhas)
 Hmi(10)  Targets(12)  List(23)
@@ -46,8 +46,8 @@ Inventory(28)  Info(30)  Devices(47)  Blocks(83)  Tree(142)  TagTables(214)  Typ
 ## `Tia.Core/LadConverter.cs` (501 linhas)
 LadConverter(17)  Convert(19)  ParseAll(150)  NextUid(312)  TagAccess(314)  ConstAccess(322)  Operand(332)  NewNet(339)  Compile(341)  ToFlgNet(403)
 
-## `Tia.Core/Library.cs` (277 linhas)
-Library(17)  List(32)  ImportMasterCopy(78)  AddMasterCopy(166)  DeleteMasterCopy(218)
+## `Tia.Core/Library.cs` (293 linhas)
+Library(17)  List(42)  ImportMasterCopy(88)  AddMasterCopy(176)  DeleteMasterCopy(234)
 
 ## `Tia.Core/Memory.cs` (113 linhas)
 Memory(20)  FreeM(22)  X(68)  B(69)  W(70)  D(71)  BOOL(76)  WORD(77)  DWORD(78)  LWORD(79)

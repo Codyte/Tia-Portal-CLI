@@ -50,6 +50,11 @@ if (Test-Path $metaFile) {
             ForEach-Object { [IO.Path]::GetFileNameWithoutExtension($_) })
     }
 }
+# UDT citado pelos ramos do DB GLOBAL (': "X"') — mesma regex do install-lib, que os importa em
+# runtime. Sem eles na .al21 a instalacao ainda cairia em library/blocks/*.xml (gitignored).
+Get-ChildItem (Join-Path $script:Repo 'library/db-global') -Filter *.scl -ErrorAction SilentlyContinue |
+    ForEach-Object { $extras += @([regex]::Matches((Get-Content $_.FullName -Raw -Encoding utf8),
+        ':\s*"([^"]+)"') | ForEach-Object { $_.Groups[1].Value }) }
 $extras = @($extras | Where-Object { $_ } | Sort-Object -Unique)
 if (-not $MoldsOnly) { $molds = @(); $extras = @() }
 

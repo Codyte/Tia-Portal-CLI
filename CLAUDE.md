@@ -42,9 +42,10 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
   - `pwsh scripts/raio-x.ps1 <Nome>` = banho read-only → `workspace/<proj>/` (doctor, snapshot,
     devices, tags, types, plc-navi.md, AML, xref dos OBs).
   - `pwsh scripts/clone-hw.ps1 <Origem> <Destino> [-Apply]` = copia hardware via CAx/AML.
-  - `pwsh scripts/install-lib.ps1 "<Pacote>[,<Pacote>]" -Plc X [-Apply]` = instala pacotes da
-    `.al21` num PLC (blocos-base do nível 1 + pacote + clock byte + compile). Sem pacote = lista os
-    disponíveis. Pula o que já existe, então repetir é no-op. `scripts/bake-lib.ps1` faz o inverso
+  - `pwsh scripts/install-lib.ps1 "<Pacote>[,<Pacote>]" -Plc X [-Apply] [-IoSystem N]` = instala
+    pacotes da `.al21` num PLC (clock byte + hardware do bloco `devices` + blocos-base do nível 1 +
+    pacote + UDT/tabelas da pasta `extras` da própria `.al21` + iDBs + compile). Sem pacote = lista
+    os disponíveis. Pula o que já existe, então repetir é no-op. `scripts/bake-lib.ps1` faz o inverso
     (PLC → library). **Com mais de um TIA Portal aberto, todo verbo exige `--portal <projeto|PID>`.**
   - `tia run --script ops.json` = batch de verbos, attach 1x (~7s por chamada solta). Fluxo FINAIS
     completo em dry: `tia run --script docs/examples/gen-all.json`.

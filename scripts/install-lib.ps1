@@ -17,6 +17,8 @@ param(
     # Cuidado: apagar bloco chamado quebra o vínculo chamada↔iDB — o chamador precisa ser
     # reimportado depois (em CPU virgem não existe o problema).
     [switch]$Update,
+    # nome do IO system PROFINET a usar/criar; default = o declarado no packages.json
+    [string]$IoSystem,
     [switch]$Apply
 )
 $ErrorActionPreference = 'Stop'
@@ -35,6 +37,10 @@ $packages = $lib.masterCopies | Where-Object { $_.contentType -like '*PlcBlockUs
 $base = $lib.masterCopies |
     Where-Object { $_.folder -eq $Root -and $_.contentType -notlike '*PlcBlockUserGroup' } |
     Select-Object -ExpandProperty name
+
+# list-library que falha (Portal pedindo autorização, library travada) devolve {error} e o pipe
+# vira lista vazia — sem isto o erro sai como "pacote não existe na library", que aponta pro lado errado.
+if (-not $packages) { throw "list-library não devolveu pacote nenhum de ${File} — rode 'tia list-library --file $File' e veja o erro real (autorização Openness pendente?)" }
 
 $meta = @{}
 $metaFile = Join-Path $script:Repo 'library/packages.json'
@@ -70,11 +76,16 @@ foreach ($p in $Package) { Add-Package $p }
 $seen = @{}
 function Get-Existing($folder) {
     if ($seen.ContainsKey($folder)) { return $seen[$folder] }
-    # pasta ausente em CPU virgem: list-blocks levanta, e isso só quer dizer "nada instalado"
-    $out = Invoke-Tia list-blocks --plc $Plc --folder $folder @portalArgs 2>$null
+    # pasta ausente em CPU virgem: list-blocks levanta, e isso só quer dizer "nada instalado".
+    # `--folder ""` também levanta — e pacote de target vazio ("0 Moldes") caía sempre no $todo,
+    # reimportando sem --force: o Portal batiza "0 Moldes_1" em silêncio (medido 2026-08-07).
+    $fargs = if ($folder) { @('--folder', $folder) } else { @() }
+    $out = Invoke-Tia list-blocks --plc $Plc @fargs @portalArgs 2>$null
     # com --folder o verbo devolve {count,blocks}; na raiz devolve array cru
     $json = if ($LASTEXITCODE -eq 0) { $out | ConvertFrom-Json } else { @() }
-    $blocks = if ($null -ne $json.blocks) { $json.blocks } else { $json }
+    # array cru: `.blocks` num array é enumeração de membro e devolve @(), não $null — testar o
+    # tipo, senão a raiz sempre parecia vazia e o pacote de target vazio era reimportado
+    $blocks = if ($json -is [System.Array]) { $json } else { $json.blocks }
     $seen[$folder] = @{ names = @($blocks.name); folders = @($blocks.folder) }
     $seen[$folder]
 }
@@ -96,15 +107,52 @@ $fragments = @($want | ForEach-Object { if ($meta.ContainsKey($_)) { $meta[$_].d
 $tags = @($want | ForEach-Object { if ($meta.ContainsKey($_)) { $meta[$_].tags } } | Where-Object { $_ })
 $types = @($want | ForEach-Object { if ($meta.ContainsKey($_)) { $meta[$_].types } } | Where-Object { $_ })
 $instances = @($want | ForEach-Object { if ($meta.ContainsKey($_)) { $meta[$_].instances } }) | Where-Object { $_ }
+$devices = @($want | ForEach-Object { if ($meta.ContainsKey($_)) { $meta[$_].devices } } | Where-Object { $_ })
+# Device já presente não é recriado (nem com -Update: apagar hardware derruba a rede; -Update existe
+# pra corrigir bloco da library). O par connect-subnet vai mesmo assim — o drive pode existir ligado
+# em OUTRO controlador, e a constante de telegrama é por controlador. connect-subnet é idempotente.
+$haveDev = if ($devices) { @((Invoke-Tia list-devices @portalArgs | ConvertFrom-Json).device) } else { @() }
 
 Write-Host "$(if ($Update) { 'atualizar' } else { 'instalar' }) em ${Plc}: $($todo -join ', ')"
 if ($Update) { Write-Host 'MODO UPDATE: o que já existe é apagado e recriado (chamador de bloco apagado fica inconsistente — reimportar depois)' }
 if ($skipped) { Write-Host "já presentes (pulados): $skipped" }
 if ($fragments) { Write-Host "DB GLOBAL: 00-core + $($fragments -join ', ')" }
 if ($instances) { Write-Host "iDBs de molde: $($instances.Count)" }
+if ($devices) {
+    $novos = @($devices | Where-Object { $_.name -notin $haveDev })
+    Write-Host "hardware: $(($devices.name) -join ', ') — a criar: $(if ($novos) { ($novos.name) -join ', ' } else { 'nenhum (só religar no IO system)' })"
+}
 if (-not $Apply) { Write-Host 'dry-run — repita com -Apply'; exit 0 }
 
 $ops = @(, @('set-memory-bytes', '--device', $Plc, '--system', '1', '--clock', '0', '--apply'))
+# Hardware que o molde exige (bloco "devices" do packages.json). Vem ANTES dos blocos: a constante
+# <drive>~PROFINET_interface~Standard_telegram_20 que o molde referencia só nasce quando o drive é
+# IO device DESTE controlador, e o primeiro compile já cobra. Ordem provada (2026-08-07):
+# add-device → insert-telegram --change (G120 novo já vem com o Main #1) → connect-subnet do PLC
+# (cria o IO system) → connect-subnet do drive (junta nele).
+foreach ($d in $devices) {
+    if ($d.name -notin $haveDev) {
+        $op = @('add-device', '--mlfb', $d.mlfb, '--name', $d.name)
+        if ($d.group) { $op += @('--group', $d.group) }
+        $ops += , ($op + '--apply')
+        if ($d.telegram) {
+            $op = @('insert-telegram', '--device', $d.name, '--number', "$($d.telegram.number)")
+            if ($d.telegram.change) { $op += '--change' }
+            $ops += , ($op + '--apply')
+        }
+    }
+    if ($d.subnet) {
+        # nome do IO system é por PLC: com um nome compartilhado, a CPU que chega depois acha o IO
+        # system da outra e o drive vira IO device do controlador errado (medido 2026-08-07 —
+        # a constante ..~Standard_telegram_20 some sem ninguém falhar). Default = sufixo do PLC.
+        $io = if ($IoSystem) { $IoSystem }
+              elseif ($d.ioSystem) { $d.ioSystem }
+              else { "PROFINET IO-System_$Plc" }
+        $sub = @('--subnet', $d.subnet) + $(if ($io) { @('--io-system', $io) } else { @() })
+        $ops += , (@('connect-subnet', '--device', $Plc) + $sub + '--apply')
+        $ops += , (@('connect-subnet', '--device', $d.name) + $sub + '--apply')
+    }
+}
 foreach ($n in $todo) {
     $t = if ($n -in $base) { $Root } else { Get-Target $n }
     $op = @('import-master-copy', '--plc', $Plc, '--file', $File, '--name', $n)
@@ -120,15 +168,23 @@ if ($fragments) {
     $scl = Get-Content (Join-Path $script:Repo 'workspace/db-global.scl') -Raw -Encoding utf8
     $types += @([regex]::Matches($scl, ':\s*"([^"]+)"') | ForEach-Object { $_.Groups[1].Value })
 }
+# UDT e tabela de tag saem da própria .al21 (pasta 'extras', assada pelo `bake-lib -MoldsOnly`):
+# XML solto em library/ é payload gitignored, então clone limpo não teria o que importar.
+# `--name "extras/X"` com pasta explícita: FindMasterCopy recusa nome homônimo em duas pastas.
+$force = if ($Update) { @('--force') } else { @() }
 $existing = @((Invoke-Tia list-types --plc $Plc @portalArgs | ConvertFrom-Json).name)   # array cru
-foreach ($t in ($types | Sort-Object -Unique | Where-Object { $_ -notin $existing })) {
-    $xml = Join-Path $script:Repo "library/blocks/$t.xml"
-    if (-not (Test-Path $xml)) { throw "UDT sem XML em library/blocks: $t" }
-    $ops += , @('import-type', '--plc', $Plc, '--file', "library/blocks/$t.xml", '--apply')
+foreach ($t in ($types | Sort-Object -Unique | Where-Object { $Update -or $_ -notin $existing })) {
+    $ops += , (@('import-master-copy', '--plc', $Plc, '--file', $File, '--name', "extras/$t") + $force + '--apply')
 }
 if ($fragments) { $ops += , @('import-source', '--plc', $Plc, '--file', 'workspace/db-global.scl', '--apply') }
+# CreateFrom recusa tabela de nome já existente (só --force apaga antes) — sem este filtro,
+# reinstalar deixava de ser no-op.
+$haveTables = @((Invoke-Tia list-tags --plc $Plc @portalArgs | ConvertFrom-Json).table)
 foreach ($t in $tags) {
-    $ops += , @('import-tags', '--plc', $Plc, '--file', $t.file, '--folder', $t.folder, '--apply')
+    $name = [IO.Path]::GetFileNameWithoutExtension($t.file)
+    if (-not $Update -and $name -in $haveTables) { continue }
+    $ops += , (@('import-master-copy', '--plc', $Plc, '--file', $File, '--name', "extras/$name",
+        '--folder', $t.folder) + $force + '--apply')
 }
 foreach ($i in $instances) {
     $ops += , @('create-instance-db', '--plc', $Plc, '--name', $i.name, '--of', $i.of,

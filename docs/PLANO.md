@@ -67,8 +67,8 @@ Verbos por fase (nomes finais definidos na F1):
 | F4 | Polimento p/ GitHub (README EN, licença, exemplos) | repo publicável | ✅ 2026-07-18: LICENSE MIT, README EN completo (contrato dry-run/--apply, 3 gates Openness, tabela de verbos, macros, limitações), nome público decidido `tia-cli`. Publicação em si (gh repo create) pendente de ordem do user. **Gate de publicação (2026-07-28)**: nenhum payload de projeto de cliente entra no repo público — XML/AML exportado de projeto real carrega nome de equipamento, tag e estrutura de DB (`DB GLOBAL.xml` = 869 KB da planta), e publicar é irreversível na prática (fork, cache, índice). O que vai pro Git é autoral ou sanitizado (`clone --replace OLD=NEW`); payload fica gitignored e cada clone repõe o seu (`library/blocks/`, `workspace/`, `Scripts_Siemens/`, `proj/`). |
 | F5? | MCP server fino sobre Tia.Core | só se D1 cair | ⬜ |
 | F6 | Endurecer os scripts PS (ver seção "F6" no fim) | macros rodáveis do agente (sessão 0) + 5 bugs fechados | ✅ 2026-07-27: `scripts/_common.ps1` (`Invoke-Tia`, roteia por sessão, run-id, `$global:LASTEXITCODE`, timeout 600s, guard D9) + `scripts/tia.ps1` (comando único, substitui `tia-task.ps1` — removido); macros migrados; bugs 2-5 fechados (bug 1 já estava). Verificado end-to-end: `tia.ps1 doctor` exit 0, rota da task (`TIA_VIA_TASK=1`) exit 0, forma legada `["info"]` exit 0, `use-project`/`prep-project` do shell do agente |
-| F7 | Camada de compreensão: a IA lê o projeto dentro do orçamento de contexto | `explain-block` (1) e `trace` (2) read-only; depois `index`, `checkpoint`, `apply-spec` | 🔄 item 1 feito 2026-07-27: `explain-block --name X \| --file F.xml` (LAD/FBD → texto; 92KB → 8,3KB no `BombaTemplateFc`; `--file` roda sem TIA, 9 asserts em `Tia.Tests`). Smoke `--name` ok 2026-07-28 no `Software de ETE Insular_Inicial_V21`: `Resets` 58KB → 4,6KB, `Paineis Intertravamento` 53KB → 4,9KB, `FC_ALARMES_PRELIMINAR_P_GM_01` 26KB → 2,2KB — chamadas de FB com pinos, expressões série/paralelo e comentários pt-BR corretos. Item 1 fechado. **Item 2 fechado 2026-07-28**: `trace --equipment X` smoked no mesmo projeto — `AG-01` = 39 símbolos + 39 usos em 10 blocos (`PARTIDA_AGITADOR (AG-01)`, `Resets`, `FB CONDIÇÃO DE PARTIDA`…), **10,1s total / 3,3s de xref, 131 blocos varridos**; cobertura conferida contra `xref --name Resets` independente. `xref` agora resolve bloco → tag → tabela → UDT (`ResolveSymbol`), então serve o sentido direto em qualquer símbolo. O "blocker do xref" do handoff anterior era **diálogo de autorização Openness pendurado na tela**, não custo de API — ver "Openness pede aceite na tela" abaixo. Índice invertido via export XML descartado: não há problema de performance a resolver. **Gargalos de consumo fechados 2026-07-28**: (a) `--out-file F.json` global — JSON completo no arquivo, stdout só `{file,bytes,count,head}`; guard no único `Print` por onde todo verbo sai, sem flag por verbo e sem mudar quem redireciona stdout (`raio-x.ps1`). Motivo medido: `find --pattern "*" --kind tag` = 821 KB / 4372 hits, `snapshot` = 7967 linhas — um verbo desses no contexto custa a sessão que o F7 existe pra proteger. Erro nunca vai pro arquivo. (b) `run --script` isola steps: `{ok:false,error,type}` por item, batch segue, `exit 1` se algum falhou — o batch só compensa se sobreviver à 1ª exceção (attach medido = **2,9s fixo**, não 7s: `info` solo 3,0s, `list-types` 2,9s, batch de 5 steps 7,0s). (c) **`tree` virou a leitura de orientação**: emite blocos + tabelas de tag + UDTs no mesmo `plc-navi.md` — 39 KB / 309 linhas p/ 476 blocos + 194 tabelas + 13 UDTs em 4,0s, contra ~150 KB do JSON equivalente. `snapshot` saiu do bloco "read" do help pro bloco "bulk"; `raio-x.ps1` roda `tree` primeiro e aponta o `plc-navi.md` como entrada. **`--format table` (TSV) foi medido e descartado**: 822 KB → 331 KB é 2x num problema que precisa de 30x — o que paga é agrupar (4,5x) ou não devolver volume (`trace` responde a pergunta inteira em 20 KB). Orçamento resultante: orientação ~10k tokens 1x por sessão, pergunta específica ≤5k, volume bruto nunca no contexto |
-| F8 | Caminho de escrita exercitado contra projeto real (`--apply` de verdade, não dry) | cada verbo de escrita aplicado + `compile` 0 erros | 🔄 2026-07-28 no `Software de ETE Insular_Inicial_V21` (projeto de teste com backup; tudo em `ClaudeTest/`). **Primitivas 11/11 ✅**: `create-folder`, `import-block` (FC real de 90 KB), `import-tags`, `clone`, `export-type`→`import-type`, `import-source`, `add-db-member`, `delete-block`, `compile` — pasta compila Success/0 erros. **`import-ladder --apply` ✅** (2 bugs de FlgNet corrigidos, ver item 1b). **6 geradores ✅ em dry** (`gen-all.json`, 0 falhas) + payload de `gen-fault-ob` (OB de 88 KB) e `gen-alarm-fc` importado no sandbox → compile 0 erros → `explain-block` round-trip: o FlgNet desses builders já estava certo. **Pré-requisito descoberto**: `replicate-fc`/`gen-alarm-fc`/`replicate-instruments` falham com `Inconsistent blocks ... cannot be exported` se o PLC não foi compilado antes (eles exportam o GlobalDB) — `compile --apply` do PLC inteiro resolveu (projeto real: Success/0 erros, os 26 erros antigos já não existem). Guard novo em `Ops.ExportBlock` traduz essa mensagem. **Fechado 2026-07-28 (2ª sessão), escopado ao tipo `Soprador` na árvore de produção**: dry = 1 grupo, molde `Soprador 1 (S-01A)`, 2 alvos `overwrite` (S-01B/C — o projeto só tem 3 sopradores nessa pasta, não 6), 6 blocos cada, nada fora de `4. Motores/Bombas`. `--apply` exige **`--force`** quando a pasta-alvo já tem blocos (guard correto: sem ele o batch falha com `2 target folder(s) already have blocks…`). Batch `replicate-soprador-run.json` (save → apply → compile → apply → compile → save) = **0 falhas, os dois compiles Success/0 erros/0 warnings**. **Conteúdo conferido, não só compilação**: export de `PARTIDA_SOPRADOR_2 (S-01B)` e `_3 (S-01C)`, normalizando o ID de volta pro do molde, difere do template em **5 linhas de 1993** — `Created` (timestamp), `Number` (FC 151/152 vs 153), 2 `Component` de tag de IO (sufixo `_2`/`_3` do equipamento) e `ConstantValue` (301/302 vs 300); tudo o que o replicador deve reescrever, nada mais. Idempotência é *funcional*, não no-op: o 2º apply reimporta os mesmos blocos (o verbo não detecta in-sync) e o 2º compile recompila — resultado idêntico, 0 erros. **`gen-profinet --apply` + `standardize-tags --apply` ✅** no mesmo projeto: profinet 43 IO devices, 3 tags `exists` (no-op); tags 131 tabelas = 126 `ok` + 5 `rebuilt` (`SOPRADOR_TANQUE_AERACAO S-02A..E`); `compile --apply` depois = Success/0 erros/0 warnings + `save-project`. **Falta**: `replicate-instruments --apply` (dry dá `in-sync`, não escreveria nada), `import-master-copy` real — a `.al21` deixou de ser hipótese em 2026-07-29 (bake real, 148 KB, 10 master copies), mas o `--force --apply` numa CPU virgem parou no bug do `CreateFrom` duplicado; fix commitado (`a0df2f7`) e **não re-testado** — ver "Bake real da `.al21`" na seção da biblioteca |
+| F7 | Camada de compreensão: a IA lê o projeto dentro do orçamento de contexto | `explain-block` (1) e `trace` (2) read-only | ✅ **fechada em 2 itens 2026-08-07** — `index`/`checkpoint`/`apply-spec` descartados com motivo, ver "Fronteira da engine" abaixo. Item 1 feito 2026-07-27: `explain-block --name X \| --file F.xml` (LAD/FBD → texto; 92KB → 8,3KB no `BombaTemplateFc`; `--file` roda sem TIA, 9 asserts em `Tia.Tests`). Smoke `--name` ok 2026-07-28 no `Software de ETE Insular_Inicial_V21`: `Resets` 58KB → 4,6KB, `Paineis Intertravamento` 53KB → 4,9KB, `FC_ALARMES_PRELIMINAR_P_GM_01` 26KB → 2,2KB — chamadas de FB com pinos, expressões série/paralelo e comentários pt-BR corretos. Item 1 fechado. **Item 2 fechado 2026-07-28**: `trace --equipment X` smoked no mesmo projeto — `AG-01` = 39 símbolos + 39 usos em 10 blocos (`PARTIDA_AGITADOR (AG-01)`, `Resets`, `FB CONDIÇÃO DE PARTIDA`…), **10,1s total / 3,3s de xref, 131 blocos varridos**; cobertura conferida contra `xref --name Resets` independente. `xref` agora resolve bloco → tag → tabela → UDT (`ResolveSymbol`), então serve o sentido direto em qualquer símbolo. O "blocker do xref" do handoff anterior era **diálogo de autorização Openness pendurado na tela**, não custo de API — ver "Openness pede aceite na tela" abaixo. Índice invertido via export XML descartado: não há problema de performance a resolver. **Gargalos de consumo fechados 2026-07-28**: (a) `--out-file F.json` global — JSON completo no arquivo, stdout só `{file,bytes,count,head}`; guard no único `Print` por onde todo verbo sai, sem flag por verbo e sem mudar quem redireciona stdout (`raio-x.ps1`). Motivo medido: `find --pattern "*" --kind tag` = 821 KB / 4372 hits, `snapshot` = 7967 linhas — um verbo desses no contexto custa a sessão que o F7 existe pra proteger. Erro nunca vai pro arquivo. (b) `run --script` isola steps: `{ok:false,error,type}` por item, batch segue, `exit 1` se algum falhou — o batch só compensa se sobreviver à 1ª exceção (attach medido = **2,9s fixo**, não 7s: `info` solo 3,0s, `list-types` 2,9s, batch de 5 steps 7,0s). (c) **`tree` virou a leitura de orientação**: emite blocos + tabelas de tag + UDTs no mesmo `plc-navi.md` — 39 KB / 309 linhas p/ 476 blocos + 194 tabelas + 13 UDTs em 4,0s, contra ~150 KB do JSON equivalente. `snapshot` saiu do bloco "read" do help pro bloco "bulk"; `raio-x.ps1` roda `tree` primeiro e aponta o `plc-navi.md` como entrada. **`--format table` (TSV) foi medido e descartado**: 822 KB → 331 KB é 2x num problema que precisa de 30x — o que paga é agrupar (4,5x) ou não devolver volume (`trace` responde a pergunta inteira em 20 KB). Orçamento resultante: orientação ~10k tokens 1x por sessão, pergunta específica ≤5k, volume bruto nunca no contexto |
+| F8 | Caminho de escrita exercitado contra projeto real (`--apply` de verdade, não dry) | cada verbo de escrita aplicado + `compile` 0 erros | ✅ **fechada 2026-08-07** — `replicate-instruments --apply` era o último e escreveu de verdade (ver "F8 fechada" abaixo). 2026-07-28 no `Software de ETE Insular_Inicial_V21` (projeto de teste com backup; tudo em `ClaudeTest/`). **Primitivas 11/11 ✅**: `create-folder`, `import-block` (FC real de 90 KB), `import-tags`, `clone`, `export-type`→`import-type`, `import-source`, `add-db-member`, `delete-block`, `compile` — pasta compila Success/0 erros. **`import-ladder --apply` ✅** (2 bugs de FlgNet corrigidos, ver item 1b). **6 geradores ✅ em dry** (`gen-all.json`, 0 falhas) + payload de `gen-fault-ob` (OB de 88 KB) e `gen-alarm-fc` importado no sandbox → compile 0 erros → `explain-block` round-trip: o FlgNet desses builders já estava certo. **Pré-requisito descoberto**: `replicate-fc`/`gen-alarm-fc`/`replicate-instruments` falham com `Inconsistent blocks ... cannot be exported` se o PLC não foi compilado antes (eles exportam o GlobalDB) — `compile --apply` do PLC inteiro resolveu (projeto real: Success/0 erros, os 26 erros antigos já não existem). Guard novo em `Ops.ExportBlock` traduz essa mensagem. **Fechado 2026-07-28 (2ª sessão), escopado ao tipo `Soprador` na árvore de produção**: dry = 1 grupo, molde `Soprador 1 (S-01A)`, 2 alvos `overwrite` (S-01B/C — o projeto só tem 3 sopradores nessa pasta, não 6), 6 blocos cada, nada fora de `4. Motores/Bombas`. `--apply` exige **`--force`** quando a pasta-alvo já tem blocos (guard correto: sem ele o batch falha com `2 target folder(s) already have blocks…`). Batch `replicate-soprador-run.json` (save → apply → compile → apply → compile → save) = **0 falhas, os dois compiles Success/0 erros/0 warnings**. **Conteúdo conferido, não só compilação**: export de `PARTIDA_SOPRADOR_2 (S-01B)` e `_3 (S-01C)`, normalizando o ID de volta pro do molde, difere do template em **5 linhas de 1993** — `Created` (timestamp), `Number` (FC 151/152 vs 153), 2 `Component` de tag de IO (sufixo `_2`/`_3` do equipamento) e `ConstantValue` (301/302 vs 300); tudo o que o replicador deve reescrever, nada mais. Idempotência é *funcional*, não no-op: o 2º apply reimporta os mesmos blocos (o verbo não detecta in-sync) e o 2º compile recompila — resultado idêntico, 0 erros. **`gen-profinet --apply` + `standardize-tags --apply` ✅** no mesmo projeto: profinet 43 IO devices, 3 tags `exists` (no-op); tags 131 tabelas = 126 `ok` + 5 `rebuilt` (`SOPRADOR_TANQUE_AERACAO S-02A..E`); `compile --apply` depois = Success/0 erros/0 warnings + `save-project`. ~~**Falta**~~ ✅ **fechado 2026-08-07**: `replicate-instruments --apply` criou `TESTE_TOTALIZADOR` num instrumento novo (Success/0 erros) e `import-master-copy` foi exercitado na régua da CPU virgem `PLC_LIB2` — ver as duas seções de 2026-08-07 na parte da biblioteca. Registro do que estava pendente: `replicate-instruments --apply` (dry dava `in-sync`), `import-master-copy` real — a `.al21` deixou de ser hipótese em 2026-07-29 (bake real, 148 KB, 10 master copies), mas o `--force --apply` numa CPU virgem parou no bug do `CreateFrom` duplicado; fix commitado (`a0df2f7`) e **não re-testado** — ver "Bake real da `.al21`" na seção da biblioteca |
 
 Regra: **uma fase por vez, commit + handoff no fim de cada uma.** FINAIS vira referência
 read-only — nunca editar lá; extrair pra `src/` e pronto.
@@ -768,6 +768,94 @@ molde, não clona um equipamento. Dry no AsBuilt: 0 grupos, 61 pastas puladas.
 **Limite conhecido**: tags de IO físico (`BOMBA_2_ELEVATORIA_DE_GORDURA_*`) não são clonadas —
 uma bomba nova de verdade precisa de %I/%Q próprios, que dependem de hardware novo. `free-memory`
 cobre só %M; endereço físico continua manual, de propósito.
+
+### Biblioteca em um comando: extras da `.al21` + hardware declarado (2026-08-07)
+
+**`install-lib` não lê mais XML solto de `library/`.** UDT e tabela de tag agora entram por
+`import-master-copy --name "extras/<nome>"` da própria `.al21` — `Library.ImportMasterCopy` já
+ramificava `isType`/`isTable` com `ResolveTypePath`/`ResolveTagPath`, então foi troca de script, sem
+C# novo. `bake-lib -MoldsOnly` passou a assar também os UDT citados pelos ramos do DB GLOBAL
+(regex `: "X"` sobre `library/db-global/*.scl`, a mesma que o `install-lib` usa em runtime): sem
+isso a troca quebraria em 4 dos 5 UDTs, porque o `packages.json` só declarava `Diag_Hardware`.
+`.al21` agora = 5 pacotes + 5 blocos soltos + 4 moldes + **7 extras**.
+
+**Bloco `devices` no `packages.json`** fecha o "instalar biblioteca" em um comando: `install-lib`
+emite `add-device` → `insert-telegram --change` → `connect-subnet` do PLC → `connect-subnet` do
+drive, **antes** dos blocos (o primeiro `compile` já cobra a constante). Device já presente não é
+recriado; o par `connect-subnet` vai mesmo assim, porque o drive pode existir ligado em outro
+controlador.
+
+**Régua numa CPU virgem (`PLC_LIB2`, criada só pra isso): compile Success / 0 erros**, biblioteca
+inteira instalada em um comando. Reinstalar em cima = 13 pulados, 0 a instalar, Success/0.
+
+Três bugs que essa régua expôs — todos de idempotência, todos silenciosos:
+
+- **`connect-subnet` achava IO system pelo nome na subnet inteira.** Um IO system de *outra* CPU
+  com o mesmo nome fazia o verbo responder `exists` sem ligar nada, e o drive virava IO device do
+  controlador errado — em silêncio, aparecendo só como
+  `..~PROFINET_interface~Standard_telegram_20 not defined` no compile. Agora procura em
+  `controller.IoSystem` (é **um por controlador**) e levanta dizendo o nome real se o controlador
+  já tem outro. O default do macro virou `PROFINET IO-System_<PLC>`.
+- **`ConnectedToIoSystem == io` nunca era verdade**: wrapper EOM não é estável por referência.
+  Religava o drive toda vez e, quando ele já estava em outro IO system, o Openness recusava
+  (`already connected to an io system`). Agora compara por nome e, se for outro, `DisconnectFromIoSystem`
+  antes de ligar (`ioSystemAction: moved`).
+- **`Get-Existing`**: `list-blocks` sem `--folder` devolve array cru, e `$json.blocks` num array é
+  *enumeração de membro* — devolve `@()`, não `$null`. A raiz parecia sempre vazia, então pacote de
+  `target` vazio (`0 Moldes`) era reimportado toda rodada sem `--force` e o Portal batizava
+  `0 Moldes_1` calado (10 blocos duplicados, medido).
+
+`library/blocks/` deixou de ser dependência do `install-lib`; a `.al21` (também gitignored) é o
+único artefato de payload, e `bake-lib` continua sendo como cada máquina repõe o seu.
+
+### F8 fechada: `replicate-instruments --apply` real (2026-08-07)
+
+O `in-sync` eterno não era bug: o projeto de teste **foi gerado pelo mesmo algoritmo**, então as 7
+áreas batem com o que o gerador produz. Nem deletar a FC alvo destrava — a OB de chamada fica
+inconsistente e o gerador precisa exportá-la (`Inconsistent blocks ... cannot be exported`). O que
+destrava é **um instrumento novo**, que é o caso de uso real:
+
+`clone --table "MEDIDOR_DE_VAZÃO_ULTRASSÔNICO (FQIT-01)" --replace FQIT-01=FIT-99` para uma pasta
+de área nova + 3 `add-tag` (as tags de I/O que o molde referencia e que não moram na tabela da área)
++ `add-db-member --like` para o ramo do DB. Depois disso:
+`created | TESTE_TOTALIZADOR`, `addedCalls: ["TESTE_TOTALIZADOR"]`, as outras 7 áreas intactas em
+`in-sync`, **compile Success / 0 erros / 0 warnings**. Conteúdo conferido por `explain-block`: a
+chamada do `FB TOTALIZADOR` com iDB `FB TOTALIZADOR FIT-99` e todos os pinos remapeados de `FQIT-01`
+para `FIT-99` (tags e caminho no `DB GLOBAL`). Artefatos do teste removidos depois (FC, iDB, pastas,
+tabela, OB restaurada do `_ob_cache.xml`) e o projeto **fechado sem salvar** — o `.ap21` em disco
+nunca mudou.
+
+Duas cicatrizes anotadas no caminho: `--at` do `clone` só realoca tag de bit (`%MD1021` recusa, com
+mensagem certa), e `import-block --folder` **cria a árvore que faltar a partir da raiz** — passar
+`5.2 Totalizadores` em vez de `5. Instrumentação / Atuadores/5.2 Totalizadores` cria uma pasta
+paralela de mesmo nome, e aí o gerador não acha a FC existente e morre em colisão de nome.
+
+## Fronteira da engine — F7 itens 3-5 decididos (2026-08-07)
+
+**A F7 fecha em 2 itens (`explain-block`, `trace`). `index`, `checkpoint` e `apply-spec` não
+entram. A engine para no `run --script`.**
+
+- **`index` — morreu por medição, não por opinião.** O próprio registro da F7 já dizia "índice
+  invertido via export XML descartado: não há problema de performance a resolver": `trace` varre
+  131 blocos em 3,3 s. Índice é cache com invalidação — e o projeto muda por fora, na UI do
+  Portal — para economizar 3 segundos.
+- **`checkpoint` — o que existe é melhor.** O valor seria rollback de um `--apply` ruim, e isso já
+  se faz com cópia do `.ap21` (é o que os testes fazem) mais `export-all.json`. Checkpoint parcial
+  é o pior dos dois mundos: restaura bloco e não restaura hardware/subnet — e a régua do G120
+  mostrou que o estado que quebra é justamente hardware.
+- **`apply-spec` — não entra como verbo genérico.** (a) `run --script` já é a forma declarativa:
+  JSON na entrada, steps isolados, `--summary`, `exit 1` em falha; um `apply-spec` genérico seria um
+  segundo interpretador de intenção por cima do primeiro. (b) A parte com valor real já existe e é
+  **específica de domínio**: `packages.json` + `install-lib` são spec declarativa ("este PLC deve
+  ter estes pacotes, ramos de DB, tabelas, iDBs, hardware") com reconciliação de verdade
+  (`Get-Existing` pula o que já existe, `-Update` força, `$haveDev`/`$haveTables` idem). O bloco
+  `devices` de 2026-08-07 é exatamente apply-spec com escopo. (c) Genérico exigiria diff
+  bidirecional (o que existe × o que a spec pede) para todo tipo de objeto — é o `compare` do
+  v2 item 9 disfarçado, e com **D8** de pé metade fica sem sentido.
+  **Sinal para reabrir:** um 3º macro repetindo a lógica de reconciliação do `install-lib`.
+
+Fronteira declarada: **verbos + `run --script` + macros PS**. Reconciliação declarativa mora nos
+macros, por domínio.
 
 ## Pendências / decisões futuras
 

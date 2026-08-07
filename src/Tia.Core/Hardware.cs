@@ -387,14 +387,21 @@ namespace Tia.Core
                 var controller = itf.IoControllers.FirstOrDefault();
                 if (controller != null)
                 {
-                    var io = subnet.IoSystems.FirstOrDefault(
-                        s => s.Name.Equals(ioSystemName, StringComparison.OrdinalIgnoreCase));
-                    if (io == null)
+                    // procurar no controlador, não na subnet: IO system de MESMO NOME pertencente a
+                    // OUTRA CPU fazia o verbo responder "exists" sem ligar nada, e o drive que
+                    // entrasse depois virava IO device do controlador errado — em silêncio, com a
+                    // constante ..~Standard_telegram_NN faltando só na hora do compile.
+                    var mine = controller.IoSystem;   // 1 por controlador
+                    if (mine == null)
                     {
                         controller.CreateIoSystem(ioSystemName);
                         result["ioSystemAction"] = "created";
                     }
-                    else result["ioSystemAction"] = "exists";
+                    else if (mine.Name.Equals(ioSystemName, StringComparison.OrdinalIgnoreCase))
+                        result["ioSystemAction"] = "exists";
+                    else
+                        throw new InvalidOperationException("'" + device.Name + "' already owns IO system '"
+                            + mine.Name + "' — a controller has only one. Pass --io-system \"" + mine.Name + "\".");
                 }
                 else
                 {
@@ -408,8 +415,25 @@ namespace Tia.Core
                         throw new InvalidOperationException(
                             "IO system '" + ioSystemName + "' not found on subnet '" + subnetName +
                             "'. Connect the IO controller first.");
-                    connector.ConnectToIoSystem(io);
-                    result["ioSystemAction"] = "joined";
+                    // já ligado nesse IO system = no-op (o controlador acima já é idempotente):
+                    // reinstalar a biblioteca repete o par connect-subnet e não pode falhar por isso.
+                    // Ligado em OUTRO: o Openness recusa mover ("already connected to an io system"),
+                    // então desliga antes — é o caso de reaproveitar um drive noutro controlador.
+                    // comparar por nome: os wrappers EOM não são estáveis por referência, então
+                    // `was == io` era sempre falso e o verbo religava o drive toda vez
+                    var was = connector.ConnectedToIoSystem;
+                    if (was != null && was.Name.Equals(ioSystemName, StringComparison.OrdinalIgnoreCase))
+                        result["ioSystemAction"] = "already";
+                    else
+                    {
+                        if (was != null)
+                        {
+                            connector.DisconnectFromIoSystem();
+                            result["disconnectedFrom"] = was.Name;
+                        }
+                        connector.ConnectToIoSystem(io);
+                        result["ioSystemAction"] = was == null ? "joined" : "moved";
+                    }
                 }
             }
             return result;

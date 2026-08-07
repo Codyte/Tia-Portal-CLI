@@ -1,5 +1,6 @@
 {
-  "_doc": "Metadados por master copy da .al21 — o que o import sozinho não traz: dependência entre pacotes, ramo do DB GLOBAL, tabelas de tag e iDBs de molde. Pacote sem entrada aqui = importa e pronto.",
+  "_doc": "Metadados por master copy da .al21 — o que o import sozinho não traz: dependência entre pacotes, ramo do DB GLOBAL, tabelas de tag, iDBs de molde e o hardware que o molde referencia. Pacote sem entrada aqui = importa e pronto.",
+  "_doc_devices": "devices[] = hardware sem o qual o molde não compila. install-lib emite add-device → insert-telegram (--change: G120 novo já vem com o Main #1) → connect-subnet do PLC (cria o ioSystem) → connect-subnet do drive. Device já presente é pulado (o par connect-subnet vai mesmo assim). ioSystem tem que ser por PLC — o default é 'PROFINET IO-System_<PLC>'; declarar aqui ou passar -IoSystem só se o projeto já usa outro nome.",
   "0 Moldes": {
     "target": "",
     "requires": ["1.1 Acionamento", "1.3 Instrumentação", "1.4 Alarmes e Falhas", "1.5 Diagnóstico"],
@@ -16,7 +17,15 @@
     "target": "4. Motores/Bombas/4.1 Inversores_CCM_01/4.1.1 AREA_01",
     "requires": ["1.1 Acionamento"],
     "db": ["motores"],
-    "tags": [{ "file": "library/tags/MOTOR_AREA_01 (MOTOR_01).xml", "folder": "3. Partidas" }]
+    "tags": [{ "file": "library/tags/MOTOR_AREA_01 (MOTOR_01).xml", "folder": "3. Partidas" }],
+    "devices": [
+      {
+        "name": "INVERSOR_MOTOR_01_CCM_01",
+        "mlfb": "OrderNumber:6SL3244-0BB12-1FA0/4.7.13",
+        "telegram": { "number": 20, "change": true },
+        "subnet": "PN/IE_1"
+      }
+    ]
   },
   "3.1.0 Modelo": {
     "target": "3. Alarmes/Eventos/Falhas/3.1 Alarmes Words",

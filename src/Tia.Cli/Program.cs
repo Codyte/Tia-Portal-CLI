@@ -64,7 +64,8 @@ namespace Tia.Cli
                             + "(sem --type: lista slots livres; com --type: canPlug e, com --apply, pluga)",
                         "list-telegrams --device X  (read-only: drive objects SINAMICS e telegramas de cada um)",
                         "insert-telegram --device X --number N [--type Main|Supplementary|Safety|Torque|Edge] "
-                            + "[--item I] [--drive-object D] [--apply]  "
+                            + "[--item I] [--drive-object D] [--change] [--apply]  "
+                            + "(--change troca o telegrama presente: G120 novo já vem com o 1)  "
                             + "(telegrama de drive NÃO é submódulo de catálogo — plug-module não coloca)",
                         "set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]",
                         "connect-subnet --device X --subnet S [--io-system IO] [--apply]",
@@ -530,7 +531,7 @@ namespace Tia.Cli
                             result = Core.Drives.InsertTelegram(session, Require(args, "--device"),
                                 OptionValue(args, "--item"), int.Parse(Require(args, "--number")),
                                 OptionValue(args, "--type"), ParseInt(OptionValue(args, "--drive-object")),
-                                apply);
+                                args.Contains("--change"), apply);
                         break;
                     case "set-address":
                         using (WriteLock(session, apply, verb))

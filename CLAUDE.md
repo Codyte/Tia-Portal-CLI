@@ -70,7 +70,9 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
   - **Telegrama de drive SINAMICS = `insert-telegram`, nunca `plug-module`.** Não é submódulo de
     catálogo: o drive object tem `TelegramComposition` própria, então não existe TypeIdentifier de
     "Standard telegram 20" pra procurar. `list-telegrams --device X` mostra os drive objects e o
-    que já está posto; o dry-run devolve `canInsert`. Vale só pra família System (Startdrive) — o
+    que já está posto; o dry-run devolve `canInsert`. **G120 novo já nasce com `MainTelegram #1`**,
+    então o caso real é trocar: `--change` (`conflict (pass --change to replace)` sem ele, e o
+    Portal recusa apagar telegrama Main — a troca é in-place). Vale só pra família System (Startdrive) — o
     G120X **GSD** carrega telegrama como submódulo plugado de verdade, e aí é `plug-module`.
   - `tia doctor` = preflight dos 6 verbos antes de qualquer smoke.
 - Smoke test exige TIA Portal aberto com projeto de teste — confirmar com o usuário antes.

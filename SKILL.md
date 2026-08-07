@@ -86,7 +86,9 @@ pwsh "$env:TIA_CLI_HOME\scripts\tia.ps1" tree --plc "CPU1"      # de qualquer di
 - **Telegrama de drive SINAMICS é `insert-telegram`, não `plug-module`.** Família System
   (Startdrive) não tem TypeIdentifier de catálogo pra telegrama — o drive object tem
   `TelegramComposition` própria. Só o G120X **GSD** carrega telegrama como submódulo plugado.
-  Procurar o identificador inexistente já custou várias sessões.
+  Procurar o identificador inexistente já custou várias sessões. **Drive novo já vem com
+  `MainTelegram #1`**: trocar exige `--change` (telegrama Main não pode ser apagado, a troca é
+  in-place).
 - **`rebuild.ps1` muda o hash do `tia.exe`** → o Portal já aberto abre um **diálogo modal de
   autorização** na tela. Chamada pendurada com CPU ~0 = alguém precisa clicar; não é bug de API.
 

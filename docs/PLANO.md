@@ -632,9 +632,25 @@ verbo inteiro. Toda leitura de atributo de drive passa por `Try()` e degrada pra
 `"unavailable: <msg>"` — um drive ilegível não pode matar a listagem. Identificação real é o caminho
 do item, não o número.
 
-Falta o único ramo que escreve: `canInsert` + `--apply` num G120-2 **sem** telegrama
-(`OrderNumber:6SL3244-0BB12-1FA0/4.7.13`), que só existe depois do `new-plc.ps1` numa CPU virgem —
-é o que fecha os 4 erros da régua do ciclo da biblioteca.
+**Ramo que escreve fechado — e o caso normal é `--change`, não insert** (2026-08-07). Um G120-2
+recém-criado (`add-device --mlfb "OrderNumber:6SL3244-0BB12-1FA0/4.7.13"`) **já vem com
+`MainTelegram #1`**: drive sem telegrama nenhum não existe na prática, então o ramo puro de
+`InsertTelegram` para Main é inalcançável e o que o ciclo da biblioteca precisa é trocar 1 → 20.
+
+- `EraseTelegram(MainTelegram)` **não serve**: o Portal recusa com `Main telegram can not be
+  deleted.` A troca é in-place, `telegram.TelegramNumber = N` (a propriedade tem setter;
+  `CanChangeTelegram(N)` é o gate).
+- `insert-telegram` ganhou `--change`. Sem ele, telegrama diferente continua `conflict (pass
+  --change to replace)` — trocar joga fora o telegrama atual, então não é implícito. Com
+  `--change` sem `--apply` = `would change`; `canChangeTelegram: false` = `cannot change`.
+- `--apply` agora respeita `canInsert: false` (`status: cannot insert`) em vez de deixar o
+  `InsertTelegram` estourar com `An error occurred while setting the attribute Telegram (750) is
+  not supported on this DriveObject.` — o dry-run já sabia a resposta.
+
+Smoke num `ZZ_TG_TEST` criado e apagado no `Base_tia_cli`: `#1` → `--change --apply` → `changed`,
+12 bytes in / 4 out, `list-telegrams` confirma `#20`, e repetir sem `--change` volta
+`skip (already present)`. Os 4 erros da régua (`..~PROFINET_interface~Standard_telegram_20`) são
+`insert-telegram --number 20 --change --apply` por drive.
 
 ### Lint de camada no `audit` — ✅ 2026-07-28
 

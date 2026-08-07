@@ -95,7 +95,7 @@ namespace Tia.Core
         /// which is how a number/type pair gets confirmed against the drive before writing.
         /// </summary>
         public static object InsertTelegram(TiaSession session, string deviceName, string itemName,
-            int number, string typeName, int? driveObjectNumber, bool apply)
+            int number, string typeName, int? driveObjectNumber, bool change, bool apply)
         {
             var device = Hardware.FindDevice(session, deviceName);
             var type = ParseType(typeName);
@@ -141,14 +141,39 @@ namespace Tia.Core
             }
             if (existing != null)
             {
-                result["status"] = "conflict";
+                // a fresh G120 already ships with main telegram 1, so "change" is the normal path —
+                // but it throws the current telegram away, so it stays behind an explicit --change
                 result["presentNumber"] = existing.TelegramNumber;
-                result["canChangeTelegram"] = existing.CanChangeTelegram(number);
-                return result;   // changing an existing telegram is a different decision — not implicit
+                var canChange = existing.CanChangeTelegram(number);
+                result["canChangeTelegram"] = canChange;
+                if (!change)
+                {
+                    result["status"] = "conflict (pass --change to replace)";
+                    return result;
+                }
+                if (!canChange)
+                {
+                    result["status"] = "cannot change";
+                    return result;
+                }
+                if (!apply) { result["status"] = "would change"; return result; }
+                existing.TelegramNumber = number;   // in place: a main telegram cannot be erased
+                var changed = telegrams.Find(type);
+                result["status"] = "changed";
+                result["inputBytes"] = changed.GetSizeInBytes(AddressIoType.Input);
+                result["outputBytes"] = changed.GetSizeInBytes(AddressIoType.Output);
+                return result;
             }
 
-            result["canInsert"] = telegrams.CanInsertTelegram(number, type);
+            var canInsert = telegrams.CanInsertTelegram(number, type);
+            result["canInsert"] = canInsert;
             if (!apply) return result;
+            if (!canInsert)
+            {
+                // InsertTelegram would throw an opaque "attribute Telegram (N) is not supported" here
+                result["status"] = "cannot insert";
+                return result;
+            }
             telegrams.InsertTelegram(number, type);
             var inserted = telegrams.Find(type);
             result["status"] = "inserted";

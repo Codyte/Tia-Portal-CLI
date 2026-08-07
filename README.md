@@ -90,7 +90,7 @@ tia run --script docs/examples/gen-all.json
 ## Quick start
 
 ```powershell
-git clone https://github.com/Codyte/TIA-Portal.git tia-cli && cd tia-cli
+git clone https://github.com/Codyte/Tia-Portal-CLI.git tia-cli && cd tia-cli
 pwsh scripts/init.ps1    # checks the 3 gates below, copies lib/ DLLs from your TIA install,
                           # builds, runs offline tests, whitelists, puts `tia` on PATH
                           # — one shot for a new machine

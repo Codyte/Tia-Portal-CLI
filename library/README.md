@@ -15,7 +15,7 @@
 
 Os XMLs de `blocks/` saíram de um projeto real de cliente — nomes de equipamento, tags,
 estrutura de DB (`DB GLOBAL.xml` sozinho tem 869 KB da planta). Este repo é **público**
-(`github.com/Codyte/TIA-Portal`), e publicar isso é irreversível na prática (fork, cache,
+(`github.com/Codyte/Tia-Portal-CLI`), e publicar isso é irreversível na prática (fork, cache,
 índice de busca). Regra do PLANO (F4): *nenhum payload de projeto de cliente entra no repo
 público; o que for publicado tem que ser autoral ou sanitizado*.
 

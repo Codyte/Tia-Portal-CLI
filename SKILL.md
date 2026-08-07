@@ -37,7 +37,7 @@ repo de skills.
 
 ```powershell
 cd "$HOME\.claude\skills"
-git submodule add https://github.com/Codyte/TIA-Portal.git tia   # ou git clone, se não for repo
+git submodule add https://github.com/Codyte/Tia-Portal-CLI.git tia   # ou git clone, se não for repo
 pwsh "$HOME\.claude\skills\tia\scripts\init.ps1"
 ```
 

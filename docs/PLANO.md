@@ -655,8 +655,9 @@ cobre só %M; endereço físico continua manual, de propósito.
 
 ## Pendências / decisões futuras
 
-- ~~Licença~~ ✅ MIT (F4, 2026-07-18). ~~Nome público~~ ✅ `tia-cli`.
-- ~~Publicar no GitHub~~ ✅ publicado 2026-07-20: https://github.com/Codyte/tia-cli (público).
+- ~~Licença~~ ✅ MIT (F4, 2026-07-18). ~~Nome público~~ ✅ `tia-cli` (comando); o repo no GitHub é
+  `Tia-Portal-CLI` — decidido 2026-08-07, nome fica, é o que quem procura acha.
+- ~~Publicar no GitHub~~ ✅ publicado 2026-07-20: https://github.com/Codyte/Tia-Portal-CLI (público).
   `Scripts_Siemens/` excluído do público — removido do tracking + scrubado do histórico
   via `git-filter-repo` (verificado: clone fresh sem o diretório em working tree ou histórico).
 - Smoke F1 na máquina do TIA (user leva o exe; primeira execução dispara popup Openness — permitir).

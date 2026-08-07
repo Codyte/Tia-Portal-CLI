@@ -138,15 +138,17 @@ Regra e como verificar. Vale para qualquer programa que a CLI escrever.
 Nenhuma das regras acima é gratuita com a CLI como está. Ordenado por (dor evitada ÷ tamanho do
 diff):
 
-1. **`import-source --folder` + `KeepOnError`.** Os dois overloads já existem no Openness:
-   `GenerateBlocksFromSource(PlcBlockUserGroup, GenerateBlockOption)`
-   (`TIAPortalOpennessenUS/…/131792485771.htm`). Hoje `Ops.ImportSource` chama a versão sem
-   argumento — daí (a) todo bloco nasce na raiz e precisa de `move-block` + `compile` intercalados
-   (34 steps na rodada), e (b) um bloco inválido aborta o lote inteiro (o `TITLE`). Resolve R6 e os
-   tropeços 5 e 7 do relatório. ~10 linhas.
-2. **`import-source` roteando `TYPE` para `plc.TypeGroup`** (overload `PlcTypeUserGroup`). Sem isso
-   não há caminho para UDT em pasta, e o relatório `generated` mente: usa `FindBlock`, que não acha
-   UDT. Destrava R1/R2.
+1. ~~**`import-source --folder` + `KeepOnError`.**~~ **Feito em 2026-08-07.** Os overloads já
+   existiam no Openness (`TIAPortalOpennessenUS/…/131792485771.htm`) e `Ops.ImportSource` chamava a
+   versão sem argumento. Agora: `--folder` põe o bloco na pasta certa de nascença (fim dos 34 steps
+   de `move-block` + `compile`, tropeço 7) e `KeepOnError` impede que um bloco inválido derrube o
+   lote (tropeço 5). Medido no `FP01`: a fonte com `TITLE` gera **as duas** FCs — a ruim entra
+   inconsistente, e quem acusa é o `compile` seguinte. Resolve R6.
+2. ~~**`import-source` roteando `TYPE` para `plc.TypeGroup`.**~~ **Feito em 2026-08-07.** Fonte que
+   só declara `TYPE` vai para a pasta de UDT (overload `PlcTypeUserGroup`); fonte mista com
+   `--folder` é recusada com mensagem (um `--folder` não endereça os dois grupos). O relatório
+   deixou de mentir: `generated` procura em blocos **e** em UDTs. Destrava R1/R2 — UDT em pasta,
+   por fonte SCL, sem GUI.
 3. **`import-ladder` não converte chamada de bloco.** Suporta só booleano puro
    (`LadConverter.cs:11-15`) e rejeita `#locais`. É a razão real de OB1 ter saído em SCL: não havia
    caminho para LAD sem clonar um molde da biblioteca. Suportar `"FC"();` e

@@ -9,6 +9,7 @@ using Siemens.Engineering;
 using Siemens.Engineering.Compiler;
 using Siemens.Engineering.SW;
 using Siemens.Engineering.SW.Blocks;
+using Siemens.Engineering.SW.ExternalSources;
 using Siemens.Engineering.SW.Tags;
 using Siemens.Engineering.SW.Types;
 
@@ -610,8 +611,14 @@ namespace Tia.Core
             return result;
         }
 
-        /// <summary>SCL/AWL/DB/UDT source → blocks via ExternalSourceGroup + GenerateBlocksFromSource.</summary>
-        public static object ImportSource(PlcSoftware plc, string file, bool apply)
+        /// <summary>
+        /// SCL/AWL/DB/UDT source → blocks (ou UDTs) via ExternalSourceGroup + GenerateBlocksFromSource.
+        /// Com folder, o objeto nasce na pasta certa — sem ele cai na raiz e exige move-block depois.
+        /// KeepOnError: fonte com um bloco inválido não derruba mais o lote inteiro — o bloco ruim
+        /// entra inconsistente (medido: `TITLE` numa FC gera as duas, não zero) e quem acusa é o
+        /// compile seguinte. A exceção aqui é só para nome declarado que não materializou.
+        /// </summary>
+        public static object ImportSource(PlcSoftware plc, string file, string folder, bool apply)
         {
             var full = RequireFile(file);
             var ext = Path.GetExtension(full).ToLowerInvariant();
@@ -620,37 +627,71 @@ namespace Tia.Core
                 throw new InvalidOperationException(
                     "Unsupported source extension '" + ext + "'. Use: " + string.Join(", ", known));
 
-            var declared = SourceBlockNames(full);
+            var types = SourceDeclNames(full, true);
+            var blocks = SourceDeclNames(full, false);
+            var declared = blocks.Concat(types).ToList();
             var result = new Dictionary<string, object>
             {
                 { "file", full },
-                { "blocks", declared },
+                { "folder", folder },
+                { "blocks", blocks },
+                { "types", types },
                 { "applied", apply },
             };
-            if (apply)
+            if (!apply) return result;
+
+            if (!string.IsNullOrEmpty(folder) && types.Count > 0 && blocks.Count > 0)
+                throw new InvalidOperationException(
+                    "Source declares both TYPE and blocks — --folder targets one group only "
+                    + "(PLC data types vs Program blocks). Split the source in two files.");
+
+            var sources = plc.ExternalSourceGroup.ExternalSources;
+            var sourceName = Path.GetFileName(full); // extension on the name tells Openness the source type
+            sources.Find(sourceName)?.Delete();
+            var source = sources.CreateFromFile(sourceName, full);
+            string genError = null;
+            try
             {
-                var sources = plc.ExternalSourceGroup.ExternalSources;
-                var sourceName = Path.GetFileName(full); // extension on the name tells Openness the source type
-                sources.Find(sourceName)?.Delete();
-                var source = sources.CreateFromFile(sourceName, full);
-                try
-                {
-                    source.GenerateBlocksFromSource();
-                }
-                finally
-                {
-                    source.Delete(); // source is scaffolding; generated blocks stay
-                }
-                result["generated"] = declared.Where(n => FindBlock(plc, n) != null).ToList();
+                if (string.IsNullOrEmpty(folder))
+                    source.GenerateBlocksFromSource(GenerateBlockOption.KeepOnError);
+                else if (types.Count > 0)
+                    source.GenerateBlocksFromSource(
+                        (PlcTypeUserGroup)ResolveTypeFolder(plc, folder, true), GenerateBlockOption.KeepOnError);
+                else
+                    source.GenerateBlocksFromSource(
+                        (PlcBlockUserGroup)ResolveFolder(plc, folder, true), GenerateBlockOption.KeepOnError);
             }
-            return result;
+            catch (Exception ex)
+            {
+                genError = ex.Message; // o que já foi gerado fica; a lista sai no throw abaixo
+            }
+            finally
+            {
+                source.Delete(); // source is scaffolding; generated objects stay
+            }
+
+            var generated = declared.Where(n => Generated(plc, n)).ToList();
+            var missing = declared.Where(n => !Generated(plc, n)).ToList();
+            result["generated"] = generated;
+            if (missing.Count == 0 && genError == null) return result;
+
+            throw new InvalidOperationException(
+                "Source generation incomplete. Missing: " + string.Join(", ", missing)
+                + (generated.Count > 0 ? " | kept: " + string.Join(", ", generated) : "")
+                + (genError != null ? " | " + genError : ""));
         }
 
-        /// <summary>Block/type names declared in a source file (dry-run report; not a full parser).</summary>
-        private static List<string> SourceBlockNames(string file)
+        private static bool Generated(PlcSoftware plc, string name)
         {
+            return FindBlock(plc, name) != null || FindType(plc.TypeGroup, name) != null;
+        }
+
+        /// <summary>Nomes declarados numa fonte: types=true → só TYPE, false → só bloco (não é parser completo).</summary>
+        private static List<string> SourceDeclNames(string file, bool types)
+        {
+            var keywords = types ? "TYPE" : "FUNCTION_BLOCK|ORGANIZATION_BLOCK|DATA_BLOCK|FUNCTION";
             var rx = new Regex(
-                @"^\s*(?:FUNCTION_BLOCK|ORGANIZATION_BLOCK|DATA_BLOCK|FUNCTION|TYPE)\s+(?:""([^""]+)""|([^\s:]+))",
+                @"^\s*(?:" + keywords + @")\s+(?:""([^""]+)""|([^\s:]+))",
                 RegexOptions.IgnoreCase | RegexOptions.Multiline);
             return rx.Matches(File.ReadAllText(file)).Cast<Match>()
                 .Select(m => m.Groups[1].Success ? m.Groups[1].Value : m.Groups[2].Value)

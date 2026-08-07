@@ -75,7 +75,7 @@ namespace Tia.Cli
                         "set-memory-bytes --device X [--system 1] [--clock 0] [--apply]  (habilita FirstScan/AlwaysTRUE/Clock_1Hz na CPU)",
                         "export-cax [--out DIR]", "import-cax --file F.aml [--apply]" } },
                     { "write", new[] { "import-block --file F [--folder A/B] [--replace OLD=NEW ...] [--apply]",
-                        "import-source --file F.scl [--apply]",
+                        "import-source --file F.scl [--folder A/B] [--apply]  (bloco nasce na pasta, sem move-block; fonte só de TYPE vai pra pasta de UDT. KeepOnError: bloco inválido entra inconsistente em vez de derrubar o lote — compile depois pra ver o erro)",
                         "import-ladder --file F.scl [--name N] [--folder A/B] [--apply]  (SCL subset → LAD; dry-run works without TIA)",
                         "import-tags --file F [--folder A/B] [--apply]",
                         "add-tag --table T --name N --type Bool --address %M10.0 [--comment C] [--apply]  "
@@ -392,7 +392,8 @@ namespace Tia.Cli
                         break;
                     case "import-source":
                         using (WriteLock(session, apply, verb))
-                            result = Core.Ops.ImportSource(session.GetPlc(plcName), Require(args, "--file"), apply);
+                            result = Core.Ops.ImportSource(session.GetPlc(plcName), Require(args, "--file"),
+                                OptionValue(args, "--folder"), apply);
                         break;
                     case "create-folder":
                         using (WriteLock(session, apply, verb))

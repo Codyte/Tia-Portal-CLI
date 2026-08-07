@@ -67,6 +67,11 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
     tabelas + 13 UDTs, contra ~150 KB do JSON equivalente, em 4s. Depois vem verbo que responde
     pergunta (`trace`, `xref`, `explain-block`, `find --pattern`). `snapshot` (251 KB) e
     `find --kind tag` (821 KB) são volume bruto: sempre `--out-file` + grep, nunca leitura direta.
+  - **Telegrama de drive SINAMICS = `insert-telegram`, nunca `plug-module`.** Não é submódulo de
+    catálogo: o drive object tem `TelegramComposition` própria, então não existe TypeIdentifier de
+    "Standard telegram 20" pra procurar. `list-telegrams --device X` mostra os drive objects e o
+    que já está posto; o dry-run devolve `canInsert`. Vale só pra família System (Startdrive) — o
+    G120X **GSD** carrega telegrama como submódulo plugado de verdade, e aí é `plug-module`.
   - `tia doctor` = preflight dos 6 verbos antes de qualquer smoke.
 - Smoke test exige TIA Portal aberto com projeto de teste — confirmar com o usuário antes.
 
@@ -81,6 +86,21 @@ diferença entre famílias de CPU, assinatura de instrução. O custo é ~1 s e 
 descobrir no braço foi metade de uma sessão. Busca casa por **AND de palavras no título** (o índice
 não tem corpo): termo que só existe no texto dá 0 hits — achar o tópico plausível e ler com
 `--topic`.
+
+**Para a API em si, `--sdk` vem antes do `--search`.** `python scripts/tia-help.py --sdk "termo"`
+busca nos **31448 membros documentados** do IntelliSense XML das 14 assemblies do Openness
+(`PublicAPI\V21\net48\*.xml`) e devolve `Assembly|assinatura|summary`. Duas coisas que o índice do
+F1 não dá: **assinatura exata** de método/propriedade e **casamento no corpo** do texto, não só no
+título. É local (sem serviço, sem rede) e responde "existe API pra isso?" em um comando —
+`--sdk "insert main telegram"` acha `TelegramComposition.InsertMainTelegram(System.Int32)`, que meia
+sessão de sondagem no braço não achou. Índice em `workspace/sdk-index.txt` (5,8 MB, montado na 1ª
+busca ou com `--sdk-index`).
+
+**Se o `--sdk` não achar, a assembly pode não estar em `lib/`.** O gate 3 do `init.ps1` copia as 4
+que o build referencia (Base, Step7, WinCCUnified, Startdrive); a instalação tem 14. O `--sdk`
+indexa as 14 direto da instalação, então ele enxerga API que o projeto ainda não compila — achou
+lá e não compila aqui = acrescentar a DLL em `$dllNames` e a `<Reference>` no `Tia.Core.csproj`
+(o resolver de runtime do `Program.cs` já acha qualquer `Siemens.Engineering.*` sozinho).
 
 ## Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto)
 

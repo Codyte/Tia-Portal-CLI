@@ -559,6 +559,8 @@ projeto. O que a arqueologia dos AML já responde, sem sondar a API:
 - Telegrama do lado GSD: `.../SM/IDS_TEL20` plugado em `DRIVE_1` posição 2. Do lado System (G120-2)
   o identificador do `Standard telegram 20, PZD-2/6` **não está na ajuda** nem em nenhum AML/XML do
   repo (Insular tem 30 G120 e nenhum telegrama plugado) — daí o verbo `plug-module`.
+  **⚠️ Conclusão revista em 2026-08-07 — ver "Telegrama do G120" abaixo. O identificador não está
+  em lugar nenhum porque não existe: telegrama de drive System não é submódulo de catálogo.**
 
 **Verbos novos** (`src/Tia.Core/Hardware.cs`):
 - `plug-module --device X [--item I] [--type TID] [--name N] [--pos P] [--apply]` — `PlugNew` da
@@ -583,6 +585,40 @@ projeto. O que a arqueologia dos AML já responde, sem sondar a API:
   atributos (`InterfaceOperatingMode`, `PnSubslotNumber`, `PrioritizedStartup`…) e o head 16
   (`PlantDesignation`, `LocationIdentifier`…) — **nenhum de telegrama**. É submódulo plugável, e o
   identificador de catálogo dele só sai plugando um na GUI e lendo o `TypeIdentifier`.
+  (A última frase estava errada — ver a seção seguinte.)
+
+### Telegrama do G120: nunca foi `plug-module` — ✅ 2026-08-07
+
+A busca pelo TypeIdentifier de `Standard telegram 20` falhou em três frentes (ajuda do F1, AML do
+AsBuilt, `list-attrs`) por um motivo só: **telegrama de drive System não é submódulo de catálogo**.
+O drive object expõe uma composição própria, e é ela que insere o telegrama:
+
+```
+Siemens.Engineering.MC.Drives.TelegramComposition.CanInsertTelegram(Int32, TelegramType)
+Siemens.Engineering.MC.Drives.TelegramComposition.InsertTelegram(Int32, TelegramType)
+```
+
+Caminho: `deviceItem.GetService<DriveObjectContainer>()` → `.DriveObjects` → `driveObj.Telegrams`.
+`TelegramType` = Main / Supplementary / Additional / Safety / Torque / Edge.
+
+**Por que ficou invisível tantas sessões**: a API mora em `Siemens.Engineering.Startdrive.dll`, e o
+gate 3 do `init.ps1` copiava só 3 das 14 assemblies do `PublicAPI` (Base, Step7, WinCCUnified). Não
+era limite de Openness nem de documentação — era assembly que o projeto nunca referenciou. A pista
+veio de `Czarnak/totally-integrated-claude` (MIT), e foi confirmada direto no
+`Siemens.Engineering.Startdrive.xml` da instalação local antes de virar código.
+
+**O que mudou**:
+- `init.ps1` `$dllNames` e `Tia.Core.csproj` agora incluem `Startdrive`. O resolver de runtime do
+  `Program.cs` já era genérico por nome — nenhuma mudança lá.
+- `src/Tia.Core/Drives.cs`: `list-telegrams --device X` (read-only, drive objects + telegramas de
+  cada um) e `insert-telegram --device X --number N [--type Main] [--item I] [--drive-object D]
+  [--apply]`. Dry devolve `canInsert`; telegrama igual já presente é `skip`, telegrama diferente do
+  mesmo tipo é `conflict` + `canChangeTelegram` (trocar é outra decisão, não implícita).
+- O caminho GSD **continua sendo `plug-module`**: o G120X do AsBuilt carrega `.../SM/IDS_TEL20`
+  como submódulo plugado de verdade. São duas famílias com dois mecanismos, não um erro de um lado.
+
+Falta o smoke contra projeto de teste com um G120-2 (`OrderNumber:6SL3244-0BB12-1FA0/4.7.13`) —
+é o que fecha os 4 erros da régua do ciclo da biblioteca.
 
 ### Lint de camada no `audit` — ✅ 2026-07-28
 
@@ -661,11 +697,22 @@ cobre só %M; endereço físico continua manual, de propósito.
   `Scripts_Siemens/` excluído do público — removido do tracking + scrubado do histórico
   via `git-filter-repo` (verificado: clone fresh sem o diretório em working tree ou histórico).
 - Smoke F1 na máquina do TIA (user leva o exe; primeira execução dispara popup Openness — permitir).
-- **`totally-integrated-claude`** (https://github.com/Czarnak/totally-integrated-claude) — repo de
-  terceiro sobre TIA Portal + Claude. **Decisão (2026-08-06): só registrar agora, avaliar depois.**
-  Não foi lido nem clonado nesta sessão; nada dele entra no CLI enquanto não houver leitura da
-  licença e do que ele resolve que o `tia` ainda não resolve. Ver quando o ciclo da biblioteca
-  fechar, não antes.
+- ~~**`totally-integrated-claude`**~~ ✅ avaliado 2026-08-07
+  (https://github.com/Czarnak/totally-integrated-claude, **MIT**). Não é CLI concorrente: são 17
+  skills de documentação roteada da API (113 `.md`), extraídas do IntelliSense XML do V21, mais um
+  MCP server à parte. Zero código reaproveitado; o valor foi apontar API que não enxergávamos.
+  Rendeu: (a) o telegrama do G120 — ver seção própria; (b) `lib/` deixava 11 das 14 assemblies de
+  fora; (c) a ideia do índice `--sdk` no `tia-help.py`. Não vale pegar: o wheel Python
+  `siemens_tia_scripting` (caminho paralelo ao nosso C#) nem o framework de skills roteadas
+  (`VERBS.md` + `tree` custa menos).
+  Ideia ainda em aberto, do MCP deles: **`currentStateHash` no dry-run**. O preview devolve um hash
+  do estado e o apply só passa se bater — pega dry-run velho ou feito contra outro projeto. Nosso
+  dry/`--apply` não tem nada disso. Caberia nos destrutivos (`delete-device`, `move-block`,
+  `install-lib`).
+- **Assemblies do Openness fora do `lib/`** (a instalação tem 14, o build referencia 4): `Safety` +
+  `SafetyValidation` (F-blocks), `TeamcenterGateway`, `WinCC` clássico (só temos Unified) e as 5 de
+  `AddIn`. Nenhuma necessária hoje; acrescentar quando um verbo pedir — o `--sdk` do `tia-help.py`
+  já indexa as 14, então dá pra confirmar a API antes de mexer no csproj.
 
 ## Migração do repo para skill (2026-08-06)
 

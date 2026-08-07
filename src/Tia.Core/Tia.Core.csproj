@@ -22,6 +22,12 @@
       <HintPath>..\..\lib\Siemens.Engineering.WinCCUnified.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <!-- Startdrive carries the SINAMICS object model: drive objects, parameters and telegrams.
+         Telegrams are not catalog submodules you plug — they have their own TelegramComposition. -->
+    <Reference Include="Siemens.Engineering.Startdrive">
+      <HintPath>..\..\lib\Siemens.Engineering.Startdrive.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>

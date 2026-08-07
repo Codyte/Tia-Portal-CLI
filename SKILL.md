@@ -1,7 +1,7 @@
 ---
 name: tia
 description: >-
-  Dirigir o TIA Portal (Siemens) pela linha de comando via Openness — CLI `tia`, 67 verbos com
+  Dirigir o TIA Portal (Siemens) pela linha de comando via Openness — CLI `tia`, 69 verbos com
   JSON na entrada e na saída: ler projeto, exportar/importar bloco, tags, hardware, compilar,
   replicar FC de acionamento/alarme/instrumento, instalar biblioteca de blocos num PLC.
   Use sempre que a conversa envolver TIA Portal, Openness, PLC S7-1500, bloco FB/FC/OB/DB, UDT,
@@ -83,6 +83,10 @@ pwsh "$env:TIA_CLI_HOME\scripts\tia.ps1" tree --plc "CPU1"      # de qualquer di
   bloco inconsistente — `compile --apply` antes de `clone`, `diff-block`, `explain-block` e dos
   4 geradores.
 - **Mais de um Portal aberto** → todo verbo exige `--portal <projeto|PID>`.
+- **Telegrama de drive SINAMICS é `insert-telegram`, não `plug-module`.** Família System
+  (Startdrive) não tem TypeIdentifier de catálogo pra telegrama — o drive object tem
+  `TelegramComposition` própria. Só o G120X **GSD** carrega telegrama como submódulo plugado.
+  Procurar o identificador inexistente já custou várias sessões.
 - **`rebuild.ps1` muda o hash do `tia.exe`** → o Portal já aberto abre um **diálogo modal de
   autorização** na tela. Chamada pendurada com CPU ~0 = alguém precisa clicar; não é bug de API.
 
@@ -100,8 +104,9 @@ pwsh "$env:TIA_CLI_HOME\scripts\tia.ps1" tree --plc "CPU1"      # de qualquer di
 
 | Preciso de | Arquivo |
 |---|---|
-| assinatura dos 67 verbos | `$env:TIA_CLI_HOME\docs\VERBS.md` (~90 linhas, gerado do help) |
+| assinatura dos 69 verbos | `$env:TIA_CLI_HOME\docs\VERBS.md` (~90 linhas, gerado do help) |
 | decisões, fases, o que já foi medido | `$env:TIA_CLI_HOME\docs\PLANO.md` |
 | regras de operação do repo | `$env:TIA_CLI_HOME\CLAUDE.md` |
 | macros de fluxo | `$env:TIA_CLI_HOME\scripts\` (`prep-project`, `raio-x`, `install-lib`, `bake-lib`) |
+| assinatura de uma API Openness | `python "$env:TIA_CLI_HOME\scripts\tia-help.py" --sdk "termo"` — 31448 membros do IntelliSense XML das 14 assemblies, casa no corpo do summary. **Primeira parada; local, sem serviço.** |
 | como a API Openness se comporta | `python "$env:TIA_CLI_HOME\scripts\tia-help.py" --search "termo"` — 1083 tópicos da ajuda oficial do F1. **Usar antes de sondar por tentativa e erro.** |

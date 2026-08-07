@@ -25,7 +25,8 @@
 # resolve (grupo + logon, TIA Portal instalado) e automatiza o resto (lib/, build, whitelist,
 # PATH). Idempotente — re-rodar depois de git pull.
 # Uso: pwsh scripts/init.ps1  |  pwsh scripts/init.ps1 -Check
-param([switch]$Check)
+# -DotSourceOnly: define as funcoes e sai sem tocar em nada (o rebuild testa Resolve-RealPath).
+param([switch]$Check, [switch]$DotSourceOnly)
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path $PSScriptRoot
 $exe = Join-Path $repo 'src\Tia.Cli\bin\Debug\net48\tia.exe'
@@ -33,7 +34,8 @@ $skillDst = Join-Path $HOME '.claude\skills\tia'
 $ok = $true
 
 $libDir = Join-Path $repo 'lib'
-$dllNames = @('Siemens.Engineering.Base.dll', 'Siemens.Engineering.Step7.dll', 'Siemens.Engineering.WinCCUnified.dll')
+$dllNames = @('Siemens.Engineering.Base.dll', 'Siemens.Engineering.Step7.dll', 'Siemens.Engineering.WinCCUnified.dll',
+              'Siemens.Engineering.Startdrive.dll')
 $programFiles = [Environment]::GetFolderPath('ProgramFiles')
 $portalDirs = Get-ChildItem (Join-Path $programFiles 'Siemens\Automation') -Directory -Filter 'Portal V*' -ErrorAction SilentlyContinue |
     Sort-Object Name -Descending
@@ -55,22 +57,49 @@ function Test-Whitelisted {
     return $false
 }
 
+function Resolve-RealPath([string]$p) {
+    # Junction/symlink no meio do caminho faz comparacao por string mentir: aqui ~/.claude/skills
+    # e Junction pra ~/.agents/skills, entao o MESMO checkout tem dois nomes e os gates 7-9
+    # acusavam falta numa maquina correta -- mandando "mover o checkout", que quebraria tudo.
+    # .NET so resolve link na folha; o junction pode estar em qualquer segmento, dai a subida.
+    if (-not $p) { return $p }
+    $leaves = @()
+    $cur = [IO.Path]::GetFullPath($p)
+    while ($cur) {
+        $item = Get-Item -LiteralPath $cur -Force -ErrorAction SilentlyContinue
+        if ($item -and $item.LinkType -in 'Junction', 'SymbolicLink' -and $item.Target) {
+            $cur = [IO.Path]::GetFullPath(@($item.Target)[0])
+            continue                              # o alvo tambem pode ser link
+        }
+        $parent = Split-Path $cur -Parent
+        if (-not $parent) { break }               # chegou na raiz do volume
+        $leaves = , (Split-Path $cur -Leaf) + $leaves
+        $cur = $parent
+    }
+    if ($leaves) { [IO.Path]::GetFullPath((Join-Path $cur ($leaves -join '\'))) } else { $cur }
+}
+
 function Test-SkillInstalled {
     # O repo *e* a skill (submodulo de Codyte/skills): Claude Code le ~/.claude/skills/tia/SKILL.md.
     # Nada e copiado — checkout fora desse caminho deixa a skill desatualizada em silencio.
-    $repo.TrimEnd('\') -ieq $skillDst.TrimEnd('\')
+    (Resolve-RealPath $repo).TrimEnd('\') -ieq (Resolve-RealPath $skillDst).TrimEnd('\')
 }
 
 function Test-TasksCurrent {
     # A task grava o caminho absoluto do taskrun.ps1. Mover o repo mata a rota da sessao 0
     # ("No running TIA Portal instance found") ate re-registrar — sintoma identico ao de portal fechado.
+    $here = Resolve-RealPath $PSScriptRoot
     foreach ($n in 'TiaWhitelist', 'TiaSmokeRun') {
         $t = Get-ScheduledTask -TaskName $n -ErrorAction SilentlyContinue
         if (-not $t) { return $false }
-        if ($t.Actions.Arguments -notlike "*$PSScriptRoot*") { return $false }
+        # a task guarda o caminho como foi registrado; comparar depois de resolver os dois lados
+        $arg = ([regex]::Match($t.Actions.Arguments, '"([^"]+\\scripts)\\[^"\\]+\.ps1"')).Groups[1].Value
+        if (-not $arg -or (Resolve-RealPath $arg) -ine $here) { return $false }
     }
     return $true
 }
+
+if ($DotSourceOnly) { return }
 
 if ($Check) {
     # Read-only: nao copia, nao registra, nao builda. Exit 1 se faltar algo.
@@ -92,7 +121,8 @@ if ($Check) {
     Show 'tasks TiaWhitelist/TiaSmokeRun apontando pra este repo' (Test-TasksCurrent) `
         'rodar init.ps1 sem -Check (1 UAC)'
     Show 'shim tia no PATH do usuario' `
-        (([Environment]::GetEnvironmentVariable('Path', 'User') -split ';') -contains $PSScriptRoot) `
+        (([Environment]::GetEnvironmentVariable('Path', 'User') -split ';' |
+            Where-Object { $_ } | ForEach-Object { Resolve-RealPath $_ }) -contains (Resolve-RealPath $PSScriptRoot)) `
         'rodar init.ps1 sem -Check'
     Show 'repo esta em ~/.claude/skills/tia (= a skill)' (Test-SkillInstalled) `
         "mover este checkout pra $skillDst (submodulo de Codyte/skills) e rodar init.ps1 la"

@@ -361,6 +361,7 @@ namespace Tia.Core
             };
             if (apply)
             {
+                result["languagesActivated"] = EnsureCultures(ProjectOf(plc), XmlCultures(full), true);
                 var group = ResolveFolder(plc, folderPath, true);
                 group.Blocks.Import(new FileInfo(full), ImportOptions.Override);
             }
@@ -452,7 +453,10 @@ namespace Tia.Core
                 { "applied", apply },
             };
             if (apply)
+            {
+                result["languagesActivated"] = EnsureCultures(ProjectOf(plc), XmlCultures(full), true);
                 ResolveTagFolder(plc, folderPath, true).TagTables.Import(new FileInfo(full), ImportOptions.Override);
+            }
             return result;
         }
 
@@ -694,6 +698,17 @@ namespace Tia.Core
         /// morre com "Cannot import multilingual text with culture 'pt-BR' ... does not exist within
         /// the current project" — projeto novo nasce só com a cultura de instalação do TIA.
         /// </summary>
+        /// <summary>Projeto dono de um PLC — os imports precisam dele pra ativar cultura e não têm sessão.</summary>
+        internal static ProjectBase ProjectOf(PlcSoftware plc)
+        {
+            for (var node = ((IEngineeringObject)plc).Parent; node != null; node = node.Parent)
+            {
+                var project = node as ProjectBase;
+                if (project != null) return project;
+            }
+            throw new InvalidOperationException("Could not reach the project from the PLC software.");
+        }
+
         public static List<string> EnsureCultures(ProjectBase project, IEnumerable<string> cultures, bool apply)
         {
             var missing = new List<string>();

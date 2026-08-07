@@ -44,6 +44,7 @@
 - `list-telegrams --device X  (read-only: drive objects SINAMICS e telegramas de cada um)`
 - `insert-telegram --device X --number N [--type Main|Supplementary|Safety|Torque|Edge] [--item I] [--drive-object D] [--change] [--apply]  (--change troca o telegrama presente: G120 novo já vem com o 1)  (telegrama de drive NÃO é submódulo de catálogo — plug-module não coloca)`
 - `set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]`
+- `set-io-address --device X [--item I] [--io Input|Output] [--start N] [--apply]  (endereço inicial do módulo de I/O; não é atributo — set-attr não alcança, e o import-cax ignora. Sem --item: varre o device (sonda). Sem --start: só lista)`
 - `connect-subnet --device X --subnet S [--io-system IO] [--apply]`
 - `set-memory-bytes --device X [--system 1] [--clock 0] [--apply]  (habilita FirstScan/AlwaysTRUE/Clock_1Hz na CPU)`
 - `export-cax [--out DIR]`

@@ -195,6 +195,60 @@ namespace Tia.Core
             return result;
         }
 
+        // ---------- set-io-address ----------
+
+        /// <summary>
+        /// Start address of an I/O module. It is NOT an attribute of the DeviceItem (list-attrs
+        /// does not show it) and the CAx import silently ignores it on an existing device — the
+        /// only way in is DeviceItem.Addresses[i].StartAddress, and the Addresses live on the
+        /// submodule, not on the module the user names. Search item + descendants.
+        /// </summary>
+        public static object SetIoAddress(TiaSession session, string deviceName, string itemName,
+            string io, int? start, bool apply)
+        {
+            var device = FindDevice(session, deviceName);
+            var addresses = new List<Address>();
+            if (itemName == null)
+                // sem --item: varre o device inteiro. É a sonda — nome de item se repete
+                // (o drive object do G120 tem o mesmo nome do módulo) e o primeiro match perde
+                // o que interessa.
+                foreach (DeviceItem top in device.DeviceItems) CollectAddresses(top, addresses);
+            else
+                CollectAddresses(FindItem(device, itemName), addresses);
+            if (io != null)
+                addresses = addresses.Where(a => a.IoType.ToString()
+                    .Equals(io, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (addresses.Count == 0)
+                throw new InvalidOperationException("Item '" + itemName + "' has no "
+                    + (io ?? "I/O") + " address. Is it an I/O module?");
+            if (start != null && addresses.Count > 1)
+                throw new InvalidOperationException("Item '" + itemName + "' has "
+                    + addresses.Count + " addresses; pass --io Input or --io Output to pick one.");
+            var result = new Dictionary<string, object>
+            {
+                { "device", device.Name },
+                { "item", itemName ?? "(device)" },
+                { "addresses", addresses.Select(a => (object)new Dictionary<string, object>
+                    { { "ioType", a.IoType.ToString() }, { "start", a.StartAddress },
+                      { "lengthBits", a.Length } }).ToList() },
+                { "applied", apply },
+            };
+            if (start == null) return result;
+            result["start"] = start.Value;
+            if (apply)
+            {
+                addresses[0].StartAddress = start.Value;
+                result["newStart"] = addresses[0].StartAddress;
+            }
+            return result;
+        }
+
+        private static void CollectAddresses(DeviceItem item, List<Address> into)
+        {
+            foreach (Address a in item.Addresses) into.Add(a);
+            foreach (DeviceItem child in item.DeviceItems) CollectAddresses(child, into);
+        }
+
         // ---------- list-attrs ----------
 
         /// <summary>

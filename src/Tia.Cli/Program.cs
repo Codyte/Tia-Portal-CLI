@@ -68,6 +68,9 @@ namespace Tia.Cli
                             + "(--change troca o telegrama presente: G120 novo já vem com o 1)  "
                             + "(telegrama de drive NÃO é submódulo de catálogo — plug-module não coloca)",
                         "set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]",
+                        "set-io-address --device X [--item I] [--io Input|Output] [--start N] [--apply]  "
+                            + "(endereço inicial do módulo de I/O; não é atributo — set-attr não alcança, "
+                            + "e o import-cax ignora. Sem --item: varre o device (sonda). Sem --start: só lista)",
                         "connect-subnet --device X --subnet S [--io-system IO] [--apply]",
                         "set-memory-bytes --device X [--system 1] [--clock 0] [--apply]  (habilita FirstScan/AlwaysTRUE/Clock_1Hz na CPU)",
                         "export-cax [--out DIR]", "import-cax --file F.aml [--apply]" } },
@@ -545,6 +548,12 @@ namespace Tia.Cli
                             result = Core.Hardware.SetAddress(session, Require(args, "--device"),
                                 OptionValue(args, "--ip"), OptionValue(args, "--mask"),
                                 OptionValue(args, "--pn-name"), apply);
+                        break;
+                    case "set-io-address":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Hardware.SetIoAddress(session, Require(args, "--device"),
+                                OptionValue(args, "--item"), OptionValue(args, "--io"),
+                                ParseInt(OptionValue(args, "--start")), apply);
                         break;
                     case "set-memory-bytes":
                         using (WriteLock(session, apply, verb))

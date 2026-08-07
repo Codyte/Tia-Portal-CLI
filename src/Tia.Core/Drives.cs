@@ -62,6 +62,10 @@ namespace Tia.Core
                         { "type", Try(() => telegram.Type.ToString()) },
                         { "inputBytes", Try(() => telegram.GetSizeInBytes(AddressIoType.Input)) },
                         { "outputBytes", Try(() => telegram.GetSizeInBytes(AddressIoType.Output)) },
+                        // endereço no process image do CLP: o telegrama não aparece em
+                        // DeviceItem.Addresses (set-io-address não o alcança), só aqui
+                        { "attributes", Try(() => (object)telegram.GetAttributeInfos()
+                            .ToDictionary(i => i.Name, i => Try(() => telegram.GetAttribute(i.Name)))) },
                     });
                 return telegrams.Count;
             });

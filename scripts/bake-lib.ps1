@@ -26,15 +26,32 @@ $packages = $blocks.folder | Where-Object { $_ -ne $Root } |
     Sort-Object -Unique
 $loose = $blocks | Where-Object { $_.folder -eq $Root } | Select-Object -ExpandProperty name
 
+# UDT e tabela de tag citados no packages.json: sem eles na .al21, install-lib depende de XML solto
+# em library/ (payload gitignored) e clone limpo nao instala molde nenhum.
+$extras = @()
+$metaFile = Join-Path $script:Repo 'library/packages.json'
+if (Test-Path $metaFile) {
+    $meta = Get-Content $metaFile -Raw -Encoding UTF8 | ConvertFrom-Json
+    foreach ($p in $meta.PSObject.Properties) {
+        if ($p.Name -eq '_doc') { continue }
+        $extras += @($p.Value.types)
+        $extras += @($p.Value.tags | ForEach-Object { $_.file } |
+            ForEach-Object { [IO.Path]::GetFileNameWithoutExtension($_) })
+    }
+}
+$extras = @($extras | Where-Object { $_ } | Sort-Object -Unique)
+
 $ops = @()
 foreach ($p in $packages) { $ops += , @('add-master-copy', '--plc', $Plc, '--file', $File,
     '--folder', "$Root/$p", '--lib-folder', $Root, '--apply') }
 foreach ($b in $loose)    { $ops += , @('add-master-copy', '--plc', $Plc, '--file', $File,
     '--name', $b, '--lib-folder', $Root, '--apply') }
+foreach ($e in $extras)   { $ops += , @('add-master-copy', '--plc', $Plc, '--file', $File,
+    '--name', $e, '--lib-folder', $Root, '--apply') }
 
 $orphans = @()
 if ($Prune -and (Test-Path (Join-Path $script:Repo $File))) {
-    $want = @($packages) + @($loose)
+    $want = @($packages) + @($loose) + @($extras)
     $orphans = @((Invoke-Tia list-library --file $File @portalArgs | ConvertFrom-Json).masterCopies |
         Where-Object { $_.folder -eq $Root -and $_.name -notin $want } |
         Select-Object -ExpandProperty name)
@@ -43,6 +60,7 @@ if ($Prune -and (Test-Path (Join-Path $script:Repo $File))) {
 
 Write-Host "pacotes: $($packages -join ', ')"
 Write-Host "blocos soltos (nível 1): $($loose -join ', ')"
+if ($extras) { Write-Host "UDT/tabelas do packages.json: $($extras -join ', ')" }
 if ($orphans) { Write-Host "órfãos a apagar da library: $($orphans -join ', ')" }
 if (-not $Apply) { Write-Host "dry-run — repita com -Apply para gravar em $File"; exit 0 }
 

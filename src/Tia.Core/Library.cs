@@ -173,12 +173,18 @@ namespace Tia.Core
             string sourceName;
             if (!string.IsNullOrEmpty(blockName))
             {
-                var block = Ops.FindBlock(plc, blockName);
-                if (block == null) throw new InvalidOperationException("Block '" + blockName + "' not found.");
-                source = block as IMasterCopySource;
+                // bloco, UDT ou tabela de tag — os três são IMasterCopySource, e o molde precisa
+                // dos três: sem UDT e tag na .al21, install-lib depende de XML solto fora do Git
+                object found = (object)Ops.FindBlock(plc, blockName)
+                    ?? (object)Ops.FindType(plc.TypeGroup, blockName)
+                    ?? (object)Ops.FindTagTable(plc.TagTableGroup, blockName);
+                if (found == null)
+                    throw new InvalidOperationException("'" + blockName
+                        + "' not found as block, PLC data type or tag table.");
+                source = found as IMasterCopySource;
                 if (source == null)
-                    throw new InvalidOperationException("Block '" + blockName + "' is not a master copy source.");
-                sourceName = block.Name;
+                    throw new InvalidOperationException("'" + blockName + "' is not a master copy source.");
+                sourceName = ((IEngineeringObject)found).GetAttribute("Name") as string;
             }
             else
             {

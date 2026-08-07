@@ -617,7 +617,23 @@ veio de `Czarnak/totally-integrated-claude` (MIT), e foi confirmada direto no
 - O caminho GSD **continua sendo `plug-module`**: o G120X do AsBuilt carrega `.../SM/IDS_TEL20`
   como submódulo plugado de verdade. São duas famílias com dois mecanismos, não um erro de um lado.
 
-Falta o smoke contra projeto de teste com um G120-2 (`OrderNumber:6SL3244-0BB12-1FA0/4.7.13`) —
+**Smoke em `Base_tia_cli` (2026-08-07), 3 ramos verdes** contra `INVERSOR_S-01A CCM1`
+(station `SINAMICS G_46`), que já tem o telegrama posto:
+
+| chamada | resultado |
+|---|---|
+| `list-telegrams` | `MainTelegram #20`, 12 bytes in / 4 out |
+| `insert-telegram --number 20` | `skip (already present)` |
+| `insert-telegram --number 1` | `conflict`, `presentNumber: 20`, `canChangeTelegram: true` |
+
+**`DriveObjectNumber` pode estourar em vez de devolver valor**: nesses G120 responde
+`Drive object number could not be retrieved` (`EngineeringTargetInvocationException`) e derrubava o
+verbo inteiro. Toda leitura de atributo de drive passa por `Try()` e degrada pra
+`"unavailable: <msg>"` — um drive ilegível não pode matar a listagem. Identificação real é o caminho
+do item, não o número.
+
+Falta o único ramo que escreve: `canInsert` + `--apply` num G120-2 **sem** telegrama
+(`OrderNumber:6SL3244-0BB12-1FA0/4.7.13`), que só existe depois do `new-plc.ps1` numa CPU virgem —
 é o que fecha os 4 erros da régua do ciclo da biblioteca.
 
 ### Lint de camada no `audit` — ✅ 2026-07-28
@@ -705,10 +721,13 @@ cobre só %M; endereço físico continua manual, de propósito.
   fora; (c) a ideia do índice `--sdk` no `tia-help.py`. Não vale pegar: o wheel Python
   `siemens_tia_scripting` (caminho paralelo ao nosso C#) nem o framework de skills roteadas
   (`VERBS.md` + `tree` custa menos).
-  Ideia ainda em aberto, do MCP deles: **`currentStateHash` no dry-run**. O preview devolve um hash
-  do estado e o apply só passa se bater — pega dry-run velho ou feito contra outro projeto. Nosso
-  dry/`--apply` não tem nada disso. Caberia nos destrutivos (`delete-device`, `move-block`,
-  `install-lib`).
+  **`currentStateHash` no dry-run — descartado (2026-08-07).** No MCP deles o preview devolve um
+  hash do estado e o apply só passa se bater. Não traduz pro nosso shape: o MCP é um servidor vivo
+  que segura estado entre preview e apply, enquanto cada `tia` é um attach novo — guardar o hash
+  exigiria um store de nonce em disco, invalidação e um caminho de erro novo em todo verbo de
+  escrita, para proteger uma janela que já é curta. E o que ela protege, `run --script` resolve de
+  graça: dry e apply no mesmo attach, sem intervalo onde o projeto mude. Reabrir só se aparecer
+  dry-run reaproveitado entre sessões, que é quando a janela deixa de ser curta.
 - **Assemblies do Openness fora do `lib/`** (a instalação tem 14, o build referencia 4): `Safety` +
   `SafetyValidation` (F-blocks), `TeamcenterGateway`, `WinCC` clássico (só temos Unified) e as 5 de
   `AddIn`. Nenhuma necessária hoje; acrescentar quando um verbo pedir — o `--sdk` do `tia-help.py`

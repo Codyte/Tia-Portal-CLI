@@ -38,23 +38,41 @@ namespace Tia.Core
             }
         }
 
+        /// <summary>
+        /// Reading a drive attribute can throw instead of returning a value — a G120 with no
+        /// commissioning data answers `DriveObjectNumber` with
+        /// "Drive object number could not be retrieved". One unreadable drive must not take the
+        /// whole listing down, so every read here degrades to null.
+        /// </summary>
+        private static object Try<T>(Func<T> read)
+        {
+            try { return read(); }
+            catch (Exception e) { return "unavailable: " + e.Message.Split('\n')[0].Trim(); }
+        }
+
         private static Dictionary<string, object> Describe(string itemPath, DriveObject drive)
         {
             var telegrams = new List<object>();
-            foreach (Telegram telegram in drive.Telegrams)
-                telegrams.Add(new Dictionary<string, object>
-                {
-                    { "number", telegram.TelegramNumber },
-                    { "type", telegram.Type.ToString() },
-                    { "inputBytes", telegram.GetSizeInBytes(AddressIoType.Input) },
-                    { "outputBytes", telegram.GetSizeInBytes(AddressIoType.Output) },
-                });
-            return new Dictionary<string, object>
+            var listing = Try(() =>
+            {
+                foreach (Telegram telegram in drive.Telegrams)
+                    telegrams.Add(new Dictionary<string, object>
+                    {
+                        { "number", Try(() => telegram.TelegramNumber) },
+                        { "type", Try(() => telegram.Type.ToString()) },
+                        { "inputBytes", Try(() => telegram.GetSizeInBytes(AddressIoType.Input)) },
+                        { "outputBytes", Try(() => telegram.GetSizeInBytes(AddressIoType.Output)) },
+                    });
+                return telegrams.Count;
+            });
+            var result = new Dictionary<string, object>
             {
                 { "item", itemPath },
-                { "driveObject", drive.DriveObjectNumber },
+                { "driveObject", Try(() => (object)drive.DriveObjectNumber) },
                 { "telegrams", telegrams },
             };
+            if (!(listing is int)) result["telegramsError"] = listing;
+            return result;
         }
 
         // ---------- list-telegrams ----------
@@ -91,15 +109,16 @@ namespace Tia.Core
                 drives = drives.Where(d => d.Key.Split('/').Last()
                     .Equals(itemName, StringComparison.OrdinalIgnoreCase)).ToList();
             if (driveObjectNumber.HasValue)
-                drives = drives.Where(d => d.Value.DriveObjectNumber == driveObjectNumber.Value).ToList();
+                drives = drives.Where(d => Equals(Try(() => (object)d.Value.DriveObjectNumber),
+                                                  driveObjectNumber.Value)).ToList();
 
             if (drives.Count == 0)
                 throw new InvalidOperationException("No drive object in '" + device.Name
                     + "' matches --item/--drive-object. Run tia list-telegrams --device " + device.Name + ".");
             if (drives.Count > 1)
                 throw new InvalidOperationException("Device '" + device.Name + "' has " + drives.Count
-                    + " drive objects (" + string.Join(", ", drives.Select(d => d.Key + "#" + d.Value.DriveObjectNumber))
-                    + "). Narrow it with --item or --drive-object.");
+                    + " drive objects (" + string.Join(", ", drives.Select(d => d.Key + "#"
+                        + Try(() => (object)d.Value.DriveObjectNumber))) + "). Narrow it with --item or --drive-object.");
 
             var target = drives[0];
             var telegrams = target.Value.Telegrams;
@@ -108,7 +127,7 @@ namespace Tia.Core
             {
                 { "device", device.Name },
                 { "item", target.Key },
-                { "driveObject", target.Value.DriveObjectNumber },
+                { "driveObject", Try(() => (object)target.Value.DriveObjectNumber) },
                 { "number", number },
                 { "type", type.ToString() },
                 { "applied", apply },

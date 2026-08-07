@@ -20,5 +20,7 @@ aqui.
   gravada por caminho do exe e a task `TiaSmokeRun` guarda o caminho absoluto do `taskrun.ps1`.
   Mover o checkout exige `pwsh scripts/init.ps1` de novo (re-registra a task e refaz a whitelist);
   sem isso a rota da sessão 0 devolve `No running TIA Portal instance found` com o Portal aberto.
+  Os dois caminhos são o mesmo checkout: `~/.claude/skills` é **Junction** para `~/.agents/skills`
+  (`~/.agents/skills/tia` é o diretório real). Ver dois caminhos não é clone duplicado.
 - **`--out-file` nunca em `$env:TEMP`** — vira caminho 8.3 (`CARLOS~1`) que o Python não abre.
   Usar `workspace/`.

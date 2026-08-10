@@ -22,6 +22,10 @@ aqui.
   sem isso a rota da sessão 0 devolve `No running TIA Portal instance found` com o Portal aberto.
   Os dois caminhos são o mesmo checkout: `~/.claude/skills` é **Junction** para `~/.agents/skills`
   (`~/.agents/skills/tia` é o diretório real). Ver dois caminhos não é clone duplicado.
+- **`run --script` não abre nem cria projeto, e attach lazy foi descartado** (2026-08-10) — o attach
+  é 1x, antes do 1º step. Abrir projeto custa 2-4 min contra ~7 s de uma chamada solta, então o
+  refactor do `Run()` não se paga. Chamar `open-project`/`create-project` (ou `use-project.ps1`)
+  antes; a mensagem de fail-fast já ensina isso.
 - **`--out-file` nunca em `$env:TEMP`** — vira caminho 8.3 (`CARLOS~1`) que o Python não abre.
   Usar `workspace/`.
 - **Macro que recebe caminho (`use-project.ps1`, `prep-project.ps1`) exige caminho absoluto** — o

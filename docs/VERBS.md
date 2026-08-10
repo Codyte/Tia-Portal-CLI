@@ -76,6 +76,7 @@
 
 ## library
 - `list-library --file X.al19`
+- `create-library --file X.al21 [--apply]  (library vazia; o Portal cria <pasta>/<nome>/<nome>.al21 — caminho real volta em "path")`
 - `import-master-copy --file X.al19 --name M [--folder A/B] [--apply] [--force]  (--force: apaga o de mesmo nome e recria — é como se atualiza pacote já instalado)`
 - `add-master-copy --file X.al21 (--name BLOCO | --folder A/B) [--lib-folder L] [--apply]  (PLC → library; --folder = pasta inteira = pacote; substitui se já existir)`
 - `delete-master-copy --file X.al21 --name M [--apply]`

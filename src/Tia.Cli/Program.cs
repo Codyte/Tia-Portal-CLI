@@ -101,6 +101,8 @@ namespace Tia.Cli
                         "gen-alarm-fc [--config F] [--out DIR] [--apply]",
                         "replicate-instruments --config F [--out DIR] [--apply]" } },
                     { "library", new[] { "list-library --file X.al19",
+                        "create-library --file X.al21 [--apply]" +
+                        "  (library vazia; o Portal cria <pasta>/<nome>/<nome>.al21 — caminho real volta em \"path\")",
                         "import-master-copy --file X.al19 --name M [--folder A/B] [--apply] [--force]" +
                         "  (--force: apaga o de mesmo nome e recria — é como se atualiza pacote já instalado)",
                         "add-master-copy --file X.al21 (--name BLOCO | --folder A/B) [--lib-folder L] [--apply]" +
@@ -468,6 +470,10 @@ namespace Tia.Cli
                     case "import-tags":
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.ImportTagTable(session.GetPlc(plcName), Require(args, "--file"), OptionValue(args, "--folder"), apply);
+                        break;
+                    case "create-library":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Library.Create(session, Require(args, "--file"), apply);
                         break;
                     case "list-library":
                         result = Core.Library.List(session, Require(args, "--file"));

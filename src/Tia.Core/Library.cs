@@ -39,6 +39,28 @@ namespace Tia.Core
                 write ? OpenMode.ReadWrite : OpenMode.ReadOnly);
         }
 
+        /// <summary>Creates an empty user global library (.al2x). bake-lib needs the file to exist.</summary>
+        public static object Create(TiaSession session, string file, bool apply)
+        {
+            var full = Path.GetFullPath(file);
+            var dir = Path.GetDirectoryName(full);
+            var name = Path.GetFileNameWithoutExtension(full);
+            var exists = File.Exists(full);
+            var result = new Dictionary<string, object>
+            {
+                { "library", name }, { "path", full },
+                { "action", exists ? "exists" : "create" }, { "applied", false }
+            };
+            if (exists || !apply) return result;
+            // Create() recebe a pasta-mãe e o nome, e monta <dir>\<name>\<name>.al2x — o caminho
+            // real volta em "path" (não é necessariamente o --file que entrou)
+            Directory.CreateDirectory(dir);
+            var lib = session.Portal.GlobalLibraries.Create<UserGlobalLibrary>(new DirectoryInfo(dir), name);
+            result["path"] = lib.Path.FullName;
+            result["applied"] = true;
+            return result;
+        }
+
         public static object List(TiaSession session, string file)
         {
             var lib = Open(session, file);

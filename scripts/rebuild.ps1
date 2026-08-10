@@ -55,7 +55,9 @@ if (-not $SkipTests) {
     # Resolve-RealPath sustenta 3 gates do init -Check. Se ele passar a devolver tudo igual, os
     # gates viram sempre-ok e param de detectar checkout no lugar errado — falso positivo silencioso.
     . (Join-Path $PSScriptRoot 'init.ps1') -Check:$false -DotSourceOnly
-    $plain = Join-Path $repo 'scripts'
+    # partir do caminho JA resolvido: chamar o rebuild pelo junction (~/.claude/skills/tia) fazia
+    # $repo entrar com link e o gate de identidade reprovar sozinho — falso FAIL, nao regressao
+    $plain = Join-Path (Resolve-RealPath $repo) 'scripts'
     if ((Resolve-RealPath $plain) -ine [IO.Path]::GetFullPath($plain)) {
         Write-Host 'FAIL Resolve-RealPath alterou caminho sem link' -ForegroundColor Red; exit 1
     }

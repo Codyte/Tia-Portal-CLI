@@ -24,3 +24,6 @@ aqui.
   (`~/.agents/skills/tia` é o diretório real). Ver dois caminhos não é clone duplicado.
 - **`--out-file` nunca em `$env:TEMP`** — vira caminho 8.3 (`CARLOS~1`) que o Python não abre.
   Usar `workspace/`.
+- **Macro que recebe caminho (`use-project.ps1`, `prep-project.ps1`) exige caminho absoluto** — o
+  `Test-Path` roda num pwsh filho que não nasce na raiz do repo, e caminho relativo cai calado no
+  ramo de nome curto, procurando em `proj\`.

@@ -983,6 +983,23 @@ skill e mais nada; `criterios.md` não vai junto. **O produto do teste são os t
 travada separada entre "o caderno não dizia" (esperado, obra real também não diz) e "a ferramenta
 não dizia" (defeito nosso, e provavelmente do `SKILL.md`).
 
+### Rodadas executadas
+
+| Rodada | Caderno | Resultado | Veredito |
+|---|---|---|---|
+| FP-01 | filtro prensa (sequência autoral) | [`resultado-2026-08-07.md`](teste-cego/resultado-2026-08-07.md) | compile 0/0; **não foi cega** (a sessão herdou o handoff de quem escreveu o caderno) |
+| FP-02 | elevatória + preliminar, 2 áreas, zero SCL autoral | [`resultado-2026-08-10.md`](teste-cego/resultado-2026-08-10.md) | compile 0/0 + `audit` 6/6; 12 defeitos de ferramenta em 6 commits; **também não foi cega** |
+
+A FP-02 foi desenhada para o outro extremo da FP-01: **nada autoral**, só os 7 verbos `--apply`,
+para medir a engine e não a redação de SCL. Todos os 4 geradores tiveram seu **primeiro `--apply`
+de verdade fora do projeto de referência** — e os 12 defeitos são a mesma família: o gerador
+confundia "o que este projeto tem" com "o que todo projeto tem" (nome da área repetido na DB, molde
+sendo um instrumento real, ID sempre com hífen, sufixo da tag de PV sempre igual, molde nunca
+mudando). O padrão de correção também é um só: mover a suposição para o config e deixar o código
+exigir só o que é estrutural.
+
+O veredito "um agente sem contexto consegue" segue **não provado** — duas rodadas, nenhuma cega.
+
 ## F6 — Endurecer os scripts PS (✅ executada 2026-07-27)
 
 **Resultado.** `scripts/_common.ps1` + `scripts/tia.ps1` entregues como planejado; `tia-task.ps1`

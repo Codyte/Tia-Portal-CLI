@@ -101,6 +101,12 @@ warnings**, **`audit` 6/6**, salvo.
     continua passando sem BOM. Provado offline (5 casos) e em runtime, nos dois sentidos: sem BOM
     recusa citando `byte 0xC3 at offset 57`, com BOM o mesmo arquivo devolve
     `blocks: ["Afericao CMD"]`. Commit `06b478b`.
+    **O gate é específico de fonte SCL/AWL** — verificado depois em `import-block`, `import-tags` e
+    `import-type`: os três são XML e passam por `XDocument.Load` (via `RequireRootType` +
+    `XmlObjectName`) **antes** do `if (apply)`, então o encoding é o declarado no XML (declaração >
+    BOM > UTF-8 por spec) e byte alto incompatível vira `XmlException` no dry-run, alto e na causa.
+    Não há caminho silencioso de mojibake ali: aplicar `RequireUtf8Bom` a XML daria falso positivo
+    em arquivo que declara o próprio encoding e está correto.
 13. **`run --script` recusava `open-project`/`create-project` como step sem dizer a saída.** A
     limitação fica: o attach é 1x, antes do 1º step, então o batch não pode abrir o projeto em que
     ele mesmo trabalha. Attach lazy foi **descartado** — abrir projeto custa 2-4 min e a chamada

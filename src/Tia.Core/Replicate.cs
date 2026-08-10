@@ -120,6 +120,7 @@ namespace Tia.Core
                 var templates = new List<KeyValuePair<string, string>>(); // name -> xml (loaded lazily on apply)
                 foreach (var block in templateFolder.Blocks.OrderBy(b => b.Name))
                     templates.Add(new KeyValuePair<string, string>(block.Name, null));
+                var templateIdbs = InstanceDbNames(templateFolder);
 
                 var targets = new List<object>();
                 foreach (var folder in folders)
@@ -136,7 +137,8 @@ namespace Tia.Core
                     var ccm = FindCcmInfo(folder);
 
                     var blockNames = templates
-                        .Select(t => ProposedBlockName(t.Key, templateFolder.Name, folder.Name, sourceId, targetId))
+                        .Select(t => ProposedBlockName(t.Key, templateFolder.Name, folder.Name, sourceId,
+                            targetId, templateIdbs.Contains(t.Key)))
                         .ToList();
 
                     // templateFolder nunca é reescrito: é o molde golden — replicar sobre ele
@@ -191,6 +193,7 @@ namespace Tia.Core
             (string CcmName, string QaFolderName) ccm, List<string> warnings)
         {
             var templateXmls = new List<KeyValuePair<string, string>>();
+            var templateIdbs = InstanceDbNames(templateFolder);
             foreach (var block in templateFolder.Blocks.OrderBy(b => b.Name))
             {
                 string tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".xml");
@@ -210,7 +213,8 @@ namespace Tia.Core
 
             foreach (var template in templateXmls)
             {
-                string newName = ProposedBlockName(template.Key, templateFolder.Name, target.Name, sourceId, targetId);
+                string newName = ProposedBlockName(template.Key, templateFolder.Name, target.Name, sourceId,
+                    targetId, templateIdbs.Contains(template.Key));
                 string tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".xml");
                 try
                 {
@@ -273,14 +277,16 @@ namespace Tia.Core
             // MODO_LOCAL / MODO_REMOTO IO tags: point at the target's real tag in its QA folder
             var qaTagFolder = ccm.QaFolderName != "QA_INDEFINIDO"
                 ? Ops.FindTagGroup(plc.TagTableGroup, ccm.QaFolderName) : null;
-            if (qaTagFolder == null)
+            // sem pasta QA-0n (projeto que não organiza tag por painel), procura no PLC inteiro:
+            // a tabela do próprio acionamento já carrega <ID>_STS_MODO_LOCAL, e sem esta busca o
+            // FC replicado ficava apontando pro nome longo do molde (8 erros de compile no FP-02).
+            PlcTagTableGroup tagSearchRoot = qaTagFolder ?? (PlcTagTableGroup)plc.TagTableGroup;
             {
-                warnings.Add("Tag folder '" + ccm.QaFolderName + "' not found; IO tag fix skipped for '" + targetId + "'.");
-            }
-            else
-            {
-                var modoLocal = FindTag(qaTagFolder, targetId, "MODO_LOCAL");
-                var modoRemoto = FindTag(qaTagFolder, targetId, "MODO_REMOTO");
+                var modoLocal = FindTag(tagSearchRoot, targetId, "MODO_LOCAL");
+                var modoRemoto = FindTag(tagSearchRoot, targetId, "MODO_REMOTO");
+                if (modoLocal == null && modoRemoto == null)
+                    warnings.Add("No '" + targetId + "*MODO_LOCAL/MODO_REMOTO' tag found; IO tag fix skipped for '"
+                        + targetId + "'.");
                 if (modoLocal != null || modoRemoto != null)
                 {
                     XNamespace ns = "http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5";
@@ -366,11 +372,19 @@ namespace Tia.Core
         }
 
         /// <summary>Template's main block gets "PARTIDA_<target folder>", others get plain ID substitution.</summary>
+        private static HashSet<string> InstanceDbNames(PlcBlockUserGroup folder)
+        {
+            return new HashSet<string>(folder.Blocks.OfType<InstanceDB>().Select(b => b.Name));
+        }
+
         private static string ProposedBlockName(string original, string sourceFolder, string targetFolder,
-            string sourceId, string targetId)
+            string sourceId, string targetId, bool isInstanceDb)
         {
             string baseName = FolderBaseName(sourceFolder).ToUpper().Replace(" ", "_");
-            if (original.ToUpper().Replace(" ", "_").Contains(baseName))
+            // só o bloco de chamada vira PARTIDA_*: no molde genérico da library o nome da pasta
+            // ("Motor 1 (MOTOR_01)") também está contido no nome dos 5 iDBs, e sem este filtro os
+            // 6 blocos do acionamento saíam com o MESMO nome (medido no FP-02, 2026-08-07).
+            if (!isInstanceDb && original.ToUpper().Replace(" ", "_").Contains(baseName))
                 return MainBlockName(targetFolder);
             return original.Replace(sourceId, targetId)
                 .Replace(sourceId.Replace("-", "_"), targetId.Replace("-", "_"));
@@ -396,7 +410,8 @@ namespace Tia.Core
             PlcBlockGroup current = folder;
             while (current != null)
             {
-                var match = Regex.Match(current.Name, @"CCM(\d+)", RegexOptions.IgnoreCase);
+                // "CCM3" (projeto da casa) e "CCM_01" (pasta da library) são o mesmo painel
+                var match = Regex.Match(current.Name, @"CCM_?(\d+)", RegexOptions.IgnoreCase);
                 if (match.Success)
                 {
                     string ccm = match.Groups[1].Value;
@@ -437,7 +452,7 @@ namespace Tia.Core
             return null;
         }
 
-        private static PlcTag FindTag(PlcTagTableUserGroup group, string idPrefix, string keyword)
+        private static PlcTag FindTag(PlcTagTableGroup group, string idPrefix, string keyword)
         {
             foreach (PlcTagTable table in group.TagTables)
             {

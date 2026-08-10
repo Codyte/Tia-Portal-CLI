@@ -116,15 +116,39 @@ namespace Tia.Core
             for (int skip = int.Parse(start.Groups[2].Value, CultureInfo.InvariantCulture); skip > 0; skip--)
                 allocator.Skip();
 
-            var assigned = new List<string>();
-            foreach (var node in doc.Descendants().Where(e => e.Name.LocalName == "LogicalAddress").ToList())
+            var nodes = doc.Descendants().Where(e => e.Name.LocalName == "LogicalAddress").ToList();
+            var parsed = new List<KeyValuePair<XElement, Match>>();
+            foreach (var node in nodes)
             {
                 var current = (node.Value ?? "").Trim();
-                if (!Regex.IsMatch(current, @"^%M\d+\.\d+$", RegexOptions.IgnoreCase))
+                var m = Regex.Match(current, @"^%M([BWDX]?)(\d+)(?:\.(\d+))?$", RegexOptions.IgnoreCase);
+                if (!m.Success)
                     throw new InvalidOperationException("Tag address '" + current +
-                        "' is not a %M bit — --at only reassigns bit tags. Remove --at and set it by hand.");
-                node.Value = allocator.Next();
-                assigned.Add(node.Value);
+                        "' is not a %M address — --at only reassigns %M tags. Remove --at and set it by hand.");
+                parsed.Add(new KeyValuePair<XElement, Match>(node, m));
+            }
+
+            var assigned = new List<string>();
+            // tabela só de bits: alocação sequencial e densa, que é o caso do clone de acionamento simples
+            if (parsed.All(p => p.Value.Groups[1].Value.Length == 0))
+            {
+                foreach (var p in parsed) { p.Key.Value = allocator.Next(); assigned.Add(p.Key.Value); }
+                return assigned;
+            }
+
+            // tabela mista (a da casa tem %MB/%MW/%MD junto dos bits): não dá para alocar densamente
+            // sem quebrar alinhamento, então o bloco inteiro é DESLOCADO preservando o layout relativo.
+            if (start.Groups[2].Value != "0")
+                throw new ArgumentException("--at must end in .0 for a table with %MB/%MW/%MD tags (got '" + at + "').");
+            int startByte = int.Parse(start.Groups[1].Value, CultureInfo.InvariantCulture);
+            int minByte = parsed.Min(p => int.Parse(p.Value.Groups[2].Value, CultureInfo.InvariantCulture));
+            int delta = startByte - minByte;
+            foreach (var p in parsed)
+            {
+                string width = p.Value.Groups[1].Value.ToUpperInvariant();
+                int b = int.Parse(p.Value.Groups[2].Value, CultureInfo.InvariantCulture) + delta;
+                p.Key.Value = "%M" + width + b + (p.Value.Groups[3].Success ? "." + p.Value.Groups[3].Value : "");
+                assigned.Add(p.Key.Value);
             }
             return assigned;
         }

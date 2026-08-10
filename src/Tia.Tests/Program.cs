@@ -402,9 +402,17 @@ namespace Tia.Tests
             Check(Throws(() => Clone.ParseReplaces(new[] { "SEM_IGUAL" }).ToList()), "--replace sem '=' falha");
             Check(Throws(() => Clone.Readdress(table(), "M432")), "--at fora do formato %M<b>.<bit> falha");
 
-            var word = XDocument.Parse("<Document xmlns='" + ns + "'><SW.Tags.PlcTag><AttributeList>" +
-                "<LogicalAddress>%MW20</LogicalAddress></AttributeList></SW.Tags.PlcTag></Document>");
-            Check(Throws(() => Clone.Readdress(word, "%M432.0")), "tag não-bit aborta o --at (sem sobreposição)");
+            // tabela mista (a da casa tem %MB/%MW/%MD junto dos bits): deslocamento em bloco,
+            // preservando o layout relativo — alocar denso quebraria alinhamento de word/dword
+            Func<XDocument> mixed = () => XDocument.Parse("<Document xmlns='" + ns + "'>" +
+                "<SW.Tags.PlcTag><AttributeList><LogicalAddress>%M20.3</LogicalAddress></AttributeList></SW.Tags.PlcTag>" +
+                "<SW.Tags.PlcTag><AttributeList><LogicalAddress>%MW22</LogicalAddress></AttributeList></SW.Tags.PlcTag>" +
+                "<SW.Tags.PlcTag><AttributeList><LogicalAddress>%MD24</LogicalAddress></AttributeList></SW.Tags.PlcTag>" +
+                "</Document>");
+            var shifted = Clone.Readdress(mixed(), "%M432.0");
+            Check(shifted.SequenceEqual(new[] { "%M432.3", "%MW434", "%MD436" }),
+                "tabela mista desloca em bloco (" + string.Join(",", shifted) + ")");
+            Check(Throws(() => Clone.Readdress(mixed(), "%M432.6")), "--at com bit != 0 em tabela mista falha");
         }
 
         private static void Scaffold_Plan()

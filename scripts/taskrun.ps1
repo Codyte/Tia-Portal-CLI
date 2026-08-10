@@ -27,15 +27,28 @@ Set-Location $repo
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
 $OutputEncoding = [Text.UTF8Encoding]::new($false)
 try {
-    if ($tiaArgs[0] -eq '--script-ps1') {
+    # Start-Process e nao `& exe 1> arquivo`: com o operador de redirecionamento o PowerShell le o
+    # stdout do filho por PIPE e copia pro arquivo, e o TIA Portal que o tia.exe INICIA herda a
+    # ponta de escrita desse pipe e vive depois que o tia.exe sai — o PS nunca ve EOF, fica
+    # pendurado e o exit-<id>.txt (sinal de fim) nunca e gravado: open-project sem portal rodando
+    # so terminava no timeout de 600s, sem devolver a saida (medido 2026-08-10, run f3547442).
+    # Com -RedirectStandardOutput o filho recebe um handle de ARQUIVO; o portal ate o herda, mas
+    # handle de arquivo nao segura ninguem — por isso o nome carrega o run-id.
+    # separados de proposito: contrato do CLI e stdout=JSON / stderr=log humano
+    $exe, $rest = if ($tiaArgs[0] -eq '--script-ps1') {
         # macro-verbo (raio-x/prep-project/...) precisa rodar INTEIRO na sessao 1: chama tia varias vezes
-        $rest = @($tiaArgs | Select-Object -Skip 2)
-        & pwsh -NoProfile -File $tiaArgs[1] @rest 1> "$dir\out$sfx.txt" 2> "$dir\err$sfx.txt"
-    } else {
-        # separados de proposito: contrato do CLI e stdout=JSON / stderr=log humano
-        & $tia @tiaArgs 1> "$dir\out$sfx.txt" 2> "$dir\err$sfx.txt"
-    }
-    $code = $LASTEXITCODE
+        'pwsh', (@('-NoProfile', '-File', $tiaArgs[1]) + @($tiaArgs | Select-Object -Skip 2))
+    } else { $tia, @($tiaArgs) }
+    # -ArgumentList com ARRAY nao cita nada: "MOTOR_AREA_01 (MOTOR_01)" chegaria como 2 argumentos.
+    # Citacao no padrao CommandLineToArgvW (aspas dobram as barras que as precedem).
+    $line = ($rest | ForEach-Object {
+        $a = [string]$_
+        if ($a -match '[\s"]') { '"' + (($a -replace '(\\+)"', '$1$1"' -replace '"', '\"') -replace '(\\+)$', '$1$1') + '"' }
+        else { $a }
+    }) -join ' '
+    $p = Start-Process -FilePath $exe -ArgumentList $line -NoNewWindow -Wait -PassThru `
+        -RedirectStandardOutput "$dir\out$sfx.txt" -RedirectStandardError "$dir\err$sfx.txt"
+    $code = $p.ExitCode
 } catch {
     # sem isto uma falha antes do exe (exe ausente, redirect invalido) nunca grava exit e o
     # cliente so descobre no timeout

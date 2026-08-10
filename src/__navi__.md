@@ -1,8 +1,8 @@
 # __navi__ · src/ (C#) — símbolos públicos por arquivo
 <!-- gerado por scripts/navi-cs.ps1 · regenerar após refatorar -->
 
-## `Tia.Cli/Program.cs` (810 linhas)
-Program(16)  save-project(345)  close-project(348)  info(351)  list-devices(354)  list-blocks(357)  list-tags(361)  tree(364)  list-types(368)  find(371)  snapshot(375)  xref(378)  trace(381)  list-hmi(384)  free-memory(387)  export-block(393)  explain-block(396)  export-tags(401)  import-block(404)  import-ladder(411)  import-source(419)  create-folder(424)  delete-folder(429)  delete-block(434)  move-block(438)  delete-type(443)  export-type(447)  import-type(450)  scaffold(454)  clone(463)  add-db-member(469)  import-tags(475)  create-library(482)  list-library(486)  import-master-copy(489)  add-master-copy(495)  create-instance-db(501)  delete-master-copy(506)  add-device(511)  delete-device(516)  add-tag(520)  delete-tag(526)  edit-db-member(531)  delete-db-member(537)  rename-block(542)  set-tag(547)  set-attr(554)  list-attrs(560)  plug-module(564)  list-telegrams(570)  insert-telegram(573)  set-address(580)  set-io-address(586)  set-memory-bytes(592)  connect-subnet(598)  export-cax(603)  import-cax(606)  compile(610)  diff-block(625)  audit(629)  doctor(633)  gen-profinet(641)  standardize-tags(647)  gen-fault-ob(655)  replicate-fc(663)  gen-alarm-fc(670)  replicate-instruments(678)
+## `Tia.Cli/Program.cs` (847 linhas)
+Program(16)  save-project(349)  close-project(352)  info(355)  list-devices(358)  list-blocks(361)  list-tags(365)  tree(368)  list-types(372)  find(375)  snapshot(379)  xref(382)  trace(385)  list-hmi(388)  free-memory(391)  export-block(397)  explain-block(400)  export-tags(405)  import-block(408)  import-ladder(415)  import-source(423)  create-folder(428)  delete-folder(433)  delete-block(438)  move-block(442)  delete-type(447)  export-type(451)  import-type(454)  scaffold(458)  clone(467)  add-db-member(473)  import-tags(479)  create-library(486)  list-library(490)  import-master-copy(493)  add-master-copy(499)  create-instance-db(505)  delete-master-copy(510)  add-device(515)  delete-device(520)  add-tag(524)  delete-tag(530)  edit-db-member(535)  delete-db-member(541)  rename-block(546)  set-tag(551)  set-attr(558)  list-attrs(564)  plug-module(568)  list-telegrams(574)  insert-telegram(577)  set-address(584)  set-io-address(590)  set-memory-bytes(596)  connect-subnet(602)  export-cax(607)  import-cax(610)  compile(614)  diff-block(629)  audit(633)  doctor(637)  gen-profinet(645)  standardize-tags(651)  gen-fault-ob(659)  replicate-fc(667)  gen-alarm-fc(674)  replicate-instruments(682)
 
 ## `Tia.Core/AlarmFc.cs` (687 linhas)
 AlarmFcConfig(17)  AlarmFc(42)  Generate(58)  LEITURA_MUITO_ALTA(648)  LEITURA_ALTA(649)  LEITURA_BAIXA(650)  LEITURA_MUITO_BAIXA(651)  SEM_4MA(652)
@@ -31,8 +31,8 @@ Drives(17)  ListTelegrams(84)  InsertTelegram(101)
 ## `Tia.Core/FaultOb.cs` (336 linhas)
 FaultObConfig(15)  FaultOb(37)  Module(44)  Generate(51)
 
-## `Tia.Core/Hardware.cs` (542 linhas)
-Hardware(13)  FindDevice(15)  AddDevice(48)  DeleteDevice(75)  PlugModule(96)  SetAddress(184)  SetIoAddress(221)  ListAttrs(274)  SetAttr(307)  SetMemoryBytes(357)  ConnectSubnet(431)  CaxExport(513)  CaxImport(526)
+## `Tia.Core/Hardware.cs` (548 linhas)
+Hardware(13)  FindDevice(15)  AddDevice(48)  DeleteDevice(75)  PlugModule(96)  SetAddress(184)  SetIoAddress(221)  ListAttrs(274)  SetAttr(307)  SetMemoryBytes(363)  ConnectSubnet(437)  CaxExport(519)  CaxImport(532)
 
 ## `Tia.Core/Hmi.cs` (43 linhas)
 Hmi(10)  Targets(12)  List(23)
@@ -55,8 +55,8 @@ Memory(20)  FreeM(22)  X(68)  B(69)  W(70)  D(71)  BOOL(76)  WORD(77)  DWORD(78)
 ## `Tia.Core/Multiuser.cs` (98 linhas)
 Multiuser(14)  ListServerProjects(21)
 
-## `Tia.Core/Ops.cs` (977 linhas)
-Ops(19)  FindBlock(23)  ResolveFolder(87)  ResolveTagFolder(140)  ResolveTypeFolder(148)  CreateFolder(169)  DeleteFolder(195)  CreateInstanceDb(262)  DeleteBlock(282)  DeleteType(297)  ExportBlock(313)  ExportTagTable(328)  ExportType(338)  ImportBlock(370)  MoveBlock(402)  ImportTagTable(466)  AddTag(494)  DeleteTag(530)  SetTag(553)  Rename(596)  ImportType(622)  ImportSource(646)  RequireUtf8Bom(739)  XmlRootType(760)  RequireRootType(770)  EnsureCultures(804)  DiffBlock(838)  BlocksIdentical(856)  Compile(901)
+## `Tia.Core/Ops.cs` (997 linhas)
+Ops(19)  FindBlock(23)  ResolveFolder(107)  ResolveTagFolder(160)  ResolveTypeFolder(168)  CreateFolder(189)  DeleteFolder(215)  CreateInstanceDb(282)  DeleteBlock(302)  DeleteType(317)  ExportBlock(333)  ExportTagTable(348)  ExportType(358)  ImportBlock(390)  MoveBlock(422)  ImportTagTable(486)  AddTag(514)  DeleteTag(550)  SetTag(573)  Rename(616)  ImportType(642)  ImportSource(666)  RequireUtf8Bom(759)  XmlRootType(780)  RequireRootType(790)  EnsureCultures(824)  DiffBlock(858)  BlocksIdentical(876)  Compile(921)
 
 ## `Tia.Core/Profinet.cs` (166 linhas)
 ProfinetConfig(12)  ProfinetMapping(20)  Profinet(28)  Generate(30)  BoolAddressAllocator(143)  Next(153)  Skip(161)

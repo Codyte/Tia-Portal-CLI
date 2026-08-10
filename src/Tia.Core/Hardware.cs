@@ -310,10 +310,16 @@ namespace Tia.Core
             var device = FindDevice(session, deviceName);
             IEngineeringObject target = itemName == null
                 ? (IEngineeringObject)device : FindItem(device, itemName);
-            var known = target.GetAttributeInfos().Select(i => i.Name).ToList();
-            if (!known.Contains(attribute, StringComparer.Ordinal))
+            var infos = target.GetAttributeInfos();
+            var info = infos.FirstOrDefault(i => i.Name == attribute);
+            if (info == null)
                 throw new InvalidOperationException("Attribute '" + attribute + "' not found in '"
                     + (itemName ?? device.Name) + "'. Run tia list-attrs --device " + deviceName + ".");
+            // read-only recusado já no dry: sem isto o dry dizia "action: set" e só o --apply
+            // descobria, com exceção crua do Portal. A informação vem do próprio AttributeInfo.
+            if ((info.AccessMode & EngineeringAttributeAccessMode.Write) == 0)
+                throw new InvalidOperationException("Attribute '" + attribute + "' is read-only ("
+                    + info.AccessMode + ") in '" + (itemName ?? device.Name) + "'.");
             var current = TryGet(target, attribute);
             object parsed = Coerce(value, current);
             var result = new Dictionary<string, object>

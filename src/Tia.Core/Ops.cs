@@ -57,15 +57,35 @@ namespace Tia.Core
             return null;
         }
 
-        /// <summary>Busca recursiva de pasta de tag tables por nome (case-insensitive).</summary>
+        /// <summary>
+        /// Busca recursiva de pasta de tag tables por nome (case-insensitive). Mesma regra do
+        /// <see cref="FindGroup"/>: nome literal primeiro (pasta do TIA pode conter '/'), caminho
+        /// depois — o config dos geradores vem com caminho, e só o nome literal deixava
+        /// `5. Instrumentação/5.1 Tags` sem achar uma pasta que existe.
+        /// </summary>
         internal static PlcTagTableUserGroup FindTagGroup(PlcTagTableGroup start, string name)
+        {
+            var hit = FindTagGroupByName(start, name);
+            if (hit != null || name == null || name.IndexOf('/') < 0) return hit;
+
+            var group = start;
+            foreach (var part in name.Split('/'))
+            {
+                var next = FindTagGroupByName(group, part.Trim());
+                if (next == null) return null;
+                group = next;
+            }
+            return group as PlcTagTableUserGroup;
+        }
+
+        private static PlcTagTableUserGroup FindTagGroupByName(PlcTagTableGroup start, string name)
         {
             var user = start as PlcTagTableUserGroup;
             if (user != null && user.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
                 return user;
             foreach (PlcTagTableUserGroup sub in start.Groups)
             {
-                var found = FindTagGroup(sub, name);
+                var found = FindTagGroupByName(sub, name);
                 if (found != null) return found;
             }
             return null;

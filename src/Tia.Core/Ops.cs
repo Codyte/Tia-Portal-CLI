@@ -25,14 +25,33 @@ namespace Tia.Core
             return FindBlockIn(plc.BlockGroup, name);
         }
 
-        /// <summary>Busca recursiva de pasta de blocos por nome (case-insensitive).</summary>
+        /// <summary>
+        /// Busca recursiva de pasta de blocos por nome (case-insensitive). Nome com '/' é tentado
+        /// primeiro como nome literal — pasta do TIA pode conter '/' ("3. Alarmes/Eventos/Falhas") —
+        /// e só depois como caminho, que é como o config dos geradores costuma vir.
+        /// </summary>
         internal static PlcBlockUserGroup FindGroup(PlcBlockGroup start, string name)
+        {
+            var hit = FindGroupByName(start, name);
+            if (hit != null || name == null || name.IndexOf('/') < 0) return hit;
+
+            var group = start;
+            foreach (var part in name.Split('/'))
+            {
+                var next = FindGroupByName(group, part.Trim());
+                if (next == null) return null;
+                group = next;
+            }
+            return group as PlcBlockUserGroup;
+        }
+
+        private static PlcBlockUserGroup FindGroupByName(PlcBlockGroup start, string name)
         {
             if (start is PlcBlockUserGroup user && user.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
                 return user;
             foreach (PlcBlockUserGroup sub in start.Groups)
             {
-                var found = FindGroup(sub, name);
+                var found = FindGroupByName(sub, name);
                 if (found != null) return found;
             }
             return null;

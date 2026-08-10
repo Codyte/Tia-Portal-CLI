@@ -128,7 +128,18 @@ namespace Tia.Core
             result["position"] = pos;
             result["canPlug"] = target.CanPlugNew(typeId, name ?? typeId, pos);
             if (apply)
+            {
+                // "Unknown TypeIdentifer" sozinho manda adivinhar MLFB — e o Openness não expõe
+                // busca no catálogo. O caminho que funciona é copiar o typeIdentifier de um item
+                // igual já plugado em qualquer projeto (list-devices / list-attrs mostram).
+                if (!(bool)result["canPlug"])
+                    throw new InvalidOperationException("CanPlugNew disse não para '" + typeId
+                        + "' no slot " + pos + ". Confira o MLFB: o Openness não tem busca de catálogo, "
+                        + "então o typeIdentifier tem que vir de um item igual já plugado "
+                        + "(tia list-devices num projeto que tenha o módulo) e costuma exigir a versão "
+                        + "no fim (ex.: \"6ES7 155-6AU01-0BN0/V4.2\").");
                 result["plugged"] = target.PlugNew(typeId, name ?? typeId, pos).Name;
+            }
             return result;
         }
 
@@ -147,6 +158,10 @@ namespace Tia.Core
         private static DeviceItem FindItem(Device device, string name)
         {
             var item = FindItem(device.DeviceItems, name);
+            // o próprio plug-module lista os slots como "<device>/<item>": aceitar de volta o que
+            // ele imprime, senão o caminho copiado da saída dele é recusado
+            if (item == null && name != null && name.StartsWith(device.Name + "/", StringComparison.OrdinalIgnoreCase))
+                item = FindItem(device.DeviceItems, name.Substring(device.Name.Length + 1));
             if (item == null)
                 throw new InvalidOperationException("Device item '" + name + "' not found in '"
                     + device.Name + "'. Run tia list-devices.");

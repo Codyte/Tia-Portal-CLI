@@ -80,7 +80,9 @@ namespace Tia.Cli
                     { "write", new[] { "import-block --file F [--folder A/B] [--replace OLD=NEW ...] [--apply]",
                         "import-source --file F.scl [--folder A/B] [--apply]  (bloco nasce na pasta, sem move-block; fonte só de TYPE vai pra pasta de UDT. KeepOnError: bloco inválido entra inconsistente em vez de derrubar o lote — compile depois pra ver o erro. Fonte com acento exige UTF-8 com BOM: sem BOM o dry-run recusa)",
                         "import-ladder --file F.scl [--name N] [--folder A/B] [--apply]  (SCL subset → LAD; dry-run works without TIA)",
-                        "import-tags --file F [--folder A/B] [--apply]",
+                        "import-tags --file F [--folder A/B] [--replace OLD=NEW ...] [--apply]  "
+                            + "(--replace reescreve o XML antes de importar — nome da tabela e das tags; "
+                            + "tag de PLC é única no CPU, então derivar tabela de outra exige trocar todos os nomes)",
                         "add-tag --table T --name N --type Bool --address %M10.0 [--comment C] [--apply]  "
                             + "(uma tag em tabela existente; endereço livre em %M sai do free-memory)",
                         "delete-tag --table T --name N [--apply]",
@@ -472,7 +474,10 @@ namespace Tia.Cli
                         break;
                     case "import-tags":
                         using (WriteLock(session, apply, verb))
-                            result = Core.Ops.ImportTagTable(session.GetPlc(plcName), Require(args, "--file"), OptionValue(args, "--folder"), apply);
+                            result = Core.Ops.ImportTagTable(session.GetPlc(plcName),
+                                Core.Clone.RewriteFile(Require(args, "--file"),
+                                    Core.Clone.ParseReplaces(OptionValues(args, "--replace")), outDir),
+                                OptionValue(args, "--folder"), apply);
                         break;
                     case "create-library":
                         using (WriteLock(session, apply, verb))

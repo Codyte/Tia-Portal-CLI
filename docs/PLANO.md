@@ -256,7 +256,7 @@ sem verbo) e `delete-type`. Smoke no projeto de referência: `move-block --apply
 **Regra do `move-block`, que o verbo agora encapsula**: exporta **todos** os alvos antes de apagar
 o primeiro. O `delete` deixa quem referencia inconsistente, e bloco inconsistente não exporta.
 
-## Biblioteca de blocos ("arsenal") — 🔄 fatia 1 fechada 2026-07-28; bake real 2026-07-29, install pendente de re-teste (`library/`)
+## Biblioteca de blocos ("arsenal") — ✅ ciclo fechado 2026-08-07 (`library/`)
 
 Problema que resolve: os 4 geradores só rodam se o projeto do cliente **já tiver** os moldes e a
 lei de pastas (`doctor` checa `FC_Modelo`, `OB_MOLDE_ALARMES`, `DB GLOBAL`, `2. Alarmes`,
@@ -515,7 +515,7 @@ nível — só na leitura (`create=false`); criar continua um segmento por vez.
 **Master copy de pasta leva os iDBs junto** — a dúvida que fechava a fatia. `Motor 1 (MOTOR_01)`
 (5 iDBs + 1 FC) importou os 6 num PLC de teste; chegam inconsistentes até os FBs-base existirem.
 
-### Bake real da `.al21` + bug do `--force` — 🔄 2026-07-29 (fix não re-testado)
+### Bake real da `.al21` + bug do `--force` — ✅ 2026-07-29, fix validado 2026-08-07
 
 Primeira assada de verdade da biblioteca, a partir do projeto base `Base_tia_cli`
 (`Software de ETE Insular_Inicial_V21` salvo com esse nome; 1 PLC `CPU1.0 CCO`, 476 blocos,
@@ -901,7 +901,7 @@ download.
 - ~~Publicar no GitHub~~ ✅ publicado 2026-07-20: https://github.com/Codyte/Tia-Portal-CLI (público).
   `Scripts_Siemens/` excluído do público — removido do tracking + scrubado do histórico
   via `git-filter-repo` (verificado: clone fresh sem o diretório em working tree ou histórico).
-- Smoke F1 na máquina do TIA (user leva o exe; primeira execução dispara popup Openness — permitir).
+- ~~Smoke F1 na máquina do TIA~~ ✅ 2026-07-17 (ver F1 na tabela de fases).
 - ~~**`totally-integrated-claude`**~~ ✅ avaliado 2026-08-07
   (https://github.com/Czarnak/totally-integrated-claude, **MIT**). Não é CLI concorrente: são 17
   skills de documentação roteada da API (113 `.md`), extraídas do IntelliSense XML do V21, mais um

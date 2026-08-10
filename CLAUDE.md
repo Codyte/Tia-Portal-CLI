@@ -63,6 +63,10 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
     ~80 linhas em vez de grep em `Program.cs`.
   - **Nunca `list-blocks` sem filtro** — são ~480 blocos. `--folder A/B` (pega subpastas),
     `--type FB|FC|OB|GlobalDB|InstanceDB`, `--count` (só o total por pasta, ~10 linhas).
+  - **`--folder` de import é sempre o caminho completo.** `import-block --folder` cria a árvore que
+    faltar **a partir da raiz**: caminho parcial (`5.2 Totalizadores` em vez de
+    `5. Instrumentação / Atuadores/5.2 Totalizadores`) cria uma pasta paralela homônima, e o gerador
+    seguinte morre em colisão de nome.
   - **`move-block --name X | --pattern P* --folder A/B [--apply]`** — o Openness não move bloco; o
     verbo faz `export` (de todos primeiro) → `delete` → `import --folder`. Fazer isso na mão custa
     3 chamadas por bloco e falha se a ordem inverter.

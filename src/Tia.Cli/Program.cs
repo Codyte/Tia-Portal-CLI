@@ -118,7 +118,7 @@ namespace Tia.Cli
                         "--summary = só {steps,failed,errors[]}, sem o resultado de cada step. " +
                         "--plc/--out-file do processo NÃO descem pros steps: cada step carrega os seus. " +
                         "Exige projeto JÁ aberto: o attach é 1x, antes do 1º step, então open-project/create-project " +
-                        "não podem ser step — chamar antes, sozinhos)" } },
+                        "(e list-server-projects, que roda sem projeto) não podem ser step — chamar antes, sozinhos)" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports; " +
                         "--out-file F.json (qualquer verbo: JSON completo no arquivo, stdout só {file,bytes,count,head} " +
                         "— use em find/snapshot/list-*/xref, que dão centenas de KB); " +
@@ -293,11 +293,13 @@ namespace Tia.Cli
                     "Script must be a JSON array of arg arrays, e.g. [[\"list-blocks\"],[\"compile\",\"--apply\"]].");
             foreach (var step in steps)
                 if (step == null || step.Length == 0 || step[0] == "run"
-                    || step[0] == "open-project" || step[0] == "create-project")
+                    || step[0] == "open-project" || step[0] == "create-project"
+                    || step[0] == "list-server-projects")
                     throw new ArgumentException(
-                        "Each step must be a verb on an open project (not 'run'/'open-project'/'create-project'): "
-                        + "the batch attaches once, before the first step, so it cannot open or create the project it "
-                        + "works on. Call open-project/create-project on their own first (or scripts/use-project.ps1), "
+                        "Each step must be a verb on an open project (not 'run'/'open-project'/'create-project'/"
+                        + "'list-server-projects'): the batch attaches once, before the first step, so it cannot open "
+                        + "or create the project it works on — and list-server-projects runs before the attach, "
+                        + "without a project. Call those on their own first (or scripts/use-project.ps1), "
                         + "then run the batch.");
             return steps;
         }

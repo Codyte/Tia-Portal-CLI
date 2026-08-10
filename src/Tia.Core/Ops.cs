@@ -337,6 +337,17 @@ namespace Tia.Core
 
         // ---------- import ----------
 
+        /// <summary>
+        /// A pasta que falta é criada a partir da raiz, então caminho parcial ("5.2 Totalizadores" em
+        /// vez do caminho inteiro) cria uma pasta paralela homônima e o gerador seguinte morre em
+        /// colisão de nome. O dry-run diz qual dos dois vai acontecer em "folderAction".
+        /// </summary>
+        private static string FolderAction(Action probe)
+        {
+            try { probe(); return "reuse"; }
+            catch (InvalidOperationException) { return "create"; }
+        }
+
         public static object ImportBlock(PlcSoftware plc, string file, string folderPath, bool apply)
         {
             var full = RequireFile(file);
@@ -351,6 +362,8 @@ namespace Tia.Core
                 { "action", existing != null ? "override" : "create" },
                 { "applied", apply },
             };
+            if (!string.IsNullOrEmpty(folderPath))
+                result["folderAction"] = FolderAction(() => ResolveFolder(plc, folderPath, false));
             if (apply)
             {
                 result["languagesActivated"] = EnsureCultures(ProjectOf(plc), XmlCultures(full), true);
@@ -444,6 +457,8 @@ namespace Tia.Core
                 { "action", name != null && FindTagTable(plc.TagTableGroup, name) != null ? "override" : "create" },
                 { "applied", apply },
             };
+            if (!string.IsNullOrEmpty(folderPath))
+                result["folderAction"] = FolderAction(() => ResolveTagFolder(plc, folderPath, false));
             if (apply)
             {
                 result["languagesActivated"] = EnsureCultures(ProjectOf(plc), XmlCultures(full), true);
@@ -631,6 +646,12 @@ namespace Tia.Core
                 { "types", types },
                 { "applied", apply },
             };
+            if (!string.IsNullOrEmpty(folder))
+                result["folderAction"] = FolderAction(() =>
+                {
+                    if (types.Count > 0) ResolveTypeFolder(plc, folder, false);
+                    else ResolveFolder(plc, folder, false);
+                });
             if (!apply) return result;
 
             if (!string.IsNullOrEmpty(folder) && types.Count > 0 && blocks.Count > 0)

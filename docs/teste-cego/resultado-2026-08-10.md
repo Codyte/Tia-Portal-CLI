@@ -94,6 +94,13 @@ warnings**, **`audit` 6/6**, salvo.
     provou `identical: true`). Todo outro verbo acha pasta por nome recursivo (`Ops.FindGroup`);
     agora o filtro casa **fragmento de caminho** com barras nas pontas, então nome de folha, caminho
     parcial e caminho inteiro funcionam, e o limite de segmento continua firme.
+12. **`import-source` aceitava fonte sem BOM e o Openness lia como ANSI.** `"Aferição CMD"` entrava
+    `"AferiÃ§Ã£o CMD"` e o erro só aparecia no compile, longe da causa — era o defeito aberto mais
+    antigo da rodada. `Ops.RequireUtf8Bom` recusa **no dry-run** o arquivo com byte ≥ 0x80 sem BOM
+    UTF-8 (UTF-8 cru, Latin-1, UTF-16) e traz a instrução de regravação na mensagem; ASCII puro
+    continua passando sem BOM. Provado offline (5 casos) e em runtime, nos dois sentidos: sem BOM
+    recusa citando `byte 0xC3 at offset 57`, com BOM o mesmo arquivo devolve
+    `blocks: ["Afericao CMD"]`. Commit `06b478b`.
 
 ## O que a rodada ensinou sobre os geradores
 
@@ -105,8 +112,6 @@ suposição para o config e deixar o código exigir só o que é estrutural.
 
 ## Aberto
 
-- **`import-source` sem BOM = mojibake silencioso** (`AferiÃ§Ã£o CMD`), erro de compile longe da
-  causa. Vale um gate no verbo.
 - **`run --script` exige projeto já aberto** — batch não pode começar com `create-project` /
   `open-project`.
 - **`use-project.ps1` exige caminho absoluto**: o `Test-Path` do argumento roda num pwsh filho que

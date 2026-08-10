@@ -93,5 +93,5 @@
 - `run --script ops.json [--summary]  (JSON array de arg-arrays, uma sessão só; step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou. --summary = só {steps,failed,errors[]}, sem o resultado de cada step. --plc/--out-file do processo NÃO descem pros steps: cada step carrega os seus. Exige projeto JÁ aberto: o attach é 1x, antes do 1º step, então open-project/create-project (e list-server-projects, que roda sem projeto) não podem ser step — chamar antes, sozinhos)`
 
 ## notas
-write verbs are dry-run unless --apply; default --out is .\workspace\exports; --out-file F.json (qualquer verbo: JSON completo no arquivo, stdout só {file,bytes,count,head} — use em find/snapshot/list-*/xref, que dão centenas de KB); --retry N (busy, default 3) --timeout SEC; exit: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA, 5 timeout
+write verbs are dry-run unless --apply; default --out is .\workspace\exports; saída acima de 60k chars (TIA_MAX_STDOUT) derrama SOZINHA em workspace/auto-<verbo>.json e o stdout recebe o stub {file,bytes,count,head,autoSpill} — --full desliga e dumpa tudo no stdout (use em script que faz ConvertFrom-Json); --out-file F.json (qualquer verbo: JSON completo no arquivo escolhido, stdout só o stub); --retry N (busy, default 3) --timeout SEC; exit: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA, 5 timeout
 

@@ -24,7 +24,9 @@ $portalArgs = if ($Portal) { @('--portal', $Portal) } else { @() }
 if (-not $File) { $File = Resolve-LibFile }
 $packages = @(); $loose = @()
 if (-not $MoldsOnly) {
-    $blocks = (Invoke-Tia list-blocks --plc $Plc --folder $Root @portalArgs | ConvertFrom-Json).blocks
+    # --full em todo consumidor de ConvertFrom-Json: sem ele a saida grande derrama pro arquivo
+    # e o pipe recebe o stub {file,bytes,head}, que parseia sem erro e devolve $null
+    $blocks = (Invoke-Tia list-blocks --plc $Plc --folder $Root --full @portalArgs | ConvertFrom-Json).blocks
     if (-not $blocks) { throw "nenhum bloco em '$Root' (plc $Plc)" }
 
     # subpasta direta de $Root = pacote; bloco com folder == $Root = dependência comum
@@ -75,7 +77,7 @@ $orphans = @()
 if ($Prune -and $MoldsOnly) { throw '-Prune nao vale com -MoldsOnly (a rodada so enxerga os moldes)' }
 if ($Prune -and (Test-Path (Join-Path $script:Repo $File))) {
     $want = @($packages) + @($loose) + @($extras) + @($molds.name)
-    $orphans = @((Invoke-Tia list-library --file $File @portalArgs | ConvertFrom-Json).masterCopies |
+    $orphans = @((Invoke-Tia list-library --file $File --full @portalArgs | ConvertFrom-Json).masterCopies |
         Where-Object { $_.folder -eq $Root -and $_.name -notin $want } |
         Select-Object -ExpandProperty name)
     foreach ($o in $orphans) { $ops += , @('delete-master-copy', '--file', $File, '--name', $o, '--apply') }

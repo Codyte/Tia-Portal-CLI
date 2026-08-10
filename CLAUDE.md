@@ -75,9 +75,16 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
     3 chamadas por bloco e falha se a ordem inverter.
   - **`run --script ops.json --summary`** = `{steps,failed,errors[]}` em vez do resultado de cada
     step (98 steps × JSON completo é dump de contexto).
-  - **`--out-file F.json` em verbo de leitura** (`find`/`snapshot`/`list-*`/`xref`/`trace`): JSON
-    completo no arquivo, stdout devolve só `{file,bytes,count,head}`. `find --pattern "*" --kind tag`
-    num projeto real = 821 KB (~200k tokens) — sem a opção, isso cai no contexto inteiro.
+  - **Saída grande já vem cortada por padrão.** Acima de 60 000 chars (`TIA_MAX_STDOUT`) qualquer
+    verbo derrama sozinho em `workspace/auto-<verbo>.json` e o stdout recebe
+    `{file,bytes,count,head,autoSpill}` — `find --pattern "*" --kind tag` (821 KB) não cai mais no
+    contexto por esquecimento. Depois é grep no arquivo.
+    - **`--out-file F.json`** = mesma coisa, no caminho que você escolher (vale pra qualquer verbo).
+    - **`--full`** = desliga o corte e dumpa tudo no stdout. É o que script de PowerShell que faz
+      `ConvertFrom-Json` precisa: sem ele o pipe recebe o stub, que parseia sem erro e devolve
+      `$null`. Os macros do repo já passam.
+    - O teto fica acima do `tree` (39 KB, leitura de orientação legítima) e abaixo do `snapshot`
+      (251 KB). `TIA_MAX_STDOUT` **não atravessa a rota da task** (sessão 0): lá vale o default.
   - **Orientação num projeto novo = `tia tree` → `plc-navi.md`, e só isso.** Outline do PLC inteiro
     (blocos + tabelas de tag + UDTs) agrupado por pasta: 39 KB / 309 linhas p/ 476 blocos + 194
     tabelas + 13 UDTs, contra ~150 KB do JSON equivalente, em 4s. Depois vem verbo que responde

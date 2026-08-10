@@ -31,7 +31,9 @@ if (-not $File) { $File = Resolve-LibFile }
 elseif (-not (Test-Path (Join-Path $script:Repo $File))) {
     throw "global library ausente: $File — assar a partir de um PLC que ja tenha a arvore: pwsh scripts/bake-lib.ps1 -Plc <PLC> -Apply"
 }
-$lib = Invoke-Tia list-library --file $File @portalArgs | ConvertFrom-Json
+# --full em todo consumidor de ConvertFrom-Json: sem ele a saida grande derrama pro arquivo e o
+# pipe recebe o stub {file,bytes,head}, que parseia sem erro e devolve $null
+$lib = Invoke-Tia list-library --file $File --full @portalArgs | ConvertFrom-Json
 $packages = $lib.masterCopies | Where-Object { $_.contentType -like '*PlcBlockUserGroup' } |
     Select-Object -ExpandProperty name
 $base = $lib.masterCopies |
@@ -80,7 +82,7 @@ function Get-Existing($folder) {
     # `--folder ""` também levanta — e pacote de target vazio ("0 Moldes") caía sempre no $todo,
     # reimportando sem --force: o Portal batiza "0 Moldes_1" em silêncio (medido 2026-08-07).
     $fargs = if ($folder) { @('--folder', $folder) } else { @() }
-    $out = Invoke-Tia list-blocks --plc $Plc @fargs @portalArgs 2>$null
+    $out = Invoke-Tia list-blocks --plc $Plc @fargs --full @portalArgs 2>$null
     # com --folder o verbo devolve {count,blocks}; na raiz devolve array cru
     $json = if ($LASTEXITCODE -eq 0) { $out | ConvertFrom-Json } else { @() }
     # array cru: `.blocks` num array é enumeração de membro e devolve @(), não $null — testar o
@@ -172,14 +174,14 @@ if ($fragments) {
 # XML solto em library/ é payload gitignored, então clone limpo não teria o que importar.
 # `--name "extras/X"` com pasta explícita: FindMasterCopy recusa nome homônimo em duas pastas.
 $force = if ($Update) { @('--force') } else { @() }
-$existing = @((Invoke-Tia list-types --plc $Plc @portalArgs | ConvertFrom-Json).name)   # array cru
+$existing = @((Invoke-Tia list-types --plc $Plc --full @portalArgs | ConvertFrom-Json).name)   # array cru
 foreach ($t in ($types | Sort-Object -Unique | Where-Object { $Update -or $_ -notin $existing })) {
     $ops += , (@('import-master-copy', '--plc', $Plc, '--file', $File, '--name', "extras/$t") + $force + '--apply')
 }
 if ($fragments) { $ops += , @('import-source', '--plc', $Plc, '--file', 'workspace/db-global.scl', '--apply') }
 # CreateFrom recusa tabela de nome já existente (só --force apaga antes) — sem este filtro,
 # reinstalar deixava de ser no-op.
-$haveTables = @((Invoke-Tia list-tags --plc $Plc @portalArgs | ConvertFrom-Json).table)
+$haveTables = @((Invoke-Tia list-tags --plc $Plc --full @portalArgs | ConvertFrom-Json).table)
 foreach ($t in $tags) {
     $name = [IO.Path]::GetFileNameWithoutExtension($t.file)
     if (-not $Update -and $name -in $haveTables) { continue }
@@ -194,7 +196,7 @@ $ops += , @('compile', '--plc', $Plc, '--apply', '--errors')
 
 $script = Join-Path $script:Repo 'workspace\install-lib.json'
 [IO.File]::WriteAllText($script, ($ops | ConvertTo-Json -Depth 3 -Compress), [Text.UTF8Encoding]::new($false))
-$out = Invoke-Tia run --script $script @portalArgs | ConvertFrom-Json
+$out = Invoke-Tia run --script $script --full @portalArgs | ConvertFrom-Json
 $compile = @($out.results | Where-Object { $_.verb -eq 'compile' })[-1].result
 foreach ($r in $out.results | Where-Object { -not $_.ok }) { Write-Host "FALHOU $($r.verb): $($r.error)" }
 Write-Host "compile: $($compile.state) — $($compile.errors) erro(s)"

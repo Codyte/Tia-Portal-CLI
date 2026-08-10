@@ -41,6 +41,19 @@ if (-not $SkipTests) {
     }
     Write-Host '  ok  Cli.--out-file (stdout vira stub, JSON completo no arquivo)'
 
+    # auto-spill: saida acima do teto derrama sozinha, e --full desliga. Teto por env pra caber no
+    # --help; se o default de 60k voltar a valer sempre, o agente leva 821 KB de find no contexto.
+    $env:TIA_MAX_STDOUT = '500'
+    try {
+        $spill = & $exe --help | ConvertFrom-Json
+        if (-not $spill.autoSpill) { Write-Host 'FAIL auto-spill nao disparou acima do teto' -ForegroundColor Red; exit 1 }
+        if (-not (Test-Path $spill.file)) { Write-Host 'FAIL auto-spill nao escreveu o arquivo' -ForegroundColor Red; exit 1 }
+        $whole = & $exe --help --full | ConvertFrom-Json
+        if ($whole.autoSpill -or -not $whole.usage) { Write-Host 'FAIL --full nao dumpou inteiro' -ForegroundColor Red; exit 1 }
+    } finally { Remove-Item Env:TIA_MAX_STDOUT }
+    if ($spill.file) { Remove-Item $spill.file -ErrorAction SilentlyContinue }
+    Write-Host '  ok  Cli.auto-spill (acima do teto derrama sozinho; --full desliga)'
+
     # run --script valida o script ANTES do attach: erro de uso nao pode custar sessao nem exigir
     # portal aberto. Se a validacao voltar pra dentro do using(Attach()), este check falha aqui.
     $bad = Join-Path ([IO.Path]::GetTempPath()) 'tia-badscript-check.json'

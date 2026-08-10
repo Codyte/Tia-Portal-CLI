@@ -20,6 +20,8 @@ namespace Tia.Cli
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             AppDomain.CurrentDomain.AssemblyResolve += ResolveSiemensAssembly;
             _outFile = OptionValue(args, "--out-file"); // antes do --help: vale pra toda saída, inclusive ele
+            _full = Array.IndexOf(args, "--full") >= 0;
+            _verb = args.Length > 0 && !args[0].StartsWith("--") ? args[0] : "out";
             if (args.Length == 0 || args[0] == "--help" || args[0] == "-h")
             {
                 Print(new Dictionary<string, object>
@@ -127,8 +129,10 @@ namespace Tia.Cli
                         "Exige projeto JÁ aberto: o attach é 1x, antes do 1º step, então open-project/create-project " +
                         "(e list-server-projects, que roda sem projeto) não podem ser step — chamar antes, sozinhos)" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports; " +
-                        "--out-file F.json (qualquer verbo: JSON completo no arquivo, stdout só {file,bytes,count,head} " +
-                        "— use em find/snapshot/list-*/xref, que dão centenas de KB); " +
+                        "saída acima de 60k chars (TIA_MAX_STDOUT) derrama SOZINHA em workspace/auto-<verbo>.json e " +
+                        "o stdout recebe o stub {file,bytes,count,head,autoSpill} — --full desliga e dumpa tudo no " +
+                        "stdout (use em script que faz ConvertFrom-Json); " +
+                        "--out-file F.json (qualquer verbo: JSON completo no arquivo escolhido, stdout só o stub); " +
                         "--retry N (busy, default 3) --timeout SEC; exit: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA, 5 timeout" },
                 });
                 return args.Length == 0 ? 1 : 0;
@@ -735,17 +739,50 @@ namespace Tia.Cli
         /// (raio-x.ps1 e afins seguem redirecionando stdout).
         /// </summary>
         private static string _outFile;
+        private static bool _full;
+        private static string _verb = "out";
+
+        /// <summary>
+        /// Teto do stdout em chars. Acima dele, sem --out-file e sem --full, a saída derrama
+        /// sozinha pra workspace/auto-&lt;verbo&gt;.json. 60k fica acima do `tree` (39 KB, leitura de
+        /// orientação legítima) e abaixo de `snapshot` (251 KB) e `find --kind tag` (821 KB).
+        /// </summary>
+        private static int MaxStdout
+        {
+            get
+            {
+                var env = Environment.GetEnvironmentVariable("TIA_MAX_STDOUT");
+                int n;
+                return int.TryParse(env, out n) && n > 0 ? n : 60000;
+            }
+        }
 
         private static void Print(object value)
         {
-            if (_outFile == null) { Console.WriteLine(JsonConvert.SerializeObject(value, Formatting.Indented)); return; }
-            Console.WriteLine(JsonConvert.SerializeObject(WriteOut(value, _outFile), Formatting.Indented));
+            if (_outFile != null)
+            {
+                Console.WriteLine(JsonConvert.SerializeObject(WriteOut(value, _outFile), Formatting.Indented));
+                return;
+            }
+            var json = JsonConvert.SerializeObject(value, Formatting.Indented);
+            if (_full || json.Length <= MaxStdout) { Console.WriteLine(json); return; }
+            // saída grande sem destino: derrama em vez de despejar no chamador (--full desliga)
+            var stub = WriteOut(value, "workspace/auto-" + Sanitize(_verb) + ".json", json);
+            stub["autoSpill"] = "saída " + json.Length + " chars > TIA_MAX_STDOUT " + MaxStdout +
+                "; JSON completo no arquivo. Use --full pro dump inteiro no stdout, ou --out-file F.json.";
+            Console.WriteLine(JsonConvert.SerializeObject(stub, Formatting.Indented));
+        }
+
+        private static string Sanitize(string verb)
+        {
+            foreach (var c in Path.GetInvalidFileNameChars()) verb = verb.Replace(c, '_');
+            return verb;
         }
 
         /// <summary>Grava o JSON completo em `file` e devolve o stub {file,bytes,head[,count]}.</summary>
-        private static Dictionary<string, object> WriteOut(object value, string file)
+        private static Dictionary<string, object> WriteOut(object value, string file, string serialized = null)
         {
-            var json = JsonConvert.SerializeObject(value, Formatting.Indented);
+            var json = serialized ?? JsonConvert.SerializeObject(value, Formatting.Indented);
             var path = Path.GetFullPath(file);
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             File.WriteAllText(path, json);

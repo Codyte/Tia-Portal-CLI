@@ -67,11 +67,18 @@ namespace Tia.Core
 
             // templates + global DB exported up-front (read-only operations)
             var templateFolder = Ops.FindGroup(plc.BlockGroup, config.TemplateFolder);
-            if (templateFolder == null)
-                throw new InvalidOperationException("Template folder '" + config.TemplateFolder + "' not found.");
-            var templateFc = templateFolder.Blocks.Find(config.TemplateFc);
+            var templateFc = templateFolder == null ? null : templateFolder.Blocks.Find(config.TemplateFc);
             if (templateFc == null)
-                throw new InvalidOperationException("Template FC '" + config.TemplateFc + "' not found in '" + config.TemplateFolder + "'.");
+            {
+                // install-lib entrega FC_Modelo em "0 Moldes" (pacote de moldes), não na pasta de
+                // alarmes do default — sem este fallback o gerador nunca roda num PLC recém-instalado
+                templateFc = Ops.FindBlock(plc, config.TemplateFc);
+                if (templateFc == null)
+                    throw new InvalidOperationException("Template FC '" + config.TemplateFc
+                        + "' not found in '" + config.TemplateFolder + "' nor anywhere else in the PLC.");
+                var parent = templateFc.Parent as PlcBlockUserGroup;
+                config.TemplateFolder = parent == null ? "" : parent.Name;
+            }
             var obTemplate = Ops.FindBlock(plc, config.ObTemplate);
             if (obTemplate == null)
                 throw new InvalidOperationException("OB template '" + config.ObTemplate + "' not found.");

@@ -12,10 +12,10 @@
 - `info`
 - `list-devices`
 - `list-blocks [--folder A/B] [--type FB|FC|OB|GlobalDB|InstanceDB] [--count]  (sem filtro = ~500 blocos num projeto real; --count = só o total por pasta)`
-- `list-tags`
+- `list-tags [--table T]  (sem --table: uma linha por tabela; com --table: as tags dela)`
 - `list-types`
 - `tree [--out DIR]  ← COMECE AQUI: outline do PLC inteiro (blocos + tabelas de tag + UDTs) em plc-navi.md, ~26 KB num projeto de 476 blocos (o mesmo em JSON: 117 KB)`
-- `find --pattern P* [--kind block|table|tag|type]`
+- `find --pattern P* [--kind block|table|tag|type|constant]  (constant = constantes de sistema e de usuário; é como se confere <drive>~PROFINET_interface~Standard_telegram_20 sem ler o compile)`
 - `xref --name X  (bloco, tag, tabela ou UDT → o que ele usa)`
 - `trace --equipment AG-01  (símbolos do equipamento + quem referencia; ~9s em projeto grande)`
 - `list-hmi [--device X]  (WinCC Unified: telas + tag tables)`

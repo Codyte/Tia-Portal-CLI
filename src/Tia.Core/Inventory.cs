@@ -219,11 +219,40 @@ namespace Tia.Core
             return b.Name + "(" + t + b.Number + ")";
         }
 
-        public static object TagTables(PlcSoftware plc)
+        /// <summary>Sem --table: uma linha por tabela. Com --table: as tags daquela tabela.</summary>
+        public static object TagTables(PlcSoftware plc, string table = null)
         {
             var result = new List<object>();
             CollectTagTables(plc.TagTableGroup, "", result);
-            return result;
+            if (string.IsNullOrEmpty(table)) return result;
+
+            var hit = FindTagTable(plc.TagTableGroup, table);
+            if (hit == null)
+                throw new InvalidOperationException("Tag table '" + table + "' not found. Known: "
+                    + string.Join(", ", result.Cast<Dictionary<string, object>>().Select(d => (string)d["table"])));
+            return new Dictionary<string, object>
+            {
+                { "table", hit.Name },
+                { "tagCount", hit.Tags.Count },
+                { "tags", hit.Tags.Cast<PlcTag>().Select(t => (object)new Dictionary<string, object>
+                    {
+                        { "name", t.Name }, { "type", t.DataTypeName },
+                        { "address", t.LogicalAddress },
+                        { "comment", t.Comment.Items.Count > 0 ? t.Comment.Items[0].Text : "" },
+                    }).ToList() },
+            };
+        }
+
+        private static PlcTagTable FindTagTable(PlcTagTableGroup group, string name)
+        {
+            foreach (PlcTagTable t in group.TagTables)
+                if (string.Equals(t.Name, name, StringComparison.OrdinalIgnoreCase)) return t;
+            foreach (PlcTagTableUserGroup sub in group.Groups)
+            {
+                var hit = FindTagTable(sub, name);
+                if (hit != null) return hit;
+            }
+            return null;
         }
 
         private static void CollectTagTables(PlcTagTableGroup group, string folder, List<object> into)
@@ -265,7 +294,7 @@ namespace Tia.Core
         public static object Find(PlcSoftware plc, string pattern, string kind)
         {
             kind = (kind ?? "all").ToLowerInvariant();
-            var known = new[] { "all", "block", "table", "tag", "type" };
+            var known = new[] { "all", "block", "table", "tag", "type", "constant" };
             if (!known.Contains(kind))
                 throw new InvalidOperationException("Unknown --kind '" + kind + "'. Use: " + string.Join("|", known));
             var rx = new Regex("^" + Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".") + "$",
@@ -278,7 +307,7 @@ namespace Tia.Core
                         hits.Add(new Dictionary<string, object>
                             { { "kind", "block" }, { "name", b["name"] }, { "folder", b["folder"] }, { "type", b["type"] } });
 
-            if (kind == "all" || kind == "table" || kind == "tag")
+            if (kind == "all" || kind == "table" || kind == "tag" || kind == "constant")
                 FindInTagTables(plc.TagTableGroup, "", rx, kind, hits);
 
             if (kind == "all" || kind == "type")
@@ -303,6 +332,26 @@ namespace Tia.Core
                 if ((kind == "all" || kind == "table") && rx.IsMatch(table.Name))
                     hits.Add(new Dictionary<string, object>
                         { { "kind", "table" }, { "name", table.Name }, { "folder", folder } });
+                // constante de sistema (ex.: <drive>~PROFINET_interface~Standard_telegram_20) só
+                // nasce quando o device é IO device do controlador — é o jeito de conferir isso
+                // sem ler o compile. As de usuário moram na mesma tabela, em outra composição.
+                if (kind == "all" || kind == "constant")
+                {
+                    foreach (PlcSystemConstant c in table.SystemConstants)
+                        if (rx.IsMatch(c.Name))
+                            hits.Add(new Dictionary<string, object>
+                            {
+                                { "kind", "constant" }, { "name", c.Name }, { "table", table.Name },
+                                { "scope", "system" }, { "dataType", c.DataTypeName }, { "value", c.Value },
+                            });
+                    foreach (PlcUserConstant c in table.UserConstants)
+                        if (rx.IsMatch(c.Name))
+                            hits.Add(new Dictionary<string, object>
+                            {
+                                { "kind", "constant" }, { "name", c.Name }, { "table", table.Name },
+                                { "scope", "user" }, { "dataType", c.DataTypeName }, { "value", c.Value },
+                            });
+                }
                 if (kind == "all" || kind == "tag")
                     foreach (PlcTag tag in table.Tags)
                         if (rx.IsMatch(tag.Name))

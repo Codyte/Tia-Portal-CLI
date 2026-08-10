@@ -341,6 +341,23 @@ skill e mais nada; `criterios.md` não vai junto. **O produto do teste são os t
 travada separada entre "o caderno não dizia" (esperado, obra real também não diz) e "a ferramenta
 não dizia" (defeito nosso, e provavelmente do `SKILL.md`).
 
+### FP-03 executada (2026-08-10) — agitador `AG-05`, partida direta
+
+Caderno [`caderno-FP-03.md`](teste-cego/caderno-FP-03.md), resultado em
+[`resultado-FP-03.md`](teste-cego/resultado-FP-03.md). O programa saiu conforme (compila 0/1,
+`audit` 5/6, 10 blocos novos, 8 deles instância ou clone da biblioteca) — o resultado do teste são
+os 10 tropeços, e a fila que sai deles:
+
+1. `add-call` + `delete-network` — **R8 (chamada em LAD) hoje só é alcançável escrevendo FlgNet na
+   mão**; foram 250 linhas de Python para uma rede de chamada.
+2. `add-db-member` resolvendo a inconsistência sozinho, e `edit-db-member --rename` **falhando alto
+   em vez de devolver `ok: true` sem efeito** (bug, não falta de recurso).
+3. `set-retain --block <FB> --member M` — `Remanence` não pode ser setado em iDB, só no FB, e o
+   `import-source` não expressa retentividade: entregar "horímetro retentivo" obrigou a
+   reimplementar o horímetro fora da biblioteca.
+4. `list-interface` — reconstituir o padrão da casa custou 12 chamadas de leitura.
+5. `clone --with-instances`; 6. `audit` reconhecendo acionamento sem inversor.
+
 ## Histórico fechado
 
 As sagas já resolvidas (biblioteca, hardware do molde, telegrama, F6, migração para skill,

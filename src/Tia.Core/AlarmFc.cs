@@ -27,6 +27,9 @@ namespace Tia.Core
         public string CallObName { get; set; } = "CHAMADA_ALARMES";
         public int CallObNumber { get; set; } = 1;
         public List<string> IgnoreFolders { get; set; } = new List<string>();
+        /// <summary>Area base name -> global-DB top struct. Overrides the tag-name heuristic.</summary>
+        public Dictionary<string, string> Structs { get; set; } =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -122,7 +125,16 @@ namespace Tia.Core
                 string areaClean = CleanName(areaBase);
                 string fcName = "FC_ALARMES_" + areaClean;
                 string subFolderName = TargetSubFolderName(alarmGroup.Name);
-                string structName = FindParentStruct(dbXml, equipmentTags.Select(t => t.Name).ToList(),
+                string structName;
+                if (config.Structs.TryGetValue(areaBase, out var mappedStruct))
+                {
+                    // heurística de nome de tag erra quando o projeto não repete o nome da área na DB
+                    if (!TopStructNames(dbXml).Contains(mappedStruct, StringComparer.OrdinalIgnoreCase))
+                        throw new InvalidOperationException("Struct '" + mappedStruct + "' (config 'Structs' -> '"
+                            + areaBase + "') not found in global DB '" + config.GlobalDb + "'.");
+                    structName = mappedStruct;
+                }
+                else structName = FindParentStruct(dbXml, equipmentTags.Select(t => t.Name).ToList(),
                     instrumentTags.Select(t => t.Name).ToList(), areaBase);
                 if (string.IsNullOrEmpty(structName))
                 {
@@ -210,7 +222,7 @@ namespace Tia.Core
             var fcRoot = targetRoot ?? Ops.FindGroup(plc.BlockGroup, config.TargetRootFolder);
             if (fcRoot != null)
             {
-                var fcs = CollectFcs(fcRoot)
+                var fcs = CollectFcs(fcRoot, config.TemplateFolder)
                     .OrderBy(fc => ((PlcBlockUserGroup)fc.Parent).Name, new NaturalStringComparer()).ToList();
                 // on dry-run the FCs may not exist yet: fall back to the planned FC list
                 var callNames = fcs.Any()
@@ -500,17 +512,21 @@ namespace Tia.Core
             if (!string.IsNullOrEmpty(areaName))
             {
                 string cleanArea = CleanName(areaName);
-                var topStructs = dbXml.Descendants(IntfNs + "Section")
-                    .FirstOrDefault(s => s.Attribute("Name")?.Value == "Static")?.Elements(IntfNs + "Member");
-                if (topStructs != null)
-                    foreach (var m in topStructs)
-                    {
-                        string name = m.Attribute("Name")?.Value;
-                        if (!string.IsNullOrEmpty(name) && cleanArea.Contains(CleanName(name)))
-                            return name;
-                    }
+                foreach (var name in TopStructNames(dbXml))
+                    if (cleanArea.Contains(CleanName(name)))
+                        return name;
             }
             return null;
+        }
+
+        private static List<string> TopStructNames(XDocument dbXml)
+        {
+            return (dbXml.Descendants(IntfNs + "Section")
+                    .FirstOrDefault(s => s.Attribute("Name")?.Value == "Static")
+                    ?.Elements(IntfNs + "Member")
+                    .Select(m => m.Attribute("Name")?.Value)
+                    .Where(n => !string.IsNullOrEmpty(n))
+                ?? Enumerable.Empty<string>()).ToList();
         }
 
         private static string TopStructName(XElement member)
@@ -558,18 +574,24 @@ namespace Tia.Core
 
         private static List<TagRef> CollectTags(PlcTagTableUserGroup group)
         {
+            // só Bool: tabela de instrumento mistura o valor Real com os bits de alarme, e o
+            // FB BITS TO WORD só aceita Bool (o compile reprova longe daqui)
             var tags = group.TagTables.SelectMany(t => t.Tags)
+                .Where(t => "Bool".Equals(t.DataTypeName, StringComparison.OrdinalIgnoreCase))
                 .Select(t => new TagRef { Name = t.Name, SourceArea = group.Name }).ToList();
             foreach (PlcTagTableUserGroup sub in group.Groups)
                 tags.AddRange(CollectTags(sub));
             return tags;
         }
 
-        private static List<FC> CollectFcs(PlcBlockUserGroup group)
+        /// <summary>FCs under the target root, minus the mold folder — o molde mora dentro do root
+        /// alvo e senão entraria na lista de chamadas do OB.</summary>
+        private static List<FC> CollectFcs(PlcBlockUserGroup group, string skipFolder)
         {
             var fcs = group.Blocks.OfType<FC>().ToList();
             foreach (PlcBlockUserGroup sub in group.Groups)
-                fcs.AddRange(CollectFcs(sub));
+                if (!sub.Name.Equals(skipFolder, StringComparison.OrdinalIgnoreCase))
+                    fcs.AddRange(CollectFcs(sub, skipFolder));
             return fcs;
         }
 

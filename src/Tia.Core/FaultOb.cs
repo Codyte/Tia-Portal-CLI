@@ -16,6 +16,8 @@ namespace Tia.Core
     {
         /// <summary>Device groups named "&lt;GroupPrefix&gt;xx" are scanned; "HW_" is stripped for the QA name.</summary>
         public string GroupPrefix { get; set; } = "HW_QA-";
+        /// <summary>QA name -&gt; device name, para projeto cujos dispositivos não estão em grupos.</summary>
+        public Dictionary<string, string> Devices { get; set; } = new Dictionary<string, string>();
         public string TemplateOb { get; set; } = "MODULE_ERROR_MOLDE";
         public string ObNamePrefix { get; set; } = "OB_DIAG_";
         /// <summary>
@@ -129,6 +131,17 @@ namespace Tia.Core
         internal static Dictionary<string, List<Module>> DiscoverTasks(TiaSession session, FaultObConfig config)
         {
             var tasks = new Dictionary<string, List<Module>>();
+            // hardware criado pelo CLI nasce na raiz do projeto, sem DeviceUserGroup — o mapa
+            // QA -> nome do device cobre esse caso sem exigir refazer a árvore de dispositivos
+            foreach (var pair in config.Devices)
+            {
+                var device = Hardware.FindDevice(session, pair.Value);
+                if (device == null)
+                    throw new InvalidOperationException("Device '" + pair.Value + "' not found (config 'Devices').");
+                var mapped = new List<Module>();
+                CollectModules(device.DeviceItems, pair.Key, mapped);
+                if (mapped.Any()) tasks[pair.Key] = mapped;
+            }
             foreach (var group in AllDeviceGroups(session))
             {
                 if (!group.Name.StartsWith(config.GroupPrefix, StringComparison.OrdinalIgnoreCase))

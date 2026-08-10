@@ -67,24 +67,35 @@ namespace Tia.Core
         /// <summary>Folder path "A/B/C" under Program blocks. create=false throws if missing.</summary>
         public static PlcBlockGroup ResolveFolder(PlcSoftware plc, string path, bool create)
         {
-            PlcBlockGroup current = plc.BlockGroup;
+            return WalkFolders(plc.BlockGroup, path, "Block",
+                (g, n) => (PlcBlockGroup)g.Groups.Find(n),
+                create ? (Func<PlcBlockGroup, string, PlcBlockGroup>)((g, n) => g.Groups.Create(n)) : null);
+        }
+
+        /// <summary>
+        /// Caminho "A/B" segmento a segmento, casando o mais longo primeiro — nome de pasta pode
+        /// conter '/' ("1. I/OS", "3. Alarmes/Eventos/Falhas"). create=null lança se faltar.
+        /// </summary>
+        static T WalkFolders<T>(T root, string path, string kind, Func<T, string, T> find, Func<T, string, T> create)
+            where T : class
+        {
+            T current = root;
             if (string.IsNullOrEmpty(path)) return current;
             var parts = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < parts.Length; )
             {
-                // nome de pasta pode conter '/' ("3. Alarmes/Eventos/Falhas") — casa o mais longo primeiro
-                PlcBlockGroup next = null;
+                T next = null;
                 int taken = 1;
                 for (int j = parts.Length; j > i; j--)
                 {
-                    next = current.Groups.Find(string.Join("/", parts, i, j - i));
+                    next = find(current, string.Join("/", parts, i, j - i));
                     if (next != null) { taken = j - i; break; }
                 }
                 if (next == null)
                 {
-                    if (!create)
-                        throw new InvalidOperationException("Block folder not found: '" + parts[i] + "' (in '" + path + "').");
-                    next = current.Groups.Create(parts[i]);
+                    if (create == null)
+                        throw new InvalidOperationException(kind + " folder not found: '" + parts[i] + "' (in '" + path + "').");
+                    next = create(current, parts[i]);
                 }
                 current = next;
                 i += taken;
@@ -107,39 +118,17 @@ namespace Tia.Core
         /// <summary>Tag table folder path "A/B" under PLC tags. create=false throws if missing.</summary>
         public static PlcTagTableGroup ResolveTagFolder(PlcSoftware plc, string path, bool create)
         {
-            PlcTagTableGroup current = plc.TagTableGroup;
-            if (string.IsNullOrEmpty(path)) return current;
-            foreach (var part in path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                var next = current.Groups.Find(part);
-                if (next == null)
-                {
-                    if (!create)
-                        throw new InvalidOperationException("Tag folder not found: '" + part + "' (in '" + path + "').");
-                    next = current.Groups.Create(part);
-                }
-                current = next;
-            }
-            return current;
+            return WalkFolders(plc.TagTableGroup, path, "Tag",
+                (g, n) => (PlcTagTableGroup)g.Groups.Find(n),
+                create ? (Func<PlcTagTableGroup, string, PlcTagTableGroup>)((g, n) => g.Groups.Create(n)) : null);
         }
 
         /// <summary>Pasta de UDT "A/B" sob PLC data types. Espelha ResolveFolder/ResolveTagFolder.</summary>
         public static PlcTypeGroup ResolveTypeFolder(PlcSoftware plc, string path, bool create)
         {
-            PlcTypeGroup current = plc.TypeGroup;
-            if (string.IsNullOrEmpty(path)) return current;
-            foreach (var part in path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                var next = current.Groups.Find(part);
-                if (next == null)
-                {
-                    if (!create)
-                        throw new InvalidOperationException("Type folder not found: '" + part + "' (in '" + path + "').");
-                    next = current.Groups.Create(part);
-                }
-                current = next;
-            }
-            return current;
+            return WalkFolders(plc.TypeGroup, path, "Type",
+                (g, n) => (PlcTypeGroup)g.Groups.Find(n),
+                create ? (Func<PlcTypeGroup, string, PlcTypeGroup>)((g, n) => g.Groups.Create(n)) : null);
         }
 
         internal static PlcType FindType(PlcTypeGroup group, string name)

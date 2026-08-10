@@ -77,10 +77,6 @@ namespace Tia.Core
         }
 
         /// <summary>
-        /// folder = prefixo da pasta ("1. FB Bibliotecas" pega as subpastas também), type = FB/FC/OB/
-        /// GlobalDB/InstanceDB. Sem filtro, um PLC real devolve ~500 blocos: é o dump que estoura contexto.
-        /// </summary>
-        /// <summary>
         /// --folder casa **fragmento de caminho**, não prefixo da raiz: todo outro verbo acha pasta por
         /// nome recursivo (Ops.FindGroup), e aqui "3.1 Alarmes Words" (que mora sob
         /// "3. Alarmes/Eventos/Falhas/") devolvia count 0 — silencioso, lido como pasta vazia.
@@ -93,6 +89,10 @@ namespace Tia.Core
                 .IndexOf("/" + filter.Trim('/') + "/", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
+        /// <summary>
+        /// folder = fragmento de caminho ("1. FB Bibliotecas" pega as subpastas também), type = FB/FC/OB/
+        /// GlobalDB/InstanceDB. Sem filtro, um PLC real devolve ~500 blocos: é o dump que estoura contexto.
+        /// </summary>
         public static object Blocks(PlcSoftware plc, string folder = null, string type = null, bool countOnly = false)
         {
             var all = new List<object>();

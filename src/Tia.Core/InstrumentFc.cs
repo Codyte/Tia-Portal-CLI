@@ -32,6 +32,12 @@ namespace Tia.Core
         public List<string> IgnoreFolders { get; set; } = new List<string>();
         /// <summary>Only tags whose name contains one of these substrings; empty = all.</summary>
         public List<string> TagFilters { get; set; } = new List<string>();
+        /// <summary>
+        /// Instrumento que o molde referencia (ex.: "INSTR_01"). Sem isso ele é adivinhado entre
+        /// os instrumentos reais — o que exige que o molde seja o FC de um instrumento do próprio
+        /// projeto. Molde genérico (vindo de biblioteca) só precisa existir na DB global.
+        /// </summary>
+        public string MoldInstrumentId { get; set; }
         /// <summary>Next free command number per kind (defaults mirror the original script).</summary>
         public Dictionary<string, int> NextCommandIds { get; set; } = new Dictionary<string, int>
         {
@@ -60,6 +66,9 @@ namespace Tia.Core
         {
             public string Id;
             public string GlobalDbPath;
+            /// <summary>Tag do valor de processo — o sufixo dela é próprio de cada instrumento
+            /// (NIVEL_POCO × VAZAO_INSTANTANEA), então trocar o Id do molde não a produz.</summary>
+            public string PvTag;
             public int TagCount;
             public int CmdAfericao;
             public int CmdLimites;
@@ -167,6 +176,8 @@ namespace Tia.Core
                     {
                         Id = group.Key,
                         GlobalDbPath = path,
+                        PvTag = group.Select(x => x.Tag.Name)
+                            .FirstOrDefault(n => n.IndexOf("_PV_", StringComparison.OrdinalIgnoreCase) >= 0),
                         TagCount = group.Count(),
                         CmdAfericao = cmdA,
                         CmdLimites = cmdL,
@@ -181,8 +192,14 @@ namespace Tia.Core
             var componentNames = new HashSet<string>(templateXml.Descendants(FlgNs + "Component")
                 .Select(c => c.Attribute("Name")?.Value).Where(n => !string.IsNullOrEmpty(n)));
             Instrument source = null;
+            if (!string.IsNullOrWhiteSpace(config.MoldInstrumentId))
+                source = new Instrument
+                {
+                    Id = config.MoldInstrumentId,
+                    GlobalDbPath = FindPathInDbXml(dbXml, config.MoldInstrumentId),
+                };
             int best = 0;
-            foreach (var instrument in tasks.SelectMany(t => t.Instruments))
+            foreach (var instrument in source == null ? tasks.SelectMany(t => t.Instruments) : Enumerable.Empty<Instrument>())
             {
                 int count = componentNames.Count(n => n.Contains(instrument.Id));
                 if (count > best) { best = count; source = instrument; }
@@ -208,14 +225,13 @@ namespace Tia.Core
             var obCalls = new List<(string Fc, string Area)>();
             foreach (var task in tasks)
             {
-                bool complete = IsTaskComplete(plc, task);
+                string xmlPath = BuildAreaFcXml(templateXml, task, source, config, outDir);
+                bool complete = IsTaskComplete(plc, task, xmlPath);
                 obCalls.Add((task.TargetFcName, task.AreaName));
                 string action = complete ? "in-sync" : "generate";
-                string xmlPath = null;
 
                 if (!complete)
                 {
-                    xmlPath = BuildAreaFcXml(templateXml, task, source, config, outDir);
                     if (apply)
                     {
                         var targetSubFolder = destRoot.Groups.Find(task.TargetFolderName)
@@ -340,8 +356,12 @@ namespace Tia.Core
                 else
                 {
                     var nameAttr = first.Attribute("Name");
-                    if (nameAttr != null && nameAttr.Value.StartsWith(source.Id, StringComparison.OrdinalIgnoreCase))
-                        nameAttr.Value = target.Id + nameAttr.Value.Substring(source.Id.Length);
+                    if (nameAttr == null || !nameAttr.Value.StartsWith(source.Id, StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    nameAttr.Value = nameAttr.Value.IndexOf("_PV_", StringComparison.OrdinalIgnoreCase) >= 0
+                            && !string.IsNullOrEmpty(target.PvTag)
+                        ? target.PvTag
+                        : target.Id + nameAttr.Value.Substring(source.Id.Length);
                 }
             }
         }
@@ -516,11 +536,13 @@ namespace Tia.Core
         // ---------- checks + helpers ----------
 
         /// <summary>Area complete when its FC exists and every required instance DB already exists.</summary>
-        private static bool IsTaskComplete(PlcSoftware plc, AreaTask task)
+        private static bool IsTaskComplete(PlcSoftware plc, AreaTask task, string xmlPath)
         {
             var folder = Ops.FindGroup(plc.BlockGroup, task.TargetFolderName);
             if (folder == null) return false;
-            if (!(folder.Blocks.Find(task.TargetFcName) is FC)) return false;
+            // conteúdo, não só existência: senão um FC gerado por molde velho fica preso "in-sync"
+            var fc = folder.Blocks.Find(task.TargetFcName) as FC;
+            if (fc == null || !BlocksIdentical(fc, xmlPath)) return false;
             // global lookup — ImportAreaFc also skips creation when the DB exists anywhere
             foreach (var instrument in task.Instruments)
                 foreach (var dbName in instrument.InstanceDbs)
@@ -555,9 +577,11 @@ namespace Tia.Core
                 .FirstOrDefault(s => s.Attribute("Name")?.Value == "Static");
             if (staticSection == null)
                 throw new InvalidOperationException("'Static' section not found in global DB XML.");
+            // nome de membro de DB não aceita hífen: "LIT-01" tem que casar "..._LIT_01"
+            string needle = instrumentId.Replace('-', '_');
             var member = staticSection.Descendants(IntfNs + "Member")
-                .FirstOrDefault(m => m.Attribute("Name")?.Value
-                    .IndexOf(instrumentId, StringComparison.OrdinalIgnoreCase) >= 0);
+                .FirstOrDefault(m => m.Attribute("Name")?.Value.Replace('-', '_')
+                    .IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0);
             if (member == null)
                 throw new InvalidOperationException(
                     "No global DB structure contains the ID '" + instrumentId + "'.");
@@ -596,7 +620,12 @@ namespace Tia.Core
         private static string ExtractId(string tagName)
         {
             if (string.IsNullOrEmpty(tagName)) return null;
-            var match = Regex.Match(tagName, @"^([A-Z0-9\.-]+(?:-[A-Z0-9\.-]+)*)");
+            // "MEDIDOR_NIVEL (LIT-01)" -> LIT-01 (a tag do valor analógico traz o TAG no parêntese)
+            var paren = Regex.Match(tagName, @"\(([^)]+)\)");
+            if (paren.Success) return paren.Groups[1].Value.Trim();
+            // "LIT-01_STS_LEITURA_ALTA" / "FQIT_01_..." -> letras + separador + número; sem o
+            // número, PIT-10 e PIT-01 cairiam no mesmo Id e o replace geraria a tag errada
+            var match = Regex.Match(tagName, @"^([A-Za-z]+[-_]?\d+)");
             return match.Success ? match.Groups[1].Value : null;
         }
 

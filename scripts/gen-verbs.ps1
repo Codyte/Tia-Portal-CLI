@@ -13,16 +13,17 @@ if (-not (Test-Path $exe)) { throw "tia.exe ausente: $exe (rodar rebuild.ps1)" }
 # mesma razao do _common.ps1: tia.exe fala UTF-8, e sem isto o help volta decodificado na
 # codepage OEM do host — todo acento do VERBS.md vira mojibake na regeracao seguinte.
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
-$help = & $exe --help | ConvertFrom-Json
+$help = & $exe --help --full | ConvertFrom-Json
 $sb = [Text.StringBuilder]::new()
 [void]$sb.AppendLine('# Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao)')
 [void]$sb.AppendLine()
 [void]$sb.AppendLine("``$($help.usage)``")
+$verbs = 0
 foreach ($p in $help.PSObject.Properties) {
     if ($p.Name -in 'usage', 'notes') { continue }
     [void]$sb.AppendLine()
     [void]$sb.AppendLine("## $($p.Name)")
-    foreach ($line in @($p.Value)) { [void]$sb.AppendLine("- ``$line``") }
+    foreach ($line in @($p.Value)) { [void]$sb.AppendLine("- ``$line``"); $verbs++ }
 }
 [void]$sb.AppendLine()
 [void]$sb.AppendLine('## notas')
@@ -30,4 +31,17 @@ foreach ($p in $help.PSObject.Properties) {
 
 $out = Join-Path $repo 'docs\VERBS.md'
 Set-Content $out ($sb.ToString().TrimEnd() + "`n") -Encoding utf8
-"gen-verbs: $out"
+"gen-verbs: $out ($verbs verbos)"
+
+# O numero de verbos aparece a mao no SKILL.md (2x) e no README — era o tipo de dado que envelhece
+# calado (ficou em 69 com 72 no help). Aqui a verdade e' o help; o resto so' precisa ser avisado.
+# CLAUDE.md fica de fora: la' "6 verbos" e' o preflight do doctor, nao o total.
+foreach ($f in @('SKILL.md', 'README.md')) {
+    $path = Join-Path $repo $f
+    if (-not (Test-Path $path)) { continue }
+    $stale = Select-String -LiteralPath $path -Pattern '(\d+)\s+verb' -AllMatches |
+        ForEach-Object { $_.Matches } | Where-Object { [int]$_.Groups[1].Value -ne $verbs }
+    foreach ($m in $stale) {
+        Write-Host "  AVISO $f diz '$($m.Value)' — o help tem $verbs" -ForegroundColor Yellow
+    }
+}

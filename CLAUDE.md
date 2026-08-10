@@ -1,6 +1,8 @@
 # TIA Portal Openness API — instruções do repo
 
 **Toda sessão: ler `docs/PLANO.md` (decisões + fase atual) e `__navi__.md` antes de qualquer coisa.**
+O histórico datado das sagas já fechadas saiu do PLANO inteiro para `docs/DIARIO.md` — ler só
+quando a pergunta for "como chegamos nisso".
 
 Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de `src/` é
 `src/__navi__.md` — símbolos públicos de cada `.cs` + os `case "verbo"` do CLI com linha;

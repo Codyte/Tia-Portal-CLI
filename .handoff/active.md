@@ -53,8 +53,8 @@ mid-flight.
 - `scripts/rebuild.ps1:44-54` — os checks offline de CLI (`--out-file`, `run --script`).
 - `src/Tia.Tests/Program.cs` — `Ops_RequireUtf8Bom`, `Ops_WalkFolders`, `Inventory_FolderMatches`.
 - `docs/teste-cego/resultado-2026-08-10.md` — achados 12 e 13 + a seção "Aberto" (2 itens restantes).
-- `src/__navi__.md` — **regenerar com `pwsh scripts/navi-cs.ps1`**: esta sessão acrescentou 3 símbolos
-  públicos (`RequireUtf8Bom`, `WalkFolders`, `FolderMatches`, `ParseScript`) e o mapa não sabe deles.
+- `src/__navi__.md` — **regenerado ao fim desta sessão** (`pwsh scripts/navi-cs.ps1`), já com
+  `RequireUtf8Bom`, `WalkFolders`, `FolderMatches` e `ParseScript`.
 
 ## Open / blockers
 - `use-project.ps1` exige caminho absoluto (passo 2).

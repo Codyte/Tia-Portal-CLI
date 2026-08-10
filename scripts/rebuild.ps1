@@ -41,6 +41,17 @@ if (-not $SkipTests) {
     }
     Write-Host '  ok  Cli.--out-file (stdout vira stub, JSON completo no arquivo)'
 
+    # run --script valida o script ANTES do attach: erro de uso nao pode custar sessao nem exigir
+    # portal aberto. Se a validacao voltar pra dentro do using(Attach()), este check falha aqui.
+    $bad = Join-Path ([IO.Path]::GetTempPath()) 'tia-badscript-check.json'
+    '[["create-project","--dir","x","--name","y"]]' | Set-Content -LiteralPath $bad -Encoding utf8
+    $out = & $exe run --script $bad 2>&1 | Out-String
+    if ($LASTEXITCODE -eq 0) { Write-Host 'FAIL run --script aceitou create-project como step' -ForegroundColor Red; exit 1 }
+    if ($out -notmatch 'attaches once') {
+        Write-Host "FAIL run --script: erro nao ensina a saida (veio: $out)" -ForegroundColor Red; exit 1
+    }
+    Write-Host '  ok  Cli.run --script (open/create-project recusado antes do attach, com a saida na mensagem)'
+
     # Resolve-RealPath sustenta 3 gates do init -Check. Se ele passar a devolver tudo igual, os
     # gates viram sempre-ok e param de detectar checkout no lugar errado — falso positivo silencioso.
     . (Join-Path $PSScriptRoot 'init.ps1') -Check:$false -DotSourceOnly

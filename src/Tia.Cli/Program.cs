@@ -116,7 +116,9 @@ namespace Tia.Cli
                     { "batch", new[] { "run --script ops.json [--summary]  (JSON array de arg-arrays, uma sessão só; " +
                         "step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou. " +
                         "--summary = só {steps,failed,errors[]}, sem o resultado de cada step. " +
-                        "--plc/--out-file do processo NÃO descem pros steps: cada step carrega os seus)" } },
+                        "--plc/--out-file do processo NÃO descem pros steps: cada step carrega os seus. " +
+                        "Exige projeto JÁ aberto: o attach é 1x, antes do 1º step, então open-project/create-project " +
+                        "não podem ser step — chamar antes, sozinhos)" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports; " +
                         "--out-file F.json (qualquer verbo: JSON completo no arquivo, stdout só {file,bytes,count,head} " +
                         "— use em find/snapshot/list-*/xref, que dão centenas de KB); " +
@@ -219,22 +221,15 @@ namespace Tia.Cli
                 return 0;
             }
 
+            // script malformado = erro de uso: falha antes do attach (não custa os ~7s nem exige portal)
+            var batch = args[0] == "run" ? ParseScript(Require(args, "--script")) : null;
+
             using (var session = Core.TiaSession.Attach())
             {
                 // batch: list of verbs in one attach — [["list-blocks"],["compile","--apply"]]
                 if (args[0] == "run")
                 {
-                    var steps = JsonConvert.DeserializeObject<List<string[]>>(
-                        File.ReadAllText(Require(args, "--script")));
-                    if (steps == null || steps.Count == 0)
-                        throw new ArgumentException(
-                            "Script must be a JSON array of arg arrays, e.g. [[\"list-blocks\"],[\"compile\",\"--apply\"]].");
-                    // script malformado = fail-fast (erro de uso); exceção de step = isolada.
-                    foreach (var step in steps)
-                        if (step == null || step.Length == 0 || step[0] == "run"
-                            || step[0] == "open-project" || step[0] == "create-project")
-                            throw new ArgumentException("Each step must be a verb (not 'run'/'open-project'/'create-project').");
-
+                    var steps = batch;
                     var results = new List<object>();
                     int failed = 0;
                     foreach (var step in steps)
@@ -283,6 +278,28 @@ namespace Tia.Cli
                 Print(DispatchWithRetry(session, args, args));
                 return 0;
             }
+        }
+
+        /// <summary>
+        /// Lê e valida o script do batch. Roda antes do Attach: erro de uso não deve custar sessão
+        /// nem exigir portal aberto. open-project/create-project não podem ser step — o attach é 1x,
+        /// antes do 1º step, então o batch não abre o projeto em que ele mesmo trabalha.
+        /// </summary>
+        private static List<string[]> ParseScript(string file)
+        {
+            var steps = JsonConvert.DeserializeObject<List<string[]>>(File.ReadAllText(file));
+            if (steps == null || steps.Count == 0)
+                throw new ArgumentException(
+                    "Script must be a JSON array of arg arrays, e.g. [[\"list-blocks\"],[\"compile\",\"--apply\"]].");
+            foreach (var step in steps)
+                if (step == null || step.Length == 0 || step[0] == "run"
+                    || step[0] == "open-project" || step[0] == "create-project")
+                    throw new ArgumentException(
+                        "Each step must be a verb on an open project (not 'run'/'open-project'/'create-project'): "
+                        + "the batch attaches once, before the first step, so it cannot open or create the project it "
+                        + "works on. Call open-project/create-project on their own first (or scripts/use-project.ps1), "
+                        + "then run the batch.");
+            return steps;
         }
 
         /// <summary>Retries on "portal busy" errors: --retry N (default 3, 0 disables), linear backoff.</summary>

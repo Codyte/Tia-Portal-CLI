@@ -55,6 +55,10 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
     completo em dry: `tia run --script docs/examples/gen-all.json`.
     **Isola steps**: step que falha vira `{ok:false,error,type}` e o batch segue; `exit 1` se algum
     falhou. Bateria onde falha é esperada roda de uma vez só.
+    **Exige projeto já aberto** — o attach é 1x, antes do 1º step, então `open-project` /
+    `create-project` não podem ser step (fail-fast, o batch inteiro nem começa): abrir/criar numa
+    chamada antes (ou `use-project.ps1`) e o batch trabalha em cima. Não vale mudar: abrir projeto
+    custa 2-4 min, e a chamada solta a mais custa ~7 s.
   - **Assinatura de verbo → `docs/VERBS.md`** (gerado do help pelo `rebuild.ps1`). Uma leitura de
     ~80 linhas em vez de grep em `Program.cs`.
   - **Nunca `list-blocks` sem filtro** — são ~480 blocos. `--folder A/B` (pega subpastas),

@@ -101,6 +101,15 @@ warnings**, **`audit` 6/6**, salvo.
     continua passando sem BOM. Provado offline (5 casos) e em runtime, nos dois sentidos: sem BOM
     recusa citando `byte 0xC3 at offset 57`, com BOM o mesmo arquivo devolve
     `blocks: ["Afericao CMD"]`. Commit `06b478b`.
+13. **`run --script` recusava `open-project`/`create-project` como step sem dizer a saída.** A
+    limitação fica: o attach é 1x, antes do 1º step, então o batch não pode abrir o projeto em que
+    ele mesmo trabalha. Attach lazy foi **descartado** — abrir projeto custa 2-4 min e a chamada
+    solta a mais custa ~7 s, então o ganho seria ruído sobre um refactor do `Run()`. O que faltava
+    era ensinar: a mensagem de fail-fast agora dá o porquê e manda chamar
+    `open-project`/`create-project` (ou `use-project.ps1`) antes, e o help do `batch` diz "exige
+    projeto JÁ aberto". A validação do script saiu de dentro do `using (Attach())` para antes dele:
+    erro de uso não custa mais os ~7 s de sessão nem exige portal aberto — e é justamente isso que
+    torna o caso testável offline, no check novo do `rebuild.ps1`.
 
 ## O que a rodada ensinou sobre os geradores
 
@@ -112,8 +121,6 @@ suposição para o config e deixar o código exigir só o que é estrutural.
 
 ## Aberto
 
-- **`run --script` exige projeto já aberto** — batch não pode começar com `create-project` /
-  `open-project`.
 - **`use-project.ps1` exige caminho absoluto**: o `Test-Path` do argumento roda num pwsh filho que
   não nasce na raiz do repo, então caminho relativo cai no ramo de nome curto e procura em `proj\`.
 - `WalkFolders` (longest-match de pasta) e o filtro de `list-blocks --folder` não têm teste offline:

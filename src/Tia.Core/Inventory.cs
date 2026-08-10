@@ -87,13 +87,15 @@ namespace Tia.Core
             IEnumerable<object> hits = all;
             if (!string.IsNullOrEmpty(folder))
             {
-                var prefix = folder.Trim('/');
+                // fragmento de caminho, não prefixo da raiz: todo outro verbo acha pasta por nome
+                // recursivo (Ops.FindGroup), e aqui "3.1 Alarmes Words" (que mora sob
+                // "3. Alarmes/Eventos/Falhas/") devolvia count 0 — silencioso, lido como pasta vazia.
+                // As barras nas pontas prendem o casamento no limite de segmento: "3.1" não casa
+                // "3.1 Alarmes Words", e subpasta continua entrando.
+                var needle = "/" + folder.Trim('/') + "/";
                 hits = hits.Where(o =>
-                {
-                    var f = (string)((Dictionary<string, object>)o)["folder"];
-                    return f.Equals(prefix, StringComparison.OrdinalIgnoreCase)
-                        || f.StartsWith(prefix + "/", StringComparison.OrdinalIgnoreCase);
-                });
+                    ("/" + (string)((Dictionary<string, object>)o)["folder"] + "/")
+                        .IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0);
             }
             // igualdade, não substring: "OB" casava dentro de "GlobalDB" (Gl-ob-alDB) e o filtro
             // devolvia DB junto com OB

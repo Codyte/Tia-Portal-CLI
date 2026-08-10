@@ -78,6 +78,23 @@ warnings**, **`audit` 6/6**, salvo.
    `MOTOR_01_CMD_MOTOR_01_BOTAO_RESET_FALHA`. O prefixo do masterId passou a ser removido antes do
    split.
 
+### Infraestrutura (3ª sessão do dia — fechamento da rodada)
+
+10. **`Start-Process -Wait` do runner da task esperava os *descendentes*.** `open-project` com o
+    Portal fechado abria o projeto e o `tia.exe` saía, mas o Portal que ele iniciou é descendente:
+    o `-Wait` ficava pendurado enquanto o Portal vivesse, o `exit-<id>.txt` (sinal de fim) nunca era
+    gravado e o cliente só desistia no timeout de 600 s — **com o projeto aberto e correto na tela**.
+    O fix anterior (`213dae4`) tratou o *pipe* de stdout, não o `-Wait`. Agora é
+    `Start-Process -PassThru` + `$p.WaitForExit()`, que espera só o processo. Com isso o passo que
+    nunca tinha sido provado — **`use-project.ps1` com o Portal fechado, pela rota da sessão 0** —
+    passa: Portal sobe, projeto abre, e a chamada volta.
+11. **`list-blocks --folder` era prefixo da raiz, não nome de pasta.** `--folder "3.1 Alarmes Words"`
+    devolvia `count: 0` porque a pasta mora sob `3. Alarmes/Eventos/Falhas/`. Silencioso e lido como
+    "pasta vazia" — bateu com a suspeita errada de que `in-sync` estava mentindo (o `diff-block`
+    provou `identical: true`). Todo outro verbo acha pasta por nome recursivo (`Ops.FindGroup`);
+    agora o filtro casa **fragmento de caminho** com barras nas pontas, então nome de folha, caminho
+    parcial e caminho inteiro funcionam, e o limite de segmento continua firme.
+
 ## O que a rodada ensinou sobre os geradores
 
 Os 4 geradores nasceram como port de scripts escritos *para um projeto*. Todo defeito desta sessão
@@ -92,7 +109,7 @@ suposição para o config e deixar o código exigir só o que é estrutural.
   causa. Vale um gate no verbo.
 - **`run --script` exige projeto já aberto** — batch não pode começar com `create-project` /
   `open-project`.
-- **`use-project.ps1` com o Portal fechado** continua não provado (a rota da sessão 0 pede caminho
-  absoluto; a tentativa desta rodada morreu antes disso).
-- `WalkFolders` (longest-match de pasta) não tem teste offline: precisa de `PlcSoftware` vivo, e foi
-  validado só em runtime.
+- **`use-project.ps1` exige caminho absoluto**: o `Test-Path` do argumento roda num pwsh filho que
+  não nasce na raiz do repo, então caminho relativo cai no ramo de nome curto e procura em `proj\`.
+- `WalkFolders` (longest-match de pasta) e o filtro de `list-blocks --folder` não têm teste offline:
+  precisam de `PlcSoftware` vivo, e foram validados só em runtime.

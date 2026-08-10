@@ -46,8 +46,13 @@ try {
         if ($a -match '[\s"]') { '"' + (($a -replace '(\\+)"', '$1$1"' -replace '"', '\"') -replace '(\\+)$', '$1$1') + '"' }
         else { $a }
     }) -join ' '
-    $p = Start-Process -FilePath $exe -ArgumentList $line -NoNewWindow -Wait -PassThru `
+    # sem -Wait: o -Wait do Start-Process espera o processo E OS DESCENDENTES (job object), e o
+    # TIA Portal que o tia.exe inicia e descendente — ficava pendurado enquanto o portal vivesse,
+    # mesmo com o tia.exe ja encerrado (medido 2026-08-10, run 29c5e0eb: portal aberto na tela,
+    # exit-<id>.txt nunca gravado, timeout de 600s). WaitForExit() espera SO o processo.
+    $p = Start-Process -FilePath $exe -ArgumentList $line -NoNewWindow -PassThru `
         -RedirectStandardOutput "$dir\out$sfx.txt" -RedirectStandardError "$dir\err$sfx.txt"
+    $p.WaitForExit()
     $code = $p.ExitCode
 } catch {
     # sem isto uma falha antes do exe (exe ausente, redirect invalido) nunca grava exit e o

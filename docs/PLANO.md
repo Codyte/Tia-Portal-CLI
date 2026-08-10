@@ -988,7 +988,7 @@ não dizia" (defeito nosso, e provavelmente do `SKILL.md`).
 | Rodada | Caderno | Resultado | Veredito |
 |---|---|---|---|
 | FP-01 | filtro prensa (sequência autoral) | [`resultado-2026-08-07.md`](teste-cego/resultado-2026-08-07.md) | compile 0/0; **não foi cega** (a sessão herdou o handoff de quem escreveu o caderno) |
-| FP-02 | elevatória + preliminar, 2 áreas, zero SCL autoral | [`resultado-2026-08-10.md`](teste-cego/resultado-2026-08-10.md) | compile 0/0 + `audit` 6/6; 12 defeitos de ferramenta em 6 commits; **também não foi cega** |
+| FP-02 | elevatória + preliminar, 2 áreas, zero SCL autoral | [`resultado-2026-08-10.md`](teste-cego/resultado-2026-08-10.md) | **encerrada**: compile 0/0 + `audit` 6/6, projeto salvo; 12 defeitos de gerador + 2 de infraestrutura (`-Wait` do runner da task esperava o Portal; `list-blocks --folder` era prefixo da raiz); a rota da sessão 0 com o **Portal fechado** ficou provada; **também não foi cega** |
 
 A FP-02 foi desenhada para o outro extremo da FP-01: **nada autoral**, só os 7 verbos `--apply`,
 para medir a engine e não a redação de SCL. Todos os 4 geradores tiveram seu **primeiro `--apply`

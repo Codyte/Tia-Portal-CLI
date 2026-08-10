@@ -40,8 +40,8 @@ Hmi(10)  Targets(12)  List(23)
 ## `Tia.Core/InstrumentFc.cs` (668 linhas)
 InstrumentFcConfig(16)  InstrumentFc(55)  Instrument(65)  AreaTask(78)  Run(86)
 
-## `Tia.Core/Inventory.cs` (478 linhas)
-Inventory(28)  Info(30)  Devices(47)  Blocks(83)  Tree(142)  TagTables(214)  Types(234)  Find(257)  Snapshot(314)  Xref(367)  Trace(415)
+## `Tia.Core/Inventory.cs` (480 linhas)
+Inventory(28)  Info(30)  Devices(47)  Blocks(83)  Tree(144)  TagTables(216)  Types(236)  Find(259)  Snapshot(316)  Xref(369)  Trace(417)
 
 ## `Tia.Core/LadConverter.cs` (501 linhas)
 LadConverter(17)  Convert(19)  ParseAll(150)  NextUid(312)  TagAccess(314)  ConstAccess(322)  Operand(332)  NewNet(339)  Compile(341)  ToFlgNet(403)

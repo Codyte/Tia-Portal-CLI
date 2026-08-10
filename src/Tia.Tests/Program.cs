@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Tia.Core;
@@ -61,6 +62,7 @@ namespace Tia.Tests
                 { "InstrumentFc.BuildAreaFcXml", InstrumentFc_BuildAreaFcXml },
                 { "LadConverter.Convert", LadConverter_Convert },
                 { "Ops.RequireRootType", Ops_RequireRootType },
+                { "Ops.RequireUtf8Bom", Ops_RequireUtf8Bom },
                 { "DbMember.AddToXml", DbMember_AddToXml },
                 { "Memory.Occupied", Memory_Occupied },
                 { "Clone.Rewrite", Clone_Rewrite },
@@ -247,6 +249,33 @@ namespace Tia.Tests
             Check(Throws(() => Ops.RequireRootType(Fixture("StdBombaA.xml"), "SW.Blocks.")),
                 "tag table recusada como bloco (era falso positivo no dry-run)");
             Check(!Throws(() => Ops.RequireRootType(Fixture("BombaTemplateFc.xml"), "SW.Blocks.")), "FC aceito como bloco");
+        }
+
+        /// <summary>Gate de encoding do import-source: acento sem BOM vira mojibake no Openness.</summary>
+        private static void Ops_RequireUtf8Bom()
+        {
+            Func<string, byte[], string> write = (name, bytes) =>
+            {
+                var p = Path.Combine(OutDir(), name);
+                File.WriteAllBytes(p, bytes);
+                return p;
+            };
+            const string scl = "FUNCTION \"Aferição CMD\" : Void\nEND_FUNCTION\n";
+            var bom = new byte[] { 0xEF, 0xBB, 0xBF };
+
+            Check(!Throws(() => Ops.RequireUtf8Bom(write("bom.scl",
+                    bom.Concat(Encoding.UTF8.GetBytes(scl)).ToArray()))),
+                "UTF-8 com BOM passa");
+            Check(!Throws(() => Ops.RequireUtf8Bom(write("ascii.scl",
+                    Encoding.ASCII.GetBytes("FUNCTION \"CMD\" : Void\nEND_FUNCTION\n")))),
+                "ASCII puro passa sem BOM (BOM não é exigido à toa)");
+            Check(Throws(() => Ops.RequireUtf8Bom(write("nobom.scl", Encoding.UTF8.GetBytes(scl)))),
+                "UTF-8 sem BOM recusado (era o mojibake silencioso)");
+            Check(Throws(() => Ops.RequireUtf8Bom(write("latin1.scl",
+                    Encoding.GetEncoding("ISO-8859-1").GetBytes(scl)))),
+                "Latin-1 recusado");
+            Check(Throws(() => Ops.RequireUtf8Bom(write("utf16.scl", Encoding.Unicode.GetBytes(scl)))),
+                "UTF-16 recusado (BOM FF FE não é o de UTF-8)");
         }
 
         /// <summary>Nomes de FC conferidos contra 5.1 Aferição Analógica e 5.2 Totalizadores.</summary>

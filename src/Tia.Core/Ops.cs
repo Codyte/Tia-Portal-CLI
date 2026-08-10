@@ -616,6 +616,8 @@ namespace Tia.Core
                 throw new InvalidOperationException(
                     "Unsupported source extension '" + ext + "'. Use: " + string.Join(", ", known));
 
+            RequireUtf8Bom(full);
+
             var types = SourceDeclNames(full, true);
             var blocks = SourceDeclNames(full, false);
             var declared = blocks.Concat(types).ToList();
@@ -685,6 +687,24 @@ namespace Tia.Core
             return rx.Matches(File.ReadAllText(file)).Cast<Match>()
                 .Select(m => m.Groups[1].Success ? m.Groups[1].Value : m.Groups[2].Value)
                 .Distinct().ToList();
+        }
+
+        /// <summary>
+        /// Fonte sem BOM é lida como ANSI pelo Openness: "Aferição CMD" entra "AferiÃ§Ã£o CMD" e o
+        /// erro só aparece no compile, longe da causa. ASCII puro não precisa de BOM — o gate barra
+        /// só o arquivo que tem byte alto sem marca (UTF-8 cru, Latin-1 ou UTF-16).
+        /// </summary>
+        public static void RequireUtf8Bom(string file)
+        {
+            var bytes = File.ReadAllBytes(file);
+            if (bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF) return;
+            var i = Array.FindIndex(bytes, b => b >= 0x80);
+            if (i < 0) return;
+            throw new InvalidOperationException(
+                "Source has no UTF-8 BOM but carries byte 0x" + bytes[i].ToString("X2") + " at offset " + i
+                + " — Openness would read it as ANSI and import the accent corrupted (compile fails far from the cause): "
+                + file + ". Re-save as UTF-8 with BOM: Set-Content -Encoding utf8BOM, or"
+                + " [IO.File]::WriteAllText($p, $t, [Text.UTF8Encoding]::new($true)).");
         }
 
         private static string RequireFile(string file)

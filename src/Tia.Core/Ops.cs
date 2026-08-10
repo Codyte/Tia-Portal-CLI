@@ -75,8 +75,10 @@ namespace Tia.Core
         /// <summary>
         /// Caminho "A/B" segmento a segmento, casando o mais longo primeiro — nome de pasta pode
         /// conter '/' ("1. I/OS", "3. Alarmes/Eventos/Falhas"). create=null lança se faltar.
+        /// public só para o teste offline: os delegados isolam do PlcSoftware, e a regra de
+        /// longest-match é o que sustenta todo verbo que recebe --folder.
         /// </summary>
-        static T WalkFolders<T>(T root, string path, string kind, Func<T, string, T> find, Func<T, string, T> create)
+        public static T WalkFolders<T>(T root, string path, string kind, Func<T, string, T> find, Func<T, string, T> create)
             where T : class
         {
             T current = root;

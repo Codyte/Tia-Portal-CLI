@@ -80,6 +80,19 @@ namespace Tia.Core
         /// folder = prefixo da pasta ("1. FB Bibliotecas" pega as subpastas também), type = FB/FC/OB/
         /// GlobalDB/InstanceDB. Sem filtro, um PLC real devolve ~500 blocos: é o dump que estoura contexto.
         /// </summary>
+        /// <summary>
+        /// --folder casa **fragmento de caminho**, não prefixo da raiz: todo outro verbo acha pasta por
+        /// nome recursivo (Ops.FindGroup), e aqui "3.1 Alarmes Words" (que mora sob
+        /// "3. Alarmes/Eventos/Falhas/") devolvia count 0 — silencioso, lido como pasta vazia.
+        /// As barras nas pontas prendem o casamento no limite de segmento: "3.1" não casa
+        /// "3.1 Alarmes Words", e subpasta continua entrando.
+        /// </summary>
+        public static bool FolderMatches(string blockFolder, string filter)
+        {
+            return ("/" + (blockFolder ?? "") + "/")
+                .IndexOf("/" + filter.Trim('/') + "/", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
         public static object Blocks(PlcSoftware plc, string folder = null, string type = null, bool countOnly = false)
         {
             var all = new List<object>();
@@ -87,15 +100,8 @@ namespace Tia.Core
             IEnumerable<object> hits = all;
             if (!string.IsNullOrEmpty(folder))
             {
-                // fragmento de caminho, não prefixo da raiz: todo outro verbo acha pasta por nome
-                // recursivo (Ops.FindGroup), e aqui "3.1 Alarmes Words" (que mora sob
-                // "3. Alarmes/Eventos/Falhas/") devolvia count 0 — silencioso, lido como pasta vazia.
-                // As barras nas pontas prendem o casamento no limite de segmento: "3.1" não casa
-                // "3.1 Alarmes Words", e subpasta continua entrando.
-                var needle = "/" + folder.Trim('/') + "/";
                 hits = hits.Where(o =>
-                    ("/" + (string)((Dictionary<string, object>)o)["folder"] + "/")
-                        .IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0);
+                    FolderMatches((string)((Dictionary<string, object>)o)["folder"], folder));
             }
             // igualdade, não substring: "OB" casava dentro de "GlobalDB" (Gl-ob-alDB) e o filtro
             // devolvia DB junto com OB

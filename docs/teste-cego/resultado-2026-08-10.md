@@ -123,5 +123,9 @@ suposição para o config e deixar o código exigir só o que é estrutural.
 
 - **`use-project.ps1` exige caminho absoluto**: o `Test-Path` do argumento roda num pwsh filho que
   não nasce na raiz do repo, então caminho relativo cai no ramo de nome curto e procura em `proj\`.
-- `WalkFolders` (longest-match de pasta) e o filtro de `list-blocks --folder` não têm teste offline:
-  precisam de `PlcSoftware` vivo, e foram validados só em runtime.
+- ~~`WalkFolders` e o filtro de `list-blocks --folder` sem teste offline~~ — **coberto**:
+  `WalkFolders` virou `public` (os delegados `find`/`create` já isolavam do `PlcSoftware`, então o
+  teste passa uma árvore de nós em memória) e o predicado do filtro saiu para
+  `Inventory.FolderMatches`. 19 checks offline, incluindo o limite de segmento que era o defeito e a
+  armadilha do `create` (pasta com `/` no nome só casa inteira se já existir; criar quebra em 2
+  níveis).

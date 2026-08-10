@@ -63,6 +63,8 @@ namespace Tia.Tests
                 { "LadConverter.Convert", LadConverter_Convert },
                 { "Ops.RequireRootType", Ops_RequireRootType },
                 { "Ops.RequireUtf8Bom", Ops_RequireUtf8Bom },
+                { "Ops.WalkFolders", Ops_WalkFolders },
+                { "Inventory.FolderMatches", Inventory_FolderMatches },
                 { "DbMember.AddToXml", DbMember_AddToXml },
                 { "Memory.Occupied", Memory_Occupied },
                 { "Clone.Rewrite", Clone_Rewrite },
@@ -249,6 +251,71 @@ namespace Tia.Tests
             Check(Throws(() => Ops.RequireRootType(Fixture("StdBombaA.xml"), "SW.Blocks.")),
                 "tag table recusada como bloco (era falso positivo no dry-run)");
             Check(!Throws(() => Ops.RequireRootType(Fixture("BombaTemplateFc.xml"), "SW.Blocks.")), "FC aceito como bloco");
+        }
+
+        /// <summary>Nó de pasta em memória: os delegados de WalkFolders isolam a regra do PlcSoftware.</summary>
+        private sealed class Folder
+        {
+            public string Name;
+            public readonly List<Folder> Kids = new List<Folder>();
+            public Folder Add(string name) { var k = new Folder { Name = name }; Kids.Add(k); return k; }
+            public string Trail() { return string.Join("|", Kids.Select(k => k.Name)); }
+        }
+
+        /// <summary>
+        /// Longest-match de pasta. Sem ele, nome com '/' ("1. I/OS", "3. Alarmes/Eventos/Falhas")
+        /// vira dois segmentos e o caminho não resolve. Só tinha validação em runtime.
+        /// </summary>
+        private static void Ops_WalkFolders()
+        {
+            Func<Folder> tree = () =>
+            {
+                var root = new Folder { Name = "" };
+                var ios = root.Add("1. I/OS");           // nome com barra: 2 segmentos no split
+                ios.Add("QA-00");
+                var alarmes = root.Add("3. Alarmes/Eventos/Falhas");
+                alarmes.Add("3.1 Alarmes Words").Add("3.1.0 Modelo");
+                return root;
+            };
+            Func<Folder, string, Folder> find = (f, n) => f.Kids.FirstOrDefault(k => k.Name == n);
+            Func<Folder, string, Folder> add = (f, n) => f.Add(n);
+            Func<Folder, string, Folder> walk = (root, path) => Ops.WalkFolders(root, path, "Block", find, null);
+
+            Check(walk(tree(), "1. I/OS").Name == "1. I/OS", "nome com '/' casa inteiro (longest-match)");
+            Check(walk(tree(), "1. I/OS/QA-00").Name == "QA-00", "segue para a subpasta depois do nome com '/'");
+            Check(walk(tree(), "3. Alarmes/Eventos/Falhas/3.1 Alarmes Words/3.1.0 Modelo").Name == "3.1.0 Modelo",
+                "3 barras no nome da pasta + 2 níveis abaixo");
+            Check(walk(tree(), "").Name == "", "path vazio devolve a raiz");
+            Check(Throws(() => { walk(tree(), "3.1 Alarmes Words"); }),
+                "sem create, pasta que não é filha da raiz falha (WalkFolders é caminho, não busca)");
+            Check(Throws(() => { walk(tree(), "1. I/OS/NAO_EXISTE"); }), "segmento ausente lança");
+
+            var t = tree();
+            Check(Ops.WalkFolders(t, "9. Nova/Sub", "Block", find, add).Name == "Sub", "create desce criando");
+            Check(t.Kids.Any(k => k.Name == "9. Nova"), "pasta nova pendurada na raiz");
+            // armadilha conhecida: no create não há como saber que "1. I/OS" é UM nome — vira 2 pastas.
+            var t2 = new Folder { Name = "" };
+            Ops.WalkFolders(t2, "1. I/OS", "Block", find, add);
+            Check(t2.Trail() == "1. I", "criar pasta com '/' no nome quebra em 2 níveis (só existente casa inteiro)");
+        }
+
+        /// <summary>
+        /// Filtro de list-blocks --folder: era prefixo da raiz e devolvia count 0 silencioso para
+        /// nome de folha. Casa fragmento de caminho, preso no limite de segmento.
+        /// </summary>
+        private static void Inventory_FolderMatches()
+        {
+            const string deep = "3. Alarmes/Eventos/Falhas/3.1 Alarmes Words/3.1.0 Modelo";
+            Check(Inventory.FolderMatches(deep, "3.1 Alarmes Words"), "nome de folha casa no meio do caminho");
+            Check(Inventory.FolderMatches(deep, "3. Alarmes/Eventos/Falhas"), "caminho da raiz casa");
+            Check(Inventory.FolderMatches(deep, deep), "caminho inteiro casa");
+            Check(Inventory.FolderMatches(deep, "Falhas/3.1 Alarmes Words"), "fragmento com barra casa");
+            Check(Inventory.FolderMatches(deep, "/3.1 Alarmes Words/"), "barras nas pontas do filtro são toleradas");
+            Check(Inventory.FolderMatches(deep, "3.1 ALARMES WORDS"), "case-insensitive");
+            Check(Inventory.FolderMatches("3.1 Alarmes Words", "3.1 Alarmes Words"), "a própria pasta entra, não só subpasta");
+            Check(!Inventory.FolderMatches(deep, "3.1"), "limite de segmento: '3.1' não casa '3.1 Alarmes Words'");
+            Check(!Inventory.FolderMatches(deep, "Alarmes Words"), "sufixo de segmento não casa");
+            Check(!Inventory.FolderMatches("", "3.1 Alarmes Words"), "bloco na raiz não casa filtro");
         }
 
         /// <summary>Gate de encoding do import-source: acento sem BOM vira mojibake no Openness.</summary>

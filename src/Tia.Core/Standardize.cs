@@ -548,6 +548,10 @@ namespace Tia.Core
         {
             var knownPrefixes = new HashSet<string>(
                 config.PrefixMappings.Select(m => m.Prefix), StringComparer.OrdinalIgnoreCase);
+            // IsIdentifierPattern só reconhece ID com hífen (BG-01A); masterId com underscore
+            // (MOTOR_01) sobrevivia ao filtro e saía duplicado no meio do nome
+            if (original.StartsWith(masterId + "_", StringComparison.OrdinalIgnoreCase))
+                original = original.Substring(masterId.Length + 1);
             var functional = original.Split('_')
                 .Where(p => !IsIdentifierPattern(p) && !knownPrefixes.Contains(p))
                 .ToList();

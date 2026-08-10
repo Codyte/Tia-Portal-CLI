@@ -206,7 +206,7 @@ namespace Tia.Core
             object globalDbAction = null;
             if (commentTasks.Any())
             {
-                WriteDbComments(dbXmlPath, commentTasks);
+                WriteDbComments(dbXmlPath, commentTasks, warnings);
                 bool dbInSync = Ops.BlocksIdentical(globalDbBlock, dbXmlPath, false);
                 globalDbAction = dbInSync ? "in-sync" : (apply ? "updated" : "update");
                 if (apply && !dbInSync)
@@ -476,7 +476,7 @@ namespace Tia.Core
         // ---------- global DB comments ----------
 
         private static void WriteDbComments(string dbXmlPath,
-            List<(string ParentStruct, string Member, string Comment)> tasks)
+            List<(string ParentStruct, string Member, string Comment)> tasks, List<string> warnings)
         {
             var doc = XDocument.Load(dbXmlPath);
             foreach (var task in tasks)
@@ -487,7 +487,16 @@ namespace Tia.Core
                     .FirstOrDefault(m => m.Attribute("Name")?.Value == "ALARMES");
                 var word = alarms?.Elements(IntfNs + "Member")
                     .FirstOrDefault(m => m.Attribute("Name")?.Value == task.Member);
-                if (word == null) continue;
+                if (word == null)
+                {
+                    // o FC gerado escreve em "DB GLOBAL".<area>.ALARMES.WORD_ALARMES_n, e este
+                    // gerador só comenta o membro — não o cria. Sem o aviso, o único sinal era o
+                    // compile quebrando com "Tag ... not defined" depois do gerador dizer in-sync.
+                    warnings.Add("Global DB has no '" + task.ParentStruct + ".ALARMES." + task.Member
+                        + "'; the generated FC will not compile. Create it first: tia add-db-member --db \"DB GLOBAL\""
+                        + " --path \"" + task.ParentStruct + ".ALARMES\" --name " + task.Member + " --type Word --apply");
+                    continue;
+                }
                 word.Elements(IntfNs + "Comment").Remove();
                 word.Add(new XElement(IntfNs + "Comment",
                     _cultures.Select(c => new XElement(IntfNs + "MultiLanguageText",

@@ -4,8 +4,8 @@
 ## `Tia.Cli/Program.cs` (805 linhas)
 Program(16)  save-project(343)  close-project(346)  info(349)  list-devices(352)  list-blocks(355)  list-tags(359)  tree(362)  list-types(366)  find(369)  snapshot(373)  xref(376)  trace(379)  list-hmi(382)  free-memory(385)  export-block(391)  explain-block(394)  export-tags(399)  import-block(402)  import-ladder(409)  import-source(417)  create-folder(422)  delete-folder(427)  delete-block(432)  move-block(436)  delete-type(441)  export-type(445)  import-type(448)  scaffold(452)  clone(461)  add-db-member(467)  import-tags(473)  create-library(477)  list-library(481)  import-master-copy(484)  add-master-copy(490)  create-instance-db(496)  delete-master-copy(501)  add-device(506)  delete-device(511)  add-tag(515)  delete-tag(521)  edit-db-member(526)  delete-db-member(532)  rename-block(537)  set-tag(542)  set-attr(549)  list-attrs(555)  plug-module(559)  list-telegrams(565)  insert-telegram(568)  set-address(575)  set-io-address(581)  set-memory-bytes(587)  connect-subnet(593)  export-cax(598)  import-cax(601)  compile(605)  diff-block(620)  audit(624)  doctor(628)  gen-profinet(636)  standardize-tags(642)  gen-fault-ob(650)  replicate-fc(658)  gen-alarm-fc(665)  replicate-instruments(673)
 
-## `Tia.Core/AlarmFc.cs` (678 linhas)
-AlarmFcConfig(17)  AlarmFc(42)  Generate(58)  LEITURA_MUITO_ALTA(639)  LEITURA_ALTA(640)  LEITURA_BAIXA(641)  LEITURA_MUITO_BAIXA(642)  SEM_4MA(643)
+## `Tia.Core/AlarmFc.cs` (687 linhas)
+AlarmFcConfig(17)  AlarmFc(42)  Generate(58)  LEITURA_MUITO_ALTA(648)  LEITURA_ALTA(649)  LEITURA_BAIXA(650)  LEITURA_MUITO_BAIXA(651)  SEM_4MA(652)
 
 ## `Tia.Core/AssemblyInfo.cs` (3 linhas)
 
@@ -19,8 +19,8 @@ BlockExplain(22)  Explain(24)  Statements(184)  Coil(207)  SCoil(208)  RCoil(209
 ## `Tia.Core/Clone.cs` (198 linhas)
 Clone(24)  Run(26)  RewriteFile(160)  ParseReplaces(175)
 
-## `Tia.Core/DbMember.cs` (302 linhas)
-DbMember(24)  Add(33)  Change(71)  Remove(110)  Delta(154)  Edit(200)
+## `Tia.Core/DbMember.cs` (310 linhas)
+DbMember(24)  Add(33)  Change(79)  Remove(118)  Delta(162)  Edit(208)
 
 ## `Tia.Core/Doctor.cs` (183 linhas)
 Doctor(14)  Run(23)  gen-profinet(67)  standardize-tags(84)  gen-fault-ob(93)  replicate-fc(109)  gen-alarm-fc(126)  replicate-instruments(144)

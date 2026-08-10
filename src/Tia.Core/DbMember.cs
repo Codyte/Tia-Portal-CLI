@@ -37,6 +37,14 @@ namespace Tia.Core
                 throw new ArgumentException("--name is required.");
             if (string.IsNullOrEmpty(type) && string.IsNullOrEmpty(like))
                 throw new ArgumentException("Pass --type <Udt|Bool|...> or --like <existing sibling member>.");
+            // Struct vazio é inválido ("A structure without components is not allowed") e deixa o DB
+            // inconsistente — daí em diante todo verbo que exporta o bloco morre, inclusive o
+            // add-db-member seguinte que criaria o primeiro membro. Sem saída sem reimportar o DB.
+            if (string.Equals(type, "Struct", StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentException("--type Struct cria uma estrutura vazia, que deixa o DB "
+                    + "inconsistente e trava os próximos verbos (o Openness não exporta bloco inconsistente). "
+                    + "Crie o ramo já com membro: --like <irmão do mesmo tipo>, ou import-source de um .scl "
+                    + "com o STRUCT completo.");
 
             var db = ReplicateFc.FindDataBlock(plc.BlockGroup, dbName);
             if (db == null)

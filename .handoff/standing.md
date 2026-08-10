@@ -28,6 +28,7 @@ aqui.
   antes; a mensagem de fail-fast já ensina isso.
 - **`--out-file` nunca em `$env:TEMP`** — vira caminho 8.3 (`CARLOS~1`) que o Python não abre.
   Usar `workspace/`.
-- **Macro que recebe caminho (`use-project.ps1`, `prep-project.ps1`) exige caminho absoluto** — o
-  `Test-Path` roda num pwsh filho que não nasce na raiz do repo, e caminho relativo cai calado no
-  ramo de nome curto, procurando em `proj\`.
+- **Macro que recebe caminho (`use-project.ps1`, `prep-project.ps1`) aceita relativo à raiz do repo**
+  desde 2026-08-10 — o `Test-Path` roda num pwsh filho que não nasce na raiz, então o argumento é
+  testado contra o cwd e contra a raiz. Script novo que receba caminho precisa do mesmo cuidado:
+  sem isso o relativo cai calado no ramo de nome curto, procurando em `proj\`.

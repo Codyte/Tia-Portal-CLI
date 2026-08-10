@@ -5,7 +5,11 @@ param([Parameter(Mandatory)][string]$Name, [switch]$Save)
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot '_common.ps1')
 
-$file = if (Test-Path $Name -PathType Leaf) { (Resolve-Path $Name).Path }
+# Caminho relativo é resolvido contra o cwd E contra a raiz do repo: o caller costuma estar na raiz,
+# mas este pwsh não nasce lá — sem a 2ª tentativa o relativo cai calado no ramo de nome curto.
+$path = @($Name, (Join-Path $script:Repo $Name)) |
+        Where-Object { Test-Path $_ -PathType Leaf } | Select-Object -First 1
+$file = if ($path) { (Resolve-Path $path).Path }
         else { Get-ChildItem (Join-Path $script:Repo "proj\$Name") -Filter *.ap2* -ErrorAction Stop |
                Select-Object -First 1 -ExpandProperty FullName }
 $target = [IO.Path]::GetFileNameWithoutExtension($file)

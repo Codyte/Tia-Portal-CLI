@@ -127,8 +127,10 @@ suposição para o config e deixar o código exigir só o que é estrutural.
 
 ## Aberto
 
-- **`use-project.ps1` exige caminho absoluto**: o `Test-Path` do argumento roda num pwsh filho que
-  não nasce na raiz do repo, então caminho relativo cai no ramo de nome curto e procura em `proj\`.
+- ~~`use-project.ps1` exige caminho absoluto~~ — **corrigido**: o `Test-Path` roda num pwsh filho que
+  não nasce na raiz do repo, então caminho relativo caía calado no ramo de nome curto e procurava em
+  `proj\`. Agora o argumento é testado contra o cwd **e** contra a raiz do repo, nessa ordem; nome
+  curto continua caindo em `proj\<Nome>`. `prep-project.ps1` herda (só repassa o `$Name`).
 - ~~`WalkFolders` e o filtro de `list-blocks --folder` sem teste offline~~ — **coberto**:
   `WalkFolders` virou `public` (os delegados `find`/`create` já isolavam do `PlcSoftware`, então o
   teste passa uma árvore de nós em memória) e o predicado do filtro saiu para

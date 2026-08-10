@@ -1,73 +1,78 @@
-# Handoff · TIA Portal Openness API · 2026-08-07
+# Handoff · TIA Portal Openness API · 2026-08-10
 
 ## Goal
-Lapidar o modo operante: o FP-01 compila e cumpre o memorial, mas carrega dívida de engenharia.
-Auditado, virou lei escrita. Próxima meta = a rodada que produz mais defeito por hora.
+FP-02 pelo caminho da casa (zero SCL autoral): exercitar os 7 verbos `--apply` que nunca
+construíram planta nenhuma. Oráculo: `audit` 6/6 + `compile` 0/0. Metade do caminho feita.
 
 ## State
-- HEAD: `0928744` (2 commits locais nesta sessão, **não pushados**; `381f331` da anterior também não).
-- Live state: **TIA Portal aberto na sessão 1**, projeto `workspace/blind/FP01/FP01.ap21` aberto.
-  Probes de teste criados e deletados, `compile` limpo, **projeto não salvo** — o `.ap21` em disco
-  segue igual ao entregue. Shell do agente na sessão 0 (rota da task). `tia.exe` rebuildado 2x,
-  whitelist refeita, sem diálogo modal.
-- Done: auditoria de engenharia do FP-01 (`docs/BOAS-PRATICAS.md`, 8 achados + lei R1–R9 + fila de
-  gaps), ponteiro obrigatório no `CLAUDE.md`, e os gaps 1 e 2 corrigidos e provados no projeto vivo.
-- In progress: nada mid-flight.
+- HEAD: `213dae4` (5 commits locais **não pushados**, contando os 3 da sessão anterior).
+- Live state: **TIA Portal aberto (PID 14676)** com `workspace/blind/FP02/FP02.ap21` aberto e
+  **salvo** (compile 0/0, audit 6/6). O PID 20068 é processo filho, não é sessão — `info --portal
+  20068` reprova; só existe uma sessão, então `--portal` não é obrigatório. Shell do agente na
+  sessão 0 (rota da task).
+- Done: caderno FP-02 escrito; projeto criado; hardware inteiro (CPU 1515 + 2 ET200SP com
+  DI/DQ/AI/servidor nos endereços do caderno + 4 G120 com telegrama 20, todos IO device do PLC);
+  `install-lib` dos 4 pacotes; DB GLOBAL com os ramos das 2 áreas; **`replicate-fc --apply`
+  exercitado pela 1ª vez** (5 acionamentos × 6 blocos); tabelas de tag por acionamento via
+  `clone --table --at`. 4 defeitos achados e corrigidos (commits `4289164` e `213dae4`).
+- In progress: nada mid-flight. Falta o teste final do fix do `taskrun` (ver Open).
 
 ## Decisions (and why)
-- **`import-source` passou a usar os overloads que já existiam**
-  (`GenerateBlocksFromSource(PlcBlockUserGroup|PlcTypeUserGroup, GenerateBlockOption)`): `--folder`
-  faz o bloco nascer na pasta (fim dos 17 `move-block`+`compile`) e fonte só de `TYPE` vai pra pasta
-  de UDT — **é isto que torna UDT alcançável por fonte SCL**, sem GUI. Fonte mista com `--folder`
-  é recusada: um caminho não endereça os dois grupos.
-- **`KeepOnError` não rejeita bloco inválido — ele entra inconsistente.** Medido: a fonte com
-  `TITLE` que antes abortava o lote agora gera **as duas** FCs. Contraria o tropeço 5 do relatório
-  anterior. Consequência: `import-source ok` **não** significa "compila"; quem acusa é o `compile`
-  seguinte.
-- **Chamada em LAD é regra (R8) por motivo objetivo, não estético**: `replicate-fc`, `gen-alarm-fc`
-  e `gen-fault-ob` reescrevem `FlgNet`. Bloco de chamada em SCL fica fora do alcance dos geradores
-  da própria CLI.
-- **Descartada** a ideia de outra rodada autoral em SCL: mesmo terreno, rendimento baixo — o que ela
-  acharia já está no `BOAS-PRATICAS.md`.
-- **Rodada cega adiada de propósito.** Continua pendente, mas hoje ela prova o *protocolo*, não caça
-  defeito. Vale mais depois da FP-02 e com o caderno FP-02.
-- `WebFetch` no support.industry.siemens.com dá **403** — a documentação usável é a ajuda local
-  (`scripts/tia-help.py`), que tem o pacote `ProgTIATIPPS1215enUS` ("Programming recommendations").
+- **`EquipmentTypes: ["("]` no `replicate-fc`** — o campo é filtro por substring no nome da pasta, e
+  o único molde populado de um projeto novo é o genérico `Motor 1 (MOTOR_01)`. `"("` casa toda pasta
+  de equipamento, que é a forma de dizer "todos" quando os alvos têm substantivos diferentes
+  (Bomba/Peneira/Transportador). Sem isso seria um molde por substantivo.
+- **Nome do drive tem que ser `INVERSOR_<TAG>_CCM_01`** — a constante do telegrama que o molde
+  referencia é `<nome do device>~PROFINET_interface~Standard_telegram_20`, e o `replicate-fc` só faz
+  troca textual do ID. Nome livre = constante não resolve.
+- **`replicate-fc --force` com molde inconsistente destrói os alvos**: apaga os blocos do alvo antes
+  de exportar o molde, e o Openness recusa exportar bloco inconsistente — os 4 alvos ficaram sem o
+  FC e o estado foi salvo assim. Recuperado tornando o próprio `BG-01A` consistente (2 tags que
+  faltavam) e replicando dele. **Compilar 0/0 antes de qualquer `--force`.**
+- **Instrumentos ficam sob `PRELIMINAR.INSTRUMENTACAO` na DB global** mesmo os da área 1 — o nome do
+  ramo é herdado do molde `MOLDE_ANALOGS`; renomear exige reimportar o molde.
+- **`use-project.ps1` estava certo** — o "abre e não devolve feedback" era o `taskrun.ps1` (ver
+  commit `213dae4`). Descartado mexer no macro.
+- Descartado `Start-Process -ArgumentList` com **array**: não cita nada, `"X (Y)"` viraria 2
+  argumentos. Linha montada no padrão `CommandLineToArgvW`, testada com espaço, aspas e barra final.
 
 ## Next steps (ordered)
-1. **`bake-lib.ps1`**: gerar a `.al21` a partir do projeto molde (`src/Tia.Lib/*.al21` **não existe**
-   nesta máquina; `library/blocks/` tem os 66 XMLs). Caminho PLC→library nunca provado — o teste
-   começa aí.
-2. **Varredura dry dos 69 verbos** contra os 2 projetos reais, 1 `run --script --summary` (~80
-   steps, 1 attach). Melhor achado/token do repo: erro besta, mensagem críptica, verbo que engasga
-   em projeto de 476 blocos.
-3. **FP-02 pelo caminho da casa, zero SCL autoral**: `scaffold --apply` → `install-lib` →
-   `replicate-fc --apply` → `gen-alarm-fc` → `replicate-instruments` → `gen-fault-ob` →
-   `standardize-tags`. É a metade da CLI que **nunca construiu planta nenhuma** (7 verbos `--apply`,
-   só dry até hoje; `replicate-fc --apply` nunca exercitado). Oráculo automático: `audit` **5/5** +
-   `compile` 0/0. Caderno deve forçar o que o FP-01 não tocou: válvula motorizada (17 tags),
-   totalizador, diagnóstico de módulo, e **duas áreas** (aí a numeração cruzada `2.N`/`3.N`/`3.1.N`/
-   `5.1.N` vira check de verdade).
-4. Rodada cega de verdade, com o caderno FP-02.
-5. `git push` dos 3 commits locais.
+1. **Provar o fix do `taskrun`**: fechar o TIA Portal e rodar
+   `pwsh scripts/use-project.ps1 workspace/blind/FP02/FP02.ap21` — tem que devolver o JSON
+   `{opened, path, portal:"started-with-ui"}` em 2-4 min, e não pendurar até o timeout.
+2. **Tabelas de I/O do caderno** (item 4): 2 racks × (16 DI + 16 DO + 2 AI) em
+   `1. I/OS/<rack>`, endereços exatos do caderno.
+3. **Tabelas de instrumento** em `2. Alarmes/2.1 Elevatoria de Esgoto Bruto` e `2.2 Tratamento
+   Preliminar` (padrão da casa: `MEDIDOR_<TIPO> (<TAG>)`, 8-10 tags) — é o que o
+   `replicate-instruments` varre. Instrumentos: `LIT-01`, `FIT-01` (totalizado), `FIT-02`
+   (totalizado), `PIT-10`.
+4. **`gen-alarm-fc`** (2 áreas → `3.1.1`/`3.1.2`), **`replicate-instruments`** (aferição + os 2
+   totalizadores), **`gen-fault-ob`** (QA_00 = ET200_EEB, QA_01 = ET200_TP), **`standardize-tags`**.
+   Compile entre cada um.
+5. `audit` 6/6 + `compile` 0/0 final + `save-project`, e registrar a rodada em
+   `docs/teste-cego/resultado-2026-08-10.md` (os 6 achados desta sessão já estão nos commits).
+6. `git push` dos 5 commits locais.
 
 ## Key files
-- `docs/BOAS-PRATICAS.md` — a auditoria (8 achados com evidência + citação da ajuda oficial), a lei
-  R1–R9 e a fila de gaps §3 (itens 1-2 feitos; sobram `import-ladder` sem chamada de bloco,
-  `create-folder` por segmentos, checks novos no `audit`, `list-io-map`).
-- `docs/PADRAO.md` — o molde da casa; é a régua de pasta/nome/6-blocos.
-- `src/Tia.Core/Ops.cs:613` — `ImportSource` novo (folder + KeepOnError + `SourceDeclNames`).
-- `src/Tia.Core/LadConverter.cs:11-15` — o subset que o `import-ladder` aceita (booleano puro, sem
-  chamada de bloco); é o gap 3.
-- `docs/teste-cego/resultado-2026-08-07.md` — os 9 tropeços da run anterior.
-- `src/__navi__.md` — **desatualizado** (`set-io-address` e as mudanças desta sessão não entraram);
-  regenerar com `pwsh scripts/navi-cs.ps1`.
+- `docs/teste-cego/caderno-FP-02.md` — o memorial da rodada (2 áreas, válvula motorizada 17 pontos,
+  2 totalizadores, diagnóstico das 2 periferias).
+- `workspace/fp02-*.json` / `workspace/fp02-db.scl` — os batches já rodados (hw, io, blocks, tags,
+  fix) e o SCL da DB global. Reaproveitar o formato para os próximos.
+- `src/Tia.Core/Replicate.cs` — `ProposedBlockName` (só o bloco de chamada vira `PARTIDA_*`),
+  `RewireXml` (busca de tag MODO_LOCAL no PLC inteiro), `FindCcmInfo` (`CCM_?\d+`).
+- `src/Tia.Core/Clone.cs:109` — `Readdress`: bits densos, tabela mista deslocada em bloco.
+- `scripts/taskrun.ps1` — `Start-Process` + citação `CommandLineToArgvW`.
+- `docs/PADRAO.md` / `docs/BOAS-PRATICAS.md` — a régua de pasta/nome e a lei R1–R9.
+- `src/__navi__.md` — **desatualizado** desde a sessão passada; regenerar com
+  `pwsh scripts/navi-cs.ps1`.
 
 ## Open / blockers
-- Nada bloqueia. O `FP01` fica aberto no Portal — a FP-02 precisa dele fechado ou de um Portal só.
-- Pergunta em aberto para o agente da run anterior (opcional): por que nunca criou UDT? O
-  `import-source` já aceitava `TYPE` no dry-run, então parece omissão de especificação, não
-  bloqueio técnico — se for, a correção é a regra R1, não código.
+- **`import-source` sem BOM = mojibake silencioso** (`AferiÃ§Ã£o CMD`) e erro de compile longe da
+  causa. Vale um gate no verbo — hoje é armadilha aberta.
+- **`run --script` exige projeto já aberto**, então batch não pode começar com
+  `create-project`/`open-project` (o verbo solto funciona). Não corrigido.
+- O fix do `taskrun` foi provado na citação e na não-regressão da rota da task, **não** no caso que o
+  motivou (portal não rodando) — é o passo 1.
 
 ## Skills
 - tia
@@ -75,6 +80,7 @@ Auditado, virou lei escrita. Próxima meta = a rodada que produz mais defeito po
 - caveman
 
 ## Effort
-**Baixo** para o passo 1 — `bake-lib.ps1` é sequência documentada; se falhar, o erro do Openness
-diz o quê. Sobe pra **médio** no passo 3 (7 verbos `--apply` nunca exercitados juntos, e o `audit`
-5/5 é régua dura). O gargalo do passo 3 não é raciocínio: é `compile` e attach do Portal.
+**Baixo** para o passo 1 — é fechar o Portal e rodar um comando; o gargalo é o relógio (2-4 min de
+open), não raciocínio. Sobe pra **médio** a partir do passo 3: `replicate-instruments` e
+`gen-fault-ob` nunca rodaram `--apply` e dependem de tabela de tag no formato certo. Alto só se o
+`gen-fault-ob` reclamar do `AlarmDb` — aí é o caso documentado em `PADRAO.md`.

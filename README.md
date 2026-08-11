@@ -34,7 +34,8 @@ $ tia compile --apply
 **Every write is a dry-run until you type `--apply`.** That one property is what makes it safe to
 hand the keys to an AI agent — and in blind end-to-end tests, an agent given nothing but a fictional
 machine spec delivered a **compiling PLC program**. Spec and pass criteria were written before each
-run, by someone who did not execute it: [`docs/teste-cego/`](docs/teste-cego/).
+run, by someone who did not execute it: [`docs/teste-cego/`](docs/teste-cego/) — write-up in
+Portuguese: [**the ruler and the stumbles**](docs/teste-cego/artigo.md).
 
 **77 verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML, catalog modules
 and SINAMICS telegrams · SCL→LAD converter · 6 field-proven code generators · installable block

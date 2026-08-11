@@ -19,18 +19,6 @@ who prefer a terminal over ClickOps.*
 
 ### An engineering task, start to finish, without touching the mouse
 
-```console
-$ tia tree                                  # the whole PLC as a 39 KB outline, in 4 s
-$ tia replicate-instruments                 # dry-run — reports the exact action, writes nothing
-{ "action": "create", "applied": false }
-
-$ tia replicate-instruments --apply         # the only line in this session that mutates anything
-{ "action": "create", "applied": true }
-
-$ tia compile --apply
-{ "state": "Success", "errors": 0 }
-```
-
 **Every write is a dry-run until you type `--apply`.** That one property is what makes it safe to
 hand the keys to an AI agent — and in blind end-to-end tests, an agent given nothing but a fictional
 machine spec delivered a **compiling PLC program**. Spec and pass criteria were written before each

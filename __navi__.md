@@ -28,7 +28,7 @@ _common.ps1(81)  bake-lib.ps1(96)  clone-hw.ps1(28)  compose-db.ps1(44)  gen-ver
 Program.cs(1027)
 
 ## `src/Tia.Core/` (25 files) → __navi__.md
-AlarmFc.cs(733)  AssemblyInfo.cs(3)  Audit.cs(436)  BlockEdit.cs(442)  BlockExplain.cs(390)  BlockInterface.cs(141)  Clone.cs(230)  DbMember.cs(372)  Doctor.cs(183)  Drives.cs(201)  FaultOb.cs(361)  Hardware.cs(665)  Hmi.cs(43)  InstrumentFc.cs(706)  Inventory.cs(568)  LadConverter.cs(530)  Library.cs(331)  Memory.cs(113)  Multiuser.cs(98)  Ops.cs(1235)  Profinet.cs(166)  Replicate.cs(500)  Scaffold.cs(350)  Standardize.cs(657)  TiaSession.cs(231)
+AlarmFc.cs(728)  AssemblyInfo.cs(3)  Audit.cs(436)  BlockEdit.cs(442)  BlockExplain.cs(381)  BlockInterface.cs(141)  Clone.cs(230)  DbMember.cs(372)  Doctor.cs(183)  Drives.cs(201)  FaultOb.cs(361)  Hardware.cs(665)  Hmi.cs(43)  InstrumentFc.cs(706)  Inventory.cs(568)  LadConverter.cs(530)  Library.cs(331)  Memory.cs(113)  Multiuser.cs(98)  Ops.cs(1235)  Profinet.cs(166)  Replicate.cs(500)  Scaffold.cs(350)  Standardize.cs(654)  TiaSession.cs(231)
 
 ## `src/Tia.Tests/` (1 files) → __navi__.md
 Program.cs(829)

@@ -1,49 +1,46 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L62    class StandardizeConfig
-//   L64    .RootFolder
-//   L67    .MemorySets
-//   L75    .SetMapping
-//   L86    .PrefixMappings
-//   L105   .CommentMappings
-//   L170   .AlarmOrder
-//   L176   class PrefixMapping
-//   L178   .Keyword
-//   L179   .Prefix
-//   L182   class TagTemplate
-//   L189   class NaturalStringComparer
-//   L191   .Compare
-//   L218   class AlarmTagComparer
-//   L223   .AlarmTagComparer
-//   L228   .Compare
-//   L236   .Key
-//   L247   class AddressAllocator
-//   L251   .CurrentByte
-//   L252   .CurrentBit
-//   L254   .AddressAllocator
-//   L260   .Next
-//   L275   case "BYTE"
-//   L276   case "WORD"
-//   L277   case "DWORD"
-//   L286   class MemoryManager
-//   L290   .MemoryManager
-//   L295   .AllocateBlock
-//   L320   class Standardize
-//   L322   .Run
-//   L387   .GenerateFromTemplate
-//   L437   .AuditTable
-//   L514   .AddReserves
-//   L531   .CreateTag
-//   L546   .TableAction
-//   L551   .TemplatesOf
-//   L561   .FindBestTemplate
-//   L586   .CollectTables
-//   L595   .StandardizeName
-//   L622   .IsIdentifierPattern
-//   L627   .GenerateComment
-//   L635   .IdentifySet
-//   L643   .GetSubtype
-//   L651   .ExtractId
+//   L59    class StandardizeConfig
+//   L61    .RootFolder
+//   L64    .MemorySets
+//   L72    .SetMapping
+//   L83    .PrefixMappings
+//   L102   .CommentMappings
+//   L167   .AlarmOrder
+//   L173   class PrefixMapping
+//   L175   .Keyword
+//   L176   .Prefix
+//   L179   class TagTemplate
+//   L186   class NaturalStringComparer
+//   L188   .Compare
+//   L215   class AlarmTagComparer
+//   L220   .AlarmTagComparer
+//   L225   .Compare
+//   L233   .Key
+//   L244   class AddressAllocator
+//   L248   .CurrentByte
+//   L249   .CurrentBit
+//   L251   .AddressAllocator
+//   L257   .Next
+//   L283   class MemoryManager
+//   L287   .MemoryManager
+//   L292   .AllocateBlock
+//   L317   class Standardize
+//   L319   .Run
+//   L384   .GenerateFromTemplate
+//   L434   .AuditTable
+//   L511   .AddReserves
+//   L528   .CreateTag
+//   L543   .TableAction
+//   L548   .TemplatesOf
+//   L558   .FindBestTemplate
+//   L583   .CollectTables
+//   L592   .StandardizeName
+//   L619   .IsIdentifierPattern
+//   L624   .GenerateComment
+//   L632   .IdentifySet
+//   L640   .GetSubtype
+//   L648   .ExtractId
 // ======================= END NAV INDEX =======================
 
 using System;

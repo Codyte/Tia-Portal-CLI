@@ -2,15 +2,15 @@
 <!-- navindex · 2026-08-11 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../../__navi__.md`](../../__navi__.md)
 
-- **AlarmFc.cs** (733 ln)
-  <sub>L63:class AlarmFcConfig  L65:.TargetRootFolder  L66:.TemplateFc  L67:.TemplateFolder  L68:.ObTemplate  L69:.GlobalDb  L70:.AlarmTagsFolder  L71:.StartTagsFolder  L72:.MasterFb  L73:.CallObName  L74:.CallObNumber  L75:.IgnoreFolders  L77:.Structs  L88:class AlarmFc  L98:class TagRef  L104:.Generate  L322:FC XML  L324:.BuildFcXml  L361:.RewireWordNetwork  L470:call OB  L472:.BuildCallObXml  L522:global DB comments  L524:.WriteDbComments  L554:.FindParentStruct …</sub>
+- **AlarmFc.cs** (728 ln)
+  <sub>L58:class AlarmFcConfig  L60:.TargetRootFolder  L61:.TemplateFc  L62:.TemplateFolder  L63:.ObTemplate  L64:.GlobalDb  L65:.AlarmTagsFolder  L66:.StartTagsFolder  L67:.MasterFb  L68:.CallObName  L69:.CallObNumber  L70:.IgnoreFolders  L72:.Structs  L83:class AlarmFc  L93:class TagRef  L99:.Generate  L317:FC XML  L319:.BuildFcXml  L356:.RewireWordNetwork  L465:call OB  L467:.BuildCallObXml  L517:global DB comments  L519:.WriteDbComments  L549:.FindParentStruct …</sub>
 - **AssemblyInfo.cs** (3 ln)
 - **Audit.cs** (436 ln)
   <sub>L49:class Audit  L75:.HasInverter  L82:.MissingCore  L90:.TagOf  L97:.CarriesTag  L104:.NormalizeArea  L120:.IsCallBlock  L130:.IsLooseScalar  L141:.RootMembers  L152:.Run  L237:.NonGraphicCalls  L257:.MisplacedCalls  L283:.DbGlobalCheck  L303:.FindGlobalDb  L317:.Skipped  L326:.CountTypes  L331:.CollectLanguages  L344:.LayerLeaks  L370:.IsLibrary  L377:.AreaConflicts  L404:.Check  L420:.CollectBlocks  L428:.CollectTables</sub>
 - **BlockEdit.cs** (442 ln)
   <sub>L58:class BlockEdit  L67:delete-network  L73:.DeleteNetwork  L87:add-call  L96:.AddCall  L150:set-retain  L158:.SetRetain  L180:coreografia  L186:.Patch  L212:núcleo puro (sem Openness: testável offline)  L214:class CallSpec  L224:.CountNetworks  L230:.RemoveNetworkFromXml  L250:.InsertCallInXml  L323:.SetRetainInXml  L331:.RetainOf  L337:.FindMember  L355:helpers de FlgNet  L357:.ParseParams  L370:.Access  L394:.Wire  L403:.Text  L418:.NextId  L431:.Escape …</sub>
-- **BlockExplain.cs** (390 ln)
-  <sub>L51:class BlockExplain  L53:.Explain  L93:.Val  L100:.Kids  L106:interface / membros de DB  L109:.Interface  L125:.Members  L134:.Member  L148:rede  L150:.Network  L169:.Text  L181:.Collapse  L182:.Cut  L184:FlgNet → expressão  L186:class Net  L236:case "Coil"  L237:case "SCoil"  L238:case "RCoil"  L239:case "Move"  L330:case "Contact"  L333:case "Eq"  L340:case "O"  L342:case "A"  L344:case "Call" …</sub>
+- **BlockExplain.cs** (381 ln)
+  <sub>L42:class BlockExplain  L44:.Explain  L84:.Val  L91:.Kids  L97:interface / membros de DB  L100:.Interface  L116:.Members  L125:.Member  L139:rede  L141:.Network  L160:.Text  L172:.Collapse  L173:.Cut  L175:FlgNet → expressão  L177:class Net  L362:rótulo do operando</sub>
 - **BlockInterface.cs** (141 ln)
   <sub>L17:class Param  L23:.ToString  L32:class BlockInterface  L37:.Run  L88:.Collect  L94:núcleo puro (sem Openness: testável offline)  L97:.FromXml  L117:.Describe</sub>
 - **Clone.cs** (230 ln)
@@ -36,7 +36,7 @@
 - **Library.cs** (331 ln)
   <sub>L33:class Library  L35:.Open  L59:.Create  L80:.List  L95:.CollectMasterCopies  L108:.CollectTypes  L126:.ImportMasterCopy  L214:.AddMasterCopy  L272:.DeleteMasterCopy  L291:.ResolveLibFolder  L304:.FindMasterCopy  L322:.Collect</sub>
 - **Memory.cs** (113 ln)
-  <sub>L20:class Memory  L22:.FreeM  L47:.Occupied  L64:.Width  L68:case "X"  L69:case "B"  L70:case "W"  L71:case "D"  L76:case "BOOL"  L77:case "WORD"  L78:case "DWORD"  L79:case "LWORD"  L85:.Gaps  L104:.CollectTags</sub>
+  <sub>L20:class Memory  L22:.FreeM  L47:.Occupied  L64:.Width  L85:.Gaps  L104:.CollectTags</sub>
 - **Multiuser.cs** (98 ln)
   <sub>L14:class Multiuser  L21:.ListServerProjects  L54:.ResolveServer  L69:.Describe</sub>
 - **Ops.cs** (1235 ln)
@@ -47,8 +47,8 @@
   <sub>L43:class ReplicateFcConfig  L46:.BlocksFolder  L48:.EquipmentTypes  L50:.UdtNames  L52:.SourceNumbersToReplace  L53:.GlobalDb  L55:.StartNumber  L63:class ReplicateFc  L65:.Run  L209:.FoldersOfType  L218:.ReplicateInto  L266:.RewireXml  L361:.FindPathInDbXml  L395:naming  L397:.ExtractId  L403:.InstanceDbNames  L408:.ProposedBlockName  L421:.MainBlockName  L428:.FolderBaseName  L436:.static  L454:lookups  L456:.DescendantGroups  L470:.FindDataBlock  L483:.FindTag</sub>
 - **Scaffold.cs** (350 ln)
   <sub>L51:class ScaffoldManifest  L54:.Source  L57:.Folders  L60:.TagFolders  L63:.Replace  L70:.Cpu  L72:.Items  L75:class ScaffoldItem  L77:.File  L80:.Folder  L84:class ScaffoldPlanItem  L97:class Scaffold  L100:.Rank  L114:.Plan  L145:.Merge  L155:.Apply  L164:.Run  L238:.CheckFamily  L252:.SameFamily  L259:.AlreadyInAnotherFolder  L267:.DeleteObject  L278:.FolderAction  L301:.ResolveBlockPath  L318:.ResolveTypePath …</sub>
-- **Standardize.cs** (657 ln)
-  <sub>L62:class StandardizeConfig  L64:.RootFolder  L67:.MemorySets  L75:.SetMapping  L86:.PrefixMappings  L105:.CommentMappings  L170:.AlarmOrder  L176:class PrefixMapping  L178:.Keyword  L179:.Prefix  L182:class TagTemplate  L189:class NaturalStringComparer  L191:.Compare  L218:class AlarmTagComparer  L223:.AlarmTagComparer  L228:.Compare  L236:.Key  L247:class AddressAllocator  L251:.CurrentByte  L252:.CurrentBit  L254:.AddressAllocator  L260:.Next  L275:case "BYTE"  L276:case "WORD" …</sub>
+- **Standardize.cs** (654 ln)
+  <sub>L59:class StandardizeConfig  L61:.RootFolder  L64:.MemorySets  L72:.SetMapping  L83:.PrefixMappings  L102:.CommentMappings  L167:.AlarmOrder  L173:class PrefixMapping  L175:.Keyword  L176:.Prefix  L179:class TagTemplate  L186:class NaturalStringComparer  L188:.Compare  L215:class AlarmTagComparer  L220:.AlarmTagComparer  L225:.Compare  L233:.Key  L244:class AddressAllocator  L248:.CurrentByte  L249:.CurrentBit  L251:.AddressAllocator  L257:.Next  L283:class MemoryManager  L287:.MemoryManager …</sub>
 - **TiaSession.cs** (231 ln)
   <sub>L12:class TiaSession  L14:.Portal  L15:.Project  L17:.TiaSession  L24:.PortalFilter  L30:.PickProcess  L61:.Describe  L67:.Attach  L82:lifecycle (open/save/close)  L89:.OpenProject  L119:.CreateProject  L145:.LocalProject  L154:.Save  L161:.CloseProject  L171:.AllDevices  L180:.CollectDevices  L188:.ExclusiveAccess  L194:.Plcs  L206:.GetPlc  L226:.Dispose</sub>
 

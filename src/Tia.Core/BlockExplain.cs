@@ -1,30 +1,21 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L51    class BlockExplain
-//   L53    .Explain
-//   L93    .Val
-//   L100   .Kids
-//   L106   interface / membros de DB
-//   L109   .Interface
-//   L125   .Members
-//   L134   .Member
-//   L148   rede
-//   L150   .Network
-//   L169   .Text
-//   L181   .Collapse
-//   L182   .Cut
-//   L184   FlgNet → expressão
-//   L186   class Net
-//   L236   case "Coil"
-//   L237   case "SCoil"
-//   L238   case "RCoil"
-//   L239   case "Move"
-//   L330   case "Contact"
-//   L333   case "Eq"
-//   L340   case "O"
-//   L342   case "A"
-//   L344   case "Call"
-//   L371   rótulo do operando
+//   L42    class BlockExplain
+//   L44    .Explain
+//   L84    .Val
+//   L91    .Kids
+//   L97    interface / membros de DB
+//   L100   .Interface
+//   L116   .Members
+//   L125   .Member
+//   L139   rede
+//   L141   .Network
+//   L160   .Text
+//   L172   .Collapse
+//   L173   .Cut
+//   L175   FlgNet → expressão
+//   L177   class Net
+//   L362   rótulo do operando
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX

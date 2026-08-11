@@ -1,47 +1,42 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L63    class AlarmFcConfig
-//   L65    .TargetRootFolder
-//   L66    .TemplateFc
-//   L67    .TemplateFolder
-//   L68    .ObTemplate
-//   L69    .GlobalDb
-//   L70    .AlarmTagsFolder
-//   L71    .StartTagsFolder
-//   L72    .MasterFb
-//   L73    .CallObName
-//   L74    .CallObNumber
-//   L75    .IgnoreFolders
-//   L77    .Structs
-//   L88    class AlarmFc
-//   L98    class TagRef
-//   L104   .Generate
-//   L322   FC XML
-//   L324   .BuildFcXml
-//   L361   .RewireWordNetwork
-//   L470   call OB
-//   L472   .BuildCallObXml
-//   L522   global DB comments
-//   L524   .WriteDbComments
-//   L554   .FindParentStruct
-//   L584   .TopStructNames
-//   L594   .TopStructName
-//   L607   misc helpers
-//   L609   .ExportTo
-//   L617   .BlocksIdentical
-//   L622   .ReassignUids
-//   L637   .CollectTags
-//   L651   .CollectFcs
-//   L661   .WriteCsv
-//   L683   .Describe
-//   L694   case "LEITURA_MUITO_ALTA"
-//   L695   case "LEITURA_ALTA"
-//   L696   case "LEITURA_BAIXA"
-//   L697   case "LEITURA_MUITO_BAIXA"
-//   L698   case "SEM_4MA"
-//   L707   .GetBaseName
-//   L715   .CleanName
-//   L727   .TargetSubFolderName
+//   L58    class AlarmFcConfig
+//   L60    .TargetRootFolder
+//   L61    .TemplateFc
+//   L62    .TemplateFolder
+//   L63    .ObTemplate
+//   L64    .GlobalDb
+//   L65    .AlarmTagsFolder
+//   L66    .StartTagsFolder
+//   L67    .MasterFb
+//   L68    .CallObName
+//   L69    .CallObNumber
+//   L70    .IgnoreFolders
+//   L72    .Structs
+//   L83    class AlarmFc
+//   L93    class TagRef
+//   L99    .Generate
+//   L317   FC XML
+//   L319   .BuildFcXml
+//   L356   .RewireWordNetwork
+//   L465   call OB
+//   L467   .BuildCallObXml
+//   L517   global DB comments
+//   L519   .WriteDbComments
+//   L549   .FindParentStruct
+//   L579   .TopStructNames
+//   L589   .TopStructName
+//   L602   misc helpers
+//   L604   .ExportTo
+//   L612   .BlocksIdentical
+//   L617   .ReassignUids
+//   L632   .CollectTags
+//   L646   .CollectFcs
+//   L656   .WriteCsv
+//   L678   .Describe
+//   L702   .GetBaseName
+//   L710   .CleanName
+//   L722   .TargetSubFolderName
 // ======================= END NAV INDEX =======================
 
 using System;

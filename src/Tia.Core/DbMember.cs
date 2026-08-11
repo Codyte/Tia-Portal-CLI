@@ -1,17 +1,20 @@
 // NAV INDEX
-//   1-31     usings, namespace, tipos primitivos conhecidos
-//   33-69    DbMember.Add — export do DB, edição do XML, import Override
-//   71-108   Change (edit-db-member) — troca tipo e/ou nome
-//   110-152  Remove (delete-db-member) + RemoveFromXml — núcleo puro
-//   154-198  ChangeInXml — núcleo puro do edit
-//   200-239  AddToXml — núcleo puro: resolve seção, clona/insere Member
-//   241-297  helpers: ResolveSection, NameOf, Datatype, Safe, Report
+//   1-32     usings, namespace, tipos primitivos conhecidos
+//   34-72    DbMember.Add — export do DB, edição do XML, import com prova
+//   74-119   Change (edit-db-member) — troca tipo e/ou nome
+//   121-158  Remove (delete-db-member)
+//   160-186  ExportFresh (compila o alvo sujo antes de exportar) + MemberOf
+//   188-199  RemoveFromXml — núcleo puro
+//   201-245  ChangeInXml — núcleo puro do edit
+//   247-286  AddToXml — núcleo puro: resolve seção, clona/insere Member
+//   288-345  helpers: ResolveSection, NameOf, Datatype, Safe, Report
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using Siemens.Engineering;
+using Siemens.Engineering.Compiler;
 using Siemens.Engineering.SW;
 using Siemens.Engineering.SW.Blocks;
 
@@ -56,8 +59,7 @@ namespace Tia.Core
 
             Directory.CreateDirectory(outDir);
             var file = Path.GetFullPath(Path.Combine(outDir, "addmember_" + Safe(dbLabel) + ".xml"));
-            if (File.Exists(file)) File.Delete(file);          // Openness recusa sobrescrever
-            db.Export(new FileInfo(file), ExportOptions.WithDefaults);
+            ExportFresh(db, file);
 
             var doc = XDocument.Load(file);
             var edit = AddToXml(doc, path, name, type, like);
@@ -66,7 +68,8 @@ namespace Tia.Core
 
             doc.Save(file);
             if (apply)
-                group.Blocks.Import(new FileInfo(file), ImportOptions.Override);
+                Ops.ImportAndProve(plc, group, dbLabel, file, "o membro '" + name + "'",
+                    d => MemberOf(d, path, name) != null);
             return Report(dbLabel, path, name, edit.Datatype, "create", file, apply);
         }
 
@@ -92,8 +95,7 @@ namespace Tia.Core
 
             Directory.CreateDirectory(outDir);
             var file = Path.GetFullPath(Path.Combine(outDir, "editmember_" + Safe(dbLabel) + ".xml"));
-            if (File.Exists(file)) File.Delete(file);
-            db.Export(new FileInfo(file), ExportOptions.WithDefaults);
+            ExportFresh(db, file);
 
             var doc = XDocument.Load(file);
             var changes = ChangeInXml(doc, path, name, type, rename);
@@ -106,7 +108,15 @@ namespace Tia.Core
 
             doc.Save(file);
             if (apply)
-                group.Blocks.Import(new FileInfo(file), ImportOptions.Override);
+            {
+                string after = string.IsNullOrEmpty(rename) ? name : rename;
+                Ops.ImportAndProve(plc, group, dbLabel, file, "o membro '" + after + "'", d =>
+                {
+                    var m = MemberOf(d, path, after);
+                    return m != null && (string.IsNullOrEmpty(type)
+                        || Datatype(type) == (string)m.Attribute("Datatype"));
+                });
+            }
             return result;
         }
 
@@ -129,8 +139,7 @@ namespace Tia.Core
 
             Directory.CreateDirectory(outDir);
             var file = Path.GetFullPath(Path.Combine(outDir, "delmember_" + Safe(dbLabel) + ".xml"));
-            if (File.Exists(file)) File.Delete(file);
-            db.Export(new FileInfo(file), ExportOptions.WithDefaults);
+            ExportFresh(db, file);
 
             var doc = XDocument.Load(file);
             var edit = RemoveFromXml(doc, path, name);
@@ -141,8 +150,40 @@ namespace Tia.Core
             result["warning"] = "deleting a member does not fix its references — check `xref --name " + dbLabel + "`.";
             doc.Save(file);
             if (apply)
-                group.Blocks.Import(new FileInfo(file), ImportOptions.Override);
+                Ops.ImportAndProve(plc, group, dbLabel, file, "a remoção de '" + name + "'",
+                    d => MemberOf(d, path, name) == null);
             return result;
+        }
+
+        // ---------- coreografia comum: export → patch → Import Override → prova ----------
+
+        /// <summary>
+        /// Export pronto para patch. Bloco recém-importado por outro verbo chega
+        /// modificado-não-compilado, e nesse estado o export devolve conteúdo defasado (ou recusa):
+        /// o patch sairia calculado em cima de XML de outra época. Compilar antes é mais barato que
+        /// descobrir depois.
+        /// </summary>
+        private static void ExportFresh(DataBlock db, string file)
+        {
+            if (!db.IsConsistent)
+            {
+                var pre = db.GetService<ICompilable>();
+                if (pre != null) pre.Compile();
+            }
+            if (File.Exists(file)) File.Delete(file);          // Openness recusa sobrescrever
+            db.Export(new FileInfo(file), ExportOptions.WithDefaults);
+        }
+
+        /// <summary>Membro no caminho, ou null — caminho inexistente conta como ausente.</summary>
+        private static XElement MemberOf(XDocument doc, string path, string name)
+        {
+            try
+            {
+                return ResolveSection(doc, path).Elements()
+                    .FirstOrDefault(e => e.Name.LocalName == "Member"
+                        && NameOf(e).Equals(name, StringComparison.OrdinalIgnoreCase));
+            }
+            catch (InvalidOperationException) { return null; }
         }
 
         /// <summary>Núcleo puro do delete — sem Openness, testável offline.</summary>

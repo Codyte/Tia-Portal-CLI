@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Siemens.Engineering;
@@ -283,20 +284,70 @@ namespace Tia.Core
             string folderPath, bool apply)
         {
             var fb = FindBlock(plc, ofBlock) as FB;
+            string resolvedFrom = null;
             if (fb == null)
-                throw new InvalidOperationException("FB '" + ofBlock + "' not found (instance DB needs an FB).");
+            {
+                var near = FbsLike(plc, ofBlock);
+                if (near.Count > 1)
+                    throw new InvalidOperationException("FB '" + ofBlock + "' is ambiguous: "
+                        + string.Join(" | ", near.Select(f => f.Name)));
+                if (near.Count == 0)
+                    throw new InvalidOperationException("FB '" + ofBlock
+                        + "' not found (instance DB needs an FB)." + NearestFbs(plc, ofBlock));
+                fb = near[0];
+                resolvedFrom = ofBlock;
+            }
             var existing = FindBlock(plc, name);
             var result = new Dictionary<string, object>
             {
                 { "name", name }, { "instanceOf", fb.Name }, { "folder", folderPath ?? "" },
                 { "action", existing == null ? "create" : "skip (exists)" }, { "applied", apply },
             };
+            if (resolvedFrom != null) result["resolvedFrom"] = resolvedFrom;
             if (!apply || existing != null) return result;
             var group = ResolveFolder(plc, folderPath, true);
             var db = group.Blocks.CreateInstanceDB(name, true, 1, fb.Name);
             result["created"] = db.Name;
             result["number"] = db.Number;
             return result;
+        }
+
+        /// <summary>
+        /// FBs cujo nome só difere no que ninguém digita certo: acento, caixa, underscore e espaço
+        /// repetido. `FB FILTRO DE AMOSTRAGEM  ANALÍTICA` (acento + espaço duplo) custava uma
+        /// chamada perdida por tentativa. Só resolve quando o casamento é único.
+        /// </summary>
+        internal static List<FB> FbsLike(PlcSoftware plc, string name)
+        {
+            string wanted = Squash(name);
+            return AllFbs(plc.BlockGroup).Where(f => Squash(f.Name) == wanted).ToList();
+        }
+
+        /// <summary>Palpite para o erro: FBs que começam igual, no máximo 5.</summary>
+        private static string NearestFbs(PlcSoftware plc, string name)
+        {
+            string head = Squash(name);
+            head = head.Substring(0, Math.Min(8, head.Length));
+            var near = AllFbs(plc.BlockGroup).Where(f => Squash(f.Name).StartsWith(head, StringComparison.Ordinal))
+                .Select(f => f.Name).Take(5).ToList();
+            return near.Count == 0 ? "" : " Perto: " + string.Join(" | ", near);
+        }
+
+        internal static IEnumerable<FB> AllFbs(PlcBlockGroup group)
+        {
+            foreach (var fb in group.Blocks.OfType<FB>()) yield return fb;
+            foreach (PlcBlockUserGroup sub in group.Groups)
+                foreach (var fb in AllFbs(sub)) yield return fb;
+        }
+
+        /// <summary>Nome comparável: sem acento, sem caixa, underscore vira espaço, espaço colapsa.</summary>
+        internal static string Squash(string name)
+        {
+            var sb = new StringBuilder();
+            foreach (char c in (name ?? "").Replace('_', ' ').Normalize(NormalizationForm.FormD))
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                    sb.Append(c);
+            return Regex.Replace(sb.ToString(), @"\s+", " ").Trim().ToLowerInvariant();
         }
 
         public static object DeleteBlock(PlcSoftware plc, string name, bool apply)
@@ -913,6 +964,59 @@ namespace Tia.Core
             }
             catch { return false; }
             finally { if (File.Exists(tmp)) File.Delete(tmp); }
+        }
+
+        // ---------- import com prova ----------
+
+        /// <summary>
+        /// Import Override + prova, para todo verbo que edita bloco por XML (`*-db-member`,
+        /// `add-call`, `delete-network`, `set-retain`). Depois do import o bloco fica
+        /// modificado-não-compilado e o export seguinte pode devolver o conteúdo anterior — foi
+        /// assim que um `edit-db-member --rename` saiu `ok: true` sem ter mudado nada
+        /// (docs/teste-cego/resultado-FP-03.md §5.6). Compilar fecha a janela; re-exportar prova
+        /// que o patch está no projeto, não só no arquivo.
+        /// </summary>
+        internal static void ImportAndProve(PlcSoftware plc, PlcBlockGroup group, string blockName,
+            string file, string what, Func<XDocument, bool> patched)
+        {
+            group.Blocks.Import(new FileInfo(file), ImportOptions.Override);
+
+            var block = FindBlock(plc, blockName);
+            if (block == null)
+                throw new InvalidOperationException("Block '" + blockName + "' disappeared after import.");
+            var compiler = block.GetService<ICompilable>();
+            if (compiler != null)
+            {
+                var compiled = compiler.Compile();
+                if (compiled.ErrorCount > 0)
+                    throw new InvalidOperationException("O import entrou, mas o compile de '" + blockName
+                        + "' acusou " + compiled.ErrorCount + " erro(s) — " + what + " deixou o bloco "
+                        + "inconsistente. Primeiro erro: " + FirstError(compiled.Messages));
+            }
+
+            var proof = Path.Combine(Path.GetDirectoryName(file), "proof_" + Path.GetFileName(file));
+            if (File.Exists(proof)) File.Delete(proof);
+            block.Export(new FileInfo(proof), ExportOptions.WithDefaults);
+            bool ok;
+            try { ok = patched(XDocument.Load(proof)); }
+            finally { if (File.Exists(proof)) File.Delete(proof); }
+            if (!ok)
+                throw new InvalidOperationException("O import de '" + blockName + "' passou, mas " + what
+                    + " não está no bloco depois do compile: o patch foi calculado em cima de um "
+                    + "export defasado. Rode `compile --apply` e repita o verbo.");
+        }
+
+        /// <summary>Primeira folha em estado Error, para a mensagem não sair vazia.</summary>
+        private static string FirstError(IEnumerable<CompilerResultMessage> messages)
+        {
+            foreach (var m in messages)
+            {
+                if (m.State == CompilerResultState.Error && !string.IsNullOrEmpty(m.Description))
+                    return m.Description;
+                var deep = FirstError(m.Messages);
+                if (deep != null) return deep;
+            }
+            return null;
         }
 
         // ---------- compile ----------

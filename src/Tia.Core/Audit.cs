@@ -32,8 +32,31 @@ namespace Tia.Core
         private static readonly string[] TagAreaPrefixes = { "2", "3" };
         private static readonly string[] BlockAreaPrefixes = { "3.1", "5.1" };
 
-        /// <summary>Os 6 blocos que todo acionamento padrão tem (docs/PADRAO.md, seção 4.N).</summary>
+        /// <summary>Os 6 blocos que um acionamento COM INVERSOR tem (docs/PADRAO.md, seção 4.N).</summary>
         private const int BlocksPerDrive = 6;
+
+        /// <summary>
+        /// Partida direta não tem telegrama nem referência de velocidade, então não tem os 6 blocos:
+        /// o que ela tem que ter é o trio (FC PARTIDA_*, FB FALHA_TAG, FB CONDIÇÃO DE PARTIDA_TAG).
+        /// Exigir 6 de todo mundo reprovava todo acionamento por contator (FP-03, tropeço 9).
+        /// </summary>
+        private static readonly string[] InverterMarks = { "sina_", "setpoint" };
+        private static readonly string[] CoreBlockMarks = { "falha", "condicao de partida" };
+
+        internal static bool HasInverter(IEnumerable<string> blockNames)
+        {
+            return blockNames.Any(n => InverterMarks.Any(m =>
+                (n ?? "").IndexOf(m, StringComparison.OrdinalIgnoreCase) >= 0));
+        }
+
+        /// <summary>Marcas do trio que faltam na pasta (nome normalizado: acento e caixa não contam).</summary>
+        internal static List<string> MissingCore(IEnumerable<string> blockNames)
+        {
+            var normalized = blockNames.Select(NormalizeArea).ToList();
+            return CoreBlockMarks
+                .Where(mark => !normalized.Any(n => n.IndexOf(mark, StringComparison.Ordinal) >= 0))
+                .ToList();
+        }
 
         public static string TagOf(string folderOrName)
         {
@@ -85,8 +108,18 @@ namespace Tia.Core
                 string leaf = drive.Key.Split('/').Last();
                 string tag = TagOf(leaf);
                 if (tag == null) { noTag.Add(drive.Key); continue; }
-                if (drive.Value.Count != BlocksPerDrive)
-                    wrongCount.Add(drive.Key + " → " + drive.Value.Count + " blocos");
+                if (HasInverter(drive.Value))
+                {
+                    if (drive.Value.Count != BlocksPerDrive)
+                        wrongCount.Add(drive.Key + " → " + drive.Value.Count + " blocos (com inversor: "
+                            + BlocksPerDrive + ")");
+                }
+                else
+                {
+                    var missing = MissingCore(drive.Value);
+                    if (missing.Count > 0)
+                        wrongCount.Add(drive.Key + " → partida direta sem " + string.Join(" nem ", missing));
+                }
                 foreach (string name in drive.Value.Where(n => !CarriesTag(n, tag)))
                     strayBlock.Add(drive.Key + " → " + name);
                 if (!tableTags.Contains(tag))
@@ -96,7 +129,8 @@ namespace Tia.Core
             var checks = new List<object>
             {
                 Check("(TAG) na pasta do acionamento", noTag, maxFindings),
-                Check(BlocksPerDrive + " blocos por acionamento", wrongCount, maxFindings),
+                Check("blocos por acionamento (" + BlocksPerDrive + " com inversor, trio na partida direta)",
+                    wrongCount, maxFindings),
                 Check("blocos carregam o TAG do acionamento", strayBlock, maxFindings),
                 Check("1 tabela de tags por acionamento", noTable, maxFindings),
                 Check("numeração de área consistente entre hierarquias",

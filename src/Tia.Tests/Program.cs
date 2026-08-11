@@ -73,6 +73,13 @@ namespace Tia.Tests
                 { "Audit.Naming", Audit_Naming },
                 { "Scaffold.Plan", Scaffold_Plan },
                 { "BlockExplain.Explain", BlockExplain_Explain },
+                { "BlockInterface.FromXml", BlockInterface_FromXml },
+                { "BlockEdit.InsertCallInXml", BlockEdit_InsertCallInXml },
+                { "BlockEdit.RemoveNetworkFromXml", BlockEdit_RemoveNetworkFromXml },
+                { "BlockEdit.SetRetainInXml", BlockEdit_SetRetainInXml },
+                { "Clone.InstancesInXml", Clone_InstancesInXml },
+                { "Audit.DriveShape", Audit_DriveShape },
+                { "Ops.Squash", Ops_Squash },
             };
             foreach (var t in tests)
             {
@@ -555,6 +562,170 @@ namespace Tia.Tests
                     Items = new List<ScaffoldItem> { new ScaffoldItem { File = "nao-existe.xml" } },
                 }, ".")),
                 "arquivo ausente falha no plano, antes de tocar o projeto");
+        }
+
+        // ---------- list-interface / add-call / delete-network / set-retain ----------
+
+        /// <summary>FC de 2 redes, no formato do export (Document sem namespace default).</summary>
+        private static XDocument Fc(int units)
+        {
+            var sb = new StringBuilder("<Document><SW.Blocks.FC ID=\"1\"><AttributeList>"
+                + "<Name>FC TESTE</Name><ProgrammingLanguage>LAD</ProgrammingLanguage>"
+                + "<Interface><Sections><Section Name=\"Input\">"
+                + "<Member Name=\"LIGADO\" Datatype=\"Bool\" /></Section>"
+                + "<Section Name=\"Static\"><Member Name=\"HORIMETRO\" Datatype=\"DInt\" />"
+                + "<Member Name=\"AUX\" Datatype=\"Bool\" Remanence=\"NonRetain\" /></Section>"
+                + "</Sections></Interface></AttributeList><ObjectList>");
+            for (int i = 0; i < units; i++)
+                sb.Append("<SW.Blocks.CompileUnit ID=\"" + (i + 3) + "\" CompositionName=\"CompileUnits\">"
+                    + "<ObjectList><MultilingualText ID=\"" + (i + 30) + "\" CompositionName=\"Title\">"
+                    + "<ObjectList><MultilingualTextItem ID=\"" + (i + 60) + "\" CompositionName=\"Items\">"
+                    + "<AttributeList><Culture>en-US</Culture><Text>Rede " + (i + 1) + "</Text>"
+                    + "</AttributeList></MultilingualTextItem></ObjectList></MultilingualText>"
+                    + "</ObjectList></SW.Blocks.CompileUnit>");
+            return XDocument.Parse(sb.Append("</ObjectList></SW.Blocks.FC></Document>").ToString());
+        }
+
+        private static void BlockInterface_FromXml()
+        {
+            var doc = XDocument.Parse("<Document><SW.Blocks.FB><AttributeList><Name>FB X</Name>"
+                + "<ProgrammingLanguage>SCL</ProgrammingLanguage><Interface><Sections>"
+                + "<Section Name=\"Input\"><Member Name=\"CORRENTE\" Datatype=\"Real\" /></Section>"
+                + "<Section Name=\"Output\"><Member Name=\"PARTIDAS\" Datatype=\"DInt\" /></Section>"
+                + "<Section Name=\"InOut\"><Member Name=\"DADOS\" Datatype=\"&quot;AgitadorDados&quot;\" /></Section>"
+                + "<Section Name=\"Static\"><Member Name=\"NAO_E_PINO\" Datatype=\"Bool\" /></Section>"
+                + "</Sections></Interface></AttributeList></SW.Blocks.FB></Document>");
+            var ps = BlockInterface.FromXml(doc);
+            Check(ps.Count == 3, "Static fica de fora: 3 pinos, veio " + ps.Count);
+            Check(ps[0].Section == "Input" && ps[2].Name == "DADOS", "ordem do XML preservada");
+            var row = BlockInterface.Describe(doc);
+            Check((string)row["block"] == "FB X" && row.ContainsKey("inout"), "Describe traz nome e seções");
+        }
+
+        private static void BlockEdit_InsertCallInXml()
+        {
+            var iface = new List<Param>
+            {
+                new Param { Section = "Input", Name = "CORRENTE", Datatype = "Real" },
+                new Param { Section = "Input", Name = "TEMPO", Datatype = "Time" },
+                new Param { Section = "Output", Name = "PARTIDAS", Datatype = "DInt" },
+                new Param { Section = "InOut", Name = "DADOS", Datatype = "\"AgitadorDados\"" },
+            };
+            Func<BlockEdit.CallSpec> spec = () => new BlockEdit.CallSpec
+            {
+                Fb = "FB SUPERVISAO",
+                Instance = "FB SUPERVISAO_AG-05",
+                Title = "Function Block SUPERVISAO",
+                Comment = "supervisão de corrente",
+                Params = iface,
+                Values = new Dictionary<string, string>
+                {
+                    { "CORRENTE", "DB GLOBAL.AREA.INSTR.STS_VALOR" },
+                    { "TEMPO", "T#3S" },
+                    { "PARTIDAS", "AG-05_STS_PARTIDAS" },
+                    { "DADOS", "DB GLOBAL.AREA.AG_05" },
+                },
+            };
+
+            var doc = Fc(2);
+            BlockEdit.InsertCallInXml(doc, spec(), -1);
+            Check(BlockEdit.CountNetworks(doc) == 3, "rede nova entrou");
+            var unit = doc.Descendants().Last(e => e.Name.LocalName == "SW.Blocks.CompileUnit");
+            var call = unit.Descendants().Single(e => e.Name.LocalName == "CallInfo");
+            Check((string)call.Attribute("Name") == "FB SUPERVISAO"
+                && (string)call.Attribute("BlockType") == "FB", "CallInfo aponta o FB");
+            Check(call.Elements().Count(e => e.Name.LocalName == "Parameter") == 4,
+                "todos os pinos declarados, mesmo os não ligados");
+            Check(call.Elements().Where(e => e.Name.LocalName == "Parameter")
+                .Any(e => (string)e.Attribute("Type") == "AgitadorDados"), "UDT sai sem as aspas do XML");
+
+            var accesses = unit.Descendants().Where(e => e.Name.LocalName == "Access").ToList();
+            Check(accesses.Count == 4, "1 Access por valor, veio " + accesses.Count);
+            Check(accesses.Any(a => (string)a.Attribute("Scope") == "TypedConstant"), "T#3S vira constante");
+            Check(accesses.First(a => (string)a.Attribute("Scope") == "GlobalVariable")
+                .Descendants().Count(e => e.Name.LocalName == "Component") == 4,
+                "caminho de DB vira 4 Components");
+
+            var wires = unit.Descendants().Where(e => e.Name.LocalName == "Wire").ToList();
+            Check(wires.Count == 5, "1 wire de powerrail + 4 de pino, veio " + wires.Count);
+            Check(wires[0].Elements().Any(e => e.Name.LocalName == "Powerrail"), "EN sai do powerrail");
+            var outWire = wires.First(w => w.Descendants().Any(e => e.Name.LocalName == "NameCon"
+                && (string)e.Attribute("Name") == "PARTIDAS"));
+            Check(outWire.Elements().First().Name.LocalName == "NameCon",
+                "saída liga pino → Access (ordem invertida em relação à entrada)");
+
+            // FlgNet tem que ficar no namespace v5, senão o import recusa
+            Check(unit.Descendants().First(e => e.Name.LocalName == "FlgNet").Name.NamespaceName
+                .EndsWith("/FlgNet/v5"), "FlgNet no namespace v5");
+
+            var first = Fc(2);
+            BlockEdit.InsertCallInXml(first, spec(), 0);
+            Check(first.Descendants().First(e => e.Name.LocalName == "SW.Blocks.CompileUnit")
+                .Descendants().Any(e => e.Name.LocalName == "CallInfo"), "--after 0 entra na frente");
+
+            var middle = Fc(3);
+            BlockEdit.InsertCallInXml(middle, spec(), 1);
+            Check(middle.Descendants().Where(e => e.Name.LocalName == "SW.Blocks.CompileUnit")
+                .ToList()[1].Descendants().Any(e => e.Name.LocalName == "CallInfo"), "--after 1 vira rede 2");
+
+            var empty = Fc(0);
+            BlockEdit.InsertCallInXml(empty, spec(), -1);
+            Check(BlockEdit.CountNetworks(empty) == 1, "FC sem rede nenhuma ganha a primeira");
+        }
+
+        private static void BlockEdit_RemoveNetworkFromXml()
+        {
+            var doc = Fc(3);
+            string title = BlockEdit.RemoveNetworkFromXml(doc, 2);
+            Check(title == "Rede 2", "título da rede removida volta ('" + title + "')");
+            Check(BlockEdit.CountNetworks(doc) == 2, "sobraram 2 redes");
+            Check(!doc.Descendants().Any(e => e.Name.LocalName == "Text" && e.Value == "Rede 2"),
+                "a rede certa saiu");
+            Check(Throws(() => BlockEdit.RemoveNetworkFromXml(Fc(2), 3)), "índice fora da faixa falha");
+            Check(Throws(() => BlockEdit.RemoveNetworkFromXml(Fc(2), 0)), "índice 0 falha (a numeração é 1-based)");
+        }
+
+        private static void BlockEdit_SetRetainInXml()
+        {
+            var doc = Fc(1);
+            Check(BlockEdit.SetRetainInXml(doc, "HORIMETRO", true) == "NonRetain", "valor anterior volta");
+            Check(BlockEdit.RetainOf(doc, "HORIMETRO") == "Retain", "membro ficou retentivo");
+            Check(BlockEdit.SetRetainInXml(doc, "HORIMETRO", false) == "Retain", "--off desfaz");
+            Check(BlockEdit.RetainOf(doc, "HORIMETRO") == "NonRetain", "voltou a NonRetain");
+            Check(Throws(() => BlockEdit.SetRetainInXml(doc, "NAO_EXISTE", true)), "membro inexistente falha");
+        }
+
+        private static void Clone_InstancesInXml()
+        {
+            var doc = XDocument.Parse("<Document><Call><CallInfo Name=\"FB FALHA\" BlockType=\"FB\">"
+                + "<Instance Scope=\"GlobalVariable\"><Component Name=\"FB FALHA_AG-05\" /></Instance>"
+                + "</CallInfo></Call><Call><CallInfo Name=\"FB TIMER\" BlockType=\"FB\">"
+                + "<Instance Scope=\"LocalVariable\"><Component Name=\"MULTI\" /></Instance>"
+                + "</CallInfo></Call><Call><CallInfo Name=\"FC AUX\" BlockType=\"FC\" /></Call></Document>");
+            var found = Clone.InstancesInXml(doc);
+            Check(found.Count == 1, "multi-instância e FC ficam de fora, veio " + found.Count);
+            Check(found[0].Key == "FB FALHA" && found[0].Value == "FB FALHA_AG-05", "par (FB, iDB)");
+        }
+
+        private static void Audit_DriveShape()
+        {
+            var comInversor = new[] { "PARTIDA_MOTOR_1 (M-01)", "FB FALHA_M-01", "FB CONDIÇÃO DE PARTIDA_M-01",
+                "SINA_SPEED_TLG20_M-01", "FB SETPOINT MANUAL M-01", "FB SETPOINT ESCALONAMENTO M-01" };
+            var partidaDireta = new[] { "PARTIDA_AGITADOR_5 (AG-05)", "FB FALHA_AG-05",
+                "FB CONDIÇÃO DE PARTIDA_AG-05", "FB SUPERVISAO AGITADOR_AG-05" };
+            Check(Audit.HasInverter(comInversor), "telegrama/setpoint marca acionamento com inversor");
+            Check(!Audit.HasInverter(partidaDireta), "partida direta não tem marca de inversor");
+            Check(Audit.MissingCore(partidaDireta).Count == 0, "partida direta com o trio passa");
+            Check(Audit.MissingCore(new[] { "PARTIDA_X (X-01)" }).Count == 2, "sem FALHA nem CONDIÇÃO reprova");
+        }
+
+        private static void Ops_Squash()
+        {
+            Check(Ops.Squash("FB FILTRO DE AMOSTRAGEM  ANALÍTICA") == Ops.Squash("fb filtro de amostragem analitica"),
+                "acento, caixa e espaço duplo não contam");
+            Check(Ops.Squash("FB LIMITES_OPERACAO_SENSOR") == Ops.Squash("FB LIMITES OPERACAO SENSOR"),
+                "underscore vale espaço");
+            Check(Ops.Squash("FB FALHA") != Ops.Squash("FB FALHAS"), "nome diferente continua diferente");
         }
 
         private static bool Throws(Action a)

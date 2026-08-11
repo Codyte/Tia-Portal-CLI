@@ -22,6 +22,7 @@
 - `export-block --name X [--out DIR]`
 - `export-tags --table X [--out DIR]`
 - `explain-block --name X | --file F.xml  (LAD/FBD → texto compacto; --file roda sem TIA)`
+- `list-interface [--folder A/B] [--name X] [--file F.xml] [--out DIR]  (assinatura Input/Output/InOut dos FB/FC da pasta numa chamada só — é o que se lê antes de escrever qualquer chamada; --file roda sem TIA)`
 - `export-type --name X [--out DIR]`
 - `free-memory [--bytes N] [--from B] [--count K]  (buracos livres na área %M; length -1 = até o fim)`
 
@@ -59,7 +60,10 @@
 - `delete-tag --table T --name N [--apply]`
 - `rename-block --name X --to NEW [--apply]  (bloco ou UDT; refs seguem, igual ao GUI)`
 - `set-tag --table T --name N [--type T] [--address %M10.0] [--comment C] [--rename NEW] [--apply]  (só o que for passado muda; --rename exige Openness V20+)`
-- `clone --block N | --table T --replace OLD=NEW [--replace ...] [--at %M432.0] [--folder A/B] [--apply]`
+- `clone --block N | --table T --replace OLD=NEW [--replace ...] [--at %M432.0] [--folder A/B] [--with-instances] [--apply]  (--with-instances cria os iDBs que o clone passa a referenciar; sem eles o compile morre em 'Missing instance DB')`
+- `add-call --block X --fb "FB Y" --inst iDB --param P=<tag|DB.caminho.membro|const> [--param ...] [--after N] [--title T] [--comment C] [--out DIR] [--apply]  (rede LAD com a chamada, EN no powerrail; os pinos saem da interface do FB. --after 0 = primeira rede, omitido = no fim)`
+- `delete-network --block X --index N [--out DIR] [--apply]  (N é 1-based, a numeração do explain-block)`
+- `set-retain --block FB --member M [--off] [--out DIR] [--apply]  (Remanence na declaração do FB; o Openness recusa em iDB e o import-source não expressa)`
 - `add-db-member --db X --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]`
 - `edit-db-member --db X --name M [--path A.B] [--type T] [--rename NEW] [--out DIR] [--apply]  (rename não corrige quem referencia o membro)`
 - `delete-db-member --db X --name M [--path A.B] [--out DIR] [--apply]  (não corrige quem referencia o membro)`

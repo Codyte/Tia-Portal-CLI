@@ -24,7 +24,8 @@ namespace Tia.Core
     public static class Clone
     {
         public static object Run(PlcSoftware plc, string blockName, string tableName,
-            IEnumerable<string> replaceArgs, string at, string folder, string outDir, bool apply)
+            IEnumerable<string> replaceArgs, string at, string folder, string outDir, bool apply,
+            bool withInstances = false)
         {
             if (string.IsNullOrEmpty(blockName) == string.IsNullOrEmpty(tableName))
                 throw new ArgumentException("Pass exactly one of --block <name> / --table <name>.");
@@ -74,7 +75,38 @@ namespace Tia.Core
                 if (isTable) Ops.ImportTagTable(plc, targetFile, folder, true);
                 else Ops.ImportBlock(plc, targetFile, folder, true);
             }
+            // O clone reescreve o nome dos iDBs que o XML referencia, mas ninguém os cria: o
+            // compile morre em "Missing instance DB" e o nome ainda tem que ser deduzido aplicando
+            // os --replace de cabeça (FP-03, tropeço 7). CreateInstanceDb é idempotente.
+            if (withInstances && !isTable)
+            {
+                var instances = InstancesInXml(doc)
+                    .Select(p => Ops.CreateInstanceDb(plc, p.Value, p.Key, folder, apply)).ToList();
+                if (instances.Any()) result["instances"] = instances;
+            }
             return result;
+        }
+
+        /// <summary>
+        /// Chamadas de FB com instância própria no XML → (FB, iDB). Multi-instância tem
+        /// Scope="LocalVariable" e mora dentro do iDB do chamador: não é bloco para criar.
+        /// Núcleo puro — sem Openness.
+        /// </summary>
+        internal static List<KeyValuePair<string, string>> InstancesInXml(XDocument doc)
+        {
+            var found = new List<KeyValuePair<string, string>>();
+            foreach (var call in doc.Descendants().Where(e => e.Name.LocalName == "CallInfo"))
+            {
+                if ((string)call.Attribute("BlockType") != "FB") continue;
+                var instance = call.Elements().FirstOrDefault(e => e.Name.LocalName == "Instance");
+                if (instance == null || (string)instance.Attribute("Scope") != "GlobalVariable") continue;
+                var component = instance.Elements().FirstOrDefault(e => e.Name.LocalName == "Component");
+                string idb = component == null ? null : (string)component.Attribute("Name");
+                string fb = (string)call.Attribute("Name");
+                if (string.IsNullOrEmpty(idb) || string.IsNullOrEmpty(fb)) continue;
+                if (!found.Any(p => p.Value == idb)) found.Add(new KeyValuePair<string, string>(fb, idb));
+            }
+            return found;
         }
 
         /// <summary>Troca os pares em atributos e em texto de nós folha. Núcleo puro — sem Openness.</summary>

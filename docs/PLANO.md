@@ -349,14 +349,36 @@ Caderno [`caderno-FP-03.md`](teste-cego/caderno-FP-03.md), resultado em
 os 10 tropeços, e a fila que sai deles:
 
 1. `add-call` + `delete-network` — **R8 (chamada em LAD) hoje só é alcançável escrevendo FlgNet na
-   mão**; foram 250 linhas de Python para uma rede de chamada.
-2. `add-db-member` resolvendo a inconsistência sozinho, e `edit-db-member --rename` **falhando alto
-   em vez de devolver `ok: true` sem efeito** (bug, não falta de recurso).
+   mão**; foram 276 linhas de Python para uma rede de chamada. O buraco é **chamada nova**: quando a
+   chamada já existe em algum molde, `clone` resolve (foi assim que o IIT-05 saiu em 1 chamada).
+2. **Um guard só** na coreografia `export → patch → Import Override` dos `*-db-member`: conferir o
+   patch depois de importar e compilar quando o alvo está modificado-não-compilado. Resolve o
+   `edit-db-member` devolvendo `ok: true` sem efeito (bug) e a cadeia de `--like` que quebrava.
 3. `set-retain --block <FB> --member M` — `Remanence` não pode ser setado em iDB, só no FB, e o
    `import-source` não expressa retentividade: entregar "horímetro retentivo" obrigou a
    reimplementar o horímetro fora da biblioteca.
-4. `list-interface` — reconstituir o padrão da casa custou 12 chamadas de leitura.
-5. `clone --with-instances`; 6. `audit` reconhecendo acionamento sem inversor.
+4. `list-interface` — reconstituir o padrão da casa custou 12 chamadas de leitura. O leitor de
+   interface é o mesmo que o `add-call` precisa para resolver tipo de parâmetro.
+5. `clone --with-instances`; 6. `audit` reconhecendo acionamento sem inversor;
+   7. `create-instance-db` sugerindo o nome do FB quando o exato não casa (acento e espaço duplo).
+
+**Fora da fila:** `tree` carregando assinatura de FB (custa export de todo FB para responder o que
+`list-interface` responde sob demanda) e `add-db-member --from-scl` (com o guard do item 2, a cadeia
+de `--like` deixa de quebrar).
+
+### Fila da FP-03 executada (2026-08-11) — 72 → 76 verbos
+
+Os 7 itens saíram, com teste offline para cada núcleo puro (`Tia.Tests`, 8 casos novos):
+
+| Item | Como ficou |
+|---|---|
+| 1. `add-call` + `delete-network` | `BlockEdit.cs`. `add-call` monta a rede LAD (EN no powerrail), tipa os pinos pela interface do FB e recusa entrada sem valor; `delete-network --index N` é 1-based. **Aceite ao vivo**: rede inserida no `PARTIDA_AGITADOR_5 (AG-05)`, compile 0 erros, rede removida, FC de volta às 10 redes originais. |
+| 2. guard do `*-db-member` | `Ops.ImportAndProve`: import `Override` → compila o alvo → re-exporta e confere o patch. `DbMember.ExportFresh` compila antes de exportar quando o bloco está sujo. Falha alta em vez de `ok: true` vazio. |
+| 3. `set-retain` | `--block <FB> --member M [--off]`; recusa iDB com a mensagem do Openness. |
+| 4. `list-interface` | `[--folder|--name|--file]`, um attach para a pasta inteira; `--file` roda sem TIA. É de onde o `add-call` tira tipo e seção de cada pino. |
+| 5. `clone --with-instances` | `Clone.InstancesInXml` acha as chamadas com instância própria (multi-instância fica de fora) e chama `create-instance-db`, que é idempotente. |
+| 6. `audit` sem inversor | com telegrama/setpoint exige 6 blocos; sem, exige o trio `PARTIDA_* + FALHA + CONDIÇÃO DE PARTIDA`. Partida direta deixa de reprovar. |
+| 7. `create-instance-db --of` aproximado | `Ops.Squash`: acento, caixa, underscore e espaço duplo não contam. Casou um, resolve e devolve `resolvedFrom`; casou vários, falha listando. |
 
 ## Histórico fechado
 

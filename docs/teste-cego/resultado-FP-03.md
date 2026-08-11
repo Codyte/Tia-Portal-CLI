@@ -35,7 +35,7 @@ para cada um.
 
 ### UDT e DB global
 
-`AgitadorDados` (novo, 33 membros) — o que o `MotorDados` da casa não tem: corrente nominal,
+`AgitadorDados` (novo, 31 membros) — o que o `MotorDados` da casa não tem: corrente nominal,
 percentuais de alarme/falha, tempos de filtro, cadastro do ciclo intermitente, corte de
 submergência, contador de partidas e horímetro. Todos os cadastros nascem com valor inicial
 (8,5 A / 80 % / 90 % / 20 % / 30 s / 5 s / 10 min / 120 min), então o programa chega comissionável.
@@ -122,7 +122,7 @@ Ordenado por custo. "Chamadas" conta invocações do `tia`, ~10–20 s cada.
 2. **R8 (chamada em LAD) não tem caminho pela CLI.** `import-ladder` não converte `CALL`, então
    montar o FC de partida foi: exportar o molde, apagar 2 `CompileUnit`, reescrever 3 `Access`,
    remover a negação de um contato, inserir 1 contato em série (3 wires) e **escrever uma
-   `CompileUnit` inteira na mão** (1 `Call`, 9 `Access`, 11 `Wires`) — 250 linhas de Python
+   `CompileUnit` inteira na mão** (1 `Call`, 9 `Access`, 11 `Wires`) — 276 linhas de Python
    (`workspace/ag05/make_fc.py`, não versionado). Funcionou de primeira e o resultado é LAD legítimo, mas isso é
    trabalho de verbo, não de sessão.
    **Proposta:** `add-call --block X [--after N] --fb "FB Y" --inst "iDB" --param p=<tag|DB.path|const>…`
@@ -152,10 +152,16 @@ Ordenado por custo. "Chamadas" conta invocações do `tia`, ~10–20 s cada.
    `--from-scl F.scl`, importando um `STRUCT` inteiro num caminho: um verbo, um compile).
 
 6. **`edit-db-member --rename` devolveu `ok: true` sem efeito.** No batch, o passo seguinte ainda
-   viu o nome antigo (`Known members: INSTR_01_MEDIDOR_DE_VAZAO_ULTRASSONICO`): o rename foi
-   sobrescrito porque o passo posterior exportou a DB de um estado anterior ao compile. Isso é pior
-   que um erro — sai `ok` e o projeto não mudou. **Proposta:** o verbo deve falhar alto (ou
-   compilar) quando o bloco alvo está inconsistente, em vez de reportar sucesso.
+   viu o nome antigo (`Known members: INSTR_01_MEDIDOR_DE_VAZAO_ULTRASSONICO`). Isso é pior que um
+   erro — sai `ok` e o projeto não mudou.
+   **Mecanismo** (revisto depois da execução, com os `step2*.json` na mão): a DB **não** estava
+   inconsistente — o export funcionou. Estava *modificada-não-compilada*, porque o passo anterior
+   (`add-db-member --like`, um `Import Override`) não tinha compilado. Nesse estado o export
+   seguinte devolve o conteúdo pré-import, e o patch é calculado em cima de um XML velho.
+   **Proposta:** não é "recusar bloco inconsistente" — esse guard não dispararia aqui. É a
+   coreografia `export → patch → Import Override`, comum a `add`/`edit`/`delete-db-member`,
+   **conferir o resultado depois de importar** (re-exportar e verificar o patch) e compilar sozinha
+   quando o alvo está modificado-não-compilado.
 
 7. **`clone --replace` foi a melhor ferramenta da sessão** e resolveu o instrumento inteiro em
    1 chamada (46 substituições, incluindo caminho de DB, nomes de iDB e tags). O que faltou: o
@@ -184,7 +190,8 @@ Ordenado por custo. "Chamadas" conta invocações do `tia`, ~10–20 s cada.
 Ordem por (dor evitada ÷ tamanho do diff), para entrar na fila do `BOAS-PRATICAS §3`:
 
 1. `add-call` + `delete-network` — destrava a R8 de verdade (tropeço 2).
-2. `add-db-member` resolvendo a inconsistência sozinho e `edit-db-member` falhando alto
+2. **Um guard só** na coreografia `export → patch → Import Override` de `add`/`edit`/`delete-db-member`:
+   compilar quando o alvo está modificado-não-compilado e conferir o patch depois de importar
    (tropeços 5 e 6 — o 6 é bug, não falta de recurso).
 3. `set-retain --block --member` (tropeços 3 e 4).
 4. `list-interface` (tropeço 1).

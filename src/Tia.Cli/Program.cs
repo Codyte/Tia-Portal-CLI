@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Xml.Linq;
 using Newtonsoft.Json;
 
 namespace Tia.Cli
@@ -46,6 +47,9 @@ namespace Tia.Cli
                         "list-hmi [--device X]  (WinCC Unified: telas + tag tables)",
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]",
                         "explain-block --name X | --file F.xml  (LAD/FBD → texto compacto; --file roda sem TIA)",
+                        "list-interface [--folder A/B] [--name X] [--file F.xml] [--out DIR]  "
+                            + "(assinatura Input/Output/InOut dos FB/FC da pasta numa chamada só — é o que se lê "
+                            + "antes de escrever qualquer chamada; --file roda sem TIA)",
                         "export-type --name X [--out DIR]",
                         "free-memory [--bytes N] [--from B] [--count K]  (buracos livres na área %M; length -1 = até o fim)" } },
                     { "structure", new[] { "create-folder --path A/B [--tags|--types] [--apply]",
@@ -91,7 +95,16 @@ namespace Tia.Cli
                         "rename-block --name X --to NEW [--apply]  (bloco ou UDT; refs seguem, igual ao GUI)",
                         "set-tag --table T --name N [--type T] [--address %M10.0] [--comment C] [--rename NEW] [--apply]  "
                             + "(só o que for passado muda; --rename exige Openness V20+)",
-                        "clone --block N | --table T --replace OLD=NEW [--replace ...] [--at %M432.0] [--folder A/B] [--apply]",
+                        "clone --block N | --table T --replace OLD=NEW [--replace ...] [--at %M432.0] [--folder A/B] "
+                            + "[--with-instances] [--apply]  (--with-instances cria os iDBs que o clone passa a "
+                            + "referenciar; sem eles o compile morre em 'Missing instance DB')",
+                        "add-call --block X --fb \"FB Y\" --inst iDB --param P=<tag|DB.caminho.membro|const> [--param ...] "
+                            + "[--after N] [--title T] [--comment C] [--out DIR] [--apply]  "
+                            + "(rede LAD com a chamada, EN no powerrail; os pinos saem da interface do FB. "
+                            + "--after 0 = primeira rede, omitido = no fim)",
+                        "delete-network --block X --index N [--out DIR] [--apply]  (N é 1-based, a numeração do explain-block)",
+                        "set-retain --block FB --member M [--off] [--out DIR] [--apply]  "
+                            + "(Remanence na declaração do FB; o Openness recusa em iDB e o import-source não expressa)",
                         "add-db-member --db X --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]",
                         "edit-db-member --db X --name M [--path A.B] [--type T] [--rename NEW] [--out DIR] [--apply]  "
                             + "(rename não corrige quem referencia o membro)",
@@ -144,6 +157,8 @@ namespace Tia.Cli
                     return RunLadderDryRun(args);
                 if (args[0] == "explain-block" && OptionValue(args, "--file") != null)
                     return RunExplainFile(args);
+                if (args[0] == "list-interface" && OptionValue(args, "--file") != null)
+                    return RunInterfaceFile(args);
 
                 var timeout = OptionValue(args, "--timeout");
                 if (timeout == null) return Run(args);
@@ -200,6 +215,19 @@ namespace Tia.Cli
         {
             Print(Core.BlockExplain.Explain(Require(args, "--file"),
                 OptionValue(args, "--out") ?? Path.Combine("workspace", "exports")));
+            return 0;
+        }
+
+        // núcleo puro do list-interface: XML na mão dispensa TIA (e o JIT dos tipos Siemens)
+        private static int RunInterfaceFile(string[] args)
+        {
+            var file = Path.GetFullPath(Require(args, "--file"));
+            if (!File.Exists(file)) throw new FileNotFoundException("XML not found: " + file);
+            Print(new Dictionary<string, object>
+            {
+                { "count", 1 },
+                { "blocks", new List<object> { Core.BlockInterface.Describe(XDocument.Load(file)) } },
+            });
             return 0;
         }
 
@@ -405,6 +433,12 @@ namespace Tia.Cli
                     case "export-tags":
                         result = Core.Ops.ExportTagTable(session.GetPlc(plcName), Require(args, "--table"), outDir);
                         break;
+                    case "list-interface":
+                        var ifaceFile = OptionValue(args, "--file");
+                        result = Core.BlockInterface.Run(
+                            ifaceFile != null ? null : session.GetPlc(plcName),
+                            OptionValue(args, "--name"), OptionValue(args, "--folder"), ifaceFile, outDir);
+                        break;
                     case "import-block":
                         using (WriteLock(session, apply, verb))
                             result = Core.Ops.ImportBlock(session.GetPlc(plcName),
@@ -468,7 +502,25 @@ namespace Tia.Cli
                         using (WriteLock(session, apply, verb))
                             result = Core.Clone.Run(session.GetPlc(plcName), OptionValue(args, "--block"),
                                 OptionValue(args, "--table"), OptionValues(args, "--replace"),
-                                OptionValue(args, "--at"), OptionValue(args, "--folder"), outDir, apply);
+                                OptionValue(args, "--at"), OptionValue(args, "--folder"), outDir, apply,
+                                args.Contains("--with-instances"));
+                        break;
+                    case "add-call":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.BlockEdit.AddCall(session.GetPlc(plcName), Require(args, "--block"),
+                                Require(args, "--fb"), Require(args, "--inst"), OptionValues(args, "--param"),
+                                int.Parse(OptionValue(args, "--after") ?? "-1"), OptionValue(args, "--title"),
+                                OptionValue(args, "--comment"), outDir, apply);
+                        break;
+                    case "delete-network":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.BlockEdit.DeleteNetwork(session.GetPlc(plcName), Require(args, "--block"),
+                                int.Parse(Require(args, "--index")), outDir, apply);
+                        break;
+                    case "set-retain":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.BlockEdit.SetRetain(session.GetPlc(plcName), Require(args, "--block"),
+                                Require(args, "--member"), !args.Contains("--off"), outDir, apply);
                         break;
                     case "add-db-member":
                         using (WriteLock(session, apply, verb))

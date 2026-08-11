@@ -20,6 +20,11 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
 - **Compile entre etapas**: todo import deixa o alvo (e quem o referencia) inconsistente, e o
   Openness recusa exportar bloco inconsistente. `clone`, `diff-block`, `explain-block` e os 4
   geradores exportam por baixo — sem `compile --apply` antes, quebram com essa mensagem.
+  **Exceção: os verbos que editam bloco por XML** (`add`/`edit`/`delete-db-member`, `add-call`,
+  `delete-network`, `set-retain`) **compilam e conferem sozinhos** — importam com `Override`,
+  compilam o alvo e re-exportam para provar que o patch entrou. Sem essa prova, duas escritas
+  seguidas no mesmo bloco (mesmo `run --script`) faziam a segunda ler um export defasado e a
+  primeira sumia com `ok: true` (FP-03, tropeço 6).
 - Nunca rodar `tia` em paralelo (Openness single-session).
 - Nunca commitar `Siemens.Engineering.dll`.
 - Testes só contra projeto TIA de teste, nunca produção.
@@ -73,6 +78,21 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
   - **`move-block --name X | --pattern P* --folder A/B [--apply]`** — o Openness não move bloco; o
     verbo faz `export` (de todos primeiro) → `delete` → `import --folder`. Fazer isso na mão custa
     3 chamadas por bloco e falha se a ordem inverter.
+  - **Chamada em LAD (R8) = `add-call`, nunca FlgNet na mão.** A ordem que funciona:
+    `list-interface --folder "1. FB Bibliotecas"` (todas as assinaturas numa chamada; é o que se lê
+    antes de escrever a chamada) → `clone` do molde → `delete-network --index N` para as redes que
+    não servem → `add-call --block X --fb "FB Y" --inst iDB --param P=<tag|DB.caminho.membro|const>`
+    (rede LAD com EN no powerrail; pino de entrada sem valor é erro, e todos os pinos do FB entram
+    declarados). `--after 0` põe na frente, omitido põe no fim. Rede **com condição em série**
+    continua sendo clone de um molde que já a tenha.
+  - **`clone --with-instances`** cria os iDBs que o XML clonado passa a referenciar (sem eles o
+    compile morre em `Missing instance DB` e o nome do iDB tem que ser deduzido de cabeça).
+  - **Retentividade se declara no FB: `set-retain --block <FB> --member M [--off]`.** O Openness
+    recusa `Remanence` em iDB (`The attribute 'Remanence' cannot be set`) e o `import-source` não
+    expressa retentividade — sem o verbo, horímetro retentivo virava export + patch + import na mão.
+  - **`create-instance-db --of` aceita nome aproximado**: acento, caixa, underscore e espaço duplo
+    não contam (`FB FILTRO DE AMOSTRAGEM  ANALÍTICA`). Casou um só, resolve e devolve `resolvedFrom`;
+    casou mais de um, falha listando.
   - **`run --script ops.json --summary`** = `{steps,failed,errors[]}` em vez do resultado de cada
     step (98 steps × JSON completo é dump de contexto).
   - **Saída grande já vem cortada por padrão.** Acima de 60 000 chars (`TIA_MAX_STDOUT`) qualquer

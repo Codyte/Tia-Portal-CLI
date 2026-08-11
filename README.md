@@ -22,7 +22,7 @@ who prefer a terminal over ClickOps.*
 }
 ```
 
-**72 verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML, catalog modules
+**76 verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML, catalog modules
 and SINAMICS telegrams · SCL→LAD converter · 6 field-proven code generators · installable block
 library · batch mode · one attach
 

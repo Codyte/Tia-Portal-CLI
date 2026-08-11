@@ -1,62 +1,35 @@
-# __navi__ · repo tree — 103 files in 19 folders
-<!-- navindex · 2026-08-06 · DO NOT EDIT BY HAND; regen via navindex skill -->
+# __navi__ · repo tree — 83 files in 10 folders
+<!-- navindex · 2026-08-11 · DO NOT EDIT BY HAND; regen via navindex skill -->
 
 Universal index: every folder below -> the files it holds (names only). A `→ __navi__.md` marker means that folder has a symbol map — open `<that path>/__navi__.md` for exact line numbers (2 reads total: this tree -> folder map).
 
-## `./` (3 files)
-CLAUDE.md(122)  README.md(189)  SKILL.md(107)
+## `./` (6 files)
+CHANGELOG.md(126)  CLAUDE.md(211)  CONTRIBUTING.md(61)  README.md(258)  SECURITY.md(39)  SKILL.md(114)
 
-## `Scripts_Siemens/FINAIS/` (10 files) → __navi__.md
-Gerador de Conexão Profinet FINAL- config.json.txt(219)  Gerador de Conexão Profinet FINAL.txt(259)  Gerador de OB Falha Módulos FINAL.txt(612)  Padronizador de Variável-FINAL.txt(664)  Replicador de FC Acionamentos-FINAL-Config.json.txt(19)  Replicador de FC Acionamentos-FINAL-Program.txt(398)  Replicador de FC AcionamentosV3-FINAL-Program.txt(917)  Replicador de FC Alarmes-FINAL.txt(1028)  Replicador de FC Instrumentos-FINAL-Config.json.txt(17)  Replicador de FC Instrumentos-FINAL-Program.txt(1087)
-
-## `Scripts_Siemens/OLD/Jarvis_V18/IA/V18/Docs/` (2 files)
-MAPA_ATUAL.md(64)  README.md(18)
-
-## `Scripts_Siemens/OLD/TESTES/` (30 files) → __navi__.md
-Arquiteto GVL V1.txt(0)  Arquiteto de Automação_2.txt(621)  Gerador Variáveis Ordem Alfabetica FINAL.txt(624)  Gerador Variáveis Ordem Alfabetica.V2.txt(624)  Gerador Variáveis Ordem Alfabetica.txt(1111)  Gerador Variáveis.txt(553)  Gerador de FC para pastas.txt(206)  Jarvis.txt(186)  Padronizador de Variável-FINAL.txt(664)  Projeto Piloto População de FC - config.json .txt(10)  Projeto Piloto População de FC Alarmes FINAL.txt(848)  Projeto Piloto População de FC V2.txt(298)  Projeto Piloto População de FC V3.txt(291)  Projeto Piloto População de FC V4 funcional - config.json.txt(11)  Projeto Piloto População de FC V4 funcional.txt(386)  Projeto Piloto População de FC V5 funcional - config.json.txt(11)  Projeto Piloto População de FC V5 funcional.txt(386)  Projeto Piloto População de FC V6  - config.json.txt(16)  Projeto Piloto População de FC V6 .txt(339)  Projeto Piloto População de FC V6 FINAL - config.json.txt(16)  Projeto Piloto População de FC V6 FINAL.txt(339)  Projeto Piloto População de FC V7 - config.json.txt(16)  Projeto Piloto População de FC V7 com compilador - config.json.txt(16)  Projeto Piloto População de FC V7 com compilador.txt(384)  Projeto Piloto População de FC V7.txt(384)  Projeto Piloto População de FC.txt(339)  Replicador de FC Acionamentos-FINAL-Config.json.txt(18)  Replicador de FC Acionamentos-FINAL-Program.txt(398)  Replicador de FC AcionamentosV2-Program.txt(750)  Replicador de FC Alarmes-FINAL.txt(848)
-
-## `docs/` (4 files) → __navi__.md
-PADRAO.md(201)  PLANO.md(781)  VERBS.md(92)  projeto-real-fase-A.md(76)
+## `docs/` (7 files) → __navi__.md
+BENCHMARKS.md(110)  BOAS-PRATICAS.md(175)  DIARIO.md(820)  PADRAO.md(201)  PLANO.md(396)  VERBS.md(105)  projeto-real-fase-A.md(76)
 
 ## `docs/examples/` (8 files)
 batch.json(6)  gen-all.json(8)  install-full.json(11)  profinet.json(10)  replicate-fc-soprador.json(9)  replicate-fc.json(8)  replicate-instruments.json(9)  replicate-soprador-run.json(8)
 
+## `docs/teste-cego/` (8 files)
+artigo.md(179)  caderno-FP-01.md(163)  caderno-FP-02.md(255)  caderno-FP-03.md(88)  criterios.md(55)  resultado-2026-08-07.md(188)  resultado-2026-08-10.md(139)  resultado-FP-03.md(199)
+
 ## `library/` (5 files) → __navi__.md
-README.md(150)  export-all.json(68)  generic.json(558)  library.json(561)  packages.json(30)
+README.md(150)  export-all.json(68)  generic.json(558)  library.json(561)  packages.json(39)
 
 ## `library/core/` (3 files)
 README.md(51)  bake.json(13)  core.json(11)
 
 ## `scripts/` (19 files) → __navi__.md
-_common.ps1(81)  bake-lib.ps1(52)  clone-hw.ps1(28)  compose-db.ps1(44)  gen-verbs.ps1(30)  init.ps1(193)  install-lib.ps1(147)  navi-cs.ps1(22)  new-plc.ps1(42)  prep-project.ps1(18)  raio-x.ps1(66)  rebuild.ps1(65)  setup-tasks.ps1(45)  smokeloop.ps1(45)  taskrun.ps1(45)  tia-help.py(189)  tia.ps1(8)  use-project.ps1(23)  whitelist.ps1(25)
+_common.ps1(81)  bake-lib.ps1(96)  clone-hw.ps1(28)  compose-db.ps1(44)  gen-verbs.ps1(47)  init.ps1(246)  install-lib.ps1(205)  new-plc.ps1(42)  pack.ps1(88)  prep-project.ps1(18)  raio-x.ps1(66)  rebuild.ps1(107)  setup-tasks.ps1(45)  smokeloop.ps1(45)  taskrun.ps1(63)  tia-help.py(263)  tia.ps1(8)  use-project.ps1(27)  whitelist.ps1(25)
 
-## `src/Tia.Cli/obj/` (2 files) → __navi__.md
-Tia.Cli.csproj.nuget.dgspec.json(119)  project.assets.json(579)
+## `src/Tia.Cli/` (1 files) → __navi__.md
+Program.cs(1027)
 
-## `src/Tia.Cli/obj/Debug/net48/` (2 files)
-Tia.Cli.csproj.FileListAbsolute.txt(15)  Tia.Cli.sourcelink.json(1)
+## `src/Tia.Core/` (25 files) → __navi__.md
+AlarmFc.cs(733)  AssemblyInfo.cs(3)  Audit.cs(436)  BlockEdit.cs(442)  BlockExplain.cs(390)  BlockInterface.cs(141)  Clone.cs(230)  DbMember.cs(372)  Doctor.cs(183)  Drives.cs(201)  FaultOb.cs(361)  Hardware.cs(665)  Hmi.cs(43)  InstrumentFc.cs(706)  Inventory.cs(568)  LadConverter.cs(530)  Library.cs(331)  Memory.cs(113)  Multiuser.cs(98)  Ops.cs(1235)  Profinet.cs(166)  Replicate.cs(500)  Scaffold.cs(350)  Standardize.cs(657)  TiaSession.cs(231)
 
-## `src/Tia.Cli/obj/Release/net48/` (2 files)
-Tia.Cli.csproj.FileListAbsolute.txt(15)  Tia.Cli.sourcelink.json(1)
-
-## `src/Tia.Core/obj/` (2 files) → __navi__.md
-Tia.Core.csproj.nuget.dgspec.json(57)  project.assets.json(469)
-
-## `src/Tia.Core/obj/Debug/net48/` (2 files)
-Tia.Core.csproj.FileListAbsolute.txt(10)  Tia.Core.sourcelink.json(1)
-
-## `src/Tia.Core/obj/Release/net48/` (2 files)
-Tia.Core.csproj.FileListAbsolute.txt(10)  Tia.Core.sourcelink.json(1)
-
-## `src/Tia.Lib/tia-cli/` (1 files)
-LibraryInfo.txt(15)
-
-## `src/Tia.Tests/obj/` (2 files) → __navi__.md
-Tia.Tests.csproj.nuget.dgspec.json(115)  project.assets.json(518)
-
-## `src/Tia.Tests/obj/Debug/net48/` (2 files)
-Tia.Tests.csproj.FileListAbsolute.txt(14)  Tia.Tests.sourcelink.json(1)
-
-## `src/Tia.Tests/obj/Release/net48/` (2 files)
-Tia.Tests.csproj.FileListAbsolute.txt(14)  Tia.Tests.sourcelink.json(1)
+## `src/Tia.Tests/` (1 files) → __navi__.md
+Program.cs(829)
 

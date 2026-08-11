@@ -1,3 +1,44 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L54    class Hardware
+//   L56    .FindDevice
+//   L68    .HasItemNamed
+//   L78    .Interface
+//   L86    add-device
+//   L89    .AddDevice
+//   L114   delete-device
+//   L116   .DeleteDevice
+//   L129   plug-module
+//   L137   .PlugModule
+//   L187   .CollectSlots
+//   L199   .FindItem
+//   L212   .FindItem
+//   L223   set-address
+//   L225   .SetAddress
+//   L254   set-io-address
+//   L262   .SetIoAddress
+//   L302   .CollectAddresses
+//   L308   list-io-map
+//   L318   .ListIoMap
+//   L356   .CollectMap
+//   L378   .Range
+//   L384   list-attrs
+//   L391   .ListAttrs
+//   L416   set-attr
+//   L424   .SetAttr
+//   L457   .Coerce
+//   L465   .TryGet
+//   L471   set-memory-bytes
+//   L480   .SetMemoryBytes
+//   L525   .IsMemoryAttribute
+//   L533   .FindMemoryItem
+//   L548   connect-subnet
+//   L554   .ConnectSubnet
+//   L634   CAx (AML)
+//   L636   .CaxExport
+//   L649   .CaxImport
+// ======================= END NAV INDEX =======================
+
 using System;
 using System.Collections.Generic;
 using System.IO;

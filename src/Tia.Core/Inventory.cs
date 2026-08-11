@@ -1,3 +1,36 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L61    class Inventory
+//   L63    .Info
+//   L80    .Devices
+//   L97    .CollectDeviceItems
+//   L119   .FolderMatches
+//   L129   .Blocks
+//   L160   .CollectBlocks
+//   L183   .Tree
+//   L215   .AppendGrouped
+//   L227   .AppendTree
+//   L248   .BlockLabel
+//   L256   .TagTables
+//   L279   .FindTagTable
+//   L291   .CollectTagTables
+//   L304   .Types
+//   L311   .CollectTypes
+//   L324   find
+//   L327   .Find
+//   L361   .FindInTagTables
+//   L401   snapshot
+//   L404   .Snapshot
+//   L422   cross-references
+//   L429   .ResolveSymbol
+//   L443   .FindTag
+//   L457   .Xref
+//   L496   trace
+//   L505   .Trace
+//   L544   .AllSources
+//   L560   .CollectBlockObjects
+// ======================= END NAV INDEX =======================
+
 // NAV INDEX
 // 29-78    Info / Devices (device items recursivos)
 // 79-108   Blocks

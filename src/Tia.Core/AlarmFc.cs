@@ -1,3 +1,49 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L63    class AlarmFcConfig
+//   L65    .TargetRootFolder
+//   L66    .TemplateFc
+//   L67    .TemplateFolder
+//   L68    .ObTemplate
+//   L69    .GlobalDb
+//   L70    .AlarmTagsFolder
+//   L71    .StartTagsFolder
+//   L72    .MasterFb
+//   L73    .CallObName
+//   L74    .CallObNumber
+//   L75    .IgnoreFolders
+//   L77    .Structs
+//   L88    class AlarmFc
+//   L98    class TagRef
+//   L104   .Generate
+//   L322   FC XML
+//   L324   .BuildFcXml
+//   L361   .RewireWordNetwork
+//   L470   call OB
+//   L472   .BuildCallObXml
+//   L522   global DB comments
+//   L524   .WriteDbComments
+//   L554   .FindParentStruct
+//   L584   .TopStructNames
+//   L594   .TopStructName
+//   L607   misc helpers
+//   L609   .ExportTo
+//   L617   .BlocksIdentical
+//   L622   .ReassignUids
+//   L637   .CollectTags
+//   L651   .CollectFcs
+//   L661   .WriteCsv
+//   L683   .Describe
+//   L694   case "LEITURA_MUITO_ALTA"
+//   L695   case "LEITURA_ALTA"
+//   L696   case "LEITURA_BAIXA"
+//   L697   case "LEITURA_MUITO_BAIXA"
+//   L698   case "SEM_4MA"
+//   L707   .GetBaseName
+//   L715   .CleanName
+//   L727   .TargetSubFolderName
+// ======================= END NAV INDEX =======================
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;

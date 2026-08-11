@@ -1,3 +1,32 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L58    class BlockEdit
+//   L67    delete-network
+//   L73    .DeleteNetwork
+//   L87    add-call
+//   L96    .AddCall
+//   L150   set-retain
+//   L158   .SetRetain
+//   L180   coreografia
+//   L186   .Patch
+//   L212   núcleo puro (sem Openness: testável offline)
+//   L214   class CallSpec
+//   L224   .CountNetworks
+//   L230   .RemoveNetworkFromXml
+//   L250   .InsertCallInXml
+//   L323   .SetRetainInXml
+//   L331   .RetainOf
+//   L337   .FindMember
+//   L355   helpers de FlgNet
+//   L357   .ParseParams
+//   L370   .Access
+//   L394   .Wire
+//   L403   .Text
+//   L418   .NextId
+//   L431   .Escape
+//   L437   .Safe
+// ======================= END NAV INDEX =======================
+
 // NAV INDEX
 //   1-40     usings, namespace, constantes
 //   42-96    BlockEdit.DeleteNetwork — verbo delete-network

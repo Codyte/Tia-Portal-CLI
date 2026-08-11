@@ -1,3 +1,41 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L54    class InstrumentFcConfig
+//   L57    .SourceTagsFolder
+//   L59    .TargetBlocksFolder
+//   L60    .GlobalDb
+//   L62    .TargetOb
+//   L69    .FcSuffix
+//   L70    .IgnoreFolders
+//   L72    .TagFilters
+//   L78    .MoldInstrumentId
+//   L80    .NextCommandIds
+//   L93    class InstrumentFc
+//   L103   class Instrument
+//   L116   class AreaTask
+//   L124   .Run
+//   L323   generation
+//   L325   .BuildAreaFcXml
+//   L353   .RewireNetwork
+//   L407   .ImportAreaFc
+//   L447   call OB
+//   L449   .UpdateCallOb
+//   L513   .CallNetworkXml
+//   L544   .EmptyObXml
+//   L574   checks + helpers
+//   L577   .IsTaskComplete
+//   L591   .BlocksIdentical
+//   L596   .ReassignUids
+//   L612   .FindPathInDbXml
+//   L636   .CollectTags
+//   L644   .FindOb
+//   L658   .ExtractId
+//   L671   .GetBaseName
+//   L679   .FcName
+//   L686   .TargetFolderName
+//   L695   .WriteCommandCsv
+// ======================= END NAV INDEX =======================
+
 using System;
 using System.Collections.Generic;
 using System.IO;

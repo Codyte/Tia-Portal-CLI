@@ -1,3 +1,32 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L51    class BlockExplain
+//   L53    .Explain
+//   L93    .Val
+//   L100   .Kids
+//   L106   interface / membros de DB
+//   L109   .Interface
+//   L125   .Members
+//   L134   .Member
+//   L148   rede
+//   L150   .Network
+//   L169   .Text
+//   L181   .Collapse
+//   L182   .Cut
+//   L184   FlgNet → expressão
+//   L186   class Net
+//   L236   case "Coil"
+//   L237   case "SCoil"
+//   L238   case "RCoil"
+//   L239   case "Move"
+//   L330   case "Contact"
+//   L333   case "Eq"
+//   L340   case "O"
+//   L342   case "A"
+//   L344   case "Call"
+//   L371   rótulo do operando
+// ======================= END NAV INDEX =======================
+
 // NAV INDEX
 // 23-74    Explain — XML exportado → linhas compactas (+ arquivo .explain.txt)
 // 76-116   interface do bloco (IN/OUT/InOut) e árvore de membros de DB

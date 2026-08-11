@@ -1,4 +1,4 @@
-# __navi__ · `scripts/` — 20 files → symbols at exact line numbers
+# __navi__ · `scripts/` — 19 files → symbols at exact line numbers
 <!-- navindex · 2026-08-11 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../__navi__.md`](../__navi__.md)
 
@@ -12,9 +12,8 @@
   <sub>L47:Get-ExeHash  L52:Test-Whitelisted  L64:Resolve-RealPath  L86:Test-SkillInstalled  L92:Test-TasksCurrent  L111:Show</sub>
 - **install-lib.ps1** (205 ln)
   <sub>L53:Get-Target  L69:Add-Package  L79:Get-Existing</sub>
-- **navi-cs.ps1** (22 ln)
 - **new-plc.ps1** (42 ln)
-- **pack.ps1** (77 ln)
+- **pack.ps1** (88 ln)
 - **prep-project.ps1** (18 ln)
 - **raio-x.ps1** (66 ln)
   <sub>L29:Invoke-Batch</sub>

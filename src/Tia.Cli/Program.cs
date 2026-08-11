@@ -1,3 +1,101 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L115   class Program
+//   L117   .Main
+//   L312   .ExitCodeFor
+//   L323   .RunLadderDryRun
+//   L333   .RunExplainFile
+//   L341   .RunInterfaceFile
+//   L355   .Run
+//   L446   .ParseScript
+//   L466   .DispatchWithRetry
+//   L480   .IsBusy
+//   L486   .Dispatch
+//   L496   case "save-project"
+//   L499   case "close-project"
+//   L502   case "info"
+//   L505   case "list-devices"
+//   L508   case "list-blocks"
+//   L512   case "list-tags"
+//   L515   case "tree"
+//   L519   case "list-types"
+//   L522   case "find"
+//   L526   case "snapshot"
+//   L529   case "xref"
+//   L532   case "trace"
+//   L535   case "list-hmi"
+//   L538   case "free-memory"
+//   L544   case "export-block"
+//   L547   case "explain-block"
+//   L552   case "export-tags"
+//   L555   case "list-interface"
+//   L561   case "import-block"
+//   L568   case "import-ladder"
+//   L576   case "import-source"
+//   L581   case "create-folder"
+//   L586   case "delete-folder"
+//   L591   case "delete-block"
+//   L595   case "move-block"
+//   L600   case "delete-type"
+//   L604   case "export-type"
+//   L607   case "import-type"
+//   L611   case "scaffold"
+//   L620   case "clone"
+//   L627   case "add-call"
+//   L634   case "delete-network"
+//   L639   case "set-retain"
+//   L644   case "add-db-member"
+//   L650   case "import-tags"
+//   L657   case "create-library"
+//   L661   case "list-library"
+//   L664   case "import-master-copy"
+//   L670   case "add-master-copy"
+//   L676   case "create-instance-db"
+//   L681   case "delete-master-copy"
+//   L686   case "add-device"
+//   L691   case "delete-device"
+//   L695   case "add-tag"
+//   L701   case "delete-tag"
+//   L706   case "edit-db-member"
+//   L712   case "delete-db-member"
+//   L717   case "rename-block"
+//   L722   case "set-tag"
+//   L729   case "set-attr"
+//   L735   case "list-attrs"
+//   L739   case "plug-module"
+//   L745   case "list-telegrams"
+//   L748   case "insert-telegram"
+//   L755   case "set-address"
+//   L761   case "set-io-address"
+//   L767   case "list-io-map"
+//   L771   case "set-memory-bytes"
+//   L777   case "connect-subnet"
+//   L782   case "export-cax"
+//   L785   case "import-cax"
+//   L789   case "compile"
+//   L804   case "diff-block"
+//   L808   case "audit"
+//   L813   case "doctor"
+//   L821   case "gen-profinet"
+//   L827   case "standardize-tags"
+//   L835   case "gen-fault-ob"
+//   L843   case "replicate-fc"
+//   L850   case "gen-alarm-fc"
+//   L858   case "replicate-instruments"
+//   L871   .OptionValue
+//   L877   .ParseInt
+//   L883   .ParseByte
+//   L890   .OptionValues
+//   L899   .WriteLock
+//   L904   .Require
+//   L936   .Print
+//   L952   .Sanitize
+//   L959   .WriteOut
+//   L978   .CountOf
+//   L1000  .ResolveSiemensAssembly
+//   L1011  .SiemensProbeDirs
+// ======================= END NAV INDEX =======================
+
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -1,3 +1,32 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L46    class LadConverter
+//   L48    .Convert
+//   L91    lexer
+//   L93    class Tok
+//   L99    .Lex
+//   L143   AST
+//   L145   class Node
+//   L146   class Leaf
+//   L147   class CmpN
+//   L148   class Group
+//   L149   class NotN
+//   L150   class Operand
+//   L153   class Stmt
+//   L161   parser (recursive descent)
+//   L163   class Parser
+//   L304   normalize: push NOT down to leaves (De Morgan; comparators invert)
+//   L306   .Normalize
+//   L321   FlgNet emitter
+//   L327   class Net
+//   L334   class Emitter
+//   L450   .EmitNetwork
+//   L476   block XML assembly
+//   L478   .BuildBlockXml
+//   L516   .Hex
+//   L518   .Mlt
+// ======================= END NAV INDEX =======================
+
 using System;
 using System.Collections.Generic;
 using System.IO;

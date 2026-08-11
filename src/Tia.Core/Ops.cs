@@ -1,3 +1,73 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L90    class Ops
+//   L92    lookup
+//   L94    .FindBlock
+//   L104   .FindGroup
+//   L119   .FindGroupByName
+//   L137   .FindTagGroup
+//   L152   .FindTagGroupByName
+//   L165   .FindBlockIn
+//   L178   .ResolveFolder
+//   L190   .SplitPath
+//   L214   .WalkFolders
+//   L241   .FindTagTable
+//   L254   .ResolveTagFolder
+//   L262   .ResolveTypeFolder
+//   L269   .FindType
+//   L281   structure
+//   L283   .CreateFolder
+//   L315   .CreateFolders
+//   L350   .DeleteFolder
+//   L377   .TypeFolderAction
+//   L398   .CountTypes
+//   L403   .CountBlocks
+//   L408   .CountTables
+//   L417   .CreateInstanceDb
+//   L454   .FbsLike
+//   L461   .NearestFbs
+//   L470   .AllFbs
+//   L478   .Squash
+//   L487   .DeleteBlock
+//   L502   .DeleteType
+//   L516   export
+//   L518   .ExportBlock
+//   L533   .ExportTagTable
+//   L543   .ExportType
+//   L553   .ExportPath
+//   L562   import
+//   L569   .FolderAction
+//   L575   .ImportBlock
+//   L607   .MoveBlock
+//   L671   .ImportTagTable
+//   L699   .AddTag
+//   L735   .DeleteTag
+//   L758   .SetTag
+//   L801   .Rename
+//   L827   .ImportType
+//   L851   .ImportSource
+//   L922   .Generated
+//   L928   .SourceDeclNames
+//   L944   .RequireUtf8Bom
+//   L957   .RequireFile
+//   L965   .XmlRootType
+//   L975   .RequireRootType
+//   L984   .XmlCultures
+//   L999   .ProjectOf
+//   L1009  .EnsureCultures
+//   L1031  .XmlObjectName
+//   L1040  diff
+//   L1043  .DiffBlock
+//   L1061  .BlocksIdentical
+//   L1103  import com prova
+//   L1113  .ImportAndProve
+//   L1144  .FirstError
+//   L1156  compile
+//   L1159  .Compile
+//   L1201  .FlattenErrors
+//   L1224  .MessageTree
+// ======================= END NAV INDEX =======================
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;

@@ -48,6 +48,15 @@ deliberately dropped.
   names are customer project names. History was not rewritten and `library/*.json` keeps the
   object names that anchor `import-master-copy --force`.
 
+- **`scripts/navi-cs.ps1` deleted — navindex indexes C# now.** One command regenerates every map:
+  `python ~/.claude/skills/navindex/scripts/navindex.py <folder|.>`. Each `.cs` above 300 lines
+  also gets a NAV INDEX header at the top of the file, so the full `case "verb"` table (all 78,
+  with line numbers) is the first read of `src/Tia.Cli/Program.cs`; the folder maps
+  (`src/Tia.Cli/__navi__.md`, `src/Tia.Core/__navi__.md`, `src/Tia.Tests/__navi__.md`) replace the
+  single hand-rolled `src/__navi__.md`. The same navindex change makes the walk skip gitignored
+  paths, so `proj/`, `workspace/` and `Scripts_Siemens/` can no longer put customer project names
+  back into the committed tree.
+
 ### Deliberately not done
 
 - **Teaching `import-ladder` to convert `CALL`.** R8 is already unblocked by `add-call`, which

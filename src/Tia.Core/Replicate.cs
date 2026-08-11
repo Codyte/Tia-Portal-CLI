@@ -1,3 +1,31 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L43    class ReplicateFcConfig
+//   L46    .BlocksFolder
+//   L48    .EquipmentTypes
+//   L50    .UdtNames
+//   L52    .SourceNumbersToReplace
+//   L53    .GlobalDb
+//   L55    .StartNumber
+//   L63    class ReplicateFc
+//   L65    .Run
+//   L209   .FoldersOfType
+//   L218   .ReplicateInto
+//   L266   .RewireXml
+//   L361   .FindPathInDbXml
+//   L395   naming
+//   L397   .ExtractId
+//   L403   .InstanceDbNames
+//   L408   .ProposedBlockName
+//   L421   .MainBlockName
+//   L428   .FolderBaseName
+//   L436   .static
+//   L454   lookups
+//   L456   .DescendantGroups
+//   L470   .FindDataBlock
+//   L483   .FindTag
+// ======================= END NAV INDEX =======================
+
 using System;
 using System.Collections.Generic;
 using System.IO;

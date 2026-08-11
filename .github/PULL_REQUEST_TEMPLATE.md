@@ -21,6 +21,6 @@ Command(s) actually executed:
 
 - [ ] Write verb previews as JSON and mutates only under `--apply` — or this is a read verb
 - [ ] `docs/VERBS.md` regenerated if the help changed
-- [ ] `src/__navi__.md` regenerated (`pwsh scripts/navi-cs.ps1`) if C# structure changed
+- [ ] `src/*/__navi__.md` + NAV INDEX headers regenerated (`navindex.py src`) if C# structure changed
 - [ ] `CHANGELOG.md` updated under *Unreleased*
 - [ ] No Siemens binary and no customer project data in the diff

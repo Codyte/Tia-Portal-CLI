@@ -1,3 +1,30 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L49    class Audit
+//   L75    .HasInverter
+//   L82    .MissingCore
+//   L90    .TagOf
+//   L97    .CarriesTag
+//   L104   .NormalizeArea
+//   L120   .IsCallBlock
+//   L130   .IsLooseScalar
+//   L141   .RootMembers
+//   L152   .Run
+//   L237   .NonGraphicCalls
+//   L257   .MisplacedCalls
+//   L283   .DbGlobalCheck
+//   L303   .FindGlobalDb
+//   L317   .Skipped
+//   L326   .CountTypes
+//   L331   .CollectLanguages
+//   L344   .LayerLeaks
+//   L370   .IsLibrary
+//   L377   .AreaConflicts
+//   L404   .Check
+//   L420   .CollectBlocks
+//   L428   .CollectTables
+// ======================= END NAV INDEX =======================
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;

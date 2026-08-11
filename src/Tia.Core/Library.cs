@@ -1,3 +1,19 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L33    class Library
+//   L35    .Open
+//   L59    .Create
+//   L80    .List
+//   L95    .CollectMasterCopies
+//   L108   .CollectTypes
+//   L126   .ImportMasterCopy
+//   L214   .AddMasterCopy
+//   L272   .DeleteMasterCopy
+//   L291   .ResolveLibFolder
+//   L304   .FindMasterCopy
+//   L322   .Collect
+// ======================= END NAV INDEX =======================
+
 using System;
 using System.Collections.Generic;
 using System.IO;

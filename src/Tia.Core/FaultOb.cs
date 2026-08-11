@@ -1,3 +1,28 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L40    class FaultObConfig
+//   L43    .GroupPrefix
+//   L45    .Devices
+//   L46    .TemplateOb
+//   L47    .ObNamePrefix
+//   L53    .AlarmDb
+//   L54    .CommentCultures
+//   L62    class FaultOb
+//   L69    class Module
+//   L76    .Generate
+//   L156   .DiscoverTasks
+//   L185   .AllDeviceGroups
+//   L192   .WithSubGroups
+//   L200   .CollectModules
+//   L211   XML generation
+//   L213   .BuildObXml
+//   L243   .RewireNetwork
+//   L280   .AddMasterCommentEntry
+//   L309   .ReassignUids
+//   L329   .ModuleType
+//   L341   .WriteCsv
+// ======================= END NAV INDEX =======================
+
 using System;
 using System.Collections.Generic;
 using System.IO;

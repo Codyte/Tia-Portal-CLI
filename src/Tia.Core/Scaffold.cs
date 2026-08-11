@@ -1,3 +1,32 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L51    class ScaffoldManifest
+//   L54    .Source
+//   L57    .Folders
+//   L60    .TagFolders
+//   L63    .Replace
+//   L70    .Cpu
+//   L72    .Items
+//   L75    class ScaffoldItem
+//   L77    .File
+//   L80    .Folder
+//   L84    class ScaffoldPlanItem
+//   L97    class Scaffold
+//   L100   .Rank
+//   L114   .Plan
+//   L145   .Merge
+//   L155   .Apply
+//   L164   .Run
+//   L238   .CheckFamily
+//   L252   .SameFamily
+//   L259   .AlreadyInAnotherFolder
+//   L267   .DeleteObject
+//   L278   .FolderAction
+//   L301   .ResolveBlockPath
+//   L318   .ResolveTypePath
+//   L334   .ResolveTagPath
+// ======================= END NAV INDEX =======================
+
 // NAV INDEX
 // 20-50    ScaffoldManifest / ScaffoldItem / ScaffoldPlanItem (config do verbo scaffold)
 // 56-70    Scaffold — Rank (ordem de import por tipo de objeto)

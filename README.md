@@ -15,16 +15,24 @@ who prefer a terminal over ClickOps.*
 [![Platform](https://img.shields.io/badge/platform-Windows%20x64-0078D6?logo=windows)](#requirements)
 [![Dry--run first](https://img.shields.io/badge/writes-dry--run%20by%20default-orange)](#design-contract)
 
+### An engineering task, start to finish, without touching the mouse
+
 ```console
-$ tia info
-{ "project": "SmokeTest_01", "plcs": [ { "plc": "PLC_1" } ], "devices": 21 }
+$ tia tree                                  # the whole PLC as a 39 KB outline, in 4 s
+$ tia replicate-instruments                 # dry-run — reports the exact action, writes nothing
+{ "action": "create", "applied": false }
 
-$ tia find --pattern "FC_Pump*"
-[ { "kind": "block", "name": "FC_Pump_01", "folder": "4. Motores", "type": "FC" } ]
+$ tia replicate-instruments --apply         # the only line in this session that mutates anything
+{ "action": "create", "applied": true }
 
-$ tia standardize-tags           # dry-run: prints exactly what it would change
-$ tia standardize-tags --apply   # only this one touches the project
+$ tia compile --apply
+{ "state": "Success", "errors": 0 }
 ```
+
+**Every write is a dry-run until you type `--apply`.** That one property is what makes it safe to
+hand the keys to an AI agent — and in blind end-to-end tests, an agent given nothing but a fictional
+machine spec delivered a **compiling PLC program**. Spec and pass criteria were written before each
+run, by someone who did not execute it: [`docs/teste-cego/`](docs/teste-cego/).
 
 **77 verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML, catalog modules
 and SINAMICS telegrams · SCL→LAD converter · 6 field-proven code generators · installable block
@@ -36,10 +44,10 @@ library · batch mode · one attach
 
 ## Why
 
-TIA Portal automation today means clicking, or writing a one-off C# Openness app per task.
+TIA Portal automation today means clicking, or writing a one-off C# Openness app per task —
+project discovery, attach, whitelist and XML plumbing rewritten from scratch every time.
 `tia-cli` collapses that into a single whitelisted exe: stdout is always JSON, stderr is human
-log, exit codes are stable, and **every write is a dry-run unless you pass `--apply`** — safe
-enough to hand to an AI agent, fast enough for a human in a hurry.
+log, exit codes are stable, and one batch file runs dozens of verbs on a single attach.
 
 ```mermaid
 flowchart LR

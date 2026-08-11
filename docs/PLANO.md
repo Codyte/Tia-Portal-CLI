@@ -381,6 +381,28 @@ Os 7 itens saíram, com teste offline para cada núcleo puro (`Tia.Tests`, 8 cas
 | 6. `audit` sem inversor | com telegrama/setpoint exige 6 blocos; sem, exige o trio `PARTIDA_* + FALHA + CONDIÇÃO DE PARTIDA`. Partida direta deixa de reprovar. |
 | 7. `create-instance-db --of` aproximado | `Ops.Squash`: acento, caixa, underscore e espaço duplo não contam. Casou um, resolve e devolve `resolvedFrom`; casou vários, falha listando. |
 
+### FP-04 escrita (2026-08-11) — aeração `Sopradores/Aeração`, dois sopradores com inversor
+
+Caderno em [`caderno-FP-04.md`](teste-cego/caderno-FP-04.md), **ainda não executado** — a régua é a
+mesma de [`criterios.md`](teste-cego/criterios.md), e quem escreveu não executa: a rodada tem que
+sair em outra sessão, recebendo o caderno e a skill `tia`, nada mais.
+
+O caderno foi desenhado para bater na superfície que a FP-03 acrescentou e que nunca passou por
+rodada cega, sem citar verbo nenhum:
+
+| O que o caderno pede | Superfície que ele exercita |
+|---|---|
+| área de nome `Sopradores/Aeração` (barra é da folha de dados) | `create-folder`/`--folder` com `\/`, e o `\\/` dentro de `run --script` |
+| dois inversores PROFINET novos, com comando/referência/estado pela rede | `insert-telegram --change` (drive nasce com `MainTelegram #1`), `connect-subnet` nas duas ordens com `--io-system`, e o endereço do telegrama por `list-io-map` — o caso real que motivou o verbo e segue sem prova |
+| periferia remota nova dimensionada pelos instrumentos | `list-io-map` para achar o próximo byte livre |
+| dois sopradores + rodízio + alarme de área | UDT por soprador e DB global de agregados (R1/R2 do `audit`), bloco de chamada em LAD na pasta da área (R8 + `CHAMADA_*` fora da pasta) |
+| horímetro, contador de partidas e horas desde o rodízio, retentivos | `set-retain` no FB (o `import-source` não expressa retentividade) |
+| lógica de rampa/banda morta que nenhum molde da casa tem pronta | `clone --with-instances` + `delete-network` + `add-call` depois de `list-interface`, e o guard de compile-e-confere em duas escritas seguidas no mesmo bloco |
+
+Os 4 checks novos do `audit` (R1, R2, R8, `CHAMADA_*` fora da pasta) só foram vistos **passando**.
+Um programa de duas máquinas com parametrização de IHM é onde eles têm chance de reprovar — e
+reprovar é o produto do teste.
+
 ## Histórico fechado
 
 As sagas já resolvidas (biblioteca, hardware do molde, telegrama, F6, migração para skill,

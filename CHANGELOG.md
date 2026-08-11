@@ -40,6 +40,13 @@ deliberately dropped.
   containing `/` that already existed; creating `1. I/OS` silently produced two nested folders.
 - **`audit` is no longer purely read-only**: the R2 check exports the global DB to `--out`
   (default `workspace/exports`), because only the export shows each member's datatype.
+- **Customer plant names removed from the docs.** The two reference projects are now named after
+  the role they play: `Software de ETE Modelo_Inicial_V21` (the in-house template project) and
+  `Automação ETE Campo AsBuilt_1_V21` (the field as-built, outside the standard). Copying a
+  command straight out of the prose therefore needs the local `.ap21` name substituted. The root
+  `__navi__.md` no longer maps `proj/` and `workspace/` at all — gitignored payload whose folder
+  names are customer project names. History was not rewritten and `library/*.json` keeps the
+  object names that anchor `import-master-copy --force`.
 
 ### Deliberately not done
 

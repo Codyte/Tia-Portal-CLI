@@ -7,6 +7,9 @@ quando a pergunta for "como chegamos nisso".
 Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de `src/` é
 `src/__navi__.md` — símbolos públicos de cada `.cs` + os `case "verbo"` do CLI com linha;
 `navindex.py` não lê C#, então regenerar com `pwsh scripts/navi-cs.ps1` após refatorar.
+O root `__navi__.md` **não indexa `proj/` nem `workspace/`** (payload gitignored, e o nome da pasta
+é nome de projeto de cliente). `navindex.py` não conhece `.gitignore`: depois de regenerar o root,
+apagar as seções `## \`proj/...\`` e `## \`workspace/...\`` e acertar a contagem do cabeçalho.
 
 ## Regras duras
 

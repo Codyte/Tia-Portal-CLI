@@ -24,11 +24,11 @@ Consequência aceita: num clone, `blocks/` chega vazio e `scaffold` falha com
 
 ## Como repor o payload
 
-Com o projeto de referência aberto no Portal (`Software de ETE Insular_Inicial_V21`), da raiz
+Com o projeto de referência aberto no Portal (`Software de ETE Modelo_Inicial_V21`), da raiz
 do repo:
 
 ```powershell
-pwsh scripts/prep-project.ps1 "Software de ETE Insular_Inicial_V21" -Apply   # compila antes: bloco inconsistente não exporta
+pwsh scripts/prep-project.ps1 "Software de ETE Modelo_Inicial_V21" -Apply   # compila antes: bloco inconsistente não exporta
 pwsh scripts/tia.ps1 run --script library/export-all.json                    # 65 exports, 1 attach
 ```
 

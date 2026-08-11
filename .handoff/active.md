@@ -53,7 +53,7 @@ verbos que nasceram da FP-03 e nunca foram exercitados numa rodada.
    por uma rodada cega. Escrever o caderno numa sessão e **executar em outra** (o critério de
    condução que só a FP-03 respeitou). Se o caderno tiver um drive G120, fecha de quebra o caso
    real do `list-io-map`.
-2. **Limpeza barata dos nomes de cliente** (10 min, working tree só — ver Open).
+2. ~~Limpeza barata dos nomes de cliente~~ — feita 2026-08-11 (ver Open).
 3. Depois: MCP em 2 tools, tradução do artigo para EN, postar (SIOS / r/PLC / LinkedIn).
 
 ## Key files
@@ -65,22 +65,14 @@ verbos que nasceram da FP-03 e nunca foram exercitados numa rodada.
 - `CHANGELOG.md` `[Unreleased]` — já descreve tudo desta sessão, inclusive o shape que mudou.
 
 ## Open / blockers
-- **Nomes de projeto de cliente — decisão do user, dois casos diferentes:**
-  - **Não é problema:** `preliminar`, `elevatória`, `desidratação`, `casa de motores`,
-    `tanque de equalização`. São nomes de **etapa de processo de ETE** (vocabulário do domínio),
-    não identificador de cliente. E os fixtures de `docs/examples/` **já foram sanitizados** em
-    2026-07-28 (`CASA_DE_SOPRADORES` → `AREA_01`, `SOPRADOR_DESARENADOR_S-01A` → `MOTOR_S-01A` etc.,
-    `DIARIO.md:165-172`). Limpar isso deixaria os cadernos piores — as plantas dos testes cegos são
-    fictícias e é isso que se publica.
-  - **É real e continua lá:** `Insular`, `ETE SG`, `AsBuilt` em prosa (`docs/PLANO.md`,
-    `docs/PADRAO.md`, `docs/projeto-real-fase-A.md`, `library/README.md`, `scripts/raio-x.ps1`,
-    `__navi__.md`), e `SOPRADOR_DESARENADOR (S-01A)` em `library/{library,export-all,generic}.json`.
-  - **Recomendação:** fazer só a parte barata — `sed` no working tree para os 3 nomes de projeto em
-    prosa. **Não reescrever histórico**: o repo é público desde 2026-07-20, então `.handoff/archive/`
-    e os commits antigos já estão espelhados (forks, cache, índice), e `git-filter-repo` não
-    despublica nada — só quebra os SHA que a release v1.0.0 carimba. E os nomes em `library/*.json`
-    são **deliberados**: ancoram o `import-master-copy --force` (standing.md), renomear desincroniza
-    4 arquivos + a `.al21`.
+- **Nomes de projeto de cliente — feito 2026-08-11** (a limpeza barata recomendada aqui):
+  prosa sanitizada no working tree para nomes fictícios pelo papel — `Software de ETE
+  Modelo_Inicial_V21` (molde) e `Automação ETE Campo AsBuilt_1_V21` (as-built de campo). Root
+  `__navi__.md` deixou de mapear `proj/` e `workspace/`. Histórico e `library/*.json` intactos
+  de propósito. Registro em `docs/DIARIO.md` (§Procedência) e no CHANGELOG.
+  - Resíduo aceito: comando copiado da prosa não casa com o `.ap21` no disco de quem tem a cópia
+    real; e `navindex.py` não conhece `.gitignore`, então regenerar o root `__navi__.md` reimporta
+    as seções de `proj/`/`workspace/` — apagá-las de novo (está no CLAUDE.md).
 - `list-io-map` **não foi provado no caso que o motivou**: `LIB_TESTE` não tem cartão de I/O nem
   G120, então o verbo rodou com 0 endereços atribuídos. O endereço do telegrama de drive continua
   por confirmar — só um projeto com drive fecha o tropeço 2 da FP-01.

@@ -1,8 +1,8 @@
-# Padrão de projeto (referência: `Software de ETE Insular_Inicial_V21`)
+# Padrão de projeto (referência: `Software de ETE Modelo_Inicial_V21`)
 
 Projeto-molde da casa, importado em `proj/` em 2026-07-27 (zap `..._LS_1_20260727_1715.zap19`,
 upgrade V19→V21). É o projeto **conforme** — quando a CLI diverge dele, quem está errado é a CLI.
-Banho read-only completo em `workspace/Software de ETE Insular_Inicial_V21/`
+Banho read-only completo em `workspace/Software de ETE Modelo_Inicial_V21/`
 (`doctor.json`, `snapshot.json`, `list-tags.json`, `plc-navi.md`, `xref-obs.json`, AML).
 
 PLC único: `CPU1.0 CCO` · 62 devices (3 IHMs WinCC + ET200 nos CCMs/QAs) · 476 blocos em 93 pastas
@@ -99,7 +99,7 @@ Read-only, sem config. Acionamento = pasta de blocos com um FC `PARTIDA_*`; chec
 (sem acento/caixa/`(TAG)`) e `N=0` fora (é molde/painéis).
 
 Régua: este projeto passa **limpo** (36 acionamentos, 5/5 checks) — se reprovasse, a regra estaria
-errada. Discrimina de verdade: no `Automação ETE SG AsBuilt` são 69 acionamentos, **69 sem `(TAG)`**
+errada. Discrimina de verdade: no `Automação ETE Campo AsBuilt` são 69 acionamentos, **69 sem `(TAG)`**
 na pasta e 58 com contagem de blocos ≠ 6.
 
 ## `tia scaffold` — projeto novo recebe o padrão

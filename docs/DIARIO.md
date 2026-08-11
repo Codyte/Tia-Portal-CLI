@@ -92,7 +92,7 @@ a anotação anterior de "falta ordenar UDT antes de DB/FC" estava obsoleta, `Ra
   o que cada gerador exige, como repor, como instalar, limitação do `Folder` de UDT, e as duas
   pegadinhas do export (compile antes; `ExportPath` troca `/` do nome por `_` no arquivo, caso
   `FB_LIGA/DESLIGA MODO AUTO`).
-- **Testado contra o Portal ✅ 2026-07-28** (projeto `Software de ETE Insular_Inicial_V21`):
+- **Testado contra o Portal ✅ 2026-07-28** (projeto `Software de ETE Modelo_Inicial_V21`):
   `scaffold --manifest library/library.json` dry = 26 pastas `none (exists)` + **66/66
   `skip (exists)`**, zero item não encontrado (manifesto casa 1:1 com o payload e com o projeto);
   `run --script library/export-all.json` = **66/66 `ok`** num attach. Duas rodadas de export
@@ -171,10 +171,16 @@ esses nomes; `rebuild.ps1` **ALL PASS**. Sobra proposital: `library/library.json
 `library/export-all.json` citam `SOPRADOR_DESARENADOR (S-01A)` porque o nome tem que casar com o
 objeto no projeto do cliente pra repor o payload — nome de objeto, não payload.
 
-**Ainda por resolver antes de tornar o repo visível de fato**: nome de projeto de cliente em prosa
-(`Insular`, `ETE SG`, `AsBuilt`) aparece em `docs/PLANO.md`, `docs/PADRAO.md`,
-`docs/projeto-real-fase-A.md`, `library/README.md`, `scripts/raio-x.ps1`, `__navi__.md` e em todo
-o histórico de `.handoff/` — sanitizar isso é reescrever histórico já commitado, decisão do user.
+**Nome de projeto de cliente em prosa — sanitizado ✅ 2026-08-11** no working tree (`docs/PLANO.md`,
+`docs/PADRAO.md`, `docs/DIARIO.md`, `docs/projeto-real-fase-A.md`, `library/README.md`,
+`scripts/raio-x.ps1`, os dois `__navi__.md`): as duas plantas viraram nomes fictícios pelo papel que
+cumprem — **`Software de ETE Modelo_Inicial_V21`** (projeto-molde, conforme ao padrão) e
+**`Automação ETE Campo AsBuilt_1_V21`** (o as-built de campo, fora da padronização). Consequência
+aceita: comando copiado da prosa não casa com o nome do `.ap21` no disco de quem tem a cópia real —
+trocar o nome do projeto na chamada. **Histórico não foi reescrito**: o repo é público desde
+2026-07-20, então `.handoff/archive/` e os commits antigos já estão espelhados e `git-filter-repo`
+não despublicaria nada — só quebraria os SHA que a release v1.0.0 carimba. `library/*.json` também
+fica como está (o nome do objeto ancora o `import-master-copy --force`; ver `standing.md`).
 
 **Fatia 3** (utilitários genéricos: escala raw↔EU + clamp, debounce, bits→word e inverso,
 first-out, watchdog, rampa de setpoint) só depois da fatia 2. Teste das fatias 2/3 = instalar em
@@ -317,7 +323,7 @@ nível — só na leitura (`create=false`); criar continua um segmento por vez.
 ### Bake real da `.al21` + bug do `--force` — ✅ 2026-07-29, fix validado 2026-08-07
 
 Primeira assada de verdade da biblioteca, a partir do projeto base `Base_tia_cli`
-(`Software de ETE Insular_Inicial_V21` salvo com esse nome; 1 PLC `CPU1.0 CCO`, 476 blocos,
+(`Software de ETE Modelo_Inicial_V21` salvo com esse nome; 1 PLC `CPU1.0 CCO`, 476 blocos,
 compila 0 erros):
 
 - `bake-lib.ps1 -Plc "CPU1.0 CCO" -Prune -Apply` → `src/Tia.Lib/tia-cli/tia-cli.al21` = **148 KB**,
@@ -405,7 +411,7 @@ projeto. O que a arqueologia dos AML já responde, sem sondar a API:
   interface chamada `PN-IO` — não serve pro molde, a constante não bateria.
 - Telegrama do lado GSD: `.../SM/IDS_TEL20` plugado em `DRIVE_1` posição 2. Do lado System (G120-2)
   o identificador do `Standard telegram 20, PZD-2/6` **não está na ajuda** nem em nenhum AML/XML do
-  repo (Insular tem 30 G120 e nenhum telegrama plugado) — daí o verbo `plug-module`.
+  repo (Modelo tem 30 G120 e nenhum telegrama plugado) — daí o verbo `plug-module`.
   **⚠️ Conclusão revista em 2026-08-07 — ver "Telegrama do G120" abaixo. O identificador não está
   em lugar nenhum porque não existe: telegrama de drive System não é submódulo de catálogo.**
 

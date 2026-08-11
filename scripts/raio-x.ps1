@@ -1,6 +1,6 @@
 # Macro "raio-x": banho read-only do projeto → workspace/<projeto>/.
 # doctor + snapshot + list-devices + list-tags + list-types + tree (plc-navi.md)
-# + export-cax + xref de todos os OBs. Replica o banho manual do ETE SG em 1 comando.
+# + export-cax + xref de todos os OBs. Replica o banho manual do ETE Campo em 1 comando.
 # Uso: pwsh scripts/raio-x.ps1 SmokeTest_01
 #
 # Tudo passa por `tia run --script` (2 attaches: um pro banho, outro pros xrefs), porque cada

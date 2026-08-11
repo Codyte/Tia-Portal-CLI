@@ -15,13 +15,15 @@ who prefer a terminal over ClickOps.*
 [![Platform](https://img.shields.io/badge/platform-Windows%20x64-0078D6?logo=windows)](#requirements)
 [![Dry--run first](https://img.shields.io/badge/writes-dry--run%20by%20default-orange)](#design-contract)
 
-```
-> tia info                          > tia find --pattern "FC_Pump*"
-{                                   [
-  "project": "SmokeTest_01",          { "kind": "block", "name": "FC_Pump_01",
-  "plcs": [ { "plc": "PLC_1" } ],       "folder": "4. Motores", "type": "FC" }
-  "devices": 21                     ]
-}
+```console
+$ tia info
+{ "project": "SmokeTest_01", "plcs": [ { "plc": "PLC_1" } ], "devices": 21 }
+
+$ tia find --pattern "FC_Pump*"
+[ { "kind": "block", "name": "FC_Pump_01", "folder": "4. Motores", "type": "FC" } ]
+
+$ tia standardize-tags           # dry-run: prints exactly what it would change
+$ tia standardize-tags --apply   # only this one touches the project
 ```
 
 **77 verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML, catalog modules

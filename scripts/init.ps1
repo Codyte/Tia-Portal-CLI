@@ -32,6 +32,10 @@ $repo = Split-Path $PSScriptRoot
 $exe = Join-Path $repo 'src\Tia.Cli\bin\Debug\net48\tia.exe'
 $skillDst = Join-Path $HOME '.claude\skills\tia'
 $ok = $true
+# Instalacao a partir do zip de release: tia.exe ja vem compilado e o fonte nao vem junto. Sem
+# fonte nao ha o que buildar, entao os gates que so existem pro build (.NET SDK, lib/*.dll do
+# Openness) nao se aplicam -- o exe resolve as DLLs da instalacao local do Portal em runtime.
+$prebuilt = -not (Test-Path (Join-Path $repo 'src\Tia.Cli\Tia.Cli.csproj'))
 
 $libDir = Join-Path $repo 'lib'
 $dllNames = @('Siemens.Engineering.Base.dll', 'Siemens.Engineering.Step7.dll', 'Siemens.Engineering.WinCCUnified.dll',
@@ -111,10 +115,13 @@ if ($Check) {
     $principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
     Show 'grupo Siemens TIA Openness' $principal.IsInRole('Siemens TIA Openness') `
         "admin roda: net localgroup ""Siemens TIA Openness"" $env:USERNAME /add -- depois LOGOFF/LOGON"
-    Show '.NET SDK' ([bool](dotnet --version 2>$null)) 'instalar .NET SDK 8'
+    if ($prebuilt) { Write-Host "ok     .NET SDK / lib -- nao se aplica (instalacao de release, tia.exe ja compilado)" -ForegroundColor Green }
+    else {
+        Show '.NET SDK' ([bool](dotnet --version 2>$null)) 'instalar .NET SDK 8'
+        Show 'lib/*.dll (build-time)' (-not ($dllNames | Where-Object { -not (Test-Path (Join-Path $libDir $_)) })) `
+            'rodar init.ps1 sem -Check (copia da instalacao local)'
+    }
     Show "TIA Portal instalado ($($portalDirs.Name -join ', '))" ([bool]$portalDirs) 'TIA Portal V19+ com Openness'
-    Show 'lib/*.dll (build-time)' (-not ($dllNames | Where-Object { -not (Test-Path (Join-Path $libDir $_)) })) `
-        'rodar init.ps1 sem -Check (copia da instalacao local)'
     Show "tia.exe$(if (Test-Path $exe) { ' (' + (Get-Item $exe).LastWriteTime.ToString('yyyy-MM-dd HH:mm') + ')' })" `
         (Test-Path $exe) 'pwsh scripts/rebuild.ps1'
     Show 'whitelist do registro bate com o hash atual' (Test-Whitelisted) `
@@ -149,7 +156,20 @@ if (-not $principal.IsInRole('Siemens TIA Openness')) {
     Write-Host "gate 1 ok: grupo Siemens TIA Openness"
 }
 
-$dotnetVer = (dotnet --version 2>$null)
+if ($prebuilt) {
+    if (-not (Test-Path $exe)) {
+        Write-Warning "Nem fonte nem tia.exe neste diretorio. O zip de release foi extraido pela metade?"
+        exit 1
+    }
+    Write-Host "gates 2 e 3: pulados (instalacao de release -- tia.exe ja compilado, sem build)"
+    if (-not $portalDirs) {
+        Write-Warning "TIA Portal V19+ com Openness nao encontrado em Program Files. O CLI so roda com o Portal instalado."
+        $ok = $false
+    }
+}
+
+$dotnetVer = if ($prebuilt) { $null } else { (dotnet --version 2>$null) }
+if (-not $prebuilt) {
 if (-not $dotnetVer) {
     Write-Warning ".NET SDK nao encontrado no PATH. Instale .NET SDK 8: https://dotnet.microsoft.com/download"
     $ok = $false
@@ -175,6 +195,7 @@ if ($missing.Count -gt 0) {
 } else {
     Write-Host "gate 3 ok: lib/ populada"
 }
+}
 
 if (-not $ok) {
     Write-Host "init incompleto -- resolva os gates acima e rode 'pwsh scripts/init.ps1' de novo." -ForegroundColor Yellow
@@ -195,7 +216,7 @@ if (-not (Test-TasksCurrent)) {
 }
 Write-Host "gate 4 ok: tasks TiaWhitelist/TiaSmokeRun registradas"
 
-& (Join-Path $repo 'scripts\rebuild.ps1')
+& (Join-Path $repo 'scripts\rebuild.ps1') -WhitelistOnly:$prebuilt
 if ($LASTEXITCODE -ne 0) { exit 1 }
 
 # gate 5: shim no PATH + TIA_CLI_HOME. Variavel de usuario (nao de maquina) -> sem elevacao.

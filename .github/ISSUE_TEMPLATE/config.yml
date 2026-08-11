@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Openness API question (not a bug in this CLI)
+    url: https://support.industry.siemens.com/forum/
+    about: How the Openness API itself behaves is a Siemens question. Locally, `python scripts/tia-help.py --search "term"` searches the official F1 help.
+  - name: Security issue
+    url: https://github.com/Codyte/Tia-Portal-CLI/security/advisories/new
+    about: Report privately instead of opening a public issue. See SECURITY.md for what is in scope.

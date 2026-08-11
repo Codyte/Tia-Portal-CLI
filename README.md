@@ -7,6 +7,8 @@
 *Every Openness operation as a shell verb. Built for AI agents and for engineers
 who prefer a terminal over ClickOps.*
 
+[![Release](https://img.shields.io/github/v/release/Codyte/Tia-Portal-CLI?label=release&color=blue)](https://github.com/Codyte/Tia-Portal-CLI/releases/latest)
+[![ci](https://github.com/Codyte/Tia-Portal-CLI/actions/workflows/ci.yml/badge.svg)](https://github.com/Codyte/Tia-Portal-CLI/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![.NET Framework 4.8](https://img.shields.io/badge/.NET-Framework%204.8-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![TIA Portal V19+](https://img.shields.io/badge/TIA%20Portal-V19%20%7C%20V20%20%7C%20V21-009999)](https://www.siemens.com/tia-portal)
@@ -22,7 +24,7 @@ who prefer a terminal over ClickOps.*
 }
 ```
 
-**76 verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML, catalog modules
+**77 verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML, catalog modules
 and SINAMICS telegrams · SCL→LAD converter · 6 field-proven code generators · installable block
 library · batch mode · one attach
 
@@ -113,12 +115,26 @@ tia run --script docs/examples/gen-all.json
 
 ## Quick start
 
+**From a release — no .NET SDK needed.** Download the zip from
+[Releases](https://github.com/Codyte/Tia-Portal-CLI/releases/latest), extract it anywhere, and:
+
+```powershell
+pwsh scripts/init.ps1           # skips the build gates: the exe is already there.
+                                 # Registers the whitelist and puts `tia` on PATH.
+pwsh scripts/init.ps1 -Check    # read-only report, exit 1 if a gate is missing
+```
+
+The zip carries **no Siemens binaries** — `tia.exe` resolves the Openness assemblies from your own
+TIA Portal installation at runtime.
+
+**From source** — needed to contribute, or to build against a Portal version other than the one
+released:
+
 ```powershell
 git clone https://github.com/Codyte/Tia-Portal-CLI.git tia-cli && cd tia-cli
 pwsh scripts/init.ps1    # checks the 3 gates below, copies lib/ DLLs from your TIA install,
                           # builds, runs offline tests, whitelists, puts `tia` on PATH
                           # — one shot for a new machine
-pwsh scripts/init.ps1 -Check    # read-only: 8 gates + live state, exit 1 if a gate is missing
 ```
 
 `init.ps1` is idempotent — re-run it after `git pull`. Besides the build it sets the `TIA_CLI_HOME`
@@ -143,6 +159,16 @@ tia standardize-tags          # dry-run: what would change
 tia standardize-tags --apply  # do it
 ```
 
+**No project to try it on?** Build one from nothing — this needs only a Portal installation:
+
+```powershell
+tia --version                                          # CLI version + which Openness it loaded
+tia create-project --dir C:\temp --name Demo           # opens the Portal on an empty project
+tia add-device --mlfb "6ES7 515-2AN03-0AB0/V3.1" --name CPU1 --apply
+tia tree                                               # the whole PLC as markdown
+tia gen-fault-ob                                       # dry-run: what a generator would write
+```
+
 First attach without a whitelist entry triggers an Openness consent popup in the Portal UI —
 click allow, it won't ask again for that exe hash. After this first-time setup, use
 `pwsh scripts/rebuild.ps1` for subsequent rebuilds (same build+test+whitelist, skips the gate
@@ -155,7 +181,8 @@ checks and lib/ copy).
   API surface used is present since V19 and `init.ps1` discovers V19/V20/V21 installs, but neither
   has been run end-to-end — treat V19/V20 as unverified, not as a promise. One verb is known to
   need newer: `set-tag --rename` requires Openness V20+.
-- .NET Framework 4.8 (runtime) / .NET SDK 8 (build). Target is `net48` x64.
+- .NET Framework 4.8 (ships with Windows) to run. The .NET SDK 8 is needed **only to build from
+  source** — the release zip carries a compiled `tia.exe`. Target is `net48` x64.
 - `Siemens.Engineering.dll` is **not** in this repo (Siemens license). At build time a local
   copy under `lib/` (gitignored) is used; at runtime the exe resolves the DLL from the installed
   Portal (`TIA_ENGINEERING_DIR` env var → exe folder → default V21/V20/V19 install paths).
@@ -191,6 +218,7 @@ First run against a Portal without whitelist entry triggers the Openness consent
 | `scripts/clone-hw.ps1 <From> <To> [-Apply]` | copy hardware between projects via CAx export/import |
 | `scripts/install-lib.ps1 "<Package>" -Plc X [-Apply]` | install library packages into a PLC from the `.al21` alone — clock byte, the package's hardware, base blocks, UDTs, tag tables, instance DBs, compile. Skips what already exists, so re-running is a no-op. No package name = list what's available |
 | `scripts/bake-lib.ps1` | the inverse: PLC → `.al21`, so a library can be re-baked from a project that already carries it |
+| `scripts/pack.ps1 [-Publish]` | build the release zip from the local build (no Siemens binaries; only Git-tracked files go in) |
 
 </details>
 
@@ -215,6 +243,11 @@ First run against a Portal without whitelist entry triggers the Openness consent
 - [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md) — measured time-to-answer per verb, what one attach
   saves, output volume, and a real captured cycle. English.
 - [`docs/VERBS.md`](docs/VERBS.md) — full signatures, generated from `--help`. English.
+- [`CHANGELOG.md`](CHANGELOG.md) — what changed per release, including what is deliberately absent.
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — how to build and what a PR has to prove. Read the first
+  section before opening one: **CI cannot build this project**, because the Openness assemblies are
+  licensed and exist on no runner. Verification is what you ran locally.
+- [`SECURITY.md`](SECURITY.md) — what counts as a security issue in an offline engineering CLI.
 - The rest of [`docs/`](docs/) is Portuguese (plan, decisions, real-project findings). Code and CLI
   are English.
 

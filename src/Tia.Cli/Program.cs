@@ -23,6 +23,22 @@ namespace Tia.Cli
             _outFile = OptionValue(args, "--out-file"); // antes do --help: vale pra toda saída, inclusive ele
             _full = Array.IndexOf(args, "--full") >= 0;
             _verb = args.Length > 0 && !args[0].StartsWith("--") ? args[0] : "out";
+            if (args.Length > 0 && (args[0] == "--version" || args[0] == "-v" || args[0] == "version"))
+            {
+                // Primeira linha de qualquer bug report: versão + qual Openness este exe vai carregar.
+                var asm = typeof(Program).Assembly;
+                var info = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+                var engineering = SiemensProbeDirs()
+                    .FirstOrDefault(d => File.Exists(Path.Combine(d, "Siemens.Engineering.Base.dll"))
+                                      || File.Exists(Path.Combine(d, "Siemens.Engineering.dll")));
+                Print(new Dictionary<string, object>
+                {
+                    { "version", info != null ? info.InformationalVersion : asm.GetName().Version.ToString() },
+                    { "exe", asm.Location },
+                    { "engineeringDir", engineering ?? "(nenhuma instalação do Openness encontrada)" },
+                });
+                return 0;
+            }
             if (args.Length == 0 || args[0] == "--help" || args[0] == "-h")
             {
                 Print(new Dictionary<string, object>
@@ -141,6 +157,8 @@ namespace Tia.Cli
                         "--plc/--out-file do processo NÃO descem pros steps: cada step carrega os seus. " +
                         "Exige projeto JÁ aberto: o attach é 1x, antes do 1º step, então open-project/create-project " +
                         "(e list-server-projects, que roda sem projeto) não podem ser step — chamar antes, sozinhos)" } },
+                    { "meta", new[] { "--version  (versão do CLI + qual instalação do Openness este exe carrega; " +
+                        "é a 1ª linha de qualquer bug report)" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports; " +
                         "saída acima de 60k chars (TIA_MAX_STDOUT) derrama SOZINHA em workspace/auto-<verbo>.json e " +
                         "o stdout recebe o stub {file,bytes,count,head,autoSpill} — --full desliga e dumpa tudo no " +
@@ -879,8 +897,14 @@ namespace Tia.Cli
                 return null;
 
             var dllName = new AssemblyName(e.Name).Name + ".dll";
-            var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            var found = SiemensProbeDirs().Select(d => Path.Combine(d, dllName)).FirstOrDefault(File.Exists);
+            return found != null ? Assembly.LoadFrom(found) : null;
+        }
 
+        /// <summary>Onde o exe procura as assemblies do Openness, na ordem. Usado pelo resolver e por --version.</summary>
+        private static List<string> SiemensProbeDirs()
+        {
+            var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             var dirs = new List<string>();
             var env = Environment.GetEnvironmentVariable("TIA_ENGINEERING_DIR");
             if (!string.IsNullOrEmpty(env)) dirs.Add(env);
@@ -891,9 +915,7 @@ namespace Tia.Cli
                 dirs.Add(Path.Combine(publicApi, "net48")); // V21+ layout
                 dirs.Add(publicApi);                        // V19/V20 layout
             }
-
-            var found = dirs.Select(d => Path.Combine(d, dllName)).FirstOrDefault(File.Exists);
-            return found != null ? Assembly.LoadFrom(found) : null;
+            return dirs;
         }
     }
 }

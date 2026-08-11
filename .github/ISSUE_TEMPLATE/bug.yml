@@ -1,0 +1,71 @@
+name: Bug report
+description: A verb does something wrong, or Openness refuses it
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Most diagnoses here come down to three things: which Openness the exe loaded, which Portal
+        version the project is, and the exact verb line. Please don't make them be guessed.
+
+  - type: textarea
+    id: version
+    attributes:
+      label: "`tia --version` output"
+      description: Paste it whole — it reports the CLI version and which Openness install the exe loads.
+      render: json
+    validations:
+      required: true
+
+  - type: input
+    id: portal
+    attributes:
+      label: TIA Portal version
+      placeholder: "V21 Update 2 / V19 / ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: command
+    attributes:
+      label: The command
+      description: The full verb line, including whether `--apply` was passed.
+      render: powershell
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: Exact stdout/stderr. If Openness raised an exception, the message verbatim.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: dropdown
+    id: gates
+    attributes:
+      label: "`pwsh scripts/init.ps1 -Check` result"
+      options:
+        - All gates ok
+        - A gate is missing (paste the output below)
+        - Haven't run it
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else
+      description: |
+        Project shape (how many PLCs, was `--plc` passed), whether more than one Portal was open,
+        whether the shell was in session 0, the `-Check` output if a gate failed.
+        **Do not paste customer project data** — equipment names, tag lists and DB structure are
+        your employer's IP, not debugging material. Redact or reproduce on a test project.

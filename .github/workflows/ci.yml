@@ -1,0 +1,71 @@
+name: ci
+
+# O build C# NÃO roda aqui, e isso é estrutural, não preguiça: Tia.Core referencia as assemblies
+# do Openness (Siemens.Engineering.*), que são licenciadas, não estão no repo e não existem em
+# nenhum runner. Compilar exige uma máquina com TIA Portal instalado.
+# O que roda aqui é o que dá para verificar sem a Siemens: os scripts fazem parse, os JSON de
+# exemplo são JSON, e nada de licenciado nem de projeto de cliente entrou no versionamento.
+# O build + os testes offline (Tia.Tests) rodam na máquina do dev via `pwsh scripts/rebuild.ps1`.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PowerShell — parse de todos os scripts
+        shell: pwsh
+        run: |
+          $bad = @()
+          foreach ($f in Get-ChildItem scripts -Filter *.ps1 -Recurse) {
+            $errs = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($f.FullName, [ref]$null, [ref]$errs)
+            if ($errs) { $bad += "$($f.Name): $($errs[0].Message)" }
+          }
+          if ($bad) { $bad | ForEach-Object { Write-Host "FAIL $_" }; exit 1 }
+          Write-Host "ok: $((Get-ChildItem scripts -Filter *.ps1 -Recurse).Count) scripts fazem parse"
+
+      - name: JSON — exemplos e manifestos são válidos
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem docs, library -Filter *.json -Recurse -ErrorAction SilentlyContinue
+          $bad = @()
+          foreach ($f in $files) {
+            try { $null = Get-Content $f.FullName -Raw | ConvertFrom-Json }
+            catch { $bad += "$($f.FullName): $($_.Exception.Message)" }
+          }
+          if ($bad) { $bad | ForEach-Object { Write-Host "FAIL $_" }; exit 1 }
+          Write-Host "ok: $($files.Count) JSON válidos"
+
+      - name: Licença e privacidade — nada proibido versionado
+        shell: pwsh
+        run: |
+          # Regra dura do repo: DLL da Siemens (licença) e payload de projeto de cliente
+          # (nomes de equipamento, tags, estrutura de DB) nunca entram no Git.
+          $forbidden = git ls-files |
+            Where-Object { $_ -match '(^|/)(lib|workspace|proj|Scripts_Siemens)/' -or
+                           $_ -match '^library/blocks/' -or
+                           $_ -match '\.(al2\d|ap2\d|zap\d+)$' -or
+                           $_ -match 'Siemens\..*\.dll$' }
+          if ($forbidden) {
+            Write-Host "FAIL arquivos proibidos versionados:"
+            $forbidden | ForEach-Object { Write-Host "  $_" }
+            exit 1
+          }
+          Write-Host "ok: nenhuma DLL licenciada nem payload de projeto versionado"
+
+      - name: Versão — Directory.Build.props tem entrada no CHANGELOG
+        shell: pwsh
+        run: |
+          $v = ([xml](Get-Content src/Directory.Build.props)).Project.PropertyGroup.Version
+          if (-not $v) { Write-Host "FAIL src/Directory.Build.props sem <Version>"; exit 1 }
+          if (-not (Select-String -Path CHANGELOG.md -SimpleMatch "[$v]" -Quiet)) {
+            Write-Host "FAIL versão $v não tem seção no CHANGELOG.md"; exit 1
+          }
+          Write-Host "ok: versão $v documentada no CHANGELOG"

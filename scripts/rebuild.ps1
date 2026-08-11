@@ -1,6 +1,8 @@
 # Macro "rebuild": build Debug + testes offline + whitelist elevada SÓ se tia.exe mudou.
-# Uso: pwsh scripts/rebuild.ps1 [-SkipTests]
-param([switch]$SkipTests)
+# Uso: pwsh scripts/rebuild.ps1 [-SkipTests] [-WhitelistOnly]
+# -WhitelistOnly: só o passo da whitelist, sem build. É o que a instalação a partir do zip de
+# release usa — lá o tia.exe já vem pronto e não há .NET SDK nem lib/ para compilar.
+param([switch]$SkipTests, [switch]$WhitelistOnly)
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path $PSScriptRoot
 $exe = Join-Path $repo 'src\Tia.Cli\bin\Debug\net48\tia.exe'
@@ -23,10 +25,12 @@ function Test-WhitelistStale {
     return ($reg.Count -eq 0) -or [bool]@($reg | Where-Object { $_ -ne $h })
 }
 
-dotnet build (Join-Path $repo 'src') -c Debug --nologo -v q
-if ($LASTEXITCODE -ne 0) { exit 1 }
+if (-not $WhitelistOnly) {
+    dotnet build (Join-Path $repo 'src') -c Debug --nologo -v q
+    if ($LASTEXITCODE -ne 0) { exit 1 }
+}
 
-if (-not $SkipTests) {
+if (-not $SkipTests -and -not $WhitelistOnly) {
     & (Join-Path $repo 'src\Tia.Tests\bin\Debug\net48\Tia.Tests.exe')
     if ($LASTEXITCODE -ne 0) { exit 1 }
 
@@ -81,7 +85,7 @@ if (-not $SkipTests) {
 }
 
 # referencia de verbo derivada do proprio help — evita grep em Program.cs pra achar assinatura
-& (Join-Path $PSScriptRoot 'gen-verbs.ps1')
+if (-not $WhitelistOnly) { & (Join-Path $PSScriptRoot 'gen-verbs.ps1') }
 
 if (Test-WhitelistStale) {
     # Task TiaWhitelist roda como SYSTEM/Highest: sem UAC, disparavel por qualquer sessao.

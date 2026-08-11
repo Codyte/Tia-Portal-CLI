@@ -1,0 +1,48 @@
+name: Verb request
+description: Something the Openness API can do that this CLI doesn't expose yet
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before opening: online operations (go-online, download to PLC, Multiuser check-in) are a
+        closed decision and will be declined — see *Design contract* in the README.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What you're trying to do
+      description: The engineering task, not the API call. What does the click-path in TIA look like today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: api
+    attributes:
+      label: Does the Openness API support it?
+      description: |
+        If you know the type or method, name it. `python scripts/tia-help.py --sdk "term"` searches
+        the IntelliSense XML of all 14 Openness assemblies and answers this in one command.
+    validations:
+      required: false
+
+  - type: textarea
+    id: shape
+    attributes:
+      label: Proposed verb shape
+      description: Verb name, flags, and what the JSON would look like on stdout.
+      render: shell
+    validations:
+      required: false
+
+  - type: dropdown
+    id: help
+    attributes:
+      label: Can you implement it?
+      description: Building requires a licensed TIA Portal install — see CONTRIBUTING.md.
+      options:
+        - "Yes, I can open a PR"
+        - "I can test a PR against my Portal"
+        - "No, requesting only"
+    validations:
+      required: true

@@ -1,72 +1,75 @@
-# Handoff · TIA Portal Openness API · 2026-08-11 (4)
+# Handoff · TIA Portal Openness API · 2026-08-11 (5)
 
 ## Goal
-Executar o caderno [`docs/teste-cego/caderno-FP-04.md`](../docs/teste-cego/caderno-FP-04.md) —
-área de aeração `Sopradores/Aeração` no CLP de teste, hardware novo incluído — e escrever
-`docs/teste-cego/resultado-FP-04.md`.
-
-É uma **rodada cega**: quem escreveu o caderno não é quem executa. O handoff da sessão que o
-escreveu foi arquivado de propósito para esta sessão não herdar nada dela.
-
-## Rodada cega — o que NÃO ler (é a regra do teste, não preferência)
-
-Ler qualquer um destes entrega de graça o que a rodada deveria descobrir sozinha, e invalida o
-resultado:
-
-- as outras rodadas: `docs/teste-cego/caderno-FP-0{1,2,3}.md`, `resultado-*.md`, `criterios.md`,
-  `artigo.md`;
-- a seção **"FP-04 escrita"** de `docs/PLANO.md` — o resto do PLANO (decisões D1–D9, fases) pode e
-  deve ser lido;
-- `docs/DIARIO.md` e `.handoff/archive/`.
-
-Tudo o mais é jogo limpo, e é o que uma obra real teria: o caderno, o `CLAUDE.md` do repo,
-`docs/BOAS-PRATICAS.md`, `docs/VERBS.md`, os `__navi__.md`, a ajuda oficial (`scripts/tia-help.py`)
-e o próprio projeto TIA.
-
-**Travou por falta de documentação = defeito da ferramenta, não da sessão.** Registrar em vez de
-contornar calado — o produto do teste são os tropeços, não o programa.
+A rodada cega FP-04 foi executada (por outra sessão) e a fila que ela gerou foi atacada: 6 dos 8
+itens entregues, com aceite ao vivo. Sobram 2 itens de decisão e a pergunta de sempre — próxima
+rodada cega ou empacotar (MCP, artigo).
 
 ## State
-- HEAD: `918b121`, pushado, working tree limpo.
-- Live state: **TIA Portal aberto** (sessão 1) com `LIB_TESTE` — o projeto do caderno, herdado de
-  sessões anteriores; nada foi tocado nele. `tia.exe` acabou de ser reconstruído
-  (`rebuild.ps1` ok, whitelist refeita, 78 verbos): o hash mudou com o Portal já aberto, então a
-  **primeira** chamada de verbo pode pendurar num **diálogo modal de autorização do Openness** na
-  tela — CPU ~0 é isso, alguém clica e segue. Registrar o clique no resultado (é furo na alegação
-  de ponta a ponta).
-- Done: nada da rodada. O caderno existe e é a entrada.
+- HEAD: `59e58ac`, pushado, working tree limpo (só o arquivo de archive deste handoff pendente).
+- Live state: **TIA Portal aberto** (sessão 1) com `LIB_TESTE`. Foi **escrito** nesta sessão: uma
+  chamada de FC e uma de FB entraram no `CHAMADA_AREA_03_SOPRADORES_AERACAO` e foram removidas, e
+  um `iDB TESTE BOOL` foi criado e apagado. `compile --plc PLC_ZERO` fecha em **0 erros / 1 warning**
+  (o warning é o de I/O sem hardware, anterior). Projeto **não salvo** — nada obriga a salvar.
+  `tia.exe` está em dia com o fonte (`rebuild.ps1` rodou 4x); o diálogo modal de autorização do
+  Openness **não apareceu** em nenhuma delas.
+- Done:
+  - **`ba13dce`** — resultado da FP-04 registrado no PLANO (fila de 8 itens) e 3 promessas do
+    `CLAUDE.md` corrigidas.
+  - **`59e58ac`** — itens 1–7 da fila. `add-call` chama FC (`--inst` opcional, exigido para FB e
+    recusado para FC); constante sai tipada pelo pino; `connect-subnet` dry devolve
+    `ownedIoSystem`/`ioSystemsOnSubnet`/`ioSystemAction`; `ImportAndProve` não devolve mais
+    `ok:false` depois de ter aplicado; `list-blocks --folder` honra `\/`; `plug-module --type` sem
+    dump de `freeSlots` + sonda de sufixo de firmware (`plugAs`); help do `clone --replace`.
+    7 casos offline novos, `ALL PASS`.
 - In progress: nada.
 
+## Decisions (and why)
+- **Bug novo achado no aceite ao vivo, não no teste:** o `add-call` declarava todos os pinos e
+  ligava só os com valor; o Portal recusa `<Parameter>` sem fio ("The connection with the name '12'
+  is not connected to the object with the UID '32'"). Em `Call` de export real vale
+  `wires == parâmetros + 1` (o `en`). FP-03 e FP-04 não pegaram porque só chamaram bloco com todos
+  os pinos preenchidos — **o offline sozinho não teria achado**; foi o import do Portal que falou.
+- **Forma da constante saiu de export real, não de dedução:** o molde `PARTIDA_MOTOR_1` escreve
+  `TypedConstant` sem tipo para `T#2S` e `LiteralConstant` + `ConstantType` para `TRUE`/`300`. Daí
+  a regra: constante que carrega o próprio tipo no texto (`T#`, `W#16#`, `'A'`) fica `TypedConstant`;
+  o resto ganha o tipo do pino.
+- **"Listar o catálogo plugável no slot" é impossível** — confirmado no SDK: `CanPlugNew` é a única
+  pergunta que o Openness responde sobre catálogo. Virou sonda de 11 sufixos de firmware no ramo de
+  falha, devolvendo `plugAs`. **Não provado ao vivo**: em `LIB_TESTE` todo slot livre recusa até o
+  MLFB versionado que a rodada plugou, então `canPlug` está preso em restrição de slot, não de
+  versão.
+- **Vazamento da FP-04 vira regra de método:** `grep` em `docs/` não respeita lista de não-ler.
+  Rodada cega tem de excluir `docs/teste-cego/` na busca. Está no PLANO.
+
 ## Next steps (ordered)
-1. Ler o caderno inteiro antes de tocar no projeto. Depois orientar-se no CLP
-   (`tia tree` → `plc-navi.md`) e planejar; o caderno é memorial de cliente, não especificação de
-   software — o que ele não diz é para decidir com engenharia, como em obra real.
-2. Executar: hardware do item 2 e 3, programa dos itens 4 a 6, no padrão de
-   `docs/BOAS-PRATICAS.md` (R1–R9). Verbo de escrita é dry por padrão, `--apply` explícito.
-3. Escrever `docs/teste-cego/resultado-FP-04.md`: veredito do item 7 do caderno + **os tropeços**,
-   um por linha — onde travou e por quantos turnos, o que teve de adivinhar porque o caderno não
-   dizia (de propósito) e o que teve de adivinhar porque a **ferramenta** não dizia (defeito
-   nosso), que verbo faltou ou devolveu a coisa errada, e que linha de `SKILL.md`/`VERBS.md`/
-   `CLAUDE.md` escrita diferente teria evitado o tropeço. Registrar o relógio: início, fim, onde
-   o tempo foi.
+1. **Decidir o item 8 da fila**: `list-io-map --device <drive>` volta vazio com telegrama posto e IO
+   system conectado (os itens do drive caem em `unassigned`). Ou o verbo passa a alcançar o endereço,
+   ou a decisão é "não serve para drive" e o `CLAUDE.md` (já corrigido) é a resposta final. Investigar
+   custa uma sessão de sondagem com o Portal; o programa não precisa (usa o `HWID`).
+2. **Provar o `plugAs`** num projeto/slot que aceite plug de verdade — ou marcar a sonda como
+   descartável se ninguém tropeçar nela de novo.
+3. Depois: MCP em 2 tools, tradução do artigo para EN, postar (SIOS / r/PLC / LinkedIn).
+   E, se houver apetite, **FP-05** — a rodada que ainda não existe teria de mirar o que a FP-04 não
+   cobriu: os 4 checks novos do `audit` continuam sem ter sido vistos **reprovando**.
 
 ## Key files
-- `docs/teste-cego/caderno-FP-04.md` — a entrada. Único arquivo de `teste-cego/` a abrir.
-- `docs/BOAS-PRATICAS.md` (R1–R9) — o padrão da casa que o item 7 do caderno cobra.
-- `docs/VERBS.md` — assinatura dos 78 verbos, ~90 linhas.
-- `__navi__.md` da raiz e de `docs/` — orientação em 1 read.
+- `docs/PLANO.md` — seções "FP-04 executada" (fila de 8) e "Fila da FP-04 executada" (como ficou).
+- `docs/teste-cego/resultado-FP-04.md` (286 ln) — os 9 tropeços, com o que teria evitado cada um.
+- `src/Tia.Core/BlockEdit.cs` — `AddCall`/`InsertCallInXml`, a maior parte do diff.
+- `src/Tia.Core/__navi__.md`, `src/Tia.Tests/__navi__.md` — mapas regenerados nesta sessão.
 
 ## Open / blockers
-- `LIB_TESTE` não tem periferia remota nem inversor: o caderno manda incluir os dois. É a parte da
-  rodada sem precedente no projeto de teste.
-- Openness é single-session: uma chamada `tia` por vez, sem paralelizar (nem via agente).
+- `list-io-map` × endereço de telegrama de drive: aberto (item 8).
+- Sonda `plugAs` do `plug-module`: implementada, sem prova ao vivo.
+- Os 4 checks novos do `audit` seguem sem ter sido vistos reprovando — duas rodadas cegas passaram.
 
 ## Skills
 - tia
 
 ## Effort
-**Alto.** É programa de PLC novo com decisões de engenharia que o caderno deliberadamente não toma
-(dimensionar cartão, escolher onde a lógica mora, como o rodízio conta hora), mais hardware que o
-projeto de teste nunca teve. O relógio, porém, é do Portal (~10–20 s por verbo, 2–4 min por
-`open-project`) — pensar mais não acelera a parte lenta. Baixar para **médio** só depois do
-hardware fechado e compilando.
+**Médio** para o passo 1. Não é implementação: é sondar o Openness com o Portal aberto para decidir
+se `list-io-map` pode alcançar endereço de drive — e o `--sdk` do `tia-help.py` vem antes de qualquer
+tentativa e erro. Sobe para **alto** só se a API contradisser a ajuda oficial. O relógio é do Portal
+(~10-20 s por verbo), então pensar mais não acelera a parte lenta; se a resposta do SDK for clara,
+cai para **baixo** e vira uma linha de `CLAUDE.md`.

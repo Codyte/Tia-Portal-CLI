@@ -1,75 +1,64 @@
-# Handoff · TIA Portal Openness API · 2026-08-11 (5)
+# Handoff · TIA Portal Openness API · 2026-08-11
 
 ## Goal
-A rodada cega FP-04 foi executada (por outra sessão) e a fila que ela gerou foi atacada: 6 dos 8
-itens entregues, com aceite ao vivo. Sobram 2 itens de decisão e a pergunta de sempre — próxima
-rodada cega ou empacotar (MCP, artigo).
+Fechar as duas pontas soltas da fila da FP-04 (itens 8 e `plugAs`) e decidir se existe FP-05. As
+duas rodadas cegas (FP-03, FP-04) já entregaram programa conforme e viraram fila implementada —
+o que sobrou é sonda de API, não construção de programa.
 
 ## State
-- HEAD: `59e58ac`, pushado, working tree limpo (só o arquivo de archive deste handoff pendente).
-- Live state: **TIA Portal aberto** (sessão 1) com `LIB_TESTE`. Foi **escrito** nesta sessão: uma
-  chamada de FC e uma de FB entraram no `CHAMADA_AREA_03_SOPRADORES_AERACAO` e foram removidas, e
-  um `iDB TESTE BOOL` foi criado e apagado. `compile --plc PLC_ZERO` fecha em **0 erros / 1 warning**
-  (o warning é o de I/O sem hardware, anterior). Projeto **não salvo** — nada obriga a salvar.
-  `tia.exe` está em dia com o fonte (`rebuild.ps1` rodou 4x); o diálogo modal de autorização do
-  Openness **não apareceu** em nenhuma delas.
-- Done:
-  - **`ba13dce`** — resultado da FP-04 registrado no PLANO (fila de 8 itens) e 3 promessas do
-    `CLAUDE.md` corrigidas.
-  - **`59e58ac`** — itens 1–7 da fila. `add-call` chama FC (`--inst` opcional, exigido para FB e
-    recusado para FC); constante sai tipada pelo pino; `connect-subnet` dry devolve
-    `ownedIoSystem`/`ioSystemsOnSubnet`/`ioSystemAction`; `ImportAndProve` não devolve mais
-    `ok:false` depois de ter aplicado; `list-blocks --folder` honra `\/`; `plug-module --type` sem
-    dump de `freeSlots` + sonda de sufixo de firmware (`plugAs`); help do `clone --replace`.
-    7 casos offline novos, `ALL PASS`.
-- In progress: nada.
+- HEAD: `76e36ab`, working tree limpo. **Esta sessão não deixou commit novo** — o trabalho da
+  FP-03 (agitador `AG-05`) está em `993aace` e a fila que saiu dela em `80de94a`; a FP-04 e sua
+  fila em `90d392b`/`59e58ac`/`76e36ab`.
+- Live state: **TIA Portal aberto (sessão 1) com o projeto-molde real**
+  `proj/Software de ETE Insular_Inicial_V21` (62 devices, PLC `CPU1.0 CCO`). É a **referência
+  read-only da casa** — nenhum verbo de escrita contra ele. Para testar, `use-project.ps1` troca
+  para `workspace/newlib/LIB_TESTE` (abrir custa 2-4 min).
+- Done: fila da FP-04 = 6 de 8 itens, com aceite ao vivo. `audit` com 10 checks. 78 verbos.
+- In progress: nada em vôo.
 
 ## Decisions (and why)
-- **Bug novo achado no aceite ao vivo, não no teste:** o `add-call` declarava todos os pinos e
-  ligava só os com valor; o Portal recusa `<Parameter>` sem fio ("The connection with the name '12'
-  is not connected to the object with the UID '32'"). Em `Call` de export real vale
-  `wires == parâmetros + 1` (o `en`). FP-03 e FP-04 não pegaram porque só chamaram bloco com todos
-  os pinos preenchidos — **o offline sozinho não teria achado**; foi o import do Portal que falou.
-- **Forma da constante saiu de export real, não de dedução:** o molde `PARTIDA_MOTOR_1` escreve
-  `TypedConstant` sem tipo para `T#2S` e `LiteralConstant` + `ConstantType` para `TRUE`/`300`. Daí
-  a regra: constante que carrega o próprio tipo no texto (`T#`, `W#16#`, `'A'`) fica `TypedConstant`;
-  o resto ganha o tipo do pino.
-- **"Listar o catálogo plugável no slot" é impossível** — confirmado no SDK: `CanPlugNew` é a única
-  pergunta que o Openness responde sobre catálogo. Virou sonda de 11 sufixos de firmware no ramo de
-  falha, devolvendo `plugAs`. **Não provado ao vivo**: em `LIB_TESTE` todo slot livre recusa até o
-  MLFB versionado que a rodada plugou, então `canPlug` está preso em restrição de slot, não de
-  versão.
-- **Vazamento da FP-04 vira regra de método:** `grep` em `docs/` não respeita lista de não-ler.
-  Rodada cega tem de excluir `docs/teste-cego/` na busca. Está no PLANO.
+- **`list-io-map` não serve para endereço de telegrama de drive** — com G120 + telegrama 20 + IO
+  system conectado, `--device <drive>` devolve `{addresses: 0}` e os itens caem em `unassigned`.
+  Quem precisa do telegrama no programa usa o `HWID` da constante
+  `<drive>~PROFINET_interface~Standard_telegram_20`. Já está no `CLAUDE.md`; falta só decidir se
+  isso é a resposta final (item 8) ou se o verbo vai atrás do endereço.
+- **Retentividade se declara no FB, nunca no iDB** — o Openness recusa `Remanence` em instância
+  (`The attribute 'Remanence' cannot be set`) e o `import-source` não expressa retentividade. Foi o
+  que motivou o `set-retain`, já entregue.
+- **Chamada em LAD por verbo, não por FlgNet na mão** — a FP-03 provou que dava para escrever a rede
+  no XML, e provou também que custa 250 linhas de Python por rede. `add-call` + `delete-network`
+  substituíram isso.
 
 ## Next steps (ordered)
-1. **Decidir o item 8 da fila**: `list-io-map --device <drive>` volta vazio com telegrama posto e IO
-   system conectado (os itens do drive caem em `unassigned`). Ou o verbo passa a alcançar o endereço,
-   ou a decisão é "não serve para drive" e o `CLAUDE.md` (já corrigido) é a resposta final. Investigar
-   custa uma sessão de sondagem com o Portal; o programa não precisa (usa o `HWID`).
-2. **Provar o `plugAs`** num projeto/slot que aceite plug de verdade — ou marcar a sonda como
-   descartável se ninguém tropeçar nela de novo.
-3. Depois: MCP em 2 tools, tradução do artigo para EN, postar (SIOS / r/PLC / LinkedIn).
-   E, se houver apetite, **FP-05** — a rodada que ainda não existe teria de mirar o que a FP-04 não
-   cobriu: os 4 checks novos do `audit` continuam sem ter sido vistos **reprovando**.
+1. **Decidir o item 8** (`list-io-map` × telegrama de drive): ou o verbo passa a alcançar o
+   endereço, ou a decisão é "não serve para drive" e o `CLAUDE.md` já é a resposta final.
+   Investigar custa uma sessão de sondagem com o Portal; nenhum programa depende disso.
+2. **Provar o `plugAs`** do `plug-module` num slot que aceite plug de verdade — ou marcar a sonda
+   como descartável se ninguém tropeçar nela de novo.
+3. Se houver apetite de FP-05: a rodada tem de mirar o que FP-03 e FP-04 **não** cobriram — os
+   4 checks novos do `audit` seguem sem ter sido vistos **reprovando**.
+4. Trilha paralela (não bloqueia nada): MCP em 2 tools, tradução do artigo para EN, publicação.
 
 ## Key files
-- `docs/PLANO.md` — seções "FP-04 executada" (fila de 8) e "Fila da FP-04 executada" (como ficou).
-- `docs/teste-cego/resultado-FP-04.md` (286 ln) — os 9 tropeços, com o que teria evitado cada um.
-- `src/Tia.Core/BlockEdit.cs` — `AddCall`/`InsertCallInXml`, a maior parte do diff.
-- `src/Tia.Core/__navi__.md`, `src/Tia.Tests/__navi__.md` — mapas regenerados nesta sessão.
+- `docs/PLANO.md` — decisões, fases, e a fila de cada rodada cega.
+- `docs/teste-cego/resultado-FP-03.md` e `resultado-FP-04.md` — os tropeços medidos e a fila que
+  saiu de cada um (é onde estão os itens 8 e `plugAs`).
+- `docs/BOAS-PRATICAS.md` — R1–R9, o aceite de qualquer programa novo.
+- `docs/VERBS.md` — assinatura dos 78 verbos (gerado pelo `rebuild.ps1`).
+- `src/Tia.Cli/Program.cs` — o header NAV INDEX no topo lista todos os `case "verbo"`.
+- `src/Tia.Core/__navi__.md` — mapa da pasta, antes de qualquer busca ampla.
 
 ## Open / blockers
-- `list-io-map` × endereço de telegrama de drive: aberto (item 8).
-- Sonda `plugAs` do `plug-module`: implementada, sem prova ao vivo.
-- Os 4 checks novos do `audit` seguem sem ter sido vistos reprovando — duas rodadas cegas passaram.
+- Item 8 (`list-io-map` × telegrama de drive): aberto, é decisão de escopo, não bug.
+- Sonda `plugAs`: implementada, sem prova ao vivo.
+- Os 4 checks novos do `audit` nunca foram vistos reprovando — duas rodadas cegas passaram limpo.
 
 ## Skills
 - tia
 
 ## Effort
-**Médio** para o passo 1. Não é implementação: é sondar o Openness com o Portal aberto para decidir
-se `list-io-map` pode alcançar endereço de drive — e o `--sdk` do `tia-help.py` vem antes de qualquer
-tentativa e erro. Sobe para **alto** só se a API contradisser a ajuda oficial. O relógio é do Portal
-(~10-20 s por verbo), então pensar mais não acelera a parte lenta; se a resposta do SDK for clara,
-cai para **baixo** e vira uma linha de `CLAUDE.md`.
+**Médio** para o passo 1 — é sondagem de API contra o Portal, e a resposta pode ser "não dá".
+Suba para **alto** se o `--sdk`/ajuda oficial disserem que o endereço do telegrama existe em
+algum lugar e o `list-io-map` continuar não achando (aí é bug de varredura, não limite do
+Openness). O gargalo é o relógio do Portal (10-20 s por chamada), não o raciocínio: mais
+pensamento não acelera o laço.

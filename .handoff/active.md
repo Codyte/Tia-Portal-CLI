@@ -1,91 +1,70 @@
-# Handoff · TIA Portal Openness API · 2026-08-11
+# Handoff · TIA Portal Openness API · 2026-08-11 (2)
 
 ## Goal
-Fila de correção do `BOAS-PRATICAS.md` §3 fechada (os 4 itens abertos que os testes cegos abriram).
-O que sobra é escolher a próxima frente — a recomendação é **FP-04**, o caderno cego que mede os
-verbos que nasceram da FP-03 e nunca foram exercitados numa rodada.
+Sessão de higiene, não de CLI: nome de projeto de cliente saiu da prosa e a navegação de C# passou
+a ser gerada pelo `navindex`. A frente de trabalho continua sendo a **FP-04** (caderno cego novo),
+intocada.
 
 ## State
-- HEAD: `6c261a6`. Working tree limpo fora deste handoff.
-- Live state: **TIA Portal aberto** (sessão 1) com `LIB_TESTE` (PLCs `PLC_ZERO` e `PLC_RT`).
-  O projeto foi tocado no smoke e **devolvido ao estado original** (pasta de teste criada e
-  apagada; 20 pastas, 0 ocorrências de `SMOKE`), sem `save-project`. O shell desta sessão nasceu
-  na **sessão 0** (roteia pela task `TiaSmokeRun`). `tia.exe` está em dia com o HEAD (`rebuild.ps1`
-  rodou duas vezes hoje) — `pack.ps1` aceita empacotar.
-- Done nesta sessão:
-  - **Artigo do teste cego** — `docs/teste-cego/artigo.md`, PT-BR, 180 linhas, arco FP-01→FP-03,
-    linkado no README. Commit `591fc61`.
-  - **`create-folder --path` repetível** + **`\/` = barra literal** em qualquer caminho de pasta
-    (a regra é do `Ops.SplitPath`, sob o longest-match do `WalkFolders`). Fecha F1/F2 do §F.
-    Shape do JSON mudou: `{kind,paths,created,failed,applied,folders[]}`.
-  - **`audit` com 4 checks novos** (10 no total): R1 UDT, R2 DB global sem escalar solto, R8
-    linguagem do bloco de chamada, `CHAMADA_*` fora da pasta de área. Check que não pode rodar
-    devolve `skipped` com motivo e **não reprova**. `--db` nomeia a DB global.
-  - **`list-io-map`** — verbo novo (78 verbos agora).
-  - **`import-ladder` com `CALL` descartado** com motivo escrito no BOAS-PRATICAS §3.4.
-  - Smoke real contra `LIB_TESTE`/`PLC_ZERO`: audit 10/10 verde (`udts: 6`, R2 achou e exportou a
-    `DB GLOBAL`); `create-folder` criou UMA pasta com barra no nome (prova: `delete-folder --path
-    "9. SMOKE\/BARRA"` resolveu — se fossem dois níveis, o escape procuraria um filho com esse nome
-    literal e falharia); re-apply devolveu `created: 0`.
+- HEAD: `f2adeba`, pushado. Working tree limpo. `tia.exe` em dia (`rebuild.ps1` rodou e deu
+  **ALL PASS**, whitelist refeita pela task).
+- Live state: **TIA Portal aberto** (sessão 1) com `LIB_TESTE` desde a sessão anterior; nada foi
+  tocado nele nesta sessão. O shell desta sessão nasceu na sessão 0 (rota da task). Atenção: o
+  `rebuild.ps1` mudou o hash do `tia.exe`, então o **próximo attach nesse Portal já aberto pode
+  abrir o diálogo modal de autorização** — chamada pendurada com CPU ~0 é isso, não bug.
+- Done:
+  - **`c85809a` — nome de cliente fora da prosa.** As duas plantas de referência passaram a ter
+    nome pelo papel: `Software de ETE Modelo_Inicial_V21` (molde da casa) e
+    `Automação ETE Campo AsBuilt_1_V21` (as-built de campo). Registro em `docs/DIARIO.md`
+    (§Procedência) e no CHANGELOG.
+  - **`f2adeba` — `scripts/navi-cs.ps1` morreu.** O `navindex` (repo `Codyte/navindex`, HEAD
+    `78ac7ce`) passou a indexar C# e a pular caminho gitignored. Um comando regenera tudo:
+    `python ~/.claude/skills/navindex/scripts/navindex.py <pasta|.>` da raiz.
 - In progress: nada.
 
 ## Decisions (and why)
-- **`audit` deixou de ser 100% read-only.** O check R2 exporta a DB global para `--out`: só o
-  export mostra o datatype dos membros, não há caminho de API que dê isso sem exportar. Aceito
-  porque o alternativo era não ter o check.
-- **`\/` em vez de lista de segmentos** (que era a proposta original do BOAS-PRATICAS §3.4). A lista
-  só serviria ao `create-folder`; o escape no `SplitPath` vale para todo verbo que recebe caminho.
-- **Dentro de `run --script` escreve-se `\\/`** — `\/` é escape válido de JSON e o parser o come
-  antes de o argumento chegar ao CLI. Descoberto no smoke; está no CLAUDE.md.
-- **`list-io-map` filtra `StartAddress == -1`** e conta em `unassigned`. O ET200SP sem cartão
-  devolve 4 desses (interface, PROFINET interface, 2 portas do BA 2xRJ45); entravam no mapa como
-  `%IB-1` e no `nextFreeByte` como `{Diagnosis: -1}`. Sumir calado é o defeito que os testes cegos
-  mais cobraram, então vira contador, não silêncio.
-- **Descartado: `import-ladder` convertendo `CALL`.** A R8 já foi destravada pelo `add-call`; a
-  segunda rota duplicaria a parte cara (resolver tipo de pino, montar `Access`/`Wires`) e o
-  `#local` como parâmetro fica fora do alcance das duas.
-- **Limpeza de nomes de projeto de cliente: separar os dois casos** (ver Open).
+- **Histórico não foi reescrito.** O repo é público desde 2026-07-20: `.handoff/archive/` e os
+  commits antigos já estão espelhados, `git-filter-repo` não despublica nada e quebraria os SHA
+  que a release v1.0.0 carimba. `library/*.json` também ficou como está — o nome do objeto ancora
+  o `import-master-copy --force`.
+- **Nome fictício pelo papel, não sigla nova.** "Modelo" e "Campo" dizem o que cada projeto é
+  dentro da doc; o resíduo aceito é que comando copiado da prosa não casa com o `.ap21` no disco
+  de quem tem a cópia real.
+- **A lista dos 71 `case "verbo"` mudou de lugar**: agora é o header NAV INDEX no topo de
+  `src/Tia.Cli/Program.cs`. O mapa da pasta mostra só os 24 primeiros símbolos — teto do
+  `navindex`, e subi-lo foi descartado lá (o header já tem tudo).
+- **Descartado: banir `proj`/`workspace` no `SKIP_DIRS` do navindex.** Nome genérico demais para
+  ferramenta global; a regra certa é o `.gitignore`, e é o que foi implementado.
 
 ## Next steps (ordered)
-1. **FP-04 — caderno cego novo.** É o que mede o que esta sessão e a anterior construíram:
-   `add-call`, `delete-network`, `set-retain`, `list-interface`, `clone --with-instances`, o guard
-   de compile-e-confere, e agora os 4 checks do `audit` + `create-folder` com `\/`. Nenhum passou
-   por uma rodada cega. Escrever o caderno numa sessão e **executar em outra** (o critério de
-   condução que só a FP-03 respeitou). Se o caderno tiver um drive G120, fecha de quebra o caso
-   real do `list-io-map`.
-2. ~~Limpeza barata dos nomes de cliente~~ — feita 2026-08-11 (ver Open).
-3. Depois: MCP em 2 tools, tradução do artigo para EN, postar (SIOS / r/PLC / LinkedIn).
+1. **FP-04 — caderno cego novo** (era o passo 1 do handoff anterior e segue intacto). Mede o que
+   nunca passou por rodada cega: `add-call`, `delete-network`, `set-retain`, `list-interface`,
+   `clone --with-instances`, o guard de compile-e-confere, os 4 checks novos do `audit` e
+   `create-folder` com `\/`. Escrever numa sessão e **executar em outra**. Com um drive G120 no
+   caderno, fecha de quebra o caso real do `list-io-map`.
+2. Depois: MCP em 2 tools, tradução do artigo para EN, postar (SIOS / r/PLC / LinkedIn).
 
 ## Key files
-- `docs/BOAS-PRATICAS.md` §3 — a fila, agora com os 4 itens riscados e o motivo de cada um.
-- `docs/teste-cego/criterios.md` — a régua (G1–G4 + I1–I4 + condução). É o molde do caderno FP-04.
-- `docs/teste-cego/artigo.md` — o texto público; fonte da versão EN quando for a hora.
-- `docs/DIARIO.md:163-177` — procedência dos fixtures e a lista exata do que ficou por sanitizar.
-- `src/__navi__.md` — símbolos por arquivo, regenerado nesta sessão.
-- `CHANGELOG.md` `[Unreleased]` — já descreve tudo desta sessão, inclusive o shape que mudou.
+- `docs/teste-cego/criterios.md` — a régua (G1–G4 + I1–I4 + condução); é o molde do caderno FP-04.
+- `docs/BOAS-PRATICAS.md` §3 — fila fechada, com o motivo de cada item.
+- `src/Tia.Cli/__navi__.md` e `src/Tia.Core/__navi__.md` — mapas por pasta (substituíram
+  `src/__navi__.md`); a lista de verbos com linha está no header do `Program.cs`.
+- `docs/DIARIO.md` §Procedência — o que foi sanitizado, o mapeamento dos nomes e o que ficou de fora.
 
 ## Open / blockers
-- **Nomes de projeto de cliente — feito 2026-08-11** (a limpeza barata recomendada aqui):
-  prosa sanitizada no working tree para nomes fictícios pelo papel — `Software de ETE
-  Modelo_Inicial_V21` (molde) e `Automação ETE Campo AsBuilt_1_V21` (as-built de campo). Root
-  `__navi__.md` deixou de mapear `proj/` e `workspace/`. Histórico e `library/*.json` intactos
-  de propósito. Registro em `docs/DIARIO.md` (§Procedência) e no CHANGELOG.
-  - Resíduo aceito: comando copiado da prosa não casa com o `.ap21` no disco de quem tem a cópia
-    real; e `navindex.py` não conhece `.gitignore`, então regenerar o root `__navi__.md` reimporta
-    as seções de `proj/`/`workspace/` — apagá-las de novo (está no CLAUDE.md).
-- `list-io-map` **não foi provado no caso que o motivou**: `LIB_TESTE` não tem cartão de I/O nem
-  G120, então o verbo rodou com 0 endereços atribuídos. O endereço do telegrama de drive continua
-  por confirmar — só um projeto com drive fecha o tropeço 2 da FP-01.
-- Os 4 checks novos do `audit` só foram vistos **passando** (o projeto de referência é limpo).
-  Nenhum foi visto reprovando contra um projeto que viole a regra — a FP-04 é onde isso aparece.
+- `list-io-map` **ainda não foi provado no caso que o motivou**: `LIB_TESTE` não tem cartão de I/O
+  nem G120. O endereço do telegrama de drive continua por confirmar.
+- Os 4 checks novos do `audit` só foram vistos **passando** — nenhum foi visto reprovando contra
+  projeto que viole a regra. A FP-04 é onde isso aparece.
+- Regenerar mapa agora é `navindex` puro, mas quem tiver checkout velho do repo de skills precisa
+  do `navindex` ≥ `4ad0dfc` — versão antiga não lê C# e apaga os mapas de `src/*/`.
 
 ## Skills
 - tia
 
 ## Effort
-**Médio** para o passo 1 (FP-04). Escrever o caderno é redação com régua já pronta (`criterios.md`
-é o molde) e a decisão de conduta já está tomada — o custo é caprichar no memorial fictício e
-resistir a escrever um caderno que o CLI resolve fácil. Sobe para **alto** se a rodada for
-executada nesta mesma linhagem de sessões: aí a escolha do que revelar ao executor vira o problema.
-O passo 2 é **baixo** (um `sed` e reler o diff). Nada aqui é limitado por raciocínio quando envolve
-o Portal — o relógio é dele, ~10-20 s por chamada `tia`, 2-4 min por `open-project`.
+**Médio** para o passo 1 (FP-04): escrever o caderno é redação com régua pronta e decisão de
+conduta já tomada; o custo é caprichar no memorial fictício e resistir a escrever um caderno que o
+CLI resolve fácil. Sobe para **alto** se a rodada for executada nesta mesma linhagem de sessões —
+aí escolher o que revelar ao executor vira o problema. Nada aqui é limitado por raciocínio quando
+envolve o Portal: o relógio é dele (~10-20 s por chamada, 2-4 min por `open-project`).

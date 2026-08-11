@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/assets/mascot.png" width="170" alt="tia-cli mascot — an industrial control module whose face is a terminal prompt">
+
 # ⚡ tia-cli
 
 **Drive Siemens TIA Portal from the command line — JSON in, JSON out.**

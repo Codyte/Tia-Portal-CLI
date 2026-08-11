@@ -1,7 +1,7 @@
 ---
 name: tia
 description: >-
-  Dirigir o TIA Portal (Siemens) pela linha de comando via Openness — CLI `tia`, 77 verbos com
+  Dirigir o TIA Portal (Siemens) pela linha de comando via Openness — CLI `tia`, 78 verbos com
   JSON na entrada e na saída: ler projeto, exportar/importar bloco, tags, hardware, compilar,
   replicar FC de acionamento/alarme/instrumento, instalar biblioteca de blocos num PLC.
   Use sempre que a conversa envolver TIA Portal, Openness, PLC S7-1500, bloco FB/FC/OB/DB, UDT,
@@ -106,7 +106,7 @@ pwsh "$env:TIA_CLI_HOME\scripts\tia.ps1" tree --plc "CPU1"      # de qualquer di
 
 | Preciso de | Arquivo |
 |---|---|
-| assinatura dos 77 verbos | `$env:TIA_CLI_HOME\docs\VERBS.md` (~90 linhas, gerado do help) |
+| assinatura dos 78 verbos | `$env:TIA_CLI_HOME\docs\VERBS.md` (~90 linhas, gerado do help) |
 | decisões, fases, o que já foi medido | `$env:TIA_CLI_HOME\docs\PLANO.md` |
 | regras de operação do repo | `$env:TIA_CLI_HOME\CLAUDE.md` |
 | macros de fluxo | `$env:TIA_CLI_HOME\scripts\` (`prep-project`, `raio-x`, `install-lib`, `bake-lib`) |

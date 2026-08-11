@@ -264,6 +264,75 @@ namespace Tia.Core
             foreach (DeviceItem child in item.DeviceItems) CollectAddresses(child, into);
         }
 
+        // ---------- list-io-map ----------
+
+        /// <summary>
+        /// Mapa de I/O do projeto inteiro, read-only. Existe porque não havia como responder "onde
+        /// está mapeado isso" sem o GUI: `list-attrs` não mostra endereço (não é atributo do
+        /// DeviceItem) e `list-telegrams` não traz o do telegrama. Na FP-01 o endereço do telegrama
+        /// do G120 saiu de uma sonda de 18 chamadas, lendo o "Next free address" da mensagem de
+        /// erro de um set_StartAddress conflitante — este verbo é a resposta direta.
+        /// Varre item + descendentes, como o set-io-address, porque os Address vivem no submódulo.
+        /// </summary>
+        public static object ListIoMap(TiaSession session, string deviceName, string io)
+        {
+            var devices = deviceName == null
+                ? session.AllDevices()
+                : new List<Device> { FindDevice(session, deviceName) };
+
+            var rows = new List<Dictionary<string, object>>();
+            foreach (var device in devices)
+                foreach (DeviceItem top in device.DeviceItems)
+                    CollectMap(device.Name, top, top.Name, rows);
+
+            if (io != null)
+                rows = rows.Where(r => ((string)r["ioType"]).Equals(io, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            rows = rows.OrderBy(r => (string)r["ioType"], StringComparer.Ordinal)
+                .ThenBy(r => (int)r["startByte"]).ToList();
+
+            // próximo byte livre por tipo: é a pergunta que a sonda do erro respondia
+            var nextFree = rows.GroupBy(r => (string)r["ioType"]).ToDictionary(
+                g => g.Key,
+                g => (object)g.Max(r => (int)r["startByte"] + (int)r["lengthBytes"]));
+
+            return new Dictionary<string, object>
+            {
+                { "devices", devices.Count },
+                { "addresses", rows.Count },
+                { "nextFreeByte", nextFree },
+                { "map", rows.Cast<object>().ToList() },
+            };
+        }
+
+        private static void CollectMap(string deviceName, DeviceItem item, string path,
+            List<Dictionary<string, object>> into)
+        {
+            foreach (Address a in item.Addresses)
+            {
+                int bytes = (a.Length + 7) / 8;   // Length é em bits
+                into.Add(new Dictionary<string, object>
+                {
+                    { "device", deviceName },
+                    { "item", path },
+                    { "ioType", a.IoType.ToString() },
+                    { "startByte", a.StartAddress },
+                    { "lengthBits", a.Length },
+                    { "lengthBytes", bytes },
+                    { "range", Range(a.IoType.ToString(), a.StartAddress, bytes) },
+                });
+            }
+            foreach (DeviceItem child in item.DeviceItems)
+                CollectMap(deviceName, child, path + "/" + child.Name, into);
+        }
+
+        /// <summary>"%IB256..267" — a forma que se lê no Portal e se escreve no programa.</summary>
+        private static string Range(string ioType, int start, int bytes)
+        {
+            string prefix = ioType.StartsWith("Out", StringComparison.OrdinalIgnoreCase) ? "%QB" : "%IB";
+            return bytes <= 1 ? prefix + start : prefix + start + ".." + (start + bytes - 1);
+        }
+
         // ---------- list-attrs ----------
 
         /// <summary>

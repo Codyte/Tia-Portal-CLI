@@ -63,6 +63,7 @@ namespace Tia.Tests
                 { "LadConverter.Convert", LadConverter_Convert },
                 { "Ops.RequireRootType", Ops_RequireRootType },
                 { "Ops.RequireUtf8Bom", Ops_RequireUtf8Bom },
+                { "Ops.SplitPath", Ops_SplitPath },
                 { "Ops.WalkFolders", Ops_WalkFolders },
                 { "Inventory.FolderMatches", Inventory_FolderMatches },
                 { "DbMember.AddToXml", DbMember_AddToXml },
@@ -79,6 +80,7 @@ namespace Tia.Tests
                 { "BlockEdit.SetRetainInXml", BlockEdit_SetRetainInXml },
                 { "Clone.InstancesInXml", Clone_InstancesInXml },
                 { "Audit.DriveShape", Audit_DriveShape },
+                { "Audit.LawChecks", Audit_LawChecks },
                 { "Ops.Squash", Ops_Squash },
             };
             foreach (var t in tests)
@@ -300,10 +302,31 @@ namespace Tia.Tests
             var t = tree();
             Check(Ops.WalkFolders(t, "9. Nova/Sub", "Block", find, add).Name == "Sub", "create desce criando");
             Check(t.Kids.Any(k => k.Name == "9. Nova"), "pasta nova pendurada na raiz");
-            // armadilha conhecida: no create não há como saber que "1. I/OS" é UM nome — vira 2 pastas.
+            // sem escape, no create não há como saber que "1. I/OS" é UM nome — vira 2 pastas.
             var t2 = new Folder { Name = "" };
             Ops.WalkFolders(t2, "1. I/OS", "Block", find, add);
-            Check(t2.Trail() == "1. I", "criar pasta com '/' no nome quebra em 2 níveis (só existente casa inteiro)");
+            Check(t2.Trail() == "1. I", "criar pasta com '/' cru quebra em 2 níveis (só existente casa inteiro)");
+
+            // '\/' é a saída: divergências F1/F2 do BOAS-PRATICAS §F ("1. I/OS", "4. Motores/Bombas").
+            var t3 = new Folder { Name = "" };
+            var leaf = Ops.WalkFolders(t3, @"1. I\/OS/QA-01", "Block", find, add);
+            Check(t3.Trail() == "1. I/OS", @"'\/' cria a pasta com barra no nome, num nível só");
+            Check(leaf.Name == "QA-01", @"depois do '\/' o '/' segue separando nível");
+            Check(walk(tree(), @"1. I\/OS/QA-00").Name == "QA-00", "escape também resolve pasta existente");
+        }
+
+        /// <summary>Split de caminho: '/' separa, '\/' é barra literal dentro do nome da pasta.</summary>
+        private static void Ops_SplitPath()
+        {
+            Func<string, string> j = p => string.Join("|", Ops.SplitPath(p));
+            Check(j("A/B/C") == "A|B|C", "barra crua separa");
+            Check(j(@"1. I\/OS") == "1. I/OS", "barra escapada fica no nome");
+            Check(j(@"1. I\/OS/QA-01") == "1. I/OS|QA-01", "escapada e crua no mesmo caminho");
+            Check(j(@"4. Motores\/Bombas/4.2 Partidas/Agitador") == "4. Motores/Bombas|4.2 Partidas|Agitador",
+                "as duas divergências do molde num caminho só");
+            Check(j("//A//B//") == "A|B", "barras vazias somem (como o split antigo)");
+            Check(j("") == "" && Ops.SplitPath(null).Count == 0, "vazio e null não quebram");
+            Check(j(@"C:\Nao\Escape") == @"C:\Nao\Escape", "'\\' que não precede '/' é literal");
         }
 
         /// <summary>
@@ -717,6 +740,36 @@ namespace Tia.Tests
             Check(!Audit.HasInverter(partidaDireta), "partida direta não tem marca de inversor");
             Check(Audit.MissingCore(partidaDireta).Count == 0, "partida direta com o trio passa");
             Check(Audit.MissingCore(new[] { "PARTIDA_X (X-01)" }).Count == 2, "sem FALHA nem CONDIÇÃO reprova");
+        }
+
+        /// <summary>Checks novos do audit: R8 (linguagem do bloco de chamada) e R2 (DB global).</summary>
+        private static void Audit_LawChecks()
+        {
+            Check(Audit.IsCallBlock("Main"), "OB1 é bloco de chamada");
+            Check(Audit.IsCallBlock("CHAMADA_ALARMES_PRELIMINAR"), "CHAMADA_* é chamada");
+            Check(Audit.IsCallBlock("PARTIDA_BOMBA_DE_LODO (BL-01)"), "PARTIDA_* é chamada");
+            Check(Audit.IsCallBlock("OB_MOLDE_PARTIDAS"), "molde é chamada");
+            Check(!Audit.IsCallBlock("FB SEQUENCIA_FP-01"), "FB de lógica pesada não é chamada");
+            Check(!Audit.IsCallBlock("FC_ALARMES_PRELIMINAR"), "FC de área não é chamada");
+
+            Check(Audit.IsLooseScalar("Bool") && Audit.IsLooseScalar("Real"), "escalar solto reprova");
+            Check(!Audit.IsLooseScalar("\"MotorDados\""), "referência a UDT (aspas) passa");
+            Check(!Audit.IsLooseScalar("Struct"), "Struct agrupa");
+            Check(!Audit.IsLooseScalar("Array[1..12] of Bool"), "Array agrupa");
+            Check(!Audit.IsLooseScalar(null) && !Audit.IsLooseScalar(""), "datatype ausente não inventa finding");
+
+            var db = XDocument.Parse(
+                "<Document><SW.Blocks.GlobalDB><Sections>"
+                + "<Section Name=\"Static\">"
+                + "<Member Name=\"PRELIMINAR\" Datatype=\"&quot;MotorDados&quot;\" />"
+                + "<Member Name=\"SEGURANCA_OK\" Datatype=\"Bool\" />"
+                + "<Member Name=\"INTL\" Datatype=\"Struct\"><Sections><Section Name=\"None\">"
+                + "<Member Name=\"ESCONDIDO\" Datatype=\"Bool\" /></Section></Sections></Member>"
+                + "</Section></Sections></SW.Blocks.GlobalDB></Document>");
+            var roots = Audit.RootMembers(db);
+            Check(roots.Count == 3, "só os membros da raiz, veio " + roots.Count);
+            Check(roots.Count(m => Audit.IsLooseScalar(m.Value)) == 1, "1 escalar solto (o de dentro do Struct não conta)");
+            Check(Audit.RootMembers(XDocument.Parse("<Document/>")).Count == 0, "DB sem Section Static não quebra");
         }
 
         private static void Ops_Squash()

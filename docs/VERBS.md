@@ -27,7 +27,7 @@
 - `free-memory [--bytes N] [--from B] [--count K]  (buracos livres na área %M; length -1 = até o fim)`
 
 ## structure
-- `create-folder --path A/B [--tags|--types] [--apply]`
+- `create-folder --path A/B [--path C/D ...] [--tags|--types] [--apply]  (repetir --path cria a árvore toda num attach; '\/' é barra literal no nome da pasta: "1. I\/OS/QA-01")`
 - `delete-folder --path A/B [--tags|--types] [--apply]`
 - `delete-block --name X [--apply]`
 - `create-instance-db --name X --of FB [--folder A/B] [--apply]  (molde importado por XML chega sem iDB → 'Missing instance DB')`
@@ -46,6 +46,7 @@
 - `insert-telegram --device X --number N [--type Main|Supplementary|Safety|Torque|Edge] [--item I] [--drive-object D] [--change] [--apply]  (--change troca o telegrama presente: G120 novo já vem com o 1)  (telegrama de drive NÃO é submódulo de catálogo — plug-module não coloca)`
 - `set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]`
 - `set-io-address --device X [--item I] [--io Input|Output] [--start N] [--apply]  (endereço inicial do módulo de I/O; não é atributo — set-attr não alcança, e o import-cax ignora. Sem --item: varre o device (sonda). Sem --start: só lista)`
+- `list-io-map [--device X] [--io Input|Output]  (read-only: todo endereço de I/O do projeto — device/item, %IB..%QB e o próximo byte livre por tipo; é onde se lê o endereço do telegrama de drive, que list-telegrams não traz)`
 - `connect-subnet --device X --subnet S [--io-system IO] [--apply]`
 - `set-memory-bytes --device X [--system 1] [--clock 0] [--apply]  (habilita FirstScan/AlwaysTRUE/Clock_1Hz na CPU)`
 - `export-cax [--out DIR]`
@@ -70,7 +71,7 @@
 - `compile [--block X | --folder A/B] [--errors] [--apply]  (--errors = lista plana {where,message,count} em vez da árvore)`
 - `diff-block --file F.xml [--name X]  (read-only, normalized compare)`
 - `doctor [--verb V] [--config F]  (read-only preflight dos verbos geradores)`
-- `audit [--plc N] [--max 50]  (read-only: projeto × lei de nomenclatura do PADRAO)`
+- `audit [--plc N] [--max 50] [--db "DB GLOBAL"]  (projeto × lei do PADRAO/BOAS-PRATICAS; o check R2 exporta a DB global para --out, o resto é read-only)`
 - `gen-profinet --config F [--apply]`
 - `standardize-tags [--config F] [--apply]`
 - `gen-fault-ob [--config F] [--out DIR] [--apply]`

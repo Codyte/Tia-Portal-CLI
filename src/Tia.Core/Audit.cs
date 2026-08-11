@@ -4,10 +4,12 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using Siemens.Engineering.CrossReference;
 using Siemens.Engineering.SW;
 using Siemens.Engineering.SW.Blocks;
 using Siemens.Engineering.SW.Tags;
+using Siemens.Engineering.SW.Types;
 
 namespace Tia.Core
 {
@@ -82,10 +84,50 @@ namespace Tia.Core
             return Regex.Replace(sb.ToString(), @"\s+", " ").Trim().ToLowerInvariant();
         }
 
-        public static object Run(PlcSoftware plc, int maxFindings)
+        /// <summary>Blocos de chamada (R8): têm que ser gráficos, porque é o que os geradores reescrevem.</summary>
+        private static readonly string[] CallBlockMarks = { "chamada", "partida", "molde", "ob_molde" };
+
+        /// <summary>Linguagens gráficas — só elas têm FlgNet, que é o que replicate/gen-* enxergam.</summary>
+        private static readonly string[] GraphicLanguages = { "LAD", "FBD" };
+
+        internal static bool IsCallBlock(string name)
+        {
+            string n = NormalizeArea(name);
+            return n == "main" || CallBlockMarks.Any(m => n.StartsWith(m, StringComparison.Ordinal));
+        }
+
+        /// <summary>
+        /// Membro solto na raiz da DB global (R2). UDT e Struct agrupam; escalar solto é o UDT que
+        /// não foi criado. Referência a UDT vem entre aspas no SimaticML ("MotorDados").
+        /// </summary>
+        internal static bool IsLooseScalar(string datatype)
+        {
+            string t = (datatype ?? "").Trim();
+            if (t.Length == 0) return false;
+            if (t.StartsWith("\"", StringComparison.Ordinal)) return false;          // UDT
+            if (t.StartsWith("Struct", StringComparison.OrdinalIgnoreCase)) return false;
+            if (t.StartsWith("Array", StringComparison.OrdinalIgnoreCase)) return false;
+            return true;
+        }
+
+        /// <summary>Membros da raiz (Section "Static") de uma DB exportada: nome → datatype.</summary>
+        internal static List<KeyValuePair<string, string>> RootMembers(XDocument doc)
+        {
+            var section = doc.Descendants().FirstOrDefault(e => e.Name.LocalName == "Section"
+                && (string)e.Attribute("Name") == "Static");
+            if (section == null) return new List<KeyValuePair<string, string>>();
+            return section.Elements().Where(e => e.Name.LocalName == "Member")
+                .Select(m => new KeyValuePair<string, string>(
+                    (string)m.Attribute("Name"), (string)m.Attribute("Datatype")))
+                .ToList();
+        }
+
+        public static object Run(PlcSoftware plc, int maxFindings, string outDir = null, string dbName = null)
         {
             var blocksByFolder = new Dictionary<string, List<string>>();
             CollectBlocks(plc.BlockGroup, "", blocksByFolder);
+            var languageOf = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            CollectLanguages(plc.BlockGroup, languageOf);
             var tablesByFolder = new Dictionary<string, List<string>>();
             CollectTables(plc.TagTableGroup, "", tablesByFolder);
 
@@ -126,6 +168,11 @@ namespace Tia.Core
                     noTable.Add(drive.Key + " → sem tabela (" + tag + ")");
             }
 
+            int udts = CountTypes(plc.TypeGroup);
+            var noUdt = udts > 0 ? new List<string>()
+                : new List<string> { "0 UDTs no PLC — todo agrupamento de dados usado por mais de "
+                    + "um bloco tem que ser UDT (R1); Struct anônima dentro de DB é o antipadrão do STEP 7 V5" };
+
             var checks = new List<object>
             {
                 Check("(TAG) na pasta do acionamento", noTag, maxFindings),
@@ -137,15 +184,128 @@ namespace Tia.Core
                     AreaConflicts(blocksByFolder.Keys, tablesByFolder.Keys), maxFindings),
                 Check("biblioteca não depende de bloco de área",
                     LayerLeaks(plc, blocksByFolder), maxFindings),
+                Check("R1 · o PLC tem UDT", noUdt, maxFindings),
+                DbGlobalCheck(plc, dbName, outDir, maxFindings),
+                Check("R8 · bloco de chamada em linguagem gráfica",
+                    NonGraphicCalls(blocksByFolder, languageOf), maxFindings),
+                Check("CHAMADA_* fora da pasta de área", MisplacedCalls(blocksByFolder), maxFindings),
             };
 
             return new Dictionary<string, object>
             {
                 { "plc", plc.Name },
                 { "drives", drives.Count },
+                { "udts", udts },
                 { "ok", checks.Cast<Dictionary<string, object>>().All(c => (bool)c["ok"]) },
                 { "checks", checks },
             };
+        }
+
+        /// <summary>
+        /// R8: chamada (Main, CHAMADA_*, PARTIDA_*, MOLDE_*) tem que ser LAD/FBD. O argumento não é
+        /// de gosto — replicate-fc/gen-alarm-fc/gen-fault-ob reescrevem FlgNet, então um bloco de
+        /// chamada em SCL está fora do alcance da ferramenta que gerou o resto do programa.
+        /// DB (iDB chamado de PARTIDA_X) não tem linguagem de código: fica de fora.
+        /// </summary>
+        private static List<string> NonGraphicCalls(Dictionary<string, List<string>> blocksByFolder,
+            Dictionary<string, string> languageOf)
+        {
+            var findings = new List<string>();
+            foreach (var kv in blocksByFolder)
+                foreach (string name in kv.Value)
+                {
+                    string lang;
+                    if (!IsCallBlock(name) || !languageOf.TryGetValue(name, out lang)) continue;
+                    if (!GraphicLanguages.Contains(lang, StringComparer.OrdinalIgnoreCase))
+                        findings.Add((kv.Key.Length == 0 ? "(raiz)" : kv.Key) + " → " + name + " (" + lang + ")");
+                }
+            return findings;
+        }
+
+        /// <summary>
+        /// CHAMADA_* mora junto do molde, um nível acima da pasta de área — a pasta de área só tem o
+        /// FC da área e as DBs. Sinal: o CHAMADA divide pasta com o trabalho que ele chama
+        /// (FC_ALARMES_*/ALARMES_* ou PARTIDA_*). Divergência 3 do BOAS-PRATICAS §F.
+        /// </summary>
+        private static List<string> MisplacedCalls(Dictionary<string, List<string>> blocksByFolder)
+        {
+            var findings = new List<string>();
+            foreach (var kv in blocksByFolder)
+            {
+                var calls = kv.Value.Where(n => NormalizeArea(n).StartsWith("chamada", StringComparison.Ordinal)).ToList();
+                if (calls.Count == 0) continue;
+                bool areaWork = kv.Value.Any(n =>
+                {
+                    string x = NormalizeArea(n);
+                    return x.StartsWith("fc_alarmes", StringComparison.Ordinal)
+                        || x.StartsWith("alarmes_", StringComparison.Ordinal)
+                        || x.StartsWith("partida", StringComparison.Ordinal);
+                });
+                if (!areaWork) continue;
+                foreach (string call in calls)
+                    findings.Add(kv.Key + " → " + call + " (divide pasta com o bloco de área que chama)");
+            }
+            return findings;
+        }
+
+        /// <summary>
+        /// R2: DB global é agregado de UDTs. Escalar solto na raiz = UDT que não foi criado. Só o
+        /// export mostra o datatype dos membros, então o check pula (não reprova) quando não há DB
+        /// global identificável, quando ela está inconsistente, ou quando o audit rodou sem --out.
+        /// </summary>
+        private static object DbGlobalCheck(PlcSoftware plc, string dbName, string outDir, int maxFindings)
+        {
+            const string name = "R2 · DB global sem escalar solto na raiz";
+            string target = dbName ?? FindGlobalDb(plc.BlockGroup);
+            if (target == null) return Skipped(name, "nenhuma DB global com 'global' no nome; passe --db NOME");
+            if (string.IsNullOrEmpty(outDir)) return Skipped(name, "precisa de --out DIR para exportar '" + target + "'");
+            try
+            {
+                var exported = (Dictionary<string, object>)Ops.ExportBlock(plc, target, outDir);
+                var doc = XDocument.Load((string)exported["file"]);
+                var loose = RootMembers(doc).Where(m => IsLooseScalar(m.Value))
+                    .Select(m => target + "." + m.Key + " : " + m.Value).ToList();
+                var row = (Dictionary<string, object>)Check(name, loose, maxFindings);
+                row["db"] = target;
+                return row;
+            }
+            catch (Exception ex) { return Skipped(name, ex.Message); }
+        }
+
+        /// <summary>DB global = GlobalDB com 'global' no nome. Convenção do molde ("DB GLOBAL").</summary>
+        private static string FindGlobalDb(PlcBlockGroup group)
+        {
+            foreach (PlcBlock b in group.Blocks)
+                if (b is GlobalDB && NormalizeArea(b.Name).IndexOf("global", StringComparison.Ordinal) >= 0)
+                    return b.Name;
+            foreach (PlcBlockUserGroup sub in group.Groups)
+            {
+                string hit = FindGlobalDb(sub);
+                if (hit != null) return hit;
+            }
+            return null;
+        }
+
+        /// <summary>Check que não pôde rodar: ok=true (não reprova o projeto) + o porquê.</summary>
+        private static object Skipped(string name, string why)
+        {
+            return new Dictionary<string, object>
+            {
+                { "check", name }, { "ok", true }, { "findings", 0 },
+                { "skipped", why },
+            };
+        }
+
+        private static int CountTypes(PlcTypeGroup group)
+        {
+            return group.Types.Count + group.Groups.Cast<PlcTypeUserGroup>().Sum(g => CountTypes(g));
+        }
+
+        private static void CollectLanguages(PlcBlockGroup group, Dictionary<string, string> into)
+        {
+            foreach (PlcBlock b in group.Blocks)
+                if (!(b is DataBlock)) into[b.Name] = b.ProgrammingLanguage.ToString();
+            foreach (PlcBlockUserGroup sub in group.Groups) CollectLanguages(sub, into);
         }
 
         /// <summary>

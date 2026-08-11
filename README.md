@@ -25,7 +25,7 @@ machine spec delivered a **compiling PLC program**. Spec and pass criteria were 
 run, by someone who did not execute it: [`docs/teste-cego/`](docs/teste-cego/) — write-up in
 Portuguese: [**the ruler and the stumbles**](docs/teste-cego/artigo.md).
 
-**77 verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML, catalog modules
+**78 verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML, catalog modules
 and SINAMICS telegrams · SCL→LAD converter · 6 field-proven code generators · installable block
 library · batch mode · one attach
 
@@ -89,7 +89,7 @@ Run `tia --help` for the full, always-current list.
 | 🔌 Session | `open-project` · `create-project` · `save-project` · `close-project` |
 | 🔍 Read | **`tree`** (start here: whole-PLC outline as markdown) · `info` · `list-devices` · `list-blocks` (`--folder` · `--type` · `--count`) · `list-tags` · `list-types` · `list-hmi` · `find` · `snapshot` · `xref` · `trace` (every symbol of one equipment + who references it) · `explain-block` (LAD/FBD → compact text) · `free-memory` (free holes in `%M`) · `export-block` · `export-tags` · `export-type` |
 | 🗂️ Structure | `create-folder` · `delete-folder` (`--tags`/`--types`) · `delete-block` · `delete-type` · `create-instance-db` · `move-block` (export→delete→import; Openness has no move) · `import-type` · `scaffold` (folder tree + template blocks from a manifest, idempotent) |
-| 🛠️ Hardware | `add-device` · `delete-device` · `list-attrs` / `set-attr` (any device-item attribute) · `plug-module` (catalog submodules) · `list-telegrams` / `insert-telegram` (SINAMICS drives) · `set-address` · `connect-subnet` · `set-memory-bytes` (clock/system byte) · `export-cax` · `import-cax` (AML) |
+| 🛠️ Hardware | `add-device` · `delete-device` · `list-attrs` / `set-attr` (any device-item attribute) · `plug-module` (catalog submodules) · `list-telegrams` / `insert-telegram` (SINAMICS drives) · `set-address` · `list-io-map` / `set-io-address` (every I/O address in the project, and the one way to move one) · `connect-subnet` · `set-memory-bytes` (clock/system byte) · `export-cax` · `import-cax` (AML) |
 | ✍️ Write | `import-block` · `import-source` · `import-ladder` (SCL subset → LAD) · `import-tags` · `add-tag` / `set-tag` / `delete-tag` · `rename-block` · `clone` · `add-db-member` / `edit-db-member` / `delete-db-member` · `compile` · `diff-block` |
 | ⚙️ Generators | `gen-profinet` · `standardize-tags` · `gen-fault-ob` · `replicate-fc` · `gen-alarm-fc` · `replicate-instruments` — plus `doctor`, a read-only preflight that checks every template/folder they need, and `audit`, project × naming law |
 | 📚 Library | `list-library` · `import-master-copy` · `add-master-copy` · `delete-master-copy` — a block library that travels as a single `.al21` and installs into a bare CPU in one command (see [`library/`](library/README.md); manifest is versioned, XML payload is not) |

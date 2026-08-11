@@ -84,7 +84,7 @@ membros nomeados, ou constantes simbólicas para os índices.
 
 | # | O que está | O que o molde manda | Causa |
 |---|---|---|---|
-| 1 | `1. I-OS` | `1. I/OS` | `create-folder --path` usa `/` como separador |
+| 1 | `1. I-OS` | `1. I/OS` | `create-folder --path` usava `/` como separador — **resolvido**: `--path "1. I\/OS"` (§3.4) |
 | 2 | `4. Motores` | `4. Motores/Bombas` | idem |
 | 3 | `CHAMADA_ALARMES_DESIDRATACAO` dentro de `3. Alarmes/3.1 Desidratacao` | `CHAMADA_*` fica no nível acima, junto do `OB_MOLDE_ALARMES` (`3.1 Alarmes Words`); a pasta de área só tem `FC_ALARMES_<AREA>` + DBs | decisão da sessão |
 | 4 | `5. Instrumentacao/5.1 Desidratacao` | `5. Instrumentação/5.1 Aferição Analógica/5.1.N <Área>` — falta um nível | decisão da sessão |
@@ -149,12 +149,27 @@ diff):
    `--folder` é recusada com mensagem (um `--folder` não endereça os dois grupos). O relatório
    deixou de mentir: `generated` procura em blocos **e** em UDTs. Destrava R1/R2 — UDT em pasta,
    por fonte SCL, sem GUI.
-3. **`import-ladder` não converte chamada de bloco.** Suporta só booleano puro
-   (`LadConverter.cs:11-15`) e rejeita `#locais`. É a razão real de OB1 ter saído em SCL: não havia
-   caminho para LAD sem clonar um molde da biblioteca. Suportar `"FC"();` e
-   `"iDB"(par := x, out => y)` como Call box destrava R8.
-4. **`create-folder` aceitando lista de segmentos** (o `scaffold` já faz isso). Destrava `1. I/OS` e
-   `4. Motores/Bombas` — divergências F1 e F2.
-5. **`audit` com os checks novos:** existe UDT; DB global sem escalar solto; linguagem do bloco de
-   chamada; `CHAMADA_*` no nível certo. Transforma esta lei em régua executável.
-6. **`list-io-map`** — pendência que já vinha do relatório (endereço de telegrama de drive).
+3. ~~**`import-ladder` não converte chamada de bloco.**~~ **Descartado em 2026-08-11**, resolvido por
+   outro caminho. A R8 foi destravada pelo `add-call` (FP-03, tropeço 2), que monta a rede LAD
+   direto no XML do bloco a partir da interface do FB — sem passar por SCL. Ensinar `CALL` ao
+   `LadConverter` seria uma segunda rota para o mesmo destino, com a parte cara do problema
+   (resolver tipo de pino, montar `Access`/`Wires`) duplicada: o conversor teria que reimplementar
+   o que o `add-call` já faz, e um `#local` como parâmetro continua fora do alcance dos dois.
+   O `import-ladder` fica no que faz bem — lógica booleana pura vinda de fonte SCL.
+4. ~~**`create-folder` aceitando lista de segmentos.**~~ **Feito em 2026-08-11.** Saiu diferente do
+   proposto: em vez de lista de segmentos, `\/` no `--path` é barra literal
+   (`--path "1. I\/OS/QA-01"`), o que vale para **todo** verbo que recebe caminho de pasta, não só
+   o `create-folder` — a regra mora no `Ops.SplitPath`, sob o longest-match do `WalkFolders`.
+   Fecha as divergências F1 e F2. No mesmo movimento, `--path` virou repetível: uma árvore inteira
+   num attach, com o caminho que falha isolado em `{path, error}`.
+5. ~~**`audit` com os checks novos.**~~ **Feito em 2026-08-11.** Os quatro entraram: `R1 · o PLC tem
+   UDT`, `R2 · DB global sem escalar solto na raiz`, `R8 · bloco de chamada em linguagem gráfica` e
+   `CHAMADA_* fora da pasta de área` — 10 checks no total. O R2 é o único que sai do read-only: só
+   o export mostra o datatype dos membros, então ele exporta a DB global para `--out` e **pula sem
+   reprovar** (`skipped`, com o motivo) quando não há DB global identificável, quando ela está
+   inconsistente, ou quando `--db` aponta para o que não existe.
+6. ~~**`list-io-map`**~~ — **Feito em 2026-08-11.** `list-io-map [--device X] [--io Input|Output]`
+   devolve todo endereço de I/O do projeto (device, caminho do item, `%IB..`/`%QB..`, bits/bytes) e
+   o próximo byte livre por tipo. É a resposta direta à sonda de 18 chamadas da FP-01: varre item +
+   descendentes, que é onde os `Address` moram — inclusive os do drive object, que
+   `list-telegrams` não traz e `list-attrs` não enxerga.

@@ -7,7 +7,44 @@ shapes and exit codes. A breaking change to any of those bumps MAJOR.
 
 ## [Unreleased]
 
-<!-- Add entries here as they land; they move into the next version's section at release. -->
+Closes the correction queue that the blind tests opened
+(`docs/BOAS-PRATICAS.md` §3, items 3–6). All four are documented as either shipped or
+deliberately dropped.
+
+### Added
+
+- **`list-io-map [--device X] [--io Input|Output]`** — every I/O address in the project:
+  device, item path, `%IB…`/`%QB…` range, bit and byte length, plus the next free byte per I/O
+  type. Answers the question that previously needed the GUI or an 18-call probe: `list-attrs`
+  does not show addresses (they are not `DeviceItem` attributes) and `list-telegrams` does not
+  carry the drive telegram's address. Walks item *and* descendants, because the `Address` objects
+  live on the submodule.
+- **`audit` — four new checks**, taking it to ten: `R1 · o PLC tem UDT`, `R2 · DB global sem
+  escalar solto na raiz`, `R8 · bloco de chamada em linguagem gráfica`, and `CHAMADA_* fora da
+  pasta de área`. A check that cannot run reports `skipped` with the reason and does **not** fail
+  the project.
+- **`audit --db "DB GLOBAL"`** — names the global DB for the R2 check when the heuristic (a
+  `GlobalDB` with "global" in its name) does not find it.
+
+### Changed
+
+- **`create-folder --path` is repeatable** — `--path A/B --path C/D` builds a whole tree on one
+  attach instead of one attach (~7 s) per folder. A path that fails becomes `{path, error}` and
+  the rest keep going, as `run --script` does with steps. **The JSON shape changed**: the verb now
+  returns `{kind, paths, created, failed, applied, folders[]}` instead of a single folder object.
+- **`\/` in any folder path is a literal slash** (`--path "1. I\/OS/QA-01"`). The rule lives in
+  `Ops.SplitPath`, under the longest-match of `WalkFolders`, so it applies to every verb that takes
+  a folder path — not just `create-folder`. Until now longest-match could only resolve a name
+  containing `/` that already existed; creating `1. I/OS` silently produced two nested folders.
+- **`audit` is no longer purely read-only**: the R2 check exports the global DB to `--out`
+  (default `workspace/exports`), because only the export shows each member's datatype.
+
+### Deliberately not done
+
+- **Teaching `import-ladder` to convert `CALL`.** R8 is already unblocked by `add-call`, which
+  builds the LAD network straight into the block's XML from the FB interface. A second route to
+  the same destination would duplicate the expensive part (resolving pin types, assembling
+  `Access`/`Wires`), and a `#local` as a parameter stays out of reach either way.
 
 ## [1.0.0] — 2026-08-11
 

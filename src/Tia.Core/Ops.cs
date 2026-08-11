@@ -113,6 +113,29 @@ namespace Tia.Core
         }
 
         /// <summary>
+        /// Segmentos de um caminho de pasta. '/' separa; '\/' é barra literal dentro do nome
+        /// ("1. I\/OS/QA-01" → "1. I/OS" + "QA-01"). O escape existe porque longest-match só
+        /// resolve nome com '/' que JÁ existe: na criação, "1. I/OS" virava duas pastas.
+        /// </summary>
+        public static List<string> SplitPath(string path)
+        {
+            var parts = new List<string>();
+            if (string.IsNullOrEmpty(path)) return parts;
+            var current = new StringBuilder();
+            for (int i = 0; i < path.Length; i++)
+            {
+                if (path[i] == '\\' && i + 1 < path.Length && path[i + 1] == '/') { current.Append('/'); i++; }
+                else if (path[i] == '/')
+                {
+                    if (current.Length > 0) { parts.Add(current.ToString()); current.Clear(); }
+                }
+                else current.Append(path[i]);
+            }
+            if (current.Length > 0) parts.Add(current.ToString());
+            return parts;
+        }
+
+        /// <summary>
         /// Caminho "A/B" segmento a segmento, casando o mais longo primeiro — nome de pasta pode
         /// conter '/' ("1. I/OS", "3. Alarmes/Eventos/Falhas"). create=null lança se faltar.
         /// public só para o teste offline: os delegados isolam do PlcSoftware, e a regra de
@@ -123,7 +146,7 @@ namespace Tia.Core
         {
             T current = root;
             if (string.IsNullOrEmpty(path)) return current;
-            var parts = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = SplitPath(path).ToArray();
             for (int i = 0; i < parts.Length; )
             {
                 T next = null;
@@ -211,6 +234,47 @@ namespace Tia.Core
                 if (tags) ResolveTagFolder(plc, path, true); else ResolveFolder(plc, path, true);
             }
             return result;
+        }
+
+        /// <summary>
+        /// Vários --path numa chamada. Cada caminho cria os níveis que faltarem, então uma árvore
+        /// inteira sai de um attach — repetir a chamada custava ~7 s de attach por pasta, e
+        /// scaffold (a outra saída) exige manifesto em disco. Um caminho que falha vira
+        /// `{path, error}` e os outros seguem, como o run --script faz com step.
+        /// </summary>
+        public static object CreateFolders(PlcSoftware plc, IEnumerable<string> paths, bool tags,
+            bool apply, bool types = false)
+        {
+            var list = (paths ?? Enumerable.Empty<string>()).Where(p => !string.IsNullOrEmpty(p)).ToList();
+            if (list.Count == 0) throw new InvalidOperationException("--path required.");
+            var rows = new List<object>();
+            int created = 0, failed = 0;
+            foreach (string path in list)
+            {
+                try
+                {
+                    var row = (Dictionary<string, object>)CreateFolder(plc, path, tags, apply, types);
+                    if ((row["action"] as string ?? "").StartsWith("create", StringComparison.Ordinal)) created++;
+                    rows.Add(row);
+                }
+                catch (Exception ex)
+                {
+                    failed++;
+                    rows.Add(new Dictionary<string, object>
+                    {
+                        { "path", path }, { "action", "error" }, { "error", ex.Message },
+                    });
+                }
+            }
+            return new Dictionary<string, object>
+            {
+                { "kind", types ? "type-folder" : tags ? "tag-folder" : "block-folder" },
+                { "paths", list.Count },
+                { "created", created },
+                { "failed", failed },
+                { "applied", apply },
+                { "folders", rows },
+            };
         }
 
         public static object DeleteFolder(PlcSoftware plc, string path, bool tags, bool apply, bool types = false)

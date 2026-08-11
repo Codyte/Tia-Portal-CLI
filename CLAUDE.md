@@ -70,6 +70,19 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
     ~80 linhas em vez de grep em `Program.cs`.
   - **Nunca `list-blocks` sem filtro** — são ~480 blocos. `--folder A/B` (pega subpastas),
     `--type FB|FC|OB|GlobalDB|InstanceDB`, `--count` (só o total por pasta, ~10 linhas).
+  - **Pasta com `/` no nome (`1. I/OS`, `4. Motores/Bombas`) se escreve `\/`**: `--path "1. I\/OS/QA-01"`.
+    Vale em qualquer verbo que receba caminho de pasta (a regra é do `Ops.SplitPath`). Sem o escape,
+    longest-match só resolve nome com `/` que **já existe** — na criação, `1. I/OS` virava duas pastas.
+    `create-folder --path` é repetível: árvore inteira num attach, caminho que falha vira
+    `{path, error}` e os outros seguem.
+  - **`list-io-map [--device X] [--io Input|Output]`** = todo endereço de I/O do projeto + próximo
+    byte livre por tipo. É onde se lê o endereço do telegrama de drive — `list-attrs` não mostra
+    endereço (não é atributo do `DeviceItem`) e `list-telegrams` não traz. Varre item **e**
+    descendentes, que é onde os `Address` moram.
+  - **`audit` são 10 checks** e o R2 **exporta a DB global** para `--out` (só o export mostra o
+    datatype dos membros) — não é mais 100% read-only. Check que não pode rodar devolve `skipped`
+    com o motivo e **não reprova** o projeto. `--db "DB GLOBAL"` nomeia a DB quando a heurística
+    (`GlobalDB` com "global" no nome) não acha.
   - **`--folder` de import é sempre o caminho completo.** `import-block`/`import-tags`/`import-source`
     criam a árvore que faltar **a partir da raiz**: caminho parcial (`5.2 Totalizadores` em vez de
     `5. Instrumentação / Atuadores/5.2 Totalizadores`) cria uma pasta paralela homônima, e o gerador

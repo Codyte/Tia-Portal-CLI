@@ -1,87 +1,72 @@
-# Handoff · TIA Portal Openness API · 2026-08-11 (3)
+# Handoff · TIA Portal Openness API · 2026-08-11 (4)
 
 ## Goal
-Sessão de ferramenta, não de CLI: o extrator do `navindex` deixou de indexar `case` de dado como
-destino de dispatch, e os mapas do repo foram regenerados. A frente de trabalho continua sendo a
-**FP-04** (caderno cego novo), intocada — é o próximo passo, detalhado abaixo.
+Executar o caderno [`docs/teste-cego/caderno-FP-04.md`](../docs/teste-cego/caderno-FP-04.md) —
+área de aeração `Sopradores/Aeração` no CLP de teste, hardware novo incluído — e escrever
+`docs/teste-cego/resultado-FP-04.md`.
+
+É uma **rodada cega**: quem escreveu o caderno não é quem executa. O handoff da sessão que o
+escreveu foi arquivado de propósito para esta sessão não herdar nada dela.
+
+## Rodada cega — o que NÃO ler (é a regra do teste, não preferência)
+
+Ler qualquer um destes entrega de graça o que a rodada deveria descobrir sozinha, e invalida o
+resultado:
+
+- as outras rodadas: `docs/teste-cego/caderno-FP-0{1,2,3}.md`, `resultado-*.md`, `criterios.md`,
+  `artigo.md`;
+- a seção **"FP-04 escrita"** de `docs/PLANO.md` — o resto do PLANO (decisões D1–D9, fases) pode e
+  deve ser lido;
+- `docs/DIARIO.md` e `.handoff/archive/`.
+
+Tudo o mais é jogo limpo, e é o que uma obra real teria: o caderno, o `CLAUDE.md` do repo,
+`docs/BOAS-PRATICAS.md`, `docs/VERBS.md`, os `__navi__.md`, a ajuda oficial (`scripts/tia-help.py`)
+e o próprio projeto TIA.
+
+**Travou por falta de documentação = defeito da ferramenta, não da sessão.** Registrar em vez de
+contornar calado — o produto do teste são os tropeços, não o programa.
 
 ## State
-- HEAD: `1e0bc11`, pushado. Working tree limpo. `navindex` também pushado (`2e113ec` em
-  `Codyte/navindex`).
-- Live state: **TIA Portal aberto** (sessão 1) com `LIB_TESTE`, herdado de duas sessões atrás;
-  nada foi tocado nele nesta sessão nem na anterior. Nenhum verbo do `tia` rodou aqui.
-  **`tia.exe` está defasado do fonte**: 3 `.cs` mudaram (só comentário de header NAV INDEX) e
-  ninguém rodou `rebuild.ps1`. O primeiro rebuild vai mudar o hash do exe e **abrir o diálogo
-  modal de autorização** no Portal já aberto — chamada pendurada com CPU ~0 é isso.
-- Done:
-  - **`Codyte/navindex` `2e113ec`** — `case "..."` só indexa se o literal for todo minúsculo.
-    Verbo de CLI é lowercase por convenção (`list-blocks`); switch sobre dado carrega maiúscula.
-    `CACHE_VER` 5 → 6 (senão o cache serve símbolo velho e a mudança parece não ter efeito).
-    Teste atualizado, passa.
-  - **`1e0bc11`** — mapas e headers do tia regenerados. 25 entradas de ruído fora
-    (`case "Coil"`, `"BOOL"`, `"BYTE"`, `"LEITURA_*"`); 71 verbos do `Program.cs` e 6 do
-    `Doctor.cs` intactos. `BlockExplain.cs` agora cabe inteiro no mapa da pasta e
-    `Standardize.cs` recuperou 2 símbolos que o ruído empurrava para fora do corte de 24.
+- HEAD: `918b121`, pushado, working tree limpo.
+- Live state: **TIA Portal aberto** (sessão 1) com `LIB_TESTE` — o projeto do caderno, herdado de
+  sessões anteriores; nada foi tocado nele. `tia.exe` acabou de ser reconstruído
+  (`rebuild.ps1` ok, whitelist refeita, 78 verbos): o hash mudou com o Portal já aberto, então a
+  **primeira** chamada de verbo pode pendurar num **diálogo modal de autorização do Openness** na
+  tela — CPU ~0 é isso, alguém clica e segue. Registrar o clique no resultado (é furo na alegação
+  de ponta a ponta).
+- Done: nada da rodada. O caderno existe e é a entrada.
 - In progress: nada.
 
-## Decisions (and why)
-- **Nada de call graph / "quem chama quem" no navindex.** Medido neste repo: 399 métodos,
-  354 nomes únicos — só 8,8% de nome repetido, então `grep "Nome("` já é resposta exata em 91%
-  dos casos, e nos 8,8% ambíguos (`Run` declarado 9x) regex também falha, porque exige resolver
-  o tipo do receptor. Protótipo de grafo devolveu uma frase ("`Ops` é chamado por 16 arquivos,
-  resto ≤4") e marcou **36 de 60 classes como dead code, 100% falso positivo** — são configs/DTOs
-  instanciados com `new`, não chamados por `Classe.Metodo(`. Índice que afirma código vivo morto
-  é pior que não ter. Se navegação doer de verdade um dia, o degrau é LSP via MCP (Serena), não
-  mais markdown gerado.
-- **Filtro lowercase é aposta em convenção, não parse** — assumido. Repo que despacha em
-  PascalCase (`case "OrderPlaced":`, event routing) perde esses rótulos do índice. Degradação
-  suave: omite, não aponta linha errada; método e tipo não são tocados. Fix de 1 linha registrado
-  em nota `ponytail:` no próprio `navindex.py`.
-- **Descartado: mapa para `docs/teste-cego/`.** Sai bom com `--threshold 150`, mas o comando padrão
-  da raiz **apaga** o mapa na regeneração seguinte — só sobrevive trocando o comando documentado do
-  repo. Ganho marginal (nomes já auto-descritivos no root tree) contra instruções divergentes.
-- **Banner de seção não é ruído.** `L92:lookup`, `L281:structure` vêm de `// ----- lookup -----`,
-  são deliberados e marcam região do arquivo. Só o `case` de dado era ruído. Constante UPPER em
-  Python (`DEFAULT_BASE`) é jump target legítimo — não mexido.
-
 ## Next steps (ordered)
-1. **FP-04 — escrever o caderno cego novo.** É o passo 1 há três handoffs; nada dele foi feito.
-   - **O que ele tem que medir** (superfície que nunca passou por rodada cega): `add-call`,
-     `delete-network`, `set-retain`, `list-interface`, `clone --with-instances`, o guard de
-     compile-e-confere dos verbos que editam bloco por XML, os **4 checks novos do `audit`** e
-     `create-folder` com `\/` no nome de pasta.
-   - **Como se escreve**: régua pronta em `docs/teste-cego/criterios.md` (G1–G4 + I1–I4 +
-     condução); molde de redação nos cadernos FP-01/02/03. É memorial descritivo fictício de
-     planta — o executor recebe o caderno e mais nada.
-   - **A disciplina que custa**: escrever numa sessão e **executar em outra**. E resistir a
-     escrever um caderno que o CLI já resolve fácil — o valor da rodada cega está no que ela
-     reprova.
-   - **De quebra**: se o caderno pedir um drive G120, fecha o caso real do `list-io-map`
-     (endereço do telegrama), que segue sem prova.
-2. Depois: MCP em 2 tools, tradução do artigo para EN, postar (SIOS / r/PLC / LinkedIn).
+1. Ler o caderno inteiro antes de tocar no projeto. Depois orientar-se no CLP
+   (`tia tree` → `plc-navi.md`) e planejar; o caderno é memorial de cliente, não especificação de
+   software — o que ele não diz é para decidir com engenharia, como em obra real.
+2. Executar: hardware do item 2 e 3, programa dos itens 4 a 6, no padrão de
+   `docs/BOAS-PRATICAS.md` (R1–R9). Verbo de escrita é dry por padrão, `--apply` explícito.
+3. Escrever `docs/teste-cego/resultado-FP-04.md`: veredito do item 7 do caderno + **os tropeços**,
+   um por linha — onde travou e por quantos turnos, o que teve de adivinhar porque o caderno não
+   dizia (de propósito) e o que teve de adivinhar porque a **ferramenta** não dizia (defeito
+   nosso), que verbo faltou ou devolveu a coisa errada, e que linha de `SKILL.md`/`VERBS.md`/
+   `CLAUDE.md` escrita diferente teria evitado o tropeço. Registrar o relógio: início, fim, onde
+   o tempo foi.
 
 ## Key files
-- `docs/teste-cego/criterios.md` (55 ln) — a régua. Ler primeiro.
-- `docs/teste-cego/caderno-FP-03.md` (88 ln) — o molde mais enxuto; FP-02 (255 ln) é o mais completo.
-- `docs/teste-cego/resultado-FP-03.md` — o formato do que a execução devolve.
-- `docs/__navi__.md` e o root `__navi__.md` — orientação em 1 read; `docs/teste-cego/` não tem mapa
-  por decisão (acima), o root tree lista os 8 arquivos com contagem de linha.
-- `docs/BOAS-PRATICAS.md` (R1–R9) — é o que o caderno cobra do executor.
+- `docs/teste-cego/caderno-FP-04.md` — a entrada. Único arquivo de `teste-cego/` a abrir.
+- `docs/BOAS-PRATICAS.md` (R1–R9) — o padrão da casa que o item 7 do caderno cobra.
+- `docs/VERBS.md` — assinatura dos 78 verbos, ~90 linhas.
+- `__navi__.md` da raiz e de `docs/` — orientação em 1 read.
 
 ## Open / blockers
-- `list-io-map` **ainda não foi provado no caso que o motivou**: `LIB_TESTE` não tem cartão de I/O
-  nem G120. Endereço do telegrama de drive continua por confirmar.
-- Os 4 checks novos do `audit` só foram vistos **passando** — nenhum foi visto reprovando contra
-  projeto que viole a regra. A FP-04 é onde isso aparece.
-- `tia.exe` defasado do fonte (só comentário) — rodar `pwsh scripts/rebuild.ps1` antes de qualquer
-  smoke, e contar com o diálogo modal de autorização no Portal aberto.
+- `LIB_TESTE` não tem periferia remota nem inversor: o caderno manda incluir os dois. É a parte da
+  rodada sem precedente no projeto de teste.
+- Openness é single-session: uma chamada `tia` por vez, sem paralelizar (nem via agente).
 
 ## Skills
 - tia
 
 ## Effort
-**Médio** para o passo 1. É redação com régua pronta e decisão de conduta já tomada — o custo não é
-raciocínio, é caprichar no memorial fictício e não facilitar para o executor. Sobe para **alto** se
-a rodada for executada nesta mesma linhagem de sessões: aí escolher o que revelar ao executor vira o
-problema, e o vazamento é invisível. Nada aqui é limitado por raciocínio assim que o Portal entra:
-o relógio é dele (~10-20 s por chamada, 2-4 min por `open-project`).
+**Alto.** É programa de PLC novo com decisões de engenharia que o caderno deliberadamente não toma
+(dimensionar cartão, escolher onde a lógica mora, como o rodízio conta hora), mais hardware que o
+projeto de teste nunca teve. O relógio, porém, é do Portal (~10–20 s por verbo, 2–4 min por
+`open-project`) — pensar mais não acelera a parte lenta. Baixar para **médio** só depois do
+hardware fechado e compilando.

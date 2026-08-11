@@ -1,42 +1,43 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L54    class Hardware
-//   L60    .FindDevice
-//   L72    .HasItemNamed
-//   L82    .Interface
-//   L90    add-device
-//   L93    .AddDevice
-//   L118   delete-device
-//   L120   .DeleteDevice
-//   L133   plug-module
-//   L141   .PlugModule
-//   L210   .CollectSlots
-//   L222   .FindItem
-//   L235   .FindItem
-//   L246   set-address
-//   L248   .SetAddress
-//   L277   set-io-address
-//   L285   .SetIoAddress
-//   L325   .CollectAddresses
-//   L331   list-io-map
-//   L341   .ListIoMap
-//   L379   .CollectMap
-//   L401   .Range
-//   L407   list-attrs
-//   L414   .ListAttrs
-//   L439   set-attr
-//   L447   .SetAttr
-//   L480   .Coerce
-//   L488   .TryGet
-//   L494   set-memory-bytes
-//   L503   .SetMemoryBytes
-//   L548   .IsMemoryAttribute
-//   L556   .FindMemoryItem
-//   L571   connect-subnet
-//   L577   .ConnectSubnet
-//   L691   CAx (AML)
-//   L693   .CaxExport
-//   L706   .CaxImport
+//   L56    class Hardware
+//   L62    .FindDevice
+//   L74    .HasItemNamed
+//   L84    .Interface
+//   L92    add-device
+//   L95    .AddDevice
+//   L120   delete-device
+//   L122   .DeleteDevice
+//   L135   plug-module
+//   L143   .PlugModule
+//   L212   .CollectSlots
+//   L224   .FindItem
+//   L237   .FindItem
+//   L248   set-address
+//   L250   .SetAddress
+//   L279   set-io-address
+//   L287   .SetIoAddress
+//   L327   .CollectAddresses
+//   L333   list-io-map
+//   L343   .ListIoMap
+//   L384   .CollectMap
+//   L412   .CollectTelegramMap
+//   L439   .Range
+//   L445   list-attrs
+//   L452   .ListAttrs
+//   L477   set-attr
+//   L485   .SetAttr
+//   L518   .Coerce
+//   L526   .TryGet
+//   L532   set-memory-bytes
+//   L541   .SetMemoryBytes
+//   L586   .IsMemoryAttribute
+//   L594   .FindMemoryItem
+//   L609   connect-subnet
+//   L615   .ConnectSubnet
+//   L729   CAx (AML)
+//   L731   .CaxExport
+//   L744   .CaxImport
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -47,6 +48,7 @@ using Siemens.Engineering;
 using Siemens.Engineering.Cax;
 using Siemens.Engineering.HW;
 using Siemens.Engineering.HW.Features;
+using Siemens.Engineering.MC.Drives;
 
 namespace Tia.Core
 {
@@ -346,8 +348,11 @@ namespace Tia.Core
 
             var rows = new List<Dictionary<string, object>>();
             foreach (var device in devices)
+            {
                 foreach (DeviceItem top in device.DeviceItems)
                     CollectMap(device.Name, top, top.Name, rows);
+                CollectTelegramMap(device, rows);
+            }
 
             // StartAddress -1 = endereço existe no modelo mas não está atribuído (interface e portas
             // de um ET200SP sem cartão devolvem 4 desses). Contar não é mentira, mas entram no
@@ -397,8 +402,41 @@ namespace Tia.Core
                 CollectMap(deviceName, child, path + "/" + child.Name, into);
         }
 
+        /// <summary>
+        /// Telegrama de drive SINAMICS ocupa process image mas não aparece em DeviceItem.Addresses
+        /// (FP-04, T7: `--device <drive>` devolvia `addresses: 0`). O endereço vive em
+        /// Telegram.Addresses, outra composição — sem varrer aqui, o `nextFreeByte` entregaria um
+        /// byte já ocupado por telegrama. Drive sem dado de comissionamento pode lançar na leitura;
+        /// um drive ilegível não derruba o mapa inteiro.
+        /// </summary>
+        private static void CollectTelegramMap(Device device, List<Dictionary<string, object>> into)
+        {
+            foreach (var pair in Drives.DriveObjects(device))
+            {
+                try
+                {
+                    foreach (Telegram telegram in pair.Value.Telegrams)
+                        foreach (Address a in telegram.Addresses)
+                        {
+                            int bytes = (a.Length + 7) / 8;
+                            into.Add(new Dictionary<string, object>
+                            {
+                                { "device", device.Name },
+                                { "item", pair.Key + "/telegram " + telegram.TelegramNumber },
+                                { "ioType", a.IoType.ToString() },
+                                { "startByte", a.StartAddress },
+                                { "lengthBits", a.Length },
+                                { "lengthBytes", bytes },
+                                { "range", Range(a.IoType.ToString(), a.StartAddress, bytes) },
+                            });
+                        }
+                }
+                catch (Exception) { }
+            }
+        }
+
         /// <summary>"%IB256..267" — a forma que se lê no Portal e se escreve no programa.</summary>
-        private static string Range(string ioType, int start, int bytes)
+        internal static string Range(string ioType, int start, int bytes)
         {
             string prefix = ioType.StartsWith("Out", StringComparison.OrdinalIgnoreCase) ? "%QB" : "%IB";
             return bytes <= 1 ? prefix + start : prefix + start + ".." + (start + bytes - 1);

@@ -2,98 +2,98 @@
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L115   class Program
 //   L117   .Main
-//   L314   .ExitCodeFor
-//   L325   .RunLadderDryRun
-//   L335   .RunExplainFile
-//   L343   .RunInterfaceFile
-//   L357   .Run
-//   L448   .ParseScript
-//   L468   .DispatchWithRetry
-//   L482   .IsBusy
-//   L488   .Dispatch
-//   L498   case "save-project"
-//   L501   case "close-project"
-//   L504   case "info"
-//   L507   case "list-devices"
-//   L510   case "list-blocks"
-//   L514   case "list-tags"
-//   L517   case "tree"
-//   L521   case "list-types"
-//   L524   case "find"
-//   L528   case "snapshot"
-//   L531   case "xref"
-//   L534   case "trace"
-//   L537   case "list-hmi"
-//   L540   case "free-memory"
-//   L546   case "export-block"
-//   L549   case "explain-block"
-//   L554   case "export-tags"
-//   L557   case "list-interface"
-//   L563   case "import-block"
-//   L570   case "import-ladder"
-//   L578   case "import-source"
-//   L583   case "create-folder"
-//   L588   case "delete-folder"
-//   L593   case "delete-block"
-//   L597   case "move-block"
-//   L602   case "delete-type"
-//   L606   case "export-type"
-//   L609   case "import-type"
-//   L613   case "scaffold"
-//   L622   case "clone"
-//   L629   case "add-call"
-//   L636   case "delete-network"
-//   L641   case "set-retain"
-//   L646   case "add-db-member"
-//   L652   case "import-tags"
-//   L659   case "create-library"
-//   L663   case "list-library"
-//   L666   case "import-master-copy"
-//   L672   case "add-master-copy"
-//   L678   case "create-instance-db"
-//   L683   case "delete-master-copy"
-//   L688   case "add-device"
-//   L693   case "delete-device"
-//   L697   case "add-tag"
-//   L703   case "delete-tag"
-//   L708   case "edit-db-member"
-//   L714   case "delete-db-member"
-//   L719   case "rename-block"
-//   L724   case "set-tag"
-//   L731   case "set-attr"
-//   L737   case "list-attrs"
-//   L741   case "plug-module"
-//   L747   case "list-telegrams"
-//   L750   case "insert-telegram"
-//   L757   case "set-address"
-//   L763   case "set-io-address"
-//   L769   case "list-io-map"
-//   L773   case "set-memory-bytes"
-//   L779   case "connect-subnet"
-//   L784   case "export-cax"
-//   L787   case "import-cax"
-//   L791   case "compile"
-//   L806   case "diff-block"
-//   L810   case "audit"
-//   L815   case "doctor"
-//   L823   case "gen-profinet"
-//   L829   case "standardize-tags"
-//   L837   case "gen-fault-ob"
-//   L845   case "replicate-fc"
-//   L852   case "gen-alarm-fc"
-//   L860   case "replicate-instruments"
-//   L873   .OptionValue
-//   L879   .ParseInt
-//   L885   .ParseByte
-//   L892   .OptionValues
-//   L901   .WriteLock
-//   L906   .Require
-//   L938   .Print
-//   L954   .Sanitize
-//   L961   .WriteOut
-//   L980   .CountOf
-//   L1002  .ResolveSiemensAssembly
-//   L1013  .SiemensProbeDirs
+//   L318   .ExitCodeFor
+//   L329   .RunLadderDryRun
+//   L339   .RunExplainFile
+//   L347   .RunInterfaceFile
+//   L361   .Run
+//   L452   .ParseScript
+//   L472   .DispatchWithRetry
+//   L486   .IsBusy
+//   L492   .Dispatch
+//   L502   case "save-project"
+//   L505   case "close-project"
+//   L508   case "info"
+//   L511   case "list-devices"
+//   L514   case "list-blocks"
+//   L518   case "list-tags"
+//   L521   case "tree"
+//   L525   case "list-types"
+//   L528   case "find"
+//   L532   case "snapshot"
+//   L535   case "xref"
+//   L538   case "trace"
+//   L541   case "list-hmi"
+//   L544   case "free-memory"
+//   L550   case "export-block"
+//   L553   case "explain-block"
+//   L558   case "export-tags"
+//   L561   case "list-interface"
+//   L567   case "import-block"
+//   L574   case "import-ladder"
+//   L582   case "import-source"
+//   L587   case "create-folder"
+//   L592   case "delete-folder"
+//   L597   case "delete-block"
+//   L601   case "move-block"
+//   L606   case "delete-type"
+//   L610   case "export-type"
+//   L613   case "import-type"
+//   L617   case "scaffold"
+//   L626   case "clone"
+//   L633   case "add-call"
+//   L640   case "delete-network"
+//   L645   case "set-retain"
+//   L650   case "add-db-member"
+//   L656   case "import-tags"
+//   L663   case "create-library"
+//   L667   case "list-library"
+//   L670   case "import-master-copy"
+//   L676   case "add-master-copy"
+//   L682   case "create-instance-db"
+//   L687   case "delete-master-copy"
+//   L692   case "add-device"
+//   L697   case "delete-device"
+//   L701   case "add-tag"
+//   L707   case "delete-tag"
+//   L712   case "edit-db-member"
+//   L718   case "delete-db-member"
+//   L723   case "rename-block"
+//   L728   case "set-tag"
+//   L735   case "set-attr"
+//   L741   case "list-attrs"
+//   L745   case "plug-module"
+//   L751   case "list-telegrams"
+//   L754   case "insert-telegram"
+//   L761   case "set-address"
+//   L767   case "set-io-address"
+//   L773   case "list-io-map"
+//   L777   case "set-memory-bytes"
+//   L783   case "connect-subnet"
+//   L788   case "export-cax"
+//   L791   case "import-cax"
+//   L795   case "compile"
+//   L810   case "diff-block"
+//   L814   case "audit"
+//   L819   case "doctor"
+//   L827   case "gen-profinet"
+//   L833   case "standardize-tags"
+//   L841   case "gen-fault-ob"
+//   L849   case "replicate-fc"
+//   L856   case "gen-alarm-fc"
+//   L864   case "replicate-instruments"
+//   L877   .OptionValue
+//   L883   .ParseInt
+//   L889   .ParseByte
+//   L896   .OptionValues
+//   L905   .WriteLock
+//   L910   .Require
+//   L942   .Print
+//   L958   .Sanitize
+//   L965   .WriteOut
+//   L984   .CountOf
+//   L1006  .ResolveSiemensAssembly
+//   L1017  .SiemensProbeDirs
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -184,8 +184,11 @@ namespace Tia.Cli
                         "set-attr --device X [--item I] --name A --value V [--apply]  "
                             + "(qualquer atributo que o list-attrs mostrar; tipo vem do valor atual)",
                         "plug-module --device X [--item I] [--type TID] [--name N] [--pos P] [--apply]  "
-                            + "(sem --type: lista slots livres; com --type: canPlug e, com --apply, pluga)",
-                        "list-telegrams --device X  (read-only: drive objects SINAMICS e telegramas de cada um)",
+                            + "(sem --type: lista slots livres; com --type: canPlug e, com --apply, pluga. "
+                            + "Alvo de plug é o rack: --item Rack_0, não o device. MLFB sem versão "
+                            + "devolve plugAs com a 1ª versão que o slot aceita)",
+                        "list-telegrams --device X  (read-only: drive objects SINAMICS, telegramas de cada um "
+                            + "e o endereço de cada telegrama — %IB/%QB, que não aparece em DeviceItem.Addresses)",
                         "insert-telegram --device X --number N [--type Main|Supplementary|Safety|Torque|Edge] "
                             + "[--item I] [--drive-object D] [--change] [--apply]  "
                             + "(--change troca o telegrama presente: G120 novo já vem com o 1)  "
@@ -196,7 +199,8 @@ namespace Tia.Cli
                             + "e o import-cax ignora. Sem --item: varre o device (sonda). Sem --start: só lista)",
                         "list-io-map [--device X] [--io Input|Output]  (read-only: todo endereço de I/O "
                             + "do projeto — device/item, %IB..%QB e o próximo byte livre por tipo; "
-                            + "é onde se lê o endereço do telegrama de drive, que list-telegrams não traz)",
+                            + "inclui o telegrama de drive SINAMICS, que não vive em DeviceItem.Addresses "
+                            + "e sem isso deixava o nextFreeByte entregar byte já ocupado)",
                         "connect-subnet --device X --subnet S [--io-system IO] [--apply]",
                         "set-memory-bytes --device X [--system 1] [--clock 0] [--apply]  (habilita FirstScan/AlwaysTRUE/Clock_1Hz na CPU)",
                         "export-cax [--out DIR]", "import-cax --file F.aml [--apply]" } },

@@ -19,12 +19,12 @@
   <sub>L48:class DbMember  L57:.Add  L103:.Change  L149:.Remove  L179:coreografia comum: export → patch → Import Override → prova  L187:.ExportFresh  L199:.MemberOf  L211:.RemoveFromXml  L224:struct Delta  L232:.ChangeInXml  L270:struct Edit  L281:.AddToXml  L311:.ResolveSection  L338:.NameOf  L344:.Datatype  L352:.Safe  L357:.Report</sub>
 - **Doctor.cs** (183 ln)
   <sub>L14:class Doctor  L23:.Run  L43:.CheckVerb  L67:case "gen-profinet"  L84:case "standardize-tags"  L93:case "gen-fault-ob"  L109:case "replicate-fc"  L126:case "gen-alarm-fc"  L144:case "replicate-instruments"  L175:.AnyFc</sub>
-- **Drives.cs** (201 ln)
-  <sub>L17:class Drives  L20:.DriveObjects  L27:.Collect  L47:.Try  L53:.Describe  L82:list-telegrams  L84:.ListTelegrams  L95:insert-telegram  L101:.InsertTelegram  L190:.ParseType</sub>
+- **Drives.cs** (234 ln)
+  <sub>L31:class Drives  L34:.DriveObjects  L41:.Collect  L61:.Try  L67:.Describe  L115:list-telegrams  L117:.ListTelegrams  L128:insert-telegram  L134:.InsertTelegram  L223:.ParseType</sub>
 - **FaultOb.cs** (361 ln)
   <sub>L40:class FaultObConfig  L43:.GroupPrefix  L45:.Devices  L46:.TemplateOb  L47:.ObNamePrefix  L53:.AlarmDb  L54:.CommentCultures  L62:class FaultOb  L69:class Module  L76:.Generate  L156:.DiscoverTasks  L185:.AllDeviceGroups  L192:.WithSubGroups  L200:.CollectModules  L211:XML generation  L213:.BuildObXml  L243:.RewireNetwork  L280:.AddMasterCommentEntry  L309:.ReassignUids  L329:.ModuleType  L341:.WriteCsv</sub>
-- **Hardware.cs** (722 ln)
-  <sub>L54:class Hardware  L60:.FindDevice  L72:.HasItemNamed  L82:.Interface  L90:add-device  L93:.AddDevice  L118:delete-device  L120:.DeleteDevice  L133:plug-module  L141:.PlugModule  L210:.CollectSlots  L222:.FindItem  L235:.FindItem  L246:set-address  L248:.SetAddress  L277:set-io-address  L285:.SetIoAddress  L325:.CollectAddresses  L331:list-io-map  L341:.ListIoMap  L379:.CollectMap  L401:.Range  L407:list-attrs  L414:.ListAttrs …</sub>
+- **Hardware.cs** (760 ln)
+  <sub>L56:class Hardware  L62:.FindDevice  L74:.HasItemNamed  L84:.Interface  L92:add-device  L95:.AddDevice  L120:delete-device  L122:.DeleteDevice  L135:plug-module  L143:.PlugModule  L212:.CollectSlots  L224:.FindItem  L237:.FindItem  L248:set-address  L250:.SetAddress  L279:set-io-address  L287:.SetIoAddress  L327:.CollectAddresses  L333:list-io-map  L343:.ListIoMap  L384:.CollectMap  L412:.CollectTelegramMap  L439:.Range  L445:list-attrs …</sub>
 - **Hmi.cs** (43 ln)
   <sub>L10:class Hmi  L12:.Targets  L23:.List</sub>
 - **InstrumentFc.cs** (706 ln)

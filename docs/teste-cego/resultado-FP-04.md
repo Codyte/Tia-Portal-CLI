@@ -204,6 +204,13 @@ Os 9 `unassigned` são os itens de drive. Ou o endereço só materializa depois 
 o verbo não alcança — de qualquer forma, a linha do `CLAUDE.md` promete o que não entrega. Não
 travou a rodada porque o `SINA_SPEED_TLG20` usa o `HWID`, não o endereço.
 
+**Resolvido em 2026-08-11 — o verbo não alcançava.** O endereço do telegrama vive em
+`MC.Drives.Telegram.Addresses` (assembly Startdrive), não em `DeviceItem.Addresses`; achado com
+`tia-help.py --sdk "telegram address"`, um comando. `list-telegrams` passou a devolver `addresses[]`
+e o `list-io-map` a varrer os drive objects de cada device. O tropeço era maior do que parecia: no
+projeto-molde real (34 drives em `%IB256`+) o `nextFreeByte` dizia `Input: 156` — resposta errada,
+não faltante.
+
 ### T8 · `plug-module --type` derrama os `freeSlots` inteiros junto do `canPlug`
 
 Sondar 9 MLFBs candidatos custou ~330 linhas de JSON, das quais 9 interessavam (`canPlug`). O
@@ -220,6 +227,11 @@ quer `/V1.0`. Não há regra: sondei nove combinações num batch. O GUI mostra 
 slot; a CLI não.
 
 **Correção:** `plug-module` sem `--type` (ou com `--like`) listar os tipos plugáveis naquele slot.
+
+**Fechado em 2026-08-11:** não há API de catálogo, então a sonda de 11 sufixos (`plugAs`) é o que
+resta — provada ao vivo no projeto-molde real, com uma condição que faltava: **o alvo do plug é o
+rack, não o device** (`--item Rack_0`). Sem isso `canPlug` é falso para qualquer versão, que foi por
+que a própria FP-04 não conseguiu provar.
 
 ---
 

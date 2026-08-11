@@ -1,3 +1,17 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L31    class Drives
+//   L34    .DriveObjects
+//   L41    .Collect
+//   L61    .Try
+//   L67    .Describe
+//   L115   list-telegrams
+//   L117   .ListTelegrams
+//   L128   insert-telegram
+//   L134   .InsertTelegram
+//   L223   .ParseType
+// ======================= END NAV INDEX =======================
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +31,7 @@ namespace Tia.Core
     public static class Drives
     {
         /// <summary>Every drive object reachable from a device, with the item that hosts it.</summary>
-        private static List<KeyValuePair<string, DriveObject>> DriveObjects(Device device)
+        internal static List<KeyValuePair<string, DriveObject>> DriveObjects(Device device)
         {
             var found = new List<KeyValuePair<string, DriveObject>>();
             Collect(device.DeviceItems, device.Name, found);
@@ -63,7 +77,26 @@ namespace Tia.Core
                         { "inputBytes", Try(() => telegram.GetSizeInBytes(AddressIoType.Input)) },
                         { "outputBytes", Try(() => telegram.GetSizeInBytes(AddressIoType.Output)) },
                         // endereço no process image do CLP: o telegrama não aparece em
-                        // DeviceItem.Addresses (set-io-address não o alcança), só aqui
+                        // DeviceItem.Addresses — por isso `list-io-map --device <drive>` devolve
+                        // `addresses: 0` (FP-04, T7). O endereço vive em Telegram.Addresses, que é
+                        // outra composição, e só aqui dá para lê-lo.
+                        { "addresses", Try(() =>
+                            {
+                                var rows = new List<object>();
+                                foreach (Address a in telegram.Addresses)
+                                {
+                                    int bytes = (a.Length + 7) / 8;   // Length é em bits
+                                    rows.Add(new Dictionary<string, object>
+                                    {
+                                        { "ioType", a.IoType.ToString() },
+                                        { "startByte", a.StartAddress },
+                                        { "lengthBits", a.Length },
+                                        { "lengthBytes", bytes },
+                                        { "range", Hardware.Range(a.IoType.ToString(), a.StartAddress, bytes) },
+                                    });
+                                }
+                                return (object)rows;
+                            }) },
                         { "attributes", Try(() => (object)telegram.GetAttributeInfos()
                             .ToDictionary(i => i.Name, i => Try(() => telegram.GetAttribute(i.Name)))) },
                     });

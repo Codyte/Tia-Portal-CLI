@@ -85,11 +85,14 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     de o argumento chegar no CLI — o verbo recebe `/` cru e cai no longest-match (que só acha pasta
     que já existe). Na linha de comando, `\/` direto.
   - **`list-io-map [--device X] [--io Input|Output]`** = todo endereço de I/O do projeto + próximo
-    byte livre por tipo. Varre item **e** descendentes, que é onde os `Address` moram.
-    **Não serve para endereço de telegrama de drive**: com G120 + telegrama 20 + IO system
-    conectado, `--device <drive>` volta `{addresses: 0}` e os itens do drive caem em `unassigned`
-    (FP-04, T7). Quem precisa do telegrama no programa usa o `HWID` da constante
-    `<drive>~PROFINET_interface~Standard_telegram_20`, não o endereço.
+    byte livre por tipo. Varre item **e** descendentes, que é onde os `Address` moram, **e os
+    telegramas dos drive objects SINAMICS** — telegrama não vive em `DeviceItem.Addresses` e sim em
+    `Telegram.Addresses` (outra composição, assembly Startdrive), que é por que `--device <drive>`
+    devolvia `{addresses: 0}` até 2026-08-11 (FP-04, T7). Sem essa varredura o `nextFreeByte` mentia:
+    no projeto-molde real ele dizia `Input: 156` com 34 drives ocupando de `%IB256` pra cima
+    (com a varredura: `Input: 664`, `Output: 392`, 45 → 113 endereços). O mesmo endereço sai por
+    drive em `list-telegrams --device X`. Quem precisa do telegrama **no programa** continua usando o
+    `HWID` da constante `<drive>~PROFINET_interface~Standard_telegram_20`, não o endereço.
   - **`audit` são 10 checks** e o R2 **exporta a DB global** para `--out` (só o export mostra o
     datatype dos membros) — não é mais 100% read-only. Check que não pode rodar devolve `skipped`
     com o motivo e **não reprova** o projeto. `--db "DB GLOBAL"` nomeia a DB quando a heurística

@@ -41,12 +41,12 @@
 - `delete-device --name X [--apply]`
 - `list-attrs --device X [--item I] [--like SUB]  (read-only: atributos e valores do device item)`
 - `set-attr --device X [--item I] --name A --value V [--apply]  (qualquer atributo que o list-attrs mostrar; tipo vem do valor atual)`
-- `plug-module --device X [--item I] [--type TID] [--name N] [--pos P] [--apply]  (sem --type: lista slots livres; com --type: canPlug e, com --apply, pluga)`
-- `list-telegrams --device X  (read-only: drive objects SINAMICS e telegramas de cada um)`
+- `plug-module --device X [--item I] [--type TID] [--name N] [--pos P] [--apply]  (sem --type: lista slots livres; com --type: canPlug e, com --apply, pluga. Alvo de plug é o rack: --item Rack_0, não o device. MLFB sem versão devolve plugAs com a 1ª versão que o slot aceita)`
+- `list-telegrams --device X  (read-only: drive objects SINAMICS, telegramas de cada um e o endereço de cada telegrama — %IB/%QB, que não aparece em DeviceItem.Addresses)`
 - `insert-telegram --device X --number N [--type Main|Supplementary|Safety|Torque|Edge] [--item I] [--drive-object D] [--change] [--apply]  (--change troca o telegrama presente: G120 novo já vem com o 1)  (telegrama de drive NÃO é submódulo de catálogo — plug-module não coloca)`
 - `set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]`
 - `set-io-address --device X [--item I] [--io Input|Output] [--start N] [--apply]  (endereço inicial do módulo de I/O; não é atributo — set-attr não alcança, e o import-cax ignora. Sem --item: varre o device (sonda). Sem --start: só lista)`
-- `list-io-map [--device X] [--io Input|Output]  (read-only: todo endereço de I/O do projeto — device/item, %IB..%QB e o próximo byte livre por tipo; é onde se lê o endereço do telegrama de drive, que list-telegrams não traz)`
+- `list-io-map [--device X] [--io Input|Output]  (read-only: todo endereço de I/O do projeto — device/item, %IB..%QB e o próximo byte livre por tipo; inclui o telegrama de drive SINAMICS, que não vive em DeviceItem.Addresses e sem isso deixava o nextFreeByte entregar byte já ocupado)`
 - `connect-subnet --device X --subnet S [--io-system IO] [--apply]`
 - `set-memory-bytes --device X [--system 1] [--clock 0] [--apply]  (habilita FirstScan/AlwaysTRUE/Clock_1Hz na CPU)`
 - `export-cax [--out DIR]`

@@ -75,7 +75,9 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
   - **Nunca `list-blocks` sem filtro** — são ~480 blocos. `--folder A/B` (pega subpastas),
     `--type FB|FC|OB|GlobalDB|InstanceDB`, `--count` (só o total por pasta, ~10 linhas).
   - **Pasta com `/` no nome (`1. I/OS`, `4. Motores/Bombas`) se escreve `\/`**: `--path "1. I\/OS/QA-01"`.
-    Vale em qualquer verbo que receba caminho de pasta (a regra é do `Ops.SplitPath`). Sem o escape,
+    Vale em qualquer verbo que receba caminho de pasta (a regra é do `Ops.SplitPath`) — **menos o
+    `--folder` do `list-blocks`, que ignora o escape e devolve `count: 0` com `ok: true`** (FP-04,
+    T5): para conferir pasta com `/` no nome, filtrar pela pasta-mãe com `--count`. Sem o escape,
     longest-match só resolve nome com `/` que **já existe** — na criação, `1. I/OS` virava duas pastas.
     `create-folder --path` é repetível: árvore inteira num attach, caminho que falha vira
     `{path, error}` e os outros seguem.
@@ -83,9 +85,11 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     de o argumento chegar no CLI — o verbo recebe `/` cru e cai no longest-match (que só acha pasta
     que já existe). Na linha de comando, `\/` direto.
   - **`list-io-map [--device X] [--io Input|Output]`** = todo endereço de I/O do projeto + próximo
-    byte livre por tipo. É onde se lê o endereço do telegrama de drive — `list-attrs` não mostra
-    endereço (não é atributo do `DeviceItem`) e `list-telegrams` não traz. Varre item **e**
-    descendentes, que é onde os `Address` moram.
+    byte livre por tipo. Varre item **e** descendentes, que é onde os `Address` moram.
+    **Não serve para endereço de telegrama de drive**: com G120 + telegrama 20 + IO system
+    conectado, `--device <drive>` volta `{addresses: 0}` e os itens do drive caem em `unassigned`
+    (FP-04, T7). Quem precisa do telegrama no programa usa o `HWID` da constante
+    `<drive>~PROFINET_interface~Standard_telegram_20`, não o endereço.
   - **`audit` são 10 checks** e o R2 **exporta a DB global** para `--out` (só o export mostra o
     datatype dos membros) — não é mais 100% read-only. Check que não pode rodar devolve `skipped`
     com o motivo e **não reprova** o projeto. `--db "DB GLOBAL"` nomeia a DB quando a heurística
@@ -105,6 +109,10 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     (rede LAD com EN no powerrail; pino de entrada sem valor é erro, e todos os pinos do FB entram
     declarados). `--after 0` põe na frente, omitido põe no fim. Rede **com condição em série**
     continua sendo clone de um molde que já a tenha.
+  - **`clone --replace` é troca de texto no XML exportado, não caminho de membro.** Caminho de DB
+    lá é cadeia de `<Component Name="…"/>`: `A.B.C=X.Y` casa zero vezes — trocar **um componente por
+    vez**, e a estrutura de destino tem que ter a **mesma profundidade** da origem, senão o clone
+    compila com dezenas de erros de membro inexistente (FP-04, T2: undo de 26 steps).
   - **`clone --with-instances`** cria os iDBs que o XML clonado passa a referenciar (sem eles o
     compile morre em `Missing instance DB` e o nome do iDB tem que ser deduzido de cabeça).
   - **Retentividade se declara no FB: `set-retain --block <FB> --member M [--off]`.** O Openness

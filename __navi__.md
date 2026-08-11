@@ -1,19 +1,19 @@
-# __navi__ · repo tree — 84 files in 10 folders
+# __navi__ · repo tree — 85 files in 10 folders
 <!-- navindex · 2026-08-11 · DO NOT EDIT BY HAND; regen via navindex skill -->
 
 Universal index: every folder below -> the files it holds (names only). A `→ __navi__.md` marker means that folder has a symbol map — open `<that path>/__navi__.md` for exact line numbers (2 reads total: this tree -> folder map).
 
 ## `./` (6 files)
-CHANGELOG.md(126)  CLAUDE.md(211)  CONTRIBUTING.md(61)  README.md(258)  SECURITY.md(39)  SKILL.md(114)
+CHANGELOG.md(126)  CLAUDE.md(219)  CONTRIBUTING.md(61)  README.md(258)  SECURITY.md(39)  SKILL.md(114)
 
 ## `docs/` (7 files) → __navi__.md
-BENCHMARKS.md(110)  BOAS-PRATICAS.md(175)  DIARIO.md(820)  PADRAO.md(201)  PLANO.md(418)  VERBS.md(105)  projeto-real-fase-A.md(76)
+BENCHMARKS.md(110)  BOAS-PRATICAS.md(175)  DIARIO.md(820)  PADRAO.md(201)  PLANO.md(452)  VERBS.md(105)  projeto-real-fase-A.md(76)
 
 ## `docs/examples/` (8 files)
 batch.json(6)  gen-all.json(8)  install-full.json(11)  profinet.json(10)  replicate-fc-soprador.json(9)  replicate-fc.json(8)  replicate-instruments.json(9)  replicate-soprador-run.json(8)
 
-## `docs/teste-cego/` (9 files)
-artigo.md(179)  caderno-FP-01.md(163)  caderno-FP-02.md(255)  caderno-FP-03.md(88)  caderno-FP-04.md(135)  criterios.md(55)  resultado-2026-08-07.md(188)  resultado-2026-08-10.md(139)  resultado-FP-03.md(199)
+## `docs/teste-cego/` (10 files)
+artigo.md(179)  caderno-FP-01.md(163)  caderno-FP-02.md(255)  caderno-FP-03.md(88)  caderno-FP-04.md(135)  criterios.md(55)  resultado-2026-08-07.md(188)  resultado-2026-08-10.md(139)  resultado-FP-03.md(199)  resultado-FP-04.md(286)
 
 ## `library/` (5 files) → __navi__.md
 README.md(150)  export-all.json(68)  generic.json(558)  library.json(561)  packages.json(39)

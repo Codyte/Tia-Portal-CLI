@@ -403,6 +403,40 @@ Os 4 checks novos do `audit` (R1, R2, R8, `CHAMADA_*` fora da pasta) só foram v
 Um programa de duas máquinas com parametrização de IHM é onde eles têm chance de reprovar — e
 reprovar é o produto do teste.
 
+### FP-04 executada (2026-08-11) — aeração, dois sopradores com inversor
+
+Resultado em [`resultado-FP-04.md`](teste-cego/resultado-FP-04.md). **45 min** (15:05→15:50),
+~30 chamadas de verbo. Entregue: ET200SP nova (DI 8x + AI 4xI, 50 % de reserva nos dois), dois G120
+com telegrama 20 no IO system do `PLC_ZERO`, 23 blocos, 6 UDTs, 6 tabelas de tag, DB global com
+**um** membro agregado. `compile` 0 erros; `audit` **9/10**, com justificativa escrita no único que
+reprova (o 6º bloco do molde é iDB de um FB que o próprio `MOTOR_01` do projeto não chama).
+Os **4 checks novos passaram** — continuam sem ter sido vistos reprovando.
+
+O programa saiu conforme; o produto do teste foram **9 tropeços da ferramenta**, e a rodada custou
+mais em contorno de CLI do que em engenharia: só o T1 comeu 25 dos 45 min.
+
+**Fila da FP-04** (ordem = dor evitada ÷ tamanho do diff):
+
+| # | Item | Onde | Por quê |
+|---|---|---|---|
+| 1 | `add-call` com `--inst` opcional → chamada de FC | `BlockEdit.cs` | O `CHAMADA_*` do padrão é sequência de chamadas de **FC**, o caso mais comum da R8, e o verbo só monta FB. 25 min montando 5 `CompileUnit` na mão. |
+| 2 | `add-call` emitindo `LiteralConstant` + `ConstantType` pelo tipo do pino | `BlockEdit.cs` | `=TRUE` num pino Bool morre em `'ConstantValue' has the invalid value 'TRUE'`. `Time` passa. É pino do `FB FALHA`, o mais chamado da biblioteca. O tipo já vem da interface. |
+| 3 | `ioSystemAction: create\|reuse` no dry-run do `connect-subnet` | `Hardware` | Nenhum verbo devolve o nome do IO system existente; achar o do `PLC_ZERO` custou `export-cax` + grep num AML de 1,5 MB. |
+| 4 | `Ops.ImportAndProve`: separar "não apliquei" de "apliquei e não provei" | `Ops.cs` | `add-db-member` reportou `ok:false` **depois** de o patch entrar (o export de prova é que falhou, com `compile` tendo dito 0 erros). Quem lê o erro desfaz o que estava certo. |
+| 5 | `Ops.SplitPath` no filtro de `--folder` do `list-blocks` | `Blocks` | Falso-negativo silencioso: `count: 0`, `ok: true` para pasta com `/` no nome. Documentado como exceção no `CLAUDE.md` enquanto não sai. |
+| 6 | `plug-module --type` sem o dump de `freeSlots`, e listagem do catálogo plugável no slot | `Hardware` | Sondar 9 MLFBs custou ~330 linhas de JSON para 9 úteis, e o sufixo de versão do MLFB (`/V0.0`, `/V2.0`, `/V1.0`) não tem regra — só o GUI mostra o catálogo do slot. |
+| 7 | Help do `clone --replace` dizendo que é troca textual no XML | `Program.cs` (`VERBS.md` é gerado) | Uma linha contra o undo de 26 steps do T2. Já escrita no `CLAUDE.md`. |
+| 8 | Promessa do `list-io-map` sobre endereço de telegrama de drive | verbo ou `CLAUDE.md` | `--device <drive>` volta vazio com telegrama posto e IO system conectado; os itens do drive caem em `unassigned`. `CLAUDE.md` já corrigido — falta decidir se o verbo passa a alcançar. |
+
+**Fora da fila, registrado:** o "Contexto de execução" do caderno errou ao afirmar que `LIB_TESTE`
+não tinha periferia nem inversor — tinha (`ET200SP_QA` sem cartões, dois G120 do CCM_01). Não
+atrapalhou; serviu de gabarito de MLFB.
+
+**Vazamento da regra cega, assumido pela própria rodada:** um `grep` em `docs/` bateu em duas linhas
+de um resultado antigo (MLFBs de ET200SP). O executor não abriu o arquivo e registrou o efeito
+possível. Lição de método para a próxima rodada: **busca em rodada cega exclui `docs/teste-cego/`
+explicitamente** — lista de não-ler não vale para `grep`.
+
 ## Histórico fechado
 
 As sagas já resolvidas (biblioteca, hardware do molde, telegrama, F6, migração para skill,

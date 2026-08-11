@@ -29,6 +29,17 @@ $stamped = (& $exe --version | ConvertFrom-Json).version
 if ($stamped -notlike "$version*") {
     throw "tia.exe diz '$stamped' mas Directory.Build.props diz '$version' -- build defasado"
 }
+# O SDK carimba no InformationalVersion o commit do HEAD no momento do BUILD (1.0.0+<sha>).
+# Buildar antes de commitar deixa o exe apontando pro commit pai -- o binario esta certo, a
+# procedencia que ele declara nao. Ordem correta: commit, depois rebuild, depois pack.
+$head = (git -C $repo rev-parse HEAD).Trim()
+if ($stamped -like '*+*' -and ($stamped -split '\+')[1] -ne $head) {
+    throw "tia.exe carimbou o commit $((($stamped -split '\+')[1]).Substring(0,7)) mas o HEAD e $($head.Substring(0,7)) -- " +
+          "commitar primeiro e rodar sem -SkipBuild"
+}
+if ((git -C $repo status --porcelain)) {
+    Write-Warning "working tree suja -- o zip sai de arquivos rastreados, entao mudanca nao commitada NAO entra"
+}
 
 $dist = Join-Path $repo 'workspace\dist'
 $stage = Join-Path $dist "tia-cli-$tag"

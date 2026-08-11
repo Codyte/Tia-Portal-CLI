@@ -285,6 +285,12 @@ namespace Tia.Core
                 foreach (DeviceItem top in device.DeviceItems)
                     CollectMap(device.Name, top, top.Name, rows);
 
+            // StartAddress -1 = endereço existe no modelo mas não está atribuído (interface e portas
+            // de um ET200SP sem cartão devolvem 4 desses). Contar não é mentira, mas entram no
+            // nextFreeByte como -1 e viram "%IB-1" no mapa — some do mapa, aparece no contador.
+            int unassigned = rows.Count(r => (int)r["startByte"] < 0);
+            rows = rows.Where(r => (int)r["startByte"] >= 0).ToList();
+
             if (io != null)
                 rows = rows.Where(r => ((string)r["ioType"]).Equals(io, StringComparison.OrdinalIgnoreCase)).ToList();
 
@@ -300,6 +306,7 @@ namespace Tia.Core
             {
                 { "devices", devices.Count },
                 { "addresses", rows.Count },
+                { "unassigned", unassigned },
                 { "nextFreeByte", nextFree },
                 { "map", rows.Cast<object>().ToList() },
             };

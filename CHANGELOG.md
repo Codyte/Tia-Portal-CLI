@@ -18,7 +18,9 @@ deliberately dropped.
   type. Answers the question that previously needed the GUI or an 18-call probe: `list-attrs`
   does not show addresses (they are not `DeviceItem` attributes) and `list-telegrams` does not
   carry the drive telegram's address. Walks item *and* descendants, because the `Address` objects
-  live on the submodule.
+  live on the submodule. Addresses that exist in the model but are not assigned
+  (`StartAddress == -1`, e.g. the interface and ports of an ET200SP with no cards) are counted in
+  `unassigned` and kept out of the map, where they would otherwise read as `%IB-1`.
 - **`audit` — four new checks**, taking it to ten: `R1 · o PLC tem UDT`, `R2 · DB global sem
   escalar solto na raiz`, `R8 · bloco de chamada em linguagem gráfica`, and `CHAMADA_* fora da
   pasta de área`. A check that cannot run reports `skipped` with the reason and does **not** fail

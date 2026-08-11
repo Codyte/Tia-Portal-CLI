@@ -75,6 +75,9 @@ Mapas de navegação: `__navi__.md` na raiz (árvore do repo) e por pasta. O de 
     longest-match só resolve nome com `/` que **já existe** — na criação, `1. I/OS` virava duas pastas.
     `create-folder --path` é repetível: árvore inteira num attach, caminho que falha vira
     `{path, error}` e os outros seguem.
+    **Dentro de `run --script` escreva `\\/`**: `\/` é escape válido de JSON e o parser o come antes
+    de o argumento chegar no CLI — o verbo recebe `/` cru e cai no longest-match (que só acha pasta
+    que já existe). Na linha de comando, `\/` direto.
   - **`list-io-map [--device X] [--io Input|Output]`** = todo endereço de I/O do projeto + próximo
     byte livre por tipo. É onde se lê o endereço do telegrama de drive — `list-attrs` não mostra
     endereço (não é atributo do `DeviceItem`) e `list-telegrams` não traz. Varre item **e**

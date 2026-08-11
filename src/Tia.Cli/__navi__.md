@@ -2,6 +2,6 @@
 <!-- navindex · 2026-08-11 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../../__navi__.md`](../../__navi__.md)
 
-- **Program.cs** (1027 ln)
-  <sub>L115:class Program  L117:.Main  L312:.ExitCodeFor  L323:.RunLadderDryRun  L333:.RunExplainFile  L341:.RunInterfaceFile  L355:.Run  L446:.ParseScript  L466:.DispatchWithRetry  L480:.IsBusy  L486:.Dispatch  L496:case "save-project"  L499:case "close-project"  L502:case "info"  L505:case "list-devices"  L508:case "list-blocks"  L512:case "list-tags"  L515:case "tree"  L519:case "list-types"  L522:case "find"  L526:case "snapshot"  L529:case "xref"  L532:case "trace"  L535:case "list-hmi" …</sub>
+- **Program.cs** (1029 ln)
+  <sub>L115:class Program  L117:.Main  L314:.ExitCodeFor  L325:.RunLadderDryRun  L335:.RunExplainFile  L343:.RunInterfaceFile  L357:.Run  L448:.ParseScript  L468:.DispatchWithRetry  L482:.IsBusy  L488:.Dispatch  L498:case "save-project"  L501:case "close-project"  L504:case "info"  L507:case "list-devices"  L510:case "list-blocks"  L514:case "list-tags"  L517:case "tree"  L521:case "list-types"  L524:case "find"  L528:case "snapshot"  L531:case "xref"  L534:case "trace"  L537:case "list-hmi" …</sub>
 

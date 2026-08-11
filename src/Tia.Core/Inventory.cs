@@ -5,30 +5,30 @@
 //   L80    .Devices
 //   L97    .CollectDeviceItems
 //   L119   .FolderMatches
-//   L129   .Blocks
-//   L160   .CollectBlocks
-//   L183   .Tree
-//   L215   .AppendGrouped
-//   L227   .AppendTree
-//   L248   .BlockLabel
-//   L256   .TagTables
-//   L279   .FindTagTable
-//   L291   .CollectTagTables
-//   L304   .Types
-//   L311   .CollectTypes
-//   L324   find
-//   L327   .Find
-//   L361   .FindInTagTables
-//   L401   snapshot
-//   L404   .Snapshot
-//   L422   cross-references
-//   L429   .ResolveSymbol
-//   L443   .FindTag
-//   L457   .Xref
-//   L496   trace
-//   L505   .Trace
-//   L544   .AllSources
-//   L560   .CollectBlockObjects
+//   L133   .Blocks
+//   L164   .CollectBlocks
+//   L187   .Tree
+//   L219   .AppendGrouped
+//   L231   .AppendTree
+//   L252   .BlockLabel
+//   L260   .TagTables
+//   L283   .FindTagTable
+//   L295   .CollectTagTables
+//   L308   .Types
+//   L315   .CollectTypes
+//   L328   find
+//   L331   .Find
+//   L365   .FindInTagTables
+//   L405   snapshot
+//   L408   .Snapshot
+//   L426   cross-references
+//   L433   .ResolveSymbol
+//   L447   .FindTag
+//   L461   .Xref
+//   L500   trace
+//   L509   .Trace
+//   L548   .AllSources
+//   L564   .CollectBlockObjects
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX
@@ -118,6 +118,10 @@ namespace Tia.Core
         /// </summary>
         public static bool FolderMatches(string blockFolder, string filter)
         {
+            // `\/` é barra dentro do nome ("5.1.3 Sopradores\/Aeração"): sem desfazer o escape, o
+            // filtro casava zero e o verbo devolvia count 0 com ok:true — falso-negativo silencioso
+            // (FP-04, T5). Rejuntar pelos segmentos do Ops.SplitPath é no-op para caminho sem escape.
+            filter = string.Join("/", Ops.SplitPath(filter));
             return ("/" + (blockFolder ?? "") + "/")
                 .IndexOf("/" + filter.Trim('/') + "/", StringComparison.OrdinalIgnoreCase) >= 0;
         }

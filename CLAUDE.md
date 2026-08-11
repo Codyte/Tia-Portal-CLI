@@ -75,9 +75,9 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
   - **Nunca `list-blocks` sem filtro** — são ~480 blocos. `--folder A/B` (pega subpastas),
     `--type FB|FC|OB|GlobalDB|InstanceDB`, `--count` (só o total por pasta, ~10 linhas).
   - **Pasta com `/` no nome (`1. I/OS`, `4. Motores/Bombas`) se escreve `\/`**: `--path "1. I\/OS/QA-01"`.
-    Vale em qualquer verbo que receba caminho de pasta (a regra é do `Ops.SplitPath`) — **menos o
-    `--folder` do `list-blocks`, que ignora o escape e devolve `count: 0` com `ok: true`** (FP-04,
-    T5): para conferir pasta com `/` no nome, filtrar pela pasta-mãe com `--count`. Sem o escape,
+    Vale em qualquer verbo que receba caminho de pasta (a regra é do `Ops.SplitPath`), inclusive o
+    `--folder` do `list-blocks` — que até a FP-04 ignorava o escape e devolvia `count: 0` com
+    `ok: true`, falso-negativo silencioso. Sem o escape,
     longest-match só resolve nome com `/` que **já existe** — na criação, `1. I/OS` virava duas pastas.
     `create-folder --path` é repetível: árvore inteira num attach, caminho que falha vira
     `{path, error}` e os outros seguem.
@@ -105,10 +105,13 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
   - **Chamada em LAD (R8) = `add-call`, nunca FlgNet na mão.** A ordem que funciona:
     `list-interface --folder "1. FB Bibliotecas"` (todas as assinaturas numa chamada; é o que se lê
     antes de escrever a chamada) → `clone` do molde → `delete-network --index N` para as redes que
-    não servem → `add-call --block X --fb "FB Y" --inst iDB --param P=<tag|DB.caminho.membro|const>`
-    (rede LAD com EN no powerrail; pino de entrada sem valor é erro, e todos os pinos do FB entram
-    declarados). `--after 0` põe na frente, omitido põe no fim. Rede **com condição em série**
-    continua sendo clone de um molde que já a tenha.
+    não servem → `add-call --block X --fb "FB Y|FC Y" [--inst iDB] --param P=<tag|DB.caminho.membro|const>`
+    (rede LAD com EN no powerrail; pino de entrada sem valor é erro). `--inst` é **exigido para FB e
+    recusado para FC** — o `CHAMADA_*` do padrão é sequência de chamadas de FC. Só o pino **com
+    valor** entra declarado: o Portal recusa import de `<Parameter>` sem fio, então Output que você
+    não usa fica de fora. Constante sai tipada pelo pino (`TRUE` num Bool vira
+    `LiteralConstant`+`ConstantType`; `T#5S` se basta). `--after 0` põe na frente, omitido põe no
+    fim. Rede **com condição em série** continua sendo clone de um molde que já a tenha.
   - **`clone --replace` é troca de texto no XML exportado, não caminho de membro.** Caminho de DB
     lá é cadeia de `<Component Name="…"/>`: `A.B.C=X.Y` casa zero vezes — trocar **um componente por
     vez**, e a estrutura de destino tem que ter a **mesma profundidade** da origem, senão o clone

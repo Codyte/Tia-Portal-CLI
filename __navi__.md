@@ -4,10 +4,10 @@
 Universal index: every folder below -> the files it holds (names only). A `→ __navi__.md` marker means that folder has a symbol map — open `<that path>/__navi__.md` for exact line numbers (2 reads total: this tree -> folder map).
 
 ## `./` (6 files)
-CHANGELOG.md(126)  CLAUDE.md(219)  CONTRIBUTING.md(61)  README.md(258)  SECURITY.md(39)  SKILL.md(114)
+CHANGELOG.md(126)  CLAUDE.md(222)  CONTRIBUTING.md(61)  README.md(258)  SECURITY.md(39)  SKILL.md(114)
 
 ## `docs/` (7 files) → __navi__.md
-BENCHMARKS.md(110)  BOAS-PRATICAS.md(175)  DIARIO.md(820)  PADRAO.md(201)  PLANO.md(452)  VERBS.md(105)  projeto-real-fase-A.md(76)
+BENCHMARKS.md(110)  BOAS-PRATICAS.md(175)  DIARIO.md(820)  PADRAO.md(201)  PLANO.md(472)  VERBS.md(105)  projeto-real-fase-A.md(76)
 
 ## `docs/examples/` (8 files)
 batch.json(6)  gen-all.json(8)  install-full.json(11)  profinet.json(10)  replicate-fc-soprador.json(9)  replicate-fc.json(8)  replicate-instruments.json(9)  replicate-soprador-run.json(8)
@@ -25,11 +25,11 @@ README.md(51)  bake.json(13)  core.json(11)
 _common.ps1(81)  bake-lib.ps1(96)  clone-hw.ps1(28)  compose-db.ps1(44)  gen-verbs.ps1(47)  init.ps1(246)  install-lib.ps1(205)  new-plc.ps1(42)  pack.ps1(88)  prep-project.ps1(18)  raio-x.ps1(66)  rebuild.ps1(107)  setup-tasks.ps1(45)  smokeloop.ps1(45)  taskrun.ps1(63)  tia-help.py(263)  tia.ps1(8)  use-project.ps1(27)  whitelist.ps1(25)
 
 ## `src/Tia.Cli/` (1 files) → __navi__.md
-Program.cs(1027)
+Program.cs(1029)
 
 ## `src/Tia.Core/` (25 files) → __navi__.md
-AlarmFc.cs(728)  AssemblyInfo.cs(3)  Audit.cs(436)  BlockEdit.cs(442)  BlockExplain.cs(381)  BlockInterface.cs(141)  Clone.cs(230)  DbMember.cs(372)  Doctor.cs(183)  Drives.cs(201)  FaultOb.cs(361)  Hardware.cs(665)  Hmi.cs(43)  InstrumentFc.cs(706)  Inventory.cs(568)  LadConverter.cs(530)  Library.cs(331)  Memory.cs(113)  Multiuser.cs(98)  Ops.cs(1235)  Profinet.cs(166)  Replicate.cs(500)  Scaffold.cs(350)  Standardize.cs(654)  TiaSession.cs(231)
+AlarmFc.cs(728)  AssemblyInfo.cs(3)  Audit.cs(436)  BlockEdit.cs(486)  BlockExplain.cs(381)  BlockInterface.cs(141)  Clone.cs(230)  DbMember.cs(372)  Doctor.cs(183)  Drives.cs(201)  FaultOb.cs(361)  Hardware.cs(722)  Hmi.cs(43)  InstrumentFc.cs(706)  Inventory.cs(572)  LadConverter.cs(530)  Library.cs(331)  Memory.cs(113)  Multiuser.cs(98)  Ops.cs(1260)  Profinet.cs(166)  Replicate.cs(500)  Scaffold.cs(350)  Standardize.cs(654)  TiaSession.cs(231)
 
 ## `src/Tia.Tests/` (1 files) → __navi__.md
-Program.cs(829)
+Program.cs(888)
 

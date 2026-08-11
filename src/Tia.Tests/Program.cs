@@ -17,25 +17,25 @@
 //   L318   .Ops_WalkFolders
 //   L359   .Ops_SplitPath
 //   L376   .Inventory_FolderMatches
-//   L392   .Ops_RequireUtf8Bom
-//   L419   .InstrumentFc_FcName
-//   L430   .Profinet_TagName
-//   L440   .Audit_Naming
-//   L457   .DbMember_AddToXml
-//   L524   .Memory_Occupied
-//   L542   .Clone_Rewrite
-//   L584   .Scaffold_Plan
-//   L630   list-interface / add-call / delete-network / set-retain
-//   L633   .Fc
-//   L652   .BlockInterface_FromXml
-//   L668   .BlockEdit_InsertCallInXml
-//   L739   .BlockEdit_RemoveNetworkFromXml
-//   L751   .BlockEdit_SetRetainInXml
-//   L761   .Clone_InstancesInXml
-//   L773   .Audit_DriveShape
-//   L786   .Audit_LawChecks
-//   L815   .Ops_Squash
-//   L824   .Throws
+//   L398   .Ops_RequireUtf8Bom
+//   L425   .InstrumentFc_FcName
+//   L436   .Profinet_TagName
+//   L446   .Audit_Naming
+//   L463   .DbMember_AddToXml
+//   L530   .Memory_Occupied
+//   L548   .Clone_Rewrite
+//   L590   .Scaffold_Plan
+//   L636   list-interface / add-call / delete-network / set-retain
+//   L639   .Fc
+//   L658   .BlockInterface_FromXml
+//   L674   .BlockEdit_InsertCallInXml
+//   L798   .BlockEdit_RemoveNetworkFromXml
+//   L810   .BlockEdit_SetRetainInXml
+//   L820   .Clone_InstancesInXml
+//   L832   .Audit_DriveShape
+//   L845   .Audit_LawChecks
+//   L874   .Ops_Squash
+//   L883   .Throws
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX
@@ -386,6 +386,12 @@ namespace Tia.Tests
             Check(!Inventory.FolderMatches(deep, "3.1"), "limite de segmento: '3.1' não casa '3.1 Alarmes Words'");
             Check(!Inventory.FolderMatches(deep, "Alarmes Words"), "sufixo de segmento não casa");
             Check(!Inventory.FolderMatches("", "3.1 Alarmes Words"), "bloco na raiz não casa filtro");
+
+            // pasta com '/' no nome: o filtro chega escapado e tem que casar — FP-04, T5
+            const string slash = "5. Instrumentação/5.1 Aferição Analógica/5.1.3 Sopradores/Aeração";
+            Check(Inventory.FolderMatches(slash, @"5.1.3 Sopradores\/Aeração"), "escape \\/ casa o nome com barra");
+            Check(Inventory.FolderMatches(slash, @"5.1 Aferição Analógica/5.1.3 Sopradores\/Aeração"),
+                "escape no meio de um caminho maior");
         }
 
         /// <summary>Gate de encoding do import-source: acento sem BOM vira mojibake no Openness.</summary>
@@ -698,7 +704,7 @@ namespace Tia.Tests
             Check((string)call.Attribute("Name") == "FB SUPERVISAO"
                 && (string)call.Attribute("BlockType") == "FB", "CallInfo aponta o FB");
             Check(call.Elements().Count(e => e.Name.LocalName == "Parameter") == 4,
-                "todos os pinos declarados, mesmo os não ligados");
+                "os 4 pinos com valor declarados");
             Check(call.Elements().Where(e => e.Name.LocalName == "Parameter")
                 .Any(e => (string)e.Attribute("Type") == "AgitadorDados"), "UDT sai sem as aspas do XML");
 
@@ -734,6 +740,59 @@ namespace Tia.Tests
             var empty = Fc(0);
             BlockEdit.InsertCallInXml(empty, spec(), -1);
             Check(BlockEdit.CountNetworks(empty) == 1, "FC sem rede nenhuma ganha a primeira");
+
+            // chamada de FC (o CHAMADA_* do padrão): sem <Instance>, e sem pino o CallInfo se fecha
+            // sozinho — FP-04, T1
+            var chamada = Fc(1);
+            BlockEdit.InsertCallInXml(chamada, new BlockEdit.CallSpec
+            {
+                Fb = "PARTIDA_SOPRADOR_1 (SOP-01)",
+                BlockType = "FC",
+                Title = "Function PARTIDA_SOPRADOR_1",
+                Params = new List<Param>(),
+                Values = new Dictionary<string, string>(),
+            }, -1);
+            var fcUnit = chamada.Descendants().Last(e => e.Name.LocalName == "SW.Blocks.CompileUnit");
+            var fcCall = fcUnit.Descendants().Single(e => e.Name.LocalName == "CallInfo");
+            Check((string)fcCall.Attribute("BlockType") == "FC"
+                && (string)fcCall.Attribute("Name") == "PARTIDA_SOPRADOR_1 (SOP-01)", "CallInfo aponta o FC");
+            Check(!fcCall.Descendants().Any(e => e.Name.LocalName == "Instance"), "FC não leva instância");
+            Check(fcUnit.Descendants().Count(e => e.Name.LocalName == "Wire") == 1,
+                "chamada de FC sem pino: só o wire do powerrail");
+
+            // TRUE só entra como LiteralConstant + ConstantType; T#3S se basta — FP-04, T3
+            var tipada = spec();
+            tipada.Params = new List<Param>
+            {
+                new Param { Section = "Input", Name = "HABILITA", Datatype = "Bool" },
+                new Param { Section = "Input", Name = "TEMPO", Datatype = "Time" },
+            };
+            tipada.Values = new Dictionary<string, string> { { "HABILITA", "TRUE" }, { "TEMPO", "T#3S" } };
+            var comBool = Fc(1);
+            BlockEdit.InsertCallInXml(comBool, tipada, -1);
+            var lit = comBool.Descendants().Single(e => e.Name.LocalName == "Access"
+                && (string)e.Attribute("Scope") == "LiteralConstant");
+            Check(lit.Descendants().Any(e => e.Name.LocalName == "ConstantType" && e.Value == "Bool")
+                && lit.Descendants().Any(e => e.Name.LocalName == "ConstantValue" && e.Value == "TRUE"),
+                "Bool sai tipado pelo pino");
+            var typed = comBool.Descendants().Single(e => e.Name.LocalName == "Access"
+                && (string)e.Attribute("Scope") == "TypedConstant");
+            Check(!typed.Descendants().Any(e => e.Name.LocalName == "ConstantType"),
+                "constante que já carrega o tipo (T#3S) não ganha ConstantType");
+
+            // pino sem valor não pode ser declarado: o Portal recusa Parameter sem fio (aceite ao
+            // vivo da FP-04, o import morreu em "connection with the name ... is not connected")
+            var semSaida = spec();
+            semSaida.Values = new Dictionary<string, string>(semSaida.Values);
+            semSaida.Values.Remove("PARTIDAS");
+            var enxuto = Fc(1);
+            BlockEdit.InsertCallInXml(enxuto, semSaida, -1);
+            var enxutoCall = enxuto.Descendants().Single(e => e.Name.LocalName == "CallInfo");
+            Check(enxutoCall.Elements().Count(e => e.Name.LocalName == "Parameter") == 3,
+                "Output sem valor não é declarado");
+            Check(enxuto.Descendants().Count(e => e.Name.LocalName == "Wire")
+                == enxutoCall.Elements().Count(e => e.Name.LocalName == "Parameter") + 1,
+                "wires == parâmetros declarados + o en, como em todo export do Portal");
         }
 
         private static void BlockEdit_RemoveNetworkFromXml()

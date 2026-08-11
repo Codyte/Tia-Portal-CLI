@@ -428,6 +428,26 @@ mais em contorno de CLI do que em engenharia: só o T1 comeu 25 dos 45 min.
 | 7 | Help do `clone --replace` dizendo que é troca textual no XML | `Program.cs` (`VERBS.md` é gerado) | Uma linha contra o undo de 26 steps do T2. Já escrita no `CLAUDE.md`. |
 | 8 | Promessa do `list-io-map` sobre endereço de telegrama de drive | verbo ou `CLAUDE.md` | `--device <drive>` volta vazio com telegrama posto e IO system conectado; os itens do drive caem em `unassigned`. `CLAUDE.md` já corrigido — falta decidir se o verbo passa a alcançar. |
 
+### Fila da FP-04 executada (2026-08-11) — 6 dos 8 itens, e um bug novo achado no aceite
+
+| Item | Como ficou |
+|---|---|
+| 1. `add-call` chama FC | `BlockEdit.cs`. `--inst` é opcional: exigido para FB, recusado para FC; sem pino, o `CallInfo` se fecha sozinho. **Aceite ao vivo**: chamada de `FC_ALARMES_SOPRADORES_AERACAO` inserida no `CHAMADA_AREA_03_*`, compile limpo, rede removida depois. |
+| 2. constante tipada pelo pino | `TRUE` num pino Bool sai `LiteralConstant` + `ConstantType`; `T#5S` continua `TypedConstant` (é o que o Portal escreve, conferido em export real). **Aceite ao vivo**: `FB FALHA` chamado com os 11 inputs constantes, `INPUT_HABILITA_CONJUNTO=TRUE` inclusive. |
+| 3. `connect-subnet` diz o IO system | Dry-run devolve `ownedIoSystem`, `ioSystemsOnSubnet` e `ioSystemAction` (`create/exists/join/move/already/missing`), e a CPU que já tem outro IO system falha nomeando o dela. Ao vivo: `PROFINET IO-System_PLC_ZERO` numa chamada read-only, contra o `export-cax` de 1,5 MB. |
+| 4. `ImportAndProve` não mente mais | Export de prova que falha agora compila o PLC inteiro e tenta de novo; se ainda falhar, a mensagem abre com **"JÁ ENTROU … não repita nem desfaça"** em vez de um `ok:false` que faz o agente desfazer o que estava certo. |
+| 5. `list-blocks --folder` com `\/` | `Ops.SplitPath` no `Inventory.FolderMatches`. Ao vivo: `5.1.3 Sopradores\/Aeração` devolve os 8 blocos (era `count: 0`). |
+| 6. `plug-module` enxuto | Com `--type`, os `freeSlots` saem da resposta (eram ~330 linhas para 9 `canPlug`). O catálogo do slot **não tem API** — `CanPlugNew` é a única pergunta que o Openness responde (confirmado no SDK), então em vez de listar, o verbo **sonda 11 sufixos de firmware** quando o MLFB vem sem `/V` e devolve `plugAs` com o que passa. Não deu para provar ao vivo: em `LIB_TESTE` todo slot livre recusa até o MLFB versionado que a rodada plugou, então `canPlug` está preso em restrição de slot, não de versão. |
+| 7. help do `clone --replace` | Escrito no help (e no `CLAUDE.md`): troca textual no XML, caminho de DB é cadeia de `<Component>`, mesma profundidade na origem e no destino. |
+| 8. `list-io-map` × telegrama de drive | Só documentado (o `CLAUDE.md` agora diz que não serve e manda usar o `HWID` da constante). O verbo continua sem alcançar o endereço — decidir se vale perseguir. |
+
+**Bug novo, achado no aceite ao vivo do item 2:** o `add-call` declarava **todos** os pinos do bloco
+e ligava só os que tinham valor. O Portal recusa o import disso — *"The connection with the name '12'
+is not connected to the object with the UID '32'"* —, e em todo `Call` de export real vale
+`wires == parâmetros + 1` (o `en`). Passou despercebido na FP-03 e na FP-04 porque as duas só
+chamaram bloco com **todos** os pinos preenchidos. Agora só o pino com fio entra declarado, com
+teste offline fechando a conta.
+
 **Fora da fila, registrado:** o "Contexto de execução" do caderno errou ao afirmar que `LIB_TESTE`
 não tinha periferia nem inversor — tinha (`ET200SP_QA` sem cartões, dois G120 do CCM_01). Não
 atrapalhou; serviu de gabarito de MLFB.

@@ -2,98 +2,98 @@
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L115   class Program
 //   L117   .Main
-//   L312   .ExitCodeFor
-//   L323   .RunLadderDryRun
-//   L333   .RunExplainFile
-//   L341   .RunInterfaceFile
-//   L355   .Run
-//   L446   .ParseScript
-//   L466   .DispatchWithRetry
-//   L480   .IsBusy
-//   L486   .Dispatch
-//   L496   case "save-project"
-//   L499   case "close-project"
-//   L502   case "info"
-//   L505   case "list-devices"
-//   L508   case "list-blocks"
-//   L512   case "list-tags"
-//   L515   case "tree"
-//   L519   case "list-types"
-//   L522   case "find"
-//   L526   case "snapshot"
-//   L529   case "xref"
-//   L532   case "trace"
-//   L535   case "list-hmi"
-//   L538   case "free-memory"
-//   L544   case "export-block"
-//   L547   case "explain-block"
-//   L552   case "export-tags"
-//   L555   case "list-interface"
-//   L561   case "import-block"
-//   L568   case "import-ladder"
-//   L576   case "import-source"
-//   L581   case "create-folder"
-//   L586   case "delete-folder"
-//   L591   case "delete-block"
-//   L595   case "move-block"
-//   L600   case "delete-type"
-//   L604   case "export-type"
-//   L607   case "import-type"
-//   L611   case "scaffold"
-//   L620   case "clone"
-//   L627   case "add-call"
-//   L634   case "delete-network"
-//   L639   case "set-retain"
-//   L644   case "add-db-member"
-//   L650   case "import-tags"
-//   L657   case "create-library"
-//   L661   case "list-library"
-//   L664   case "import-master-copy"
-//   L670   case "add-master-copy"
-//   L676   case "create-instance-db"
-//   L681   case "delete-master-copy"
-//   L686   case "add-device"
-//   L691   case "delete-device"
-//   L695   case "add-tag"
-//   L701   case "delete-tag"
-//   L706   case "edit-db-member"
-//   L712   case "delete-db-member"
-//   L717   case "rename-block"
-//   L722   case "set-tag"
-//   L729   case "set-attr"
-//   L735   case "list-attrs"
-//   L739   case "plug-module"
-//   L745   case "list-telegrams"
-//   L748   case "insert-telegram"
-//   L755   case "set-address"
-//   L761   case "set-io-address"
-//   L767   case "list-io-map"
-//   L771   case "set-memory-bytes"
-//   L777   case "connect-subnet"
-//   L782   case "export-cax"
-//   L785   case "import-cax"
-//   L789   case "compile"
-//   L804   case "diff-block"
-//   L808   case "audit"
-//   L813   case "doctor"
-//   L821   case "gen-profinet"
-//   L827   case "standardize-tags"
-//   L835   case "gen-fault-ob"
-//   L843   case "replicate-fc"
-//   L850   case "gen-alarm-fc"
-//   L858   case "replicate-instruments"
-//   L871   .OptionValue
-//   L877   .ParseInt
-//   L883   .ParseByte
-//   L890   .OptionValues
-//   L899   .WriteLock
-//   L904   .Require
-//   L936   .Print
-//   L952   .Sanitize
-//   L959   .WriteOut
-//   L978   .CountOf
-//   L1000  .ResolveSiemensAssembly
-//   L1011  .SiemensProbeDirs
+//   L314   .ExitCodeFor
+//   L325   .RunLadderDryRun
+//   L335   .RunExplainFile
+//   L343   .RunInterfaceFile
+//   L357   .Run
+//   L448   .ParseScript
+//   L468   .DispatchWithRetry
+//   L482   .IsBusy
+//   L488   .Dispatch
+//   L498   case "save-project"
+//   L501   case "close-project"
+//   L504   case "info"
+//   L507   case "list-devices"
+//   L510   case "list-blocks"
+//   L514   case "list-tags"
+//   L517   case "tree"
+//   L521   case "list-types"
+//   L524   case "find"
+//   L528   case "snapshot"
+//   L531   case "xref"
+//   L534   case "trace"
+//   L537   case "list-hmi"
+//   L540   case "free-memory"
+//   L546   case "export-block"
+//   L549   case "explain-block"
+//   L554   case "export-tags"
+//   L557   case "list-interface"
+//   L563   case "import-block"
+//   L570   case "import-ladder"
+//   L578   case "import-source"
+//   L583   case "create-folder"
+//   L588   case "delete-folder"
+//   L593   case "delete-block"
+//   L597   case "move-block"
+//   L602   case "delete-type"
+//   L606   case "export-type"
+//   L609   case "import-type"
+//   L613   case "scaffold"
+//   L622   case "clone"
+//   L629   case "add-call"
+//   L636   case "delete-network"
+//   L641   case "set-retain"
+//   L646   case "add-db-member"
+//   L652   case "import-tags"
+//   L659   case "create-library"
+//   L663   case "list-library"
+//   L666   case "import-master-copy"
+//   L672   case "add-master-copy"
+//   L678   case "create-instance-db"
+//   L683   case "delete-master-copy"
+//   L688   case "add-device"
+//   L693   case "delete-device"
+//   L697   case "add-tag"
+//   L703   case "delete-tag"
+//   L708   case "edit-db-member"
+//   L714   case "delete-db-member"
+//   L719   case "rename-block"
+//   L724   case "set-tag"
+//   L731   case "set-attr"
+//   L737   case "list-attrs"
+//   L741   case "plug-module"
+//   L747   case "list-telegrams"
+//   L750   case "insert-telegram"
+//   L757   case "set-address"
+//   L763   case "set-io-address"
+//   L769   case "list-io-map"
+//   L773   case "set-memory-bytes"
+//   L779   case "connect-subnet"
+//   L784   case "export-cax"
+//   L787   case "import-cax"
+//   L791   case "compile"
+//   L806   case "diff-block"
+//   L810   case "audit"
+//   L815   case "doctor"
+//   L823   case "gen-profinet"
+//   L829   case "standardize-tags"
+//   L837   case "gen-fault-ob"
+//   L845   case "replicate-fc"
+//   L852   case "gen-alarm-fc"
+//   L860   case "replicate-instruments"
+//   L873   .OptionValue
+//   L879   .ParseInt
+//   L885   .ParseByte
+//   L892   .OptionValues
+//   L901   .WriteLock
+//   L906   .Require
+//   L938   .Print
+//   L954   .Sanitize
+//   L961   .WriteOut
+//   L980   .CountOf
+//   L1002  .ResolveSiemensAssembly
+//   L1013  .SiemensProbeDirs
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -213,12 +213,14 @@ namespace Tia.Cli
                         "set-tag --table T --name N [--type T] [--address %M10.0] [--comment C] [--rename NEW] [--apply]  "
                             + "(só o que for passado muda; --rename exige Openness V20+)",
                         "clone --block N | --table T --replace OLD=NEW [--replace ...] [--at %M432.0] [--folder A/B] "
-                            + "[--with-instances] [--apply]  (--with-instances cria os iDBs que o clone passa a "
+                            + "[--with-instances] [--apply]  (--replace é troca de TEXTO no XML exportado: caminho de "
+                            + "membro de DB lá é cadeia de <Component>, então troque um componente por vez e mantenha "
+                            + "a mesma profundidade da origem. --with-instances cria os iDBs que o clone passa a "
                             + "referenciar; sem eles o compile morre em 'Missing instance DB')",
-                        "add-call --block X --fb \"FB Y\" --inst iDB --param P=<tag|DB.caminho.membro|const> [--param ...] "
+                        "add-call --block X --fb \"FB Y|FC Y\" [--inst iDB] [--param P=<tag|DB.caminho.membro|const>] "
                             + "[--after N] [--title T] [--comment C] [--out DIR] [--apply]  "
-                            + "(rede LAD com a chamada, EN no powerrail; os pinos saem da interface do FB. "
-                            + "--after 0 = primeira rede, omitido = no fim)",
+                            + "(rede LAD com a chamada, EN no powerrail; os pinos saem da interface do bloco chamado. "
+                            + "--inst é exigido para FB e recusado para FC. --after 0 = primeira rede, omitido = no fim)",
                         "delete-network --block X --index N [--out DIR] [--apply]  (N é 1-based, a numeração do explain-block)",
                         "set-retain --block FB --member M [--off] [--out DIR] [--apply]  "
                             + "(Remanence na declaração do FB; o Openness recusa em iDB e o import-source não expressa)",
@@ -627,7 +629,7 @@ namespace Tia.Cli
                     case "add-call":
                         using (WriteLock(session, apply, verb))
                             result = Core.BlockEdit.AddCall(session.GetPlc(plcName), Require(args, "--block"),
-                                Require(args, "--fb"), Require(args, "--inst"), OptionValues(args, "--param"),
+                                Require(args, "--fb"), OptionValue(args, "--inst"), OptionValues(args, "--param"),
                                 int.Parse(OptionValue(args, "--after") ?? "-1"), OptionValue(args, "--title"),
                                 OptionValue(args, "--comment"), outDir, apply);
                         break;

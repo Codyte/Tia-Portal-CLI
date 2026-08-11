@@ -1,30 +1,30 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L58    class BlockEdit
-//   L67    delete-network
-//   L73    .DeleteNetwork
-//   L87    add-call
-//   L96    .AddCall
-//   L150   set-retain
-//   L158   .SetRetain
-//   L180   coreografia
-//   L186   .Patch
-//   L212   núcleo puro (sem Openness: testável offline)
-//   L214   class CallSpec
-//   L224   .CountNetworks
-//   L230   .RemoveNetworkFromXml
-//   L250   .InsertCallInXml
-//   L323   .SetRetainInXml
-//   L331   .RetainOf
-//   L337   .FindMember
-//   L355   helpers de FlgNet
-//   L357   .ParseParams
-//   L370   .Access
-//   L394   .Wire
-//   L403   .Text
-//   L418   .NextId
-//   L431   .Escape
-//   L437   .Safe
+//   L76    delete-network
+//   L82    .DeleteNetwork
+//   L96    add-call
+//   L108   .AddCall
+//   L173   set-retain
+//   L181   .SetRetain
+//   L203   coreografia
+//   L209   .Patch
+//   L235   núcleo puro (sem Openness: testável offline)
+//   L237   class CallSpec
+//   L249   .CountNetworks
+//   L255   .RemoveNetworkFromXml
+//   L275   .InsertCallInXml
+//   L361   .SetRetainInXml
+//   L369   .RetainOf
+//   L375   .FindMember
+//   L393   helpers de FlgNet
+//   L395   .ParseParams
+//   L408   .Access
+//   L438   .Wire
+//   L447   .Text
+//   L462   .NextId
+//   L475   .Escape
+//   L481   .Safe
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX
@@ -64,6 +64,15 @@ namespace Tia.Core
         private static readonly Regex ConstantValue =
             new Regex(@"^(-?\d|TRUE$|FALSE$|'|[A-Za-z0-9_]+#)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+        /// <summary>
+        /// Constante que já carrega o próprio tipo no texto (`T#2S`, `W#16#F`, `'A'`). O Portal
+        /// escreve essas como `TypedConstant` sem `ConstantType`; as demais (`TRUE`, `300`) como
+        /// `LiteralConstant` + `ConstantType` do tipo do pino — e recusa a primeira forma para Bool
+        /// (`'ConstantValue' has the invalid value 'TRUE'`, FP-04, T3).
+        /// </summary>
+        private static readonly Regex SelfTypedConstant =
+            new Regex(@"^([A-Za-z0-9_]+#|')", RegexOptions.Compiled);
+
         // ---------- delete-network ----------
 
         /// <summary>
@@ -87,9 +96,12 @@ namespace Tia.Core
         // ---------- add-call ----------
 
         /// <summary>
-        /// Insere uma rede com a chamada de um FB (EN direto do powerrail). Os pinos saem da
-        /// interface do FB — daí o <see cref="BlockInterface"/> ser o mesmo leitor do
-        /// `list-interface`. Input e InOut sem valor são erro: pino de entrada solto não compila.
+        /// Insere uma rede com a chamada de um FB ou de um FC (EN direto do powerrail). Os pinos
+        /// saem da interface do bloco chamado — daí o <see cref="BlockInterface"/> ser o mesmo
+        /// leitor do `list-interface`. Input e InOut sem valor são erro: pino de entrada solto não
+        /// compila. FC não tem instância: `--inst` é exigido para FB e recusado para FC — sem isso o
+        /// verbo não montava o bloco `CHAMADA_*` do padrão da casa, que é sequência de chamadas de
+        /// FC (FP-04, T1).
         /// ponytail: rede incondicional (sem contatos em série). Condição continua sendo cirurgia
         /// manual ou clone de um molde que já a tenha.
         /// </summary>
@@ -97,26 +109,34 @@ namespace Tia.Core
             IEnumerable<string> paramArgs, int after, string title, string comment,
             string outDir, bool apply)
         {
-            var fb = Ops.FindBlock(plc, fbName) as FB;
-            if (fb == null)
+            var called = Ops.FindBlock(plc, fbName);
+            if (!(called is FB) && !(called is FC))
             {
                 var near = Ops.FbsLike(plc, fbName);
                 if (near.Count != 1)
-                    throw new InvalidOperationException("FB '" + fbName + "' not found.");
-                fb = near[0];
+                    throw new InvalidOperationException("FB/FC '" + fbName + "' not found.");
+                called = near[0];
             }
+            bool isFb = called is FB;
+            if (isFb && string.IsNullOrEmpty(instance))
+                throw new ArgumentException("'" + called.Name + "' é FB: chamada de FB exige instância — "
+                    + "passe --inst <iDB>.");
+            if (!isFb && !string.IsNullOrEmpty(instance))
+                throw new ArgumentException("'" + called.Name + "' é FC: chamada de FC não tem instância — "
+                    + "tire o --inst.");
+
             Directory.CreateDirectory(outDir);
-            var ifaceFile = Path.GetFullPath(Path.Combine(outDir, "iface_" + Safe(fb.Name) + ".xml"));
+            var ifaceFile = Path.GetFullPath(Path.Combine(outDir, "iface_" + Safe(called.Name) + ".xml"));
             if (File.Exists(ifaceFile)) File.Delete(ifaceFile);
-            fb.Export(new FileInfo(ifaceFile), ExportOptions.None);
+            called.Export(new FileInfo(ifaceFile), ExportOptions.None);
             var iface = BlockInterface.FromXml(XDocument.Load(ifaceFile));
-            if (iface.Count == 0)
-                throw new InvalidOperationException("FB '" + fb.Name + "' has no Input/Output/InOut.");
+            if (iface.Count == 0 && isFb)
+                throw new InvalidOperationException("FB '" + called.Name + "' has no Input/Output/InOut.");
 
             var values = ParseParams(paramArgs);
             var unknown = values.Keys.Where(k => !iface.Any(p => p.Name == k)).ToList();
             if (unknown.Count > 0)
-                throw new ArgumentException("Parâmetro inexistente em '" + fb.Name + "': "
+                throw new ArgumentException("Parâmetro inexistente em '" + called.Name + "': "
                     + string.Join(", ", unknown) + ". Pinos: " + string.Join(", ", iface.Select(p => p.Name)));
             var missing = iface.Where(p => p.Section != "Output" && !values.ContainsKey(p.Name))
                 .Select(p => p.Name + " : " + p.Datatype).ToList();
@@ -126,9 +146,11 @@ namespace Tia.Core
 
             var spec = new CallSpec
             {
-                Fb = fb.Name,
+                Fb = called.Name,
+                BlockType = isFb ? "FB" : "FC",
                 Instance = instance,
-                Title = title ?? ("Function Block " + Regex.Replace(fb.Name, @"^FB\s+", "")),
+                Title = title ?? ((isFb ? "Function Block " : "Function ")
+                    + Regex.Replace(called.Name, @"^F[BC]\s+", "")),
                 Comment = comment,
                 Params = iface,
                 Values = values,
@@ -137,10 +159,11 @@ namespace Tia.Core
             int after1 = 0;
             var result = Patch(plc, blockName, "addcall_", outDir, apply,
                 doc => { after1 = CountNetworks(doc) + 1; InsertCallInXml(doc, spec, after); },
-                () => "a chamada de '" + fb.Name + "'",
+                () => "a chamada de '" + called.Name + "'",
                 doc => doc.Descendants().Any(e => e.Name.LocalName == "CallInfo"
-                    && (string)e.Attribute("Name") == fb.Name));
-            result["fb"] = fb.Name;
+                    && (string)e.Attribute("Name") == called.Name));
+            result["fb"] = called.Name;
+            result["blockType"] = spec.BlockType;
             result["instance"] = instance;
             result["parameters"] = iface.Count;
             result["networks"] = after1;
@@ -214,6 +237,8 @@ namespace Tia.Core
         public sealed class CallSpec
         {
             public string Fb;
+            /// <summary>"FB" (com `Instance`) ou "FC" (sem).</summary>
+            public string BlockType = "FB";
             public string Instance;
             public string Title;
             public string Comment;
@@ -260,21 +285,34 @@ namespace Tia.Core
                 string value;
                 if (!spec.Values.TryGetValue(p.Name, out value)) continue;
                 accessOf[p.Name] = uid;
-                parts.Append(Access(uid++, value));
+                parts.Append(Access(uid++, value, p.Datatype));
             }
             int callUid = uid++;
             int instUid = uid++;
             int wireUid = uid + 20;
 
+            bool isFb = spec.BlockType != "FC";
+            // Só entra como <Parameter> o pino que tem fio: o Portal recusa o import de pino
+            // declarado e não ligado ("The connection with the name 'N' is not connected to the
+            // object with the UID 'M'"), e todo Call de export real tem params == wires − 1 (o `en`).
+            // Pino de entrada sem valor já foi barrado antes; o que cai aqui é Output não usado.
+            var declared = spec.Params.Where(p => accessOf.ContainsKey(p.Name)).ToList();
+            bool empty = !isFb && declared.Count == 0;   // FC sem pino: <CallInfo ... /> e só
             parts.Append("                <Call UId=\"" + callUid + "\">\n")
-                 .Append("                  <CallInfo Name=\"" + Escape(spec.Fb) + "\" BlockType=\"FB\">\n")
-                 .Append("                    <Instance Scope=\"GlobalVariable\" UId=\"" + instUid + "\">\n")
-                 .Append("                      <Component Name=\"" + Escape(spec.Instance) + "\" />\n")
-                 .Append("                    </Instance>\n");
-            foreach (var p in spec.Params)
-                parts.Append("                    <Parameter Name=\"" + Escape(p.Name) + "\" Section=\""
-                    + p.Section + "\" Type=\"" + Escape((p.Datatype ?? "").Trim('"')) + "\" />\n");
-            parts.Append("                  </CallInfo>\n                </Call>\n");
+                 .Append("                  <CallInfo Name=\"" + Escape(spec.Fb) + "\" BlockType=\""
+                    + spec.BlockType + "\"" + (empty ? " />\n" : ">\n"));
+            if (isFb)
+                parts.Append("                    <Instance Scope=\"GlobalVariable\" UId=\"" + instUid + "\">\n")
+                     .Append("                      <Component Name=\"" + Escape(spec.Instance) + "\" />\n")
+                     .Append("                    </Instance>\n");
+            if (!empty)
+            {
+                foreach (var p in declared)
+                    parts.Append("                    <Parameter Name=\"" + Escape(p.Name) + "\" Section=\""
+                        + p.Section + "\" Type=\"" + Escape((p.Datatype ?? "").Trim('"')) + "\" />\n");
+                parts.Append("                  </CallInfo>\n");
+            }
+            parts.Append("                </Call>\n");
 
             // EN vem do powerrail: chamada incondicional
             wires.Append("                <Wire UId=\"" + wireUid++ + "\">\n")
@@ -366,8 +404,8 @@ namespace Tia.Core
             return map;
         }
 
-        /// <summary>Símbolo (`tag` ou `DB.caminho.membro`) ou constante tipada.</summary>
-        private static string Access(int uid, string value)
+        /// <summary>Símbolo (`tag` ou `DB.caminho.membro`) ou constante — tipada pelo pino.</summary>
+        private static string Access(int uid, string value, string datatype)
         {
             if (value.StartsWith("%", StringComparison.Ordinal))
                 throw new ArgumentException("Endereço absoluto ('" + value + "') não entra em chamada: "
@@ -375,9 +413,15 @@ namespace Tia.Core
             var sb = new StringBuilder();
             if (ConstantValue.IsMatch(value))
             {
-                sb.Append("                <Access Scope=\"TypedConstant\" UId=\"" + uid + "\">\n")
-                  .Append("                  <Constant>\n")
-                  .Append("                    <ConstantValue>" + Escape(value) + "</ConstantValue>\n")
+                // `T#2S` se basta; `TRUE`/`300` precisam do tipo do pino, senão o Portal recusa
+                string type = (datatype ?? "").Trim().Trim('"');
+                bool literal = !SelfTypedConstant.IsMatch(value) && type.Length > 0;
+                sb.Append("                <Access Scope=\"" + (literal ? "LiteralConstant" : "TypedConstant")
+                    + "\" UId=\"" + uid + "\">\n")
+                  .Append("                  <Constant>\n");
+                if (literal)
+                    sb.Append("                    <ConstantType>" + Escape(type) + "</ConstantType>\n");
+                sb.Append("                    <ConstantValue>" + Escape(value) + "</ConstantValue>\n")
                   .Append("                  </Constant>\n")
                   .Append("                </Access>\n");
                 return sb.ToString();

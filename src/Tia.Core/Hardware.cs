@@ -1,42 +1,42 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L54    class Hardware
-//   L56    .FindDevice
-//   L68    .HasItemNamed
-//   L78    .Interface
-//   L86    add-device
-//   L89    .AddDevice
-//   L114   delete-device
-//   L116   .DeleteDevice
-//   L129   plug-module
-//   L137   .PlugModule
-//   L187   .CollectSlots
-//   L199   .FindItem
-//   L212   .FindItem
-//   L223   set-address
-//   L225   .SetAddress
-//   L254   set-io-address
-//   L262   .SetIoAddress
-//   L302   .CollectAddresses
-//   L308   list-io-map
-//   L318   .ListIoMap
-//   L356   .CollectMap
-//   L378   .Range
-//   L384   list-attrs
-//   L391   .ListAttrs
-//   L416   set-attr
-//   L424   .SetAttr
-//   L457   .Coerce
-//   L465   .TryGet
-//   L471   set-memory-bytes
-//   L480   .SetMemoryBytes
-//   L525   .IsMemoryAttribute
-//   L533   .FindMemoryItem
-//   L548   connect-subnet
-//   L554   .ConnectSubnet
-//   L634   CAx (AML)
-//   L636   .CaxExport
-//   L649   .CaxImport
+//   L60    .FindDevice
+//   L72    .HasItemNamed
+//   L82    .Interface
+//   L90    add-device
+//   L93    .AddDevice
+//   L118   delete-device
+//   L120   .DeleteDevice
+//   L133   plug-module
+//   L141   .PlugModule
+//   L210   .CollectSlots
+//   L222   .FindItem
+//   L235   .FindItem
+//   L246   set-address
+//   L248   .SetAddress
+//   L277   set-io-address
+//   L285   .SetIoAddress
+//   L325   .CollectAddresses
+//   L331   list-io-map
+//   L341   .ListIoMap
+//   L379   .CollectMap
+//   L401   .Range
+//   L407   list-attrs
+//   L414   .ListAttrs
+//   L439   set-attr
+//   L447   .SetAttr
+//   L480   .Coerce
+//   L488   .TryGet
+//   L494   set-memory-bytes
+//   L503   .SetMemoryBytes
+//   L548   .IsMemoryAttribute
+//   L556   .FindMemoryItem
+//   L571   connect-subnet
+//   L577   .ConnectSubnet
+//   L691   CAx (AML)
+//   L693   .CaxExport
+//   L706   .CaxImport
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -53,6 +53,10 @@ namespace Tia.Core
     /// <summary>Hardware verbs: add-device (MLFB), set-address, connect-subnet/IO-system, CAx AML export/import.</summary>
     public static class Hardware
     {
+        /// <summary>Sufixos de firmware que o `plug-module` sonda quando o MLFB vem sem versão.</summary>
+        private static readonly string[] FirmwareVersions =
+            { "0.0", "1.0", "1.1", "2.0", "2.1", "2.2", "3.0", "3.1", "4.0", "4.1", "4.2" };
+
         public static Device FindDevice(TiaSession session, string name)
         {
             var devices = session.AllDevices();
@@ -158,16 +162,32 @@ namespace Tia.Core
             {
                 { "device", device.Name },
                 { "target", itemName ?? device.Name },
-                { "freeSlots", target.GetPlugLocations()
-                    .Select(l => (object)new Dictionary<string, object>
-                        { { "position", l.PositionNumber }, { "label", l.Label } }).ToList() },
                 { "applied", apply },
             };
-            if (typeId == null) return result;   // probe only: which slots are free
+            if (typeId == null)
+            {
+                // probe only: which slots are free. Com --type os freeSlots são ruído — sondar 9 MLFBs
+                // custava ~330 linhas de JSON para 9 `canPlug` (FP-04, T8)
+                result["freeSlots"] = target.GetPlugLocations()
+                    .Select(l => (object)new Dictionary<string, object>
+                        { { "position", l.PositionNumber }, { "label", l.Label } }).ToList();
+                return result;
+            }
             result["typeIdentifier"] = typeId;
             result["name"] = name ?? typeId;
             result["position"] = pos;
             result["canPlug"] = target.CanPlugNew(typeId, name ?? typeId, pos);
+            // MLFB sem sufixo de versão é recusado, e não há regra: o mesmo ET200SP quer /V0.0 no DI,
+            // /V2.0 no AI e /V1.0 no módulo servidor. O Openness não expõe o catálogo do slot
+            // (`CanPlugNew` é a única pergunta que ele responde), então sondar aqui é o que resta —
+            // 11 tentativas locais contra a bateria manual da FP-04, T9.
+            if (!(bool)result["canPlug"] && typeId.IndexOf("/V", StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                var hit = FirmwareVersions
+                    .Select(v => typeId + "/V" + v)
+                    .FirstOrDefault(candidate => target.CanPlugNew(candidate, name ?? typeId, pos));
+                if (hit != null) result["plugAs"] = hit;   // repassar em --type; --apply não adivinha
+            }
             if (apply)
             {
                 // "Unknown TypeIdentifer" sozinho manda adivinhar MLFB — e o Openness não expõe
@@ -175,10 +195,13 @@ namespace Tia.Core
                 // igual já plugado em qualquer projeto (list-devices / list-attrs mostram).
                 if (!(bool)result["canPlug"])
                     throw new InvalidOperationException("CanPlugNew disse não para '" + typeId
-                        + "' no slot " + pos + ". Confira o MLFB: o Openness não tem busca de catálogo, "
-                        + "então o typeIdentifier tem que vir de um item igual já plugado "
-                        + "(tia list-devices num projeto que tenha o módulo) e costuma exigir a versão "
-                        + "no fim (ex.: \"6ES7 155-6AU01-0BN0/V4.2\").");
+                        + "' no slot " + pos + ". "
+                        + (result.ContainsKey("plugAs")
+                            ? "Com versão passa: repita com --type \"" + result["plugAs"] + "\"."
+                            : "Confira o MLFB: o Openness não tem busca de catálogo, "
+                              + "então o typeIdentifier tem que vir de um item igual já plugado "
+                              + "(tia list-devices num projeto que tenha o módulo) e costuma exigir a versão "
+                              + "no fim (ex.: \"6ES7 155-6AU01-0BN0/V4.2\")."));
                 result["plugged"] = target.PlugNew(typeId, name ?? typeId, pos).Name;
             }
             return result;
@@ -567,6 +590,40 @@ namespace Tia.Core
                 { "applied", apply },
             };
             if (ioSystemName != null) result["ioSystem"] = ioSystemName;
+
+            // Prever o que o IO system vai sofrer, e dizer os nomes que existem. Sem isto o dry-run só
+            // ecoava o --io-system recebido, e descobrir o nome do IO system de uma CPU custava um
+            // export-cax de 1,5 MB + grep (FP-04, T6).
+            var ctrl = itf.IoControllers.FirstOrDefault();
+            if (ctrl != null && ctrl.IoSystem != null) result["ownedIoSystem"] = ctrl.IoSystem.Name;
+            if (subnet != null)
+                result["ioSystemsOnSubnet"] = subnet.IoSystems.Select(s => s.Name).ToList();
+            if (ioSystemName != null)
+            {
+                if (ctrl != null)
+                {
+                    if (ctrl.IoSystem == null) result["ioSystemAction"] = "create";
+                    else if (ctrl.IoSystem.Name.Equals(ioSystemName, StringComparison.OrdinalIgnoreCase))
+                        result["ioSystemAction"] = "exists";
+                    else
+                        throw new InvalidOperationException("'" + device.Name + "' already owns IO system '"
+                            + ctrl.IoSystem.Name + "' — a controller has only one. Pass --io-system \""
+                            + ctrl.IoSystem.Name + "\".");
+                }
+                else
+                {
+                    var conn = itf.IoConnectors.FirstOrDefault();
+                    var joined = conn == null ? null : conn.ConnectedToIoSystem;
+                    bool exists = subnet != null && subnet.IoSystems.Any(
+                        s => s.Name.Equals(ioSystemName, StringComparison.OrdinalIgnoreCase));
+                    result["ioSystemAction"] =
+                        joined != null && joined.Name.Equals(ioSystemName, StringComparison.OrdinalIgnoreCase)
+                            ? "already"
+                            : !exists ? "missing (connect the IO controller first)"
+                            : joined == null ? "join" : "move";
+                    if (joined != null) result["connectedTo"] = joined.Name;
+                }
+            }
             if (!apply) return result;
 
             if (subnet == null)

@@ -1,71 +1,72 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L90    class Ops
-//   L92    lookup
-//   L94    .FindBlock
-//   L104   .FindGroup
-//   L119   .FindGroupByName
-//   L137   .FindTagGroup
-//   L152   .FindTagGroupByName
-//   L165   .FindBlockIn
-//   L178   .ResolveFolder
-//   L190   .SplitPath
-//   L214   .WalkFolders
-//   L241   .FindTagTable
-//   L254   .ResolveTagFolder
-//   L262   .ResolveTypeFolder
-//   L269   .FindType
-//   L281   structure
-//   L283   .CreateFolder
-//   L315   .CreateFolders
-//   L350   .DeleteFolder
-//   L377   .TypeFolderAction
-//   L398   .CountTypes
-//   L403   .CountBlocks
-//   L408   .CountTables
-//   L417   .CreateInstanceDb
-//   L454   .FbsLike
-//   L461   .NearestFbs
-//   L470   .AllFbs
-//   L478   .Squash
-//   L487   .DeleteBlock
-//   L502   .DeleteType
-//   L516   export
-//   L518   .ExportBlock
-//   L533   .ExportTagTable
-//   L543   .ExportType
-//   L553   .ExportPath
-//   L562   import
-//   L569   .FolderAction
-//   L575   .ImportBlock
-//   L607   .MoveBlock
-//   L671   .ImportTagTable
-//   L699   .AddTag
-//   L735   .DeleteTag
-//   L758   .SetTag
-//   L801   .Rename
-//   L827   .ImportType
-//   L851   .ImportSource
-//   L922   .Generated
-//   L928   .SourceDeclNames
-//   L944   .RequireUtf8Bom
-//   L957   .RequireFile
-//   L965   .XmlRootType
-//   L975   .RequireRootType
-//   L984   .XmlCultures
-//   L999   .ProjectOf
-//   L1009  .EnsureCultures
-//   L1031  .XmlObjectName
-//   L1040  diff
-//   L1043  .DiffBlock
-//   L1061  .BlocksIdentical
-//   L1103  import com prova
-//   L1113  .ImportAndProve
-//   L1144  .FirstError
-//   L1156  compile
-//   L1159  .Compile
-//   L1201  .FlattenErrors
-//   L1224  .MessageTree
+//   L91    class Ops
+//   L93    lookup
+//   L95    .FindBlock
+//   L105   .FindGroup
+//   L120   .FindGroupByName
+//   L138   .FindTagGroup
+//   L153   .FindTagGroupByName
+//   L166   .FindBlockIn
+//   L179   .ResolveFolder
+//   L191   .SplitPath
+//   L215   .WalkFolders
+//   L242   .FindTagTable
+//   L255   .ResolveTagFolder
+//   L263   .ResolveTypeFolder
+//   L270   .FindType
+//   L282   structure
+//   L284   .CreateFolder
+//   L316   .CreateFolders
+//   L351   .DeleteFolder
+//   L378   .TypeFolderAction
+//   L399   .CountTypes
+//   L404   .CountBlocks
+//   L409   .CountTables
+//   L418   .CreateInstanceDb
+//   L455   .FbsLike
+//   L462   .NearestFbs
+//   L471   .AllFbs
+//   L479   .Squash
+//   L488   .DeleteBlock
+//   L503   .DeleteType
+//   L517   export
+//   L519   .ExportBlock
+//   L534   .ExportTagTable
+//   L544   .ExportType
+//   L554   .ExportPath
+//   L563   import
+//   L570   .FolderAction
+//   L576   .ImportBlock
+//   L608   .MoveBlock
+//   L672   .ImportTagTable
+//   L700   .AddTag
+//   L736   .DeleteTag
+//   L759   .SetTag
+//   L802   .Rename
+//   L828   .ImportType
+//   L852   .ImportSource
+//   L923   .Generated
+//   L929   .SourceDeclNames
+//   L945   .RequireUtf8Bom
+//   L958   .RequireFile
+//   L966   .XmlRootType
+//   L976   .RequireRootType
+//   L985   .XmlCultures
+//   L1000  .ProjectOf
+//   L1010  .EnsureCultures
+//   L1032  .XmlObjectName
+//   L1041  diff
+//   L1044  .DiffBlock
+//   L1062  .BlocksIdentical
+//   L1104  import com prova
+//   L1114  .ImportAndProve
+//   L1160  .Prove
+//   L1169  .FirstError
+//   L1181  compile
+//   L1184  .Compile
+//   L1226  .FlattenErrors
+//   L1249  .MessageTree
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -1129,15 +1130,39 @@ namespace Tia.Core
             }
 
             var proof = Path.Combine(Path.GetDirectoryName(file), "proof_" + Path.GetFileName(file));
-            if (File.Exists(proof)) File.Delete(proof);
-            block.Export(new FileInfo(proof), ExportOptions.WithDefaults);
             bool ok;
-            try { ok = patched(XDocument.Load(proof)); }
-            finally { if (File.Exists(proof)) File.Delete(proof); }
+            try { ok = Prove(block, proof, patched); }
+            catch (Exception first)
+            {
+                // O export recusa bloco inconsistente, e compilar só o bloco não limpa dependência de
+                // fora (UDT, DB) — daí um `compile --plc` com `errors: 0` ser seguido de
+                // "Inconsistent blocks and PLC data types (UDT) cannot be exported" (FP-04, T4).
+                // Compilar o PLC inteiro é caro, então só neste ramo.
+                var soft = plc.GetService<ICompilable>();
+                if (soft != null) soft.Compile();
+                try { ok = Prove(block, proof, patched); }
+                catch (Exception again)
+                {
+                    throw new InvalidOperationException("ATENÇÃO — " + what + " JÁ ENTROU em '" + blockName
+                        + "': o import foi feito. O que falhou foi a re-exportação de prova, mesmo depois "
+                        + "de compilar o PLC. NÃO repita o verbo às cegas nem desfaça: confira o bloco com "
+                        + "`explain-block` ou `export-block` antes de decidir. Erro do export: "
+                        + again.Message, first);
+                }
+            }
             if (!ok)
                 throw new InvalidOperationException("O import de '" + blockName + "' passou, mas " + what
                     + " não está no bloco depois do compile: o patch foi calculado em cima de um "
                     + "export defasado. Rode `compile --apply` e repita o verbo.");
+        }
+
+        /// <summary>Re-exporta o bloco e confere o patch no que voltou. Deixa o arquivo limpo.</summary>
+        private static bool Prove(PlcBlock block, string proof, Func<XDocument, bool> patched)
+        {
+            if (File.Exists(proof)) File.Delete(proof);
+            block.Export(new FileInfo(proof), ExportOptions.WithDefaults);
+            try { return patched(XDocument.Load(proof)); }
+            finally { if (File.Exists(proof)) File.Delete(proof); }
         }
 
         /// <summary>Primeira folha em estado Error, para a mensagem não sair vazia.</summary>

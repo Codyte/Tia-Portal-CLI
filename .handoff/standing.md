@@ -22,10 +22,6 @@ aqui.
   sem isso a rota da sessão 0 devolve `No running TIA Portal instance found` com o Portal aberto.
   Os dois caminhos são o mesmo checkout: `~/.claude/skills` é **Junction** para `~/.agents/skills`
   (`~/.agents/skills/tia` é o diretório real). Ver dois caminhos não é clone duplicado.
-- **`run --script` não abre nem cria projeto, e attach lazy foi descartado** (2026-08-10) — o attach
-  é 1x, antes do 1º step. Abrir projeto custa 2-4 min contra ~7 s de uma chamada solta, então o
-  refactor do `Run()` não se paga. Chamar `open-project`/`create-project` (ou `use-project.ps1`)
-  antes; a mensagem de fail-fast já ensina isso.
 - **Escrita no projeto-molde real (`proj/Software de ETE Insular_Inicial_V21`) só sem salvar.**
   Liberado pelo usuário em 2026-08-12 para a FP-05 rodar em projeto grande de verdade. O molde é a
   referência da casa e **não tem backup nesta máquina**: `save-project` e `close-project --save`

@@ -467,6 +467,25 @@ de um resultado antigo (MLFBs de ET200SP). O executor não abriu o arquivo e reg
 possível. Lição de método para a próxima rodada: **busca em rodada cega exclui `docs/teste-cego/`
 explicitamente** — lista de não-ler não vale para `grep`.
 
+### Fila da FP-05 executada (2026-08-12) — 7 de 7, tudo provado ao vivo
+
+A rodada está em [`resultado-FP-05.md`](teste-cego/resultado-FP-05.md) (Área 24 de recirculação no
+projeto-molde real, 32 min, `audit` 10/10). A Área 24 em si foi revertida por um reboot da máquina,
+que era o undo previsto; o que ficou foi a fila de 7 tropeços, fechada no mesmo dia.
+
+| Item | Como ficou |
+|---|---|
+| 1. `add-call` aceita FB sem pino (T5) | `BlockEdit.cs`. A guarda `has no Input/Output/InOut` morreu; o `CallInfo` de FB **não** se autofecha, o `<Instance>` mora dentro dele. **Aceite ao vivo**: FB sem interface nenhuma chamado num FC LAD, `parameters: 0`, compile Success 0/0. Bloco de área que só opera sobre tag global e estática retentiva não precisa mais de pino inventado. |
+| 2. `nextFreeByte` honesto (T2) | `Hardware.cs`. Não virou verdade — virou **piso declarado**: `nextFreeByteExact` + `nextFreeByteNote` quando há `unassigned` ou filtro. Não existe API de "next free address" no Openness (conferido no `--sdk`); a autoridade continua sendo o `Next free address: N` da mensagem de erro do Portal. A nota sai **antes** do `map`, senão cai fora do head do `--out-file`. |
+| 3. `add-db-member --path` cria o ramo (T4) | `DbMember.cs`. Segmento inexistente nasce `Struct` **no mesmo XML** do membro-folha, então o DB nunca chega vazio no Portal — que era exatamente o que a guarda de `--type Struct` protegia (ela continua de pé). `structsCreated` diz o que nasceu. **Aceite ao vivo**: `--path ZZ_TESTE_AREA.ALARMES --name ALM_ZZ --type Bool` na `DB GLOBAL`, compile Success 0/0, segunda chamada reusando o ramo. |
+| 4. `networksBefore/After` (T7) | `add-call` e `delete-network` devolvem os dois; `clone` devolve `networks`. **Aceite ao vivo**: clone de `MOLDE_ANALOGS` devolveu `networks: 2` (o molde tem 3 — a rede vazia não sobrevive ao export, que é a armadilha do T7), e o `delete-network` seguinte, `2 → 1`. |
+| 5. `connect-subnet` lista as subnets (T1) | Nome que não casa devolve `existingSubnets` em vez de só `subnetAction: create`. Ao vivo: `["PN/IE_1", "PN/IE_2"]`. |
+| 6. `nextFreeByteInDevice` (T3) | O campo muda de nome quando há `--device`: é o próximo livre daquele device, não do projeto. |
+| 7. Régua do pino solto (T6) | Decidida a favor do projeto de referência: **Input sem valor é `warning`**, fica solto na rede como no molde da casa. **`InOut` sem valor continua erro** — referência sem fio não compila. |
+
+Método: os aceites ao vivo saíram de dois batches num projeto de teste (blocos `ZZ_TESTE_*` +
+pasta + ramo na `DB GLOBAL`), apagados depois, com compile limpo antes e depois.
+
 ## Histórico fechado
 
 As sagas já resolvidas (biblioteca, hardware do molde, telegrama, F6, migração para skill,

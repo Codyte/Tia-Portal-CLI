@@ -129,9 +129,10 @@ namespace Tia.Core
             var ifaceFile = Path.GetFullPath(Path.Combine(outDir, "iface_" + Safe(called.Name) + ".xml"));
             if (File.Exists(ifaceFile)) File.Delete(ifaceFile);
             called.Export(new FileInfo(ifaceFile), ExportOptions.None);
+            // FB sem pino é chamável: o Call carrega só o <Instance>. Era erro até 2026-08-12 e
+            // obrigava a inventar um pino de entrada em bloco de área que só usa tag global e
+            // estática retentiva (FP-05, T5).
             var iface = BlockInterface.FromXml(XDocument.Load(ifaceFile));
-            if (iface.Count == 0 && isFb)
-                throw new InvalidOperationException("FB '" + called.Name + "' has no Input/Output/InOut.");
 
             var values = ParseParams(paramArgs);
             var unknown = values.Keys.Where(k => !iface.Any(p => p.Name == k)).ToList();
@@ -297,21 +298,20 @@ namespace Tia.Core
             // object with the UID 'M'"), e todo Call de export real tem params == wires − 1 (o `en`).
             // Pino de entrada sem valor já foi barrado antes; o que cai aqui é Output não usado.
             var declared = spec.Params.Where(p => accessOf.ContainsKey(p.Name)).ToList();
-            bool empty = !isFb && declared.Count == 0;   // FC sem pino: <CallInfo ... /> e só
+            // FC sem pino: <CallInfo ... /> e só. FB sem pino ainda abre a tag — o <Instance> mora lá.
+            bool selfClose = !isFb && declared.Count == 0;
             parts.Append("                <Call UId=\"" + callUid + "\">\n")
                  .Append("                  <CallInfo Name=\"" + Escape(spec.Fb) + "\" BlockType=\""
-                    + spec.BlockType + "\"" + (empty ? " />\n" : ">\n"));
+                    + spec.BlockType + "\"" + (selfClose ? " />\n" : ">\n"));
             if (isFb)
                 parts.Append("                    <Instance Scope=\"GlobalVariable\" UId=\"" + instUid + "\">\n")
                      .Append("                      <Component Name=\"" + Escape(spec.Instance) + "\" />\n")
                      .Append("                    </Instance>\n");
-            if (!empty)
-            {
-                foreach (var p in declared)
-                    parts.Append("                    <Parameter Name=\"" + Escape(p.Name) + "\" Section=\""
-                        + p.Section + "\" Type=\"" + Escape((p.Datatype ?? "").Trim('"')) + "\" />\n");
+            foreach (var p in declared)
+                parts.Append("                    <Parameter Name=\"" + Escape(p.Name) + "\" Section=\""
+                    + p.Section + "\" Type=\"" + Escape((p.Datatype ?? "").Trim('"')) + "\" />\n");
+            if (!selfClose)
                 parts.Append("                  </CallInfo>\n");
-            }
             parts.Append("                </Call>\n");
 
             // EN vem do powerrail: chamada incondicional

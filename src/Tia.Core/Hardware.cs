@@ -366,19 +366,30 @@ namespace Tia.Core
             rows = rows.OrderBy(r => (string)r["ioType"], StringComparer.Ordinal)
                 .ThenBy(r => (int)r["startByte"]).ToList();
 
-            // próximo byte livre por tipo: é a pergunta que a sonda do erro respondia
+            // próximo byte livre por tipo: é a pergunta que a sonda do erro respondia.
+            // É PISO, não garantia: sai do que este mapa leu, e o mapa não lê os `unassigned`.
+            // Na FP-05 (T2) ele disse Input: 664 e o Portal recusou com "Next free address: 1062" —
+            // 398 bytes que nenhuma composição visitada aqui expõe. Quem manda é o Portal.
             var nextFree = rows.GroupBy(r => (string)r["ioType"]).ToDictionary(
                 g => g.Key,
                 g => (object)g.Max(r => (int)r["startByte"] + (int)r["lengthBytes"]));
 
-            return new Dictionary<string, object>
+            var result = new Dictionary<string, object>
             {
                 { "devices", devices.Count },
                 { "addresses", rows.Count },
                 { "unassigned", unassigned },
-                { "nextFreeByte", nextFree },
+                { deviceName == null ? "nextFreeByte" : "nextFreeByteInDevice", nextFree },
+                { "nextFreeByteExact", unassigned == 0 && deviceName == null && io == null },
                 { "map", rows.Cast<object>().ToList() },
             };
+            if (!(bool)result["nextFreeByteExact"])
+                result["nextFreeByteNote"] = "piso, não garantia: "
+                    + (deviceName != null ? "filtrado por --device (é o próximo livre DAQUELE device); " : "")
+                    + (io != null ? "filtrado por --io; " : "")
+                    + unassigned + " itens sem endereço lido. O Portal recusa endereço ocupado "
+                    + "dizendo \"Next free address: N\" — esse N é a autoridade.";
+            return result;
         }
 
         private static void CollectMap(string deviceName, DeviceItem item, string path,

@@ -760,6 +760,25 @@ namespace Tia.Tests
             Check(fcUnit.Descendants().Count(e => e.Name.LocalName == "Wire") == 1,
                 "chamada de FC sem pino: só o wire do powerrail");
 
+            // FB sem pino nenhum: CallInfo NÃO se fecha sozinho, o <Instance> mora dentro — FP-05, T5
+            var fbSemPino = Fc(1);
+            BlockEdit.InsertCallInXml(fbSemPino, new BlockEdit.CallSpec
+            {
+                Fb = "FB RECIRCULACAO",
+                BlockType = "FB",
+                Instance = "FB RECIRCULACAO_DB",
+                Title = "Function Block RECIRCULACAO",
+                Params = new List<Param>(),
+                Values = new Dictionary<string, string>(),
+            }, -1);
+            var fbUnit = fbSemPino.Descendants().Last(e => e.Name.LocalName == "SW.Blocks.CompileUnit");
+            var fbCall = fbUnit.Descendants().Single(e => e.Name.LocalName == "CallInfo");
+            Check(fbCall.Descendants().Any(e => e.Name.LocalName == "Component"
+                && (string)e.Attribute("Name") == "FB RECIRCULACAO_DB"), "FB sem pino ainda leva instância");
+            Check(!fbCall.Elements().Any(e => e.Name.LocalName == "Parameter"), "sem pino, sem Parameter");
+            Check(fbUnit.Descendants().Count(e => e.Name.LocalName == "Wire") == 1,
+                "FB sem pino: só o wire do powerrail");
+
             // TRUE só entra como LiteralConstant + ConstantType; T#3S se basta — FP-04, T3
             var tipada = spec();
             tipada.Params = new List<Param>

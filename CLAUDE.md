@@ -93,6 +93,11 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     (com a varredura: `Input: 664`, `Output: 392`, 45 → 113 endereços). O mesmo endereço sai por
     drive em `list-telegrams --device X`. Quem precisa do telegrama **no programa** continua usando o
     `HWID` da constante `<drive>~PROFINET_interface~Standard_telegram_20`, não o endereço.
+    **`nextFreeByte` é piso, não garantia** — sai só do que o mapa leu, e o mapa não lê os
+    `unassigned`. Na FP-05 ele disse `Input: 664` e o Portal recusou com `Next free address: 1062`.
+    Desde 2026-08-12 o verbo declara isso: `nextFreeByteExact: false` + `nextFreeByteNote` quando há
+    `unassigned` ou filtro, e com `--device` o campo se chama **`nextFreeByteInDevice`** (é o próximo
+    livre daquele device, não do projeto). A autoridade é o `Next free address: N` do erro do Portal.
   - **`audit` são 10 checks** e o R2 **exporta a DB global** para `--out` (só o export mostra o
     datatype dos membros) — não é mais 100% read-only. Check que não pode rodar devolve `skipped`
     com o motivo e **não reprova** o projeto. `--db "DB GLOBAL"` nomeia a DB quando a heurística
@@ -114,7 +119,10 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     antes de escrever a chamada) → `clone` do molde → `delete-network --index N` para as redes que
     não servem → `add-call --block X --fb "FB Y|FC Y" [--inst iDB] --param P=<tag|DB.caminho.membro|const>`
     (rede LAD com EN no powerrail; pino de entrada sem valor é erro). `--inst` é **exigido para FB e
-    recusado para FC** — o `CHAMADA_*` do padrão é sequência de chamadas de FC. Só o pino **com
+    recusado para FC** — o `CHAMADA_*` do padrão é sequência de chamadas de FC. **FB sem pino
+    nenhum é chamável** (só o `<Instance>` no `Call`) desde 2026-08-12: era erro
+    `has no Input/Output/InOut` e obrigava a inventar pino em bloco de área que só usa tag global e
+    estática retentiva (FP-05, T5). Só o pino **com
     valor** entra declarado: o Portal recusa import de `<Parameter>` sem fio, então Output que você
     não usa fica de fora. Constante sai tipada pelo pino (`TRUE` num Bool vira
     `LiteralConstant`+`ConstantType`; `T#5S` se basta). `--after 0` põe na frente, omitido põe no

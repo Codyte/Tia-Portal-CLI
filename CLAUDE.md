@@ -97,6 +97,10 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     datatype dos membros) — não é mais 100% read-only. Check que não pode rodar devolve `skipped`
     com o motivo e **não reprova** o projeto. `--db "DB GLOBAL"` nomeia a DB quando a heurística
     (`GlobalDB` com "global" no nome) não acha.
+    **`scanned` diz o tamanho da população** (`folders`, `blocks`, `callBlocks`, `tagTables`) — é
+    como se distingue check conforme de check cego: `callBlocks: 0` reprova o R8 por vazio, não por
+    conformidade. No projeto-molde real: 96 pastas, 475 blocos, 46 blocos de chamada, 195 tabelas,
+    10 checks verdes.
   - **`--folder` de import é sempre o caminho completo.** `import-block`/`import-tags`/`import-source`
     criam a árvore que faltar **a partir da raiz**: caminho parcial (`5.2 Totalizadores` em vez de
     `5. Instrumentação / Atuadores/5.2 Totalizadores`) cria uma pasta paralela homônima, e o gerador

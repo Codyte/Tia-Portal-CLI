@@ -412,6 +412,16 @@ com telegrama 20 no IO system do `PLC_ZERO`, 23 blocos, 6 UDTs, 6 tabelas de tag
 reprova (o 6º bloco do molde é iDB de um FB que o próprio `MOTOR_01` do projeto não chama).
 Os **4 checks novos passaram** — continuam sem ter sido vistos reprovando.
 
+**Encaminhado em 2026-08-12 sem gastar uma rodada nisso.** A dúvida real não era "reprova?" e sim
+"olhou alguma coisa?" — check que passa por população vazia é o modo de falha do `--folder` do
+`list-blocks` (`count: 0`, `ok: true`). O `audit` passou a devolver **`scanned`**
+(`folders`/`blocks`/`callBlocks`/`tagTables`), e no projeto-molde real dá 96 / 475 / **46** / 195
+com 10 checks verdes: o R8 examinou 46 blocos de chamada com linguagem conhecida e aprovou os 46.
+Os predicados (`IsCallBlock`, `IsLooseScalar`) já têm teste offline reprovando o caso ruim; o que
+faltava era a prova de que a população chega neles, e é isso que o `scanned` mostra em toda rodada.
+Ver os 4 acusando em projeto real continua valendo — como subproduto da próxima rodada cega, não
+como rodada própria.
+
 O programa saiu conforme; o produto do teste foram **9 tropeços da ferramenta**, e a rodada custou
 mais em contorno de CLI do que em engenharia: só o T1 comeu 25 dos 45 min.
 

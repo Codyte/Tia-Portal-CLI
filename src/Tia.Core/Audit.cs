@@ -10,19 +10,19 @@
 //   L130   .IsLooseScalar
 //   L141   .RootMembers
 //   L152   .Run
-//   L237   .NonGraphicCalls
-//   L257   .MisplacedCalls
-//   L283   .DbGlobalCheck
-//   L303   .FindGlobalDb
-//   L317   .Skipped
-//   L326   .CountTypes
-//   L331   .CollectLanguages
-//   L344   .LayerLeaks
-//   L370   .IsLibrary
-//   L377   .AreaConflicts
-//   L404   .Check
-//   L420   .CollectBlocks
-//   L428   .CollectTables
+//   L250   .NonGraphicCalls
+//   L270   .MisplacedCalls
+//   L296   .DbGlobalCheck
+//   L316   .FindGlobalDb
+//   L330   .Skipped
+//   L339   .CountTypes
+//   L344   .CollectLanguages
+//   L357   .LayerLeaks
+//   L383   .IsLibrary
+//   L390   .AreaConflicts
+//   L417   .Check
+//   L433   .CollectBlocks
+//   L441   .CollectTables
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -218,11 +218,24 @@ namespace Tia.Core
                 Check("CHAMADA_* fora da pasta de área", MisplacedCalls(blocksByFolder), maxFindings),
             };
 
+            // Check que nunca acusa nada é indistinguível de check que não olhou — foi o modo de
+            // falha do `--folder` do list-blocks (`count: 0`, `ok: true`). `scanned` diz o tamanho
+            // da população de cada um: `callBlocks: 0` reprova o R8 por vazio, não por conformidade.
+            var allBlocks = blocksByFolder.SelectMany(kv => kv.Value).ToList();
+            var scanned = new Dictionary<string, object>
+            {
+                { "folders", blocksByFolder.Count },
+                { "blocks", allBlocks.Count },
+                { "callBlocks", allBlocks.Count(n => IsCallBlock(n) && languageOf.ContainsKey(n)) },
+                { "tagTables", tablesByFolder.Sum(kv => kv.Value.Count) },
+            };
+
             return new Dictionary<string, object>
             {
                 { "plc", plc.Name },
                 { "drives", drives.Count },
                 { "udts", udts },
+                { "scanned", scanned },
                 { "ok", checks.Cast<Dictionary<string, object>>().All(c => (bool)c["ok"]) },
                 { "checks", checks },
             };

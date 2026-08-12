@@ -647,6 +647,10 @@ namespace Tia.Core
             if (ctrl != null && ctrl.IoSystem != null) result["ownedIoSystem"] = ctrl.IoSystem.Name;
             if (subnet != null)
                 result["ioSystemsOnSubnet"] = subnet.IoSystems.Select(s => s.Name).ToList();
+            else
+                // Nome errado criava subnet paralela sem reclamar, e acertar `PN/IE_1` era adivinhação
+                // (FP-05, T1). Com a lista, o "create" ou é intencional ou salta aos olhos.
+                result["existingSubnets"] = session.Project.Subnets.Select(s => s.Name).ToList();
             if (ioSystemName != null)
             {
                 if (ctrl != null)

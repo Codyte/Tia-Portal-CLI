@@ -69,6 +69,9 @@ namespace Tia.Core
                 { "applied", apply },
             };
             if (addresses.Any()) result["addresses"] = addresses;
+            // Rede vazia não sobrevive ao export: molde de 1 rede vazia chega ao clone com 0 redes,
+            // e o delete-network planejado de cabeça apaga a rede errada (FP-05, T7).
+            if (!isTable) result["networks"] = BlockEdit.CountNetworks(doc);
 
             if (apply)
             {

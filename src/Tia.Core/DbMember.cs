@@ -67,8 +67,8 @@ namespace Tia.Core
             if (string.Equals(type, "Struct", StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentException("--type Struct cria uma estrutura vazia, que deixa o DB "
                     + "inconsistente e trava os próximos verbos (o Openness não exporta bloco inconsistente). "
-                    + "Crie o ramo já com membro: --like <irmão do mesmo tipo>, ou import-source de um .scl "
-                    + "com o STRUCT completo.");
+                    + "Ramo com membro dentro sai do próprio --path: `--path AREA.ALARMES --name X "
+                    + "--type Bool` cria AREA e ALARMES como Struct e põe X dentro, num import só.");
 
             var db = ReplicateFc.FindDataBlock(plc.BlockGroup, dbName);
             if (db == null)
@@ -91,7 +91,10 @@ namespace Tia.Core
             if (apply)
                 Ops.ImportAndProve(plc, group, dbLabel, file, "o membro '" + name + "'",
                     d => MemberOf(d, path, name) != null);
-            return Report(dbLabel, path, name, edit.Datatype, "create", file, apply);
+            var report = Report(dbLabel, path, name, edit.Datatype, "create", file, apply);
+            if (edit.StructsCreated != null && edit.StructsCreated.Count > 0)
+                report["structsCreated"] = edit.StructsCreated;
+            return report;
         }
 
         /// <summary>
@@ -271,6 +274,8 @@ namespace Tia.Core
         {
             public string Action;
             public string Datatype;
+            /// <summary>Segmentos de `--path` que não existiam e nasceram como Struct.</summary>
+            public List<string> StructsCreated;
         }
 
         /// <summary>
@@ -280,7 +285,8 @@ namespace Tia.Core
         /// </summary>
         internal static Edit AddToXml(XDocument doc, string path, string name, string type, string like)
         {
-            var section = ResolveSection(doc, path);
+            var created = new List<string>();
+            var section = ResolveSection(doc, path, createMissing: true, created: created);
             var members = section.Elements().Where(e => e.Name.LocalName == "Member").ToList();
 
             var existing = members.FirstOrDefault(m => NameOf(m).Equals(name, StringComparison.OrdinalIgnoreCase));
@@ -299,16 +305,25 @@ namespace Tia.Core
                 if (!string.IsNullOrEmpty(type))
                     clone.SetAttributeValue("Datatype", Datatype(type));
                 model.AddAfterSelf(clone);
-                return new Edit { Action = "create", Datatype = clone.Attribute("Datatype")?.Value };
+                return new Edit { Action = "create", Datatype = clone.Attribute("Datatype")?.Value,
+                    StructsCreated = created };
             }
 
             var datatype = Datatype(type);
             section.Add(new XElement(section.Name.Namespace + "Member",
                 new XAttribute("Name", name), new XAttribute("Datatype", datatype)));
-            return new Edit { Action = "create", Datatype = datatype };
+            return new Edit { Action = "create", Datatype = datatype, StructsCreated = created };
         }
 
-        private static XElement ResolveSection(XDocument doc, string path)
+        /// <summary>
+        /// Desce o caminho pontilhado. Com `createMissing`, segmento inexistente nasce como
+        /// `<Member Datatype="Struct">` — o ramo só fica vazio entre a criação e o membro-folha que
+        /// vem logo depois, no mesmo XML, então o DB nunca chega inconsistente no Portal. É o que
+        /// destrava reproduzir a hierarquia de área do molde (ALARMES/EVENTOS/INSTRUMENTACAO),
+        /// impossível pela CLI até 2026-08-12 (FP-05, T4).
+        /// </summary>
+        private static XElement ResolveSection(XDocument doc, string path, bool createMissing = false,
+            List<string> created = null)
         {
             var section = doc.Descendants().FirstOrDefault(e => e.Name.LocalName == "Section"
                 && (string)e.Attribute("Name") == "Static");
@@ -319,6 +334,13 @@ namespace Tia.Core
             {
                 var member = section.Elements().FirstOrDefault(e => e.Name.LocalName == "Member"
                     && NameOf(e).Equals(segment, StringComparison.OrdinalIgnoreCase));
+                if (member == null && createMissing)
+                {
+                    member = new XElement(section.Name.Namespace + "Member",
+                        new XAttribute("Name", segment), new XAttribute("Datatype", "Struct"));
+                    section.Add(member);
+                    if (created != null) created.Add(segment);
+                }
                 if (member == null)
                     throw new InvalidOperationException("Member '" + segment + "' not found while walking path '" +
                         path + "'. Known members: " + string.Join(", ",

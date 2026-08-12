@@ -499,7 +499,17 @@ namespace Tia.Tests
                 "inserido dentro do struct nativo");
 
             Check(Throws(() => DbMember.AddToXml(db(), "AREA", "X", null, "NAO_EXISTE")), "--like inexistente falha");
-            Check(Throws(() => DbMember.AddToXml(db(), "NAO_EXISTE", "X", "Bool", null)), "--path inexistente falha");
+            // --path que não existe nasce como Struct, já com o membro-folha dentro — FP-05, T4
+            var d6 = db();
+            var e6 = DbMember.AddToXml(d6, "RECIRCULACAO.ALARMES", "ALM_FALHA", "Bool", null);
+            Check(e6.Action == "create" && e6.StructsCreated.SequenceEqual(new[] { "RECIRCULACAO", "ALARMES" }),
+                "os dois segmentos que faltavam viram Struct");
+            var ramo = d6.Descendants(n + "Member").Single(m => (string)m.Attribute("Name") == "ALARMES");
+            Check((string)ramo.Attribute("Datatype") == "Struct"
+                && (string)ramo.Parent.Attribute("Name") == "RECIRCULACAO", "ramo aninhado na ordem do path");
+            Check(ramo.Elements(n + "Member").Count() == 1, "nenhum Struct fica vazio no XML importado");
+            Check(DbMember.AddToXml(d6, "RECIRCULACAO.ALARMES", "ALM_2", "Bool", null)
+                .StructsCreated.Count == 0, "segunda chamada reusa o ramo, não duplica");
             Check(Throws(() => DbMember.AddToXml(db(), "AREA.BOMBA_A", "X", "Bool", null)),
                 "path através de membro não-struct falha");
 

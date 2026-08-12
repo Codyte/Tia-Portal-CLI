@@ -90,6 +90,8 @@ namespace Tia.Core
                 doc => CountNetworks(doc) == before - 1);
             result["network"] = index;
             result["title"] = removed;
+            result["networksBefore"] = before;
+            result["networksAfter"] = before - 1;
             return result;
         }
 
@@ -98,8 +100,9 @@ namespace Tia.Core
         /// <summary>
         /// Insere uma rede com a chamada de um FB ou de um FC (EN direto do powerrail). Os pinos
         /// saem da interface do bloco chamado — daí o <see cref="BlockInterface"/> ser o mesmo
-        /// leitor do `list-interface`. Input e InOut sem valor são erro: pino de entrada solto não
-        /// compila. FC não tem instância: `--inst` é exigido para FB e recusado para FC — sem isso o
+        /// leitor do `list-interface`. InOut sem valor é erro (referência sem fio não compila);
+        /// Input sem valor sai como `warning` e fica solto, que é o que o molde da casa faz.
+        /// FC não tem instância: `--inst` é exigido para FB e recusado para FC — sem isso o
         /// verbo não montava o bloco `CHAMADA_*` do padrão da casa, que é sequência de chamadas de
         /// FC (FP-04, T1).
         /// ponytail: rede incondicional (sem contatos em série). Condição continua sendo cirurgia
@@ -139,11 +142,17 @@ namespace Tia.Core
             if (unknown.Count > 0)
                 throw new ArgumentException("Parâmetro inexistente em '" + called.Name + "': "
                     + string.Join(", ", unknown) + ". Pinos: " + string.Join(", ", iface.Select(p => p.Name)));
-            var missing = iface.Where(p => p.Section != "Output" && !values.ContainsKey(p.Name))
+            // InOut sem fio não compila mesmo (é referência, não valor) — continua erro. Input solto,
+            // não: o molde da casa (`PARTIDA_BOMBA (B-10A)`) tem pino de entrada sem fio e compila,
+            // então a régua do verbo era mais estrita que o projeto de referência (FP-05, T6). Sai
+            // como aviso e o compile é quem julga.
+            var missingInOut = iface.Where(p => p.Section == "InOut" && !values.ContainsKey(p.Name))
                 .Select(p => p.Name + " : " + p.Datatype).ToList();
-            if (missing.Count > 0)
-                throw new ArgumentException("Pino de entrada sem valor (não compila): "
-                    + string.Join(", ", missing));
+            if (missingInOut.Count > 0)
+                throw new ArgumentException("Pino InOut sem valor (não compila — InOut é referência): "
+                    + string.Join(", ", missingInOut));
+            var unwiredInputs = iface.Where(p => p.Section == "Input" && !values.ContainsKey(p.Name))
+                .Select(p => p.Name + " : " + p.Datatype).ToList();
 
             var spec = new CallSpec
             {
@@ -157,9 +166,11 @@ namespace Tia.Core
                 Values = values,
             };
 
-            int after1 = 0;
+            // networksBefore/After: o --index do delete-network é às cegas sem isso, e clone de molde
+            // com rede vazia chega sem rede nenhuma — foi como a FP-05 apagou a rede errada (T7).
+            int before = 0, after1 = 0;
             var result = Patch(plc, blockName, "addcall_", outDir, apply,
-                doc => { after1 = CountNetworks(doc) + 1; InsertCallInXml(doc, spec, after); },
+                doc => { before = CountNetworks(doc); after1 = before + 1; InsertCallInXml(doc, spec, after); },
                 () => "a chamada de '" + called.Name + "'",
                 doc => doc.Descendants().Any(e => e.Name.LocalName == "CallInfo"
                     && (string)e.Attribute("Name") == called.Name));
@@ -168,6 +179,11 @@ namespace Tia.Core
             result["instance"] = instance;
             result["parameters"] = iface.Count;
             result["networks"] = after1;
+            result["networksBefore"] = before;
+            result["networksAfter"] = after1;
+            if (unwiredInputs.Count > 0)
+                result["warning"] = "pino de entrada sem valor (fica solto na rede, como no molde da "
+                    + "casa): " + string.Join(", ", unwiredInputs) + ". Confira no compile.";
             return result;
         }
 
@@ -296,7 +312,7 @@ namespace Tia.Core
             // Só entra como <Parameter> o pino que tem fio: o Portal recusa o import de pino
             // declarado e não ligado ("The connection with the name 'N' is not connected to the
             // object with the UID 'M'"), e todo Call de export real tem params == wires − 1 (o `en`).
-            // Pino de entrada sem valor já foi barrado antes; o que cai aqui é Output não usado.
+            // O que cai aqui é Output não usado e Input sem valor: ambos ficam soltos na rede.
             var declared = spec.Params.Where(p => accessOf.ContainsKey(p.Name)).ToList();
             // FC sem pino: <CallInfo ... /> e só. FB sem pino ainda abre a tag — o <Instance> mora lá.
             bool selfClose = !isFb && declared.Count == 0;

@@ -127,6 +127,17 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     não usa fica de fora. Constante sai tipada pelo pino (`TRUE` num Bool vira
     `LiteralConstant`+`ConstantType`; `T#5S` se basta). `--after 0` põe na frente, omitido põe no
     fim. Rede **com condição em série** continua sendo clone de um molde que já a tenha.
+    **Pino de entrada sem valor é aviso, não erro** (desde 2026-08-12): fica solto na rede, que é o
+    que o molde da casa faz — só `InOut` sem valor continua barrado (referência sem fio não compila).
+    `add-call`, `delete-network` e `clone` devolvem **`networksBefore`/`networksAfter`** (o `clone`,
+    `networks`): planejar `--index` de cabeça foi como a FP-05 apagou a rede errada — molde com rede
+    vazia chega ao clone **sem rede nenhuma**, porque rede vazia não sobrevive ao export.
+  - **`add-db-member --path` cria o ramo que faltar**, como Struct, já com o membro-folha dentro
+    (`--path AREA.ALARMES --name ALM_X --type Bool` num import só; `structsCreated` lista o que
+    nasceu). É o que destrava reproduzir a hierarquia de área do molde. `--type Struct` continua
+    recusado: struct vazio deixa o DB inconsistente e trava todo verbo que exporta.
+  - **`connect-subnet` com nome que não existe lista as subnets do projeto** (`existingSubnets`) —
+    o `subnetAction: create` de um nome errado criava subnet paralela sem reclamar.
   - **`clone --replace` é troca de texto no XML exportado, não caminho de membro.** Caminho de DB
     lá é cadeia de `<Component Name="…"/>`: `A.B.C=X.Y` casa zero vezes — trocar **um componente por
     vez**, e a estrutura de destino tem que ter a **mesma profundidade** da origem, senão o clone

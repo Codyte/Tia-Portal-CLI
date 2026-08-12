@@ -1,75 +1,63 @@
 # Handoff · TIA Portal Openness API · 2026-08-12
 
 ## Goal
-FP-05 executada e relatada. O próximo passo é decidir o que vira código na CLI a partir dos 7
-tropeços medidos — a fila está escrita na seção 6 de `docs/teste-cego/resultado-FP-05.md`.
+A fila de 7 tropeços da FP-05 está fechada (código + smoke + docs). Não há trabalho em vôo — a
+próxima sessão escolhe o próximo alvo: a ponta solta do T2(b), uma FP-06, ou outra coisa.
 
 ## State
-- HEAD: `46a3cf6` (`docs(teste-cego): resultado da FP-05`), working tree limpo fora de `workspace/`
-  (gitignored).
-- **Live state: TIA Portal aberto na sessão 1 com `proj/Software de ETE Insular_Inicial_V21`
-  MODIFICADO E NÃO SALVO.** A Área 24 `Recirculação` inteira (hardware + programa) está só em
-  memória. Fechar sem salvar reverte tudo; salvar contamina o molde da casa, que não tem backup.
-  Enquanto esse Portal viver: nada de `save-project` nem `close-project --save`.
-- Done: FP-05 completa — 07:51→08:23 (32 min, ~41 chamadas). `ET 200SP station_5` (DI/DQ/AI/AO),
-  15 tags de campo, 9 tabelas, ramo `RECIRCULACAO` na `DB GLOBAL`, 17 blocos, `CHAMADA_RECIRCULACAO
-  (QA-04)` (OB142) na chamada cíclica. `compile` 0/0, `audit` 10/10, 0 colisão de endereço.
-  Relatório commitado.
-- In progress: nada em vôo.
+- HEAD: `33f8151` (`docs(plano): fila da FP-05 fechada`). Working tree limpo fora de `workspace/`.
+- **Live state: TIA Portal aberto na sessão 1** com `proj/Software de ETE Insular_Inicial_V21`.
+  O projeto está **como estava antes da FP-05**: a Área 24 morreu num reboot da máquina (era o undo
+  previsto) e os blocos `ZZ_TESTE_*` dos smokes foram apagados, com compile Success 0/0 depois.
+  O shell do agente nasceu na **sessão 1** nesta máquina, então `tia` roda direto (sem a rota da task).
+- Done: os 7 itens da fila, em 4 commits. `add-call` aceita FB sem pino e trata Input solto como
+  aviso; `list-io-map` declara `nextFreeByteExact`/`Note`/`InDevice`; `add-db-member --path` cria
+  ramo Struct; `add-call`/`delete-network`/`clone` reportam contagem de redes; `connect-subnet`
+  lista `existingSubnets`. `PLANO.md` e `CLAUDE.md` atualizados.
+- In progress: nada.
 
 ## Decisions (and why)
-- **As 3 exigências da seção 6 do caderno que violam a lei da casa foram recusadas** (chamada em
-  SCL, escalar na raiz da DB, `CHAMADA_*` na pasta da área), com o motivo escrito no relatório — o
-  item 7 do caderno prevê exatamente isso. A 4ª ("não criar UDT novo") saiu de graça: a casa já tem
-  `MotorPrincipal`/`MotorDados`/`ValvDados`/`SensorDados`.
-- **Área nasceu como 24, não 4** — a 4 do projeto já é `Elevatória de Gordura` em `2.4`/`3.1.4`/
-  `5.1.4`, e usar 4 reprovaria o check de numeração consistente.
-- **Horímetro e contador de partidas ficaram em estáticas retentivas do FB novo**, não no
-  `STS_HORIMETRO` do `FB CONDIÇÃO DE PARTIDA`: torná-lo retentivo exigiria `set-retain` no FB **da
-  biblioteca**, atingindo os 36 acionamentos existentes. O valor é publicado na DB, a IHM não vê
-  diferença.
-- **`RECIRCULACAO` ficou plana na `DB GLOBAL`** (sem `ALARMES`/`EVENTOS`/`INSTRUMENTACAO`) — não é
-  estética, é limite da CLI (tropeço T4). Registrado como divergência.
-- Rejeitado: clonar `PARTIDA_BOMBA (B-10A)` como molde das bombas novas. É acionamento com inversor,
-  e o `--replace` traria tag de I/O que não existe na Área 24 — os `PARTIDA_*` novos saíram de
-  `import-ladder` + `add-call`.
-- Retirado do `standing.md`: a entrada sobre `run --script` não abrir projeto — já está no
-  `CLAUDE.md` do repo, era duplicata.
+- **`nextFreeByte` não virou verdade, virou piso declarado.** Não existe API de "next free address"
+  no Openness (`tia-help.py --sdk` só acha `Address.StartAddress`), e os 398 bytes que o Portal
+  enxerga a mais não saem de nenhuma composição que o verbo visita. Mentir menos > adivinhar.
+- **Input solto virou `warning`, `InOut` solto continua erro.** O molde da casa
+  (`PARTIDA_BOMBA (B-10A)`) tem pino de entrada sem fio e compila — a régua do verbo era mais
+  estrita que o projeto de referência. InOut é referência: sem fio não compila mesmo.
+- **`--type Struct` continua recusado.** O ramo agora nasce pelo `--path`, no mesmo XML do
+  membro-folha, então nenhum Struct vazio chega ao Portal — a guarda protege exatamente o caso que
+  o `--path` não cobre.
+- Rejeitado: sondar o Portal no dry-run do `set-io-address` (T2 item b). Exigiria escrever o
+  endereço e reverter; num projeto real isso é escrita disfarçada de leitura.
+- Retirado do `standing.md`: a proibição de salvar o projeto-molde. O usuário esclareceu que é
+  projeto de teste.
 
 ## Next steps (ordered)
-1. **Fechar a rodada com o usuário**: perguntar se o Portal fecha (sem salvar, revertendo a Área 24)
-   ou fica aberto para inspeção visual do que foi construído. Não decidir sozinho.
-2. Atacar a fila da seção 6 do `resultado-FP-05.md`, na ordem escrita. Os dois primeiros são os que
-   pagam: `add-call` aceitando FB sem parâmetro (o `empty` do `BlockEdit.cs` já resolve o caso do FC
-   — falta estender ao FB, que só precisa do `<Instance>`), e `nextFreeByte` honesto no
-   `list-io-map` (hoje entrega endereço que o Portal recusa; o próprio verbo já conta
-   `unassigned: 130`, que é onde os 398 bytes invisíveis moram).
-3. Atualizar a tabela de fases do `docs/PLANO.md` com a FP-05 fechada.
-4. Cada item da fila que virar código: `pwsh scripts/rebuild.ps1` e teste offline antes do smoke.
+1. Perguntar ao usuário o próximo alvo — a fila acabou. Candidatos abaixo, nenhum urgente.
+2. T2(b): `set-io-address --apply` é a primeira coisa que valida; o dry-run só ecoa o `--start`.
+   Decidir se vale sondar (escreve e reverte) ou só documentar que o dry-run não confere.
+3. FP-06 (nova rodada cega) se a ideia for continuar medindo a CLI contra trabalho real.
 
 ## Key files
-- `docs/teste-cego/resultado-FP-05.md` — a entrega desta sessão; a fila está na seção 6, e os
-  tropeços medidos (com o erro exato do Portal) na seção 3.
-- `docs/teste-cego/criterios-FP-05.md` — a régua, lida depois da execução; os 5 portões passaram.
-- `src/Tia.Core/BlockEdit.cs` — `add-call` (T5 e T6 moram aqui; `empty` por volta da L300).
-- `src/Tia.Core/Hardware.cs` — `list-io-map`/`set-io-address`/`connect-subnet` (T1, T2, T3).
-- `src/Tia.Core/DbMember.cs` — `add-db-member`, guarda contra `--type Struct` na L67 (T4).
-- `src/Tia.Core/__navi__.md` e `src/Tia.Cli/__navi__.md` — mapa das duas pastas.
-- `workspace/fp05/` — tudo que a rodada leu e escreveu (gitignored): `plc-navi.md`, `io-map.json`,
-  `lib-interface.json`, `src/*.scl` das 6 fontes.
+- `docs/PLANO.md` — seção "Fila da FP-05 executada (2026-08-12)", tabela dos 7 itens com o aceite
+  de cada um. É o resumo mais denso do que esta sessão fez.
+- `docs/teste-cego/resultado-FP-05.md` — a rodada que gerou a fila (seção 3 = tropeços medidos).
+- `src/Tia.Core/__navi__.md` — mapa da pasta; os 4 arquivos tocados foram `BlockEdit.cs`,
+  `Hardware.cs`, `DbMember.cs`, `Clone.cs`.
+- `workspace/t5/` (gitignored) — `ops.json`/`ops2.json`/`cleanup*.json`: os batches de smoke que
+  provaram os 7 itens ao vivo. É a receita se algum item precisar ser re-provado.
 
 ## Open / blockers
-- O projeto real está aberto e sujo (ver Live state). Qualquer sessão que rodar `tia` nele está
-  trabalhando em cima da Área 24 — e um `save-project` acidental é irreversível.
-- Os `workspace/fp05-*.json` (scripts de batch da rodada) ficam como receita do que foi feito, mas
-  são gitignored: se a Área 24 tiver que ser reconstruída depois de fechar sem salvar, é deles que
-  sai a sequência.
+- Nada bloqueando. Ponta solta única: o dry-run do `set-io-address` não pergunta nada ao Portal.
+- **`rebuild.ps1` invalida a autorização do Portal já aberto**: a chamada seguinte trava ~10 min e
+  morre com `EngineeringSecurityException: Security error. The operation has timed out.` Conserto:
+  `Start-ScheduledTask -TaskName TiaWhitelist` e repetir. Aconteceu duas vezes nesta sessão.
+- Compile do PLC inteiro passa de 10 min: batch com `compile --apply` roda em background, não em
+  foreground com timeout de 600 s.
 
 ## Skills
 - tia
 
 ## Effort
-**Baixo** para o passo 1 (é uma pergunta ao usuário) e **médio** para o passo 2: os dois primeiros
-itens da fila são mudança pontual em arquivo conhecido, com o sintoma já medido e o local apontado.
-Suba para **alto** só se o `nextFreeByte` exigir entender por que 130 itens ficam `unassigned` — aí
-vira sonda de API e vale `tia-help.py --sdk "Address"` antes de tentar.
+**Baixo** para o passo 1 — é uma pergunta ao usuário. Se a resposta for o passo 2, suba para
+**médio**: mexer em `set-io-address` toca escrita de hardware e a decisão (sondar × documentar) não
+está tomada. Reasoning não é o gargalo aqui — build e compile do Portal são.

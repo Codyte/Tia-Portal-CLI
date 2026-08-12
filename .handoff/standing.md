@@ -22,10 +22,10 @@ aqui.
   sem isso a rota da sessão 0 devolve `No running TIA Portal instance found` com o Portal aberto.
   Os dois caminhos são o mesmo checkout: `~/.claude/skills` é **Junction** para `~/.agents/skills`
   (`~/.agents/skills/tia` é o diretório real). Ver dois caminhos não é clone duplicado.
-- **Escrita no projeto-molde real (`proj/Software de ETE Insular_Inicial_V21`) só sem salvar.**
-  Liberado pelo usuário em 2026-08-12 para a FP-05 rodar em projeto grande de verdade. O molde é a
-  referência da casa e **não tem backup nesta máquina**: `save-project` e `close-project --save`
-  estão proibidos enquanto a rodada durar. Fechar sem salvar é o único undo — e reverte tudo.
+- **`proj/Software de ETE Insular_Inicial_V21` é projeto de teste, escrita liberada** (usuário,
+  2026-08-12: "esse projeto já está salvo, ele é literalmente para esse tipo de teste"). Substitui a
+  regra anterior de "só sem salvar". Continua valendo a etiqueta: bloco de smoke nasce com prefixo
+  `ZZ_TESTE_*` em pasta própria e é apagado no fim, com compile limpo antes e depois.
 - **`--out-file` nunca em `$env:TEMP`** — vira caminho 8.3 (`CARLOS~1`) que o Python não abre.
   Usar `workspace/`.
 - **Script que recebe caminho testa contra o cwd E contra a raiz do repo** — o macro roda num pwsh

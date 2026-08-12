@@ -381,7 +381,6 @@ namespace Tia.Core
                 { "unassigned", unassigned },
                 { deviceName == null ? "nextFreeByte" : "nextFreeByteInDevice", nextFree },
                 { "nextFreeByteExact", unassigned == 0 && deviceName == null && io == null },
-                { "map", rows.Cast<object>().ToList() },
             };
             if (!(bool)result["nextFreeByteExact"])
                 result["nextFreeByteNote"] = "piso, não garantia: "
@@ -389,6 +388,7 @@ namespace Tia.Core
                     + (io != null ? "filtrado por --io; " : "")
                     + unassigned + " itens sem endereço lido. O Portal recusa endereço ocupado "
                     + "dizendo \"Next free address: N\" — esse N é a autoridade.";
+            result["map"] = rows.Cast<object>().ToList();   // por último: a nota tem que sair no head
             return result;
         }
 

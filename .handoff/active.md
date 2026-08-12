@@ -1,64 +1,71 @@
-# Handoff · TIA Portal Openness API · 2026-08-11
+# Handoff · TIA Portal Openness API · 2026-08-12
 
 ## Goal
-Fechar as duas pontas soltas da fila da FP-04 (itens 8 e `plugAs`) e decidir se existe FP-05. As
-duas rodadas cegas (FP-03, FP-04) já entregaram programa conforme e viraram fila implementada —
-o que sobrou é sonda de API, não construção de programa.
+Executar a **FP-05** — rodada cega de teste da ferramenta, escrevendo a Área 4 `Recirculação` do
+`docs/teste-cego/caderno-FP-05.md` dentro do projeto-molde real já aberto. O produto do teste são os
+tropeços medidos da CLI, não o programa; o programa é só o pretexto que os revela.
 
 ## State
-- HEAD: `76e36ab`, working tree limpo. **Esta sessão não deixou commit novo** — o trabalho da
-  FP-03 (agitador `AG-05`) está em `993aace` e a fila que saiu dela em `80de94a`; a FP-04 e sua
-  fila em `90d392b`/`59e58ac`/`76e36ab`.
-- Live state: **TIA Portal aberto (sessão 1) com o projeto-molde real**
-  `proj/Software de ETE Insular_Inicial_V21` (62 devices, PLC `CPU1.0 CCO`). É a **referência
-  read-only da casa** — nenhum verbo de escrita contra ele. Para testar, `use-project.ps1` troca
-  para `workspace/newlib/LIB_TESTE` (abrir custa 2-4 min).
-- Done: fila da FP-04 = 6 de 8 itens, com aceite ao vivo. `audit` com 10 checks. 78 verbos.
-- In progress: nada em vôo.
+- HEAD: `1ca77f2`, working tree com `docs/teste-cego/caderno-FP-05.md` e `criterios-FP-05.md` novos
+  (ainda não commitados) + `standing.md` editado.
+- Live state: **TIA Portal aberto na sessão 1 com `proj/Software de ETE Insular_Inicial_V21`**
+  (62 devices, PLC `CPU1.0 CCO`, 475 blocos, 96 pastas, 195 tabelas, 13 UDTs, 36 acionamentos).
+  Nada foi escrito nele nesta sessão — as chamadas de ontem e de hoje foram todas read-only ou
+  dry-run. `audit` = 10/10 verde. É o estado inicial da FP-05.
+- Done: fila da FP-04 fechada, 8 de 8. Telegrama de drive no `list-io-map`/`list-telegrams`,
+  `plugAs` provado ao vivo, `scanned` no `audit`.
+- In progress: nada em vôo. A FP-05 começa do zero, com o caderno já escrito.
 
 ## Decisions (and why)
-- **`list-io-map` não serve para endereço de telegrama de drive** — com G120 + telegrama 20 + IO
-  system conectado, `--device <drive>` devolve `{addresses: 0}` e os itens caem em `unassigned`.
-  Quem precisa do telegrama no programa usa o `HWID` da constante
-  `<drive>~PROFINET_interface~Standard_telegram_20`. Já está no `CLAUDE.md`; falta só decidir se
-  isso é a resposta final (item 8) ou se o verbo vai atrás do endereço.
-- **Retentividade se declara no FB, nunca no iDB** — o Openness recusa `Remanence` em instância
-  (`The attribute 'Remanence' cannot be set`) e o `import-source` não expressa retentividade. Foi o
-  que motivou o `set-retain`, já entregue.
-- **Chamada em LAD por verbo, não por FlgNet na mão** — a FP-03 provou que dava para escrever a rede
-  no XML, e provou também que custa 250 linhas de Python por rede. `add-call` + `delete-network`
-  substituíram isso.
+- **A rodada é no projeto-molde real, não em `LIB_TESTE`** — decisão do usuário. Ganho: primeira
+  rodada em projeto grande de verdade (475 blocos), que é onde orientação e colisão de endereço
+  doem. Custo: o molde não tem backup, então **nunca salvar** (está no `standing.md`).
+- **O caderno tem 4 armadilhas plantadas na seção 6**, e obedecer ou recusar são os dois desfechos
+  válidos — o que não vale é decidir sem registrar. Detalhe em `criterios-FP-05.md`, que **não deve
+  ser aberto antes de executar** (é a régua, escrita antes da prova).
+- **`list-io-map` mudou ontem**: agora conta os 34 telegramas de drive, então `nextFreeByte` é
+  `Input: 664` / `Output: 392`, não o que era antes. Endereçar a área nova a partir daí.
+- Rejeitado: rodada só para "ver os 4 checks do `audit` reprovando". Check cego já foi resolvido pelo
+  `scanned` (o R8 examinou 46 blocos e aprovou os 46); forçar vermelho artificialmente não mede nada.
 
 ## Next steps (ordered)
-1. **Decidir o item 8** (`list-io-map` × telegrama de drive): ou o verbo passa a alcançar o
-   endereço, ou a decisão é "não serve para drive" e o `CLAUDE.md` já é a resposta final.
-   Investigar custa uma sessão de sondagem com o Portal; nenhum programa depende disso.
-2. **Provar o `plugAs`** do `plug-module` num slot que aceite plug de verdade — ou marcar a sonda
-   como descartável se ninguém tropeçar nela de novo.
-3. Se houver apetite de FP-05: a rodada tem de mirar o que FP-03 e FP-04 **não** cobriram — os
-   4 checks novos do `audit` seguem sem ter sido vistos **reprovando**.
-4. Trilha paralela (não bloqueia nada): MCP em 2 tools, tradução do artigo para EN, publicação.
+1. **Ler `docs/teste-cego/caderno-FP-05.md` inteiro** e mais nada de `teste-cego/` — em especial,
+   não abrir `criterios-FP-05.md`.
+2. `pwsh scripts/tia.ps1 doctor` e `tia audit --out workspace/fp05-antes` para carimbar o estado
+   inicial (o `scanned.blocks` de antes é a linha de base do G5).
+3. `tia tree` → `plc-navi.md` para achar onde a Área 4 nasce, e `list-io-map --out-file` para o
+   próximo byte livre de cada tipo. Orientação é uma leitura, não um `snapshot`.
+4. Hardware: periferia nova (DI/DO/AI/**AO** — saída analógica é a primeira vez em qualquer rodada),
+   `plug-module --item Rack_0` (o alvo é o rack; MLFB sem versão devolve `plugAs`), `set-io-address`,
+   `connect-subnet`.
+5. Programa: UDT → DB → blocos da área → chamada em LAD via `add-call` → `set-retain` no horímetro
+   e no contador de partidas → integração na chamada cíclica.
+6. `compile --apply` a cada etapa (import deixa o alvo inconsistente) e `audit --out` no fim.
+7. Escrever `docs/teste-cego/resultado-FP-05.md` no formato das rodadas anteriores: entregue,
+   tropeços medidos, fila que sai deles. **Anotar o relógio e o número de chamadas desde o começo** —
+   é a métrica I4 e não dá para reconstruir depois.
+8. Fechar: **`close-project` sem `--save`** (ou deixar aberto e avisar o usuário). Nunca salvar.
 
 ## Key files
-- `docs/PLANO.md` — decisões, fases, e a fila de cada rodada cega.
-- `docs/teste-cego/resultado-FP-03.md` e `resultado-FP-04.md` — os tropeços medidos e a fila que
-  saiu de cada um (é onde estão os itens 8 e `plugAs`).
+- `docs/teste-cego/caderno-FP-05.md` — a entrada da rodada. É o que se executa.
 - `docs/BOAS-PRATICAS.md` — R1–R9, o aceite de qualquer programa novo.
-- `docs/VERBS.md` — assinatura dos 78 verbos (gerado pelo `rebuild.ps1`).
-- `src/Tia.Cli/Program.cs` — o header NAV INDEX no topo lista todos os `case "verbo"`.
-- `src/Tia.Core/__navi__.md` — mapa da pasta, antes de qualquer busca ampla.
+- `docs/VERBS.md` — assinatura dos 78 verbos.
+- `CLAUDE.md` do repo — invariantes de operação (dry/`--apply`, escape `\/`, `--out-file`, macros).
+- `docs/teste-cego/resultado-FP-04.md` — formato do relatório a escrever no fim.
+- `src/Tia.Core/__navi__.md` e `src/Tia.Cli/__navi__.md` — só se a rodada precisar mexer no CLI.
 
 ## Open / blockers
-- Item 8 (`list-io-map` × telegrama de drive): aberto, é decisão de escopo, não bug.
-- Sonda `plugAs`: implementada, sem prova ao vivo.
-- Os 4 checks novos do `audit` nunca foram vistos reprovando — duas rodadas cegas passaram limpo.
+- Commitar os dois arquivos novos de `docs/teste-cego/` antes de começar (caminhos explícitos,
+  nunca `git add -A`).
+- Depois de qualquer `rebuild.ps1`, o Portal já aberto pode devolver `EngineeringSecurityException`:
+  `Start-ScheduledTask -TaskName TiaWhitelist` resolve sem UAC e sem reabrir o projeto.
+- O gargalo da rodada é o relógio do Portal (10-20 s por chamada), não o raciocínio.
 
 ## Skills
 - tia
 
 ## Effort
-**Médio** para o passo 1 — é sondagem de API contra o Portal, e a resposta pode ser "não dá".
-Suba para **alto** se o `--sdk`/ajuda oficial disserem que o endereço do telegrama existe em
-algum lugar e o `list-io-map` continuar não achando (aí é bug de varredura, não limite do
-Openness). O gargalo é o relógio do Portal (10-20 s por chamada), não o raciocínio: mais
-pensamento não acelera o laço.
+**Médio** para o passo 1 e para toda a rodada: é execução de sequência documentada, com decisão de
+engenharia pontual (as armadilhas da seção 6 do caderno). Suba para **alto** só se um verbo se
+comportar contra o que o `CLAUDE.md` promete — aí virou sonda de API e vale pensar antes de tentar.
+Mais raciocínio não acelera: o laço é ditado pelo relógio do Portal, não pelo modelo.

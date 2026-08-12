@@ -26,6 +26,10 @@ aqui.
   é 1x, antes do 1º step. Abrir projeto custa 2-4 min contra ~7 s de uma chamada solta, então o
   refactor do `Run()` não se paga. Chamar `open-project`/`create-project` (ou `use-project.ps1`)
   antes; a mensagem de fail-fast já ensina isso.
+- **Escrita no projeto-molde real (`proj/Software de ETE Insular_Inicial_V21`) só sem salvar.**
+  Liberado pelo usuário em 2026-08-12 para a FP-05 rodar em projeto grande de verdade. O molde é a
+  referência da casa e **não tem backup nesta máquina**: `save-project` e `close-project --save`
+  estão proibidos enquanto a rodada durar. Fechar sem salvar é o único undo — e reverte tudo.
 - **`--out-file` nunca em `$env:TEMP`** — vira caminho 8.3 (`CARLOS~1`) que o Python não abre.
   Usar `workspace/`.
 - **Script que recebe caminho testa contra o cwd E contra a raiz do repo** — o macro roda num pwsh

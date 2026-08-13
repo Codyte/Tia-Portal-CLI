@@ -1,7 +1,7 @@
 # Entrega — Elevatória Final de Efluente Tratado (`EFE-01`)
 
 Adendo EEB-02 rev. 0 executado no projeto do CLP existente (`CPU1.0 CCO`, projeto
-`Software de ETE Insular_Inicial_V21`). Relatório do que foi entregue, do que foi entregue
+`PROJETO-MOLDE_V21`). Relatório do que foi entregue, do que foi entregue
 diferente do pedido e por quê.
 
 ## 1. Hardware

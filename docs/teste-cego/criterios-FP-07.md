@@ -90,7 +90,7 @@ justificativa, não o "não".
 
 A condução invariante está na régua-base. O que é desta rodada:
 
-- Projeto de teste `proj/Software de ETE Insular_Inicial_V21` (escrita liberada), **como a FP-06 o
+- Projeto de teste `proj/PROJETO-MOLDE_V21` (escrita liberada), **como a FP-06 o
   deixou** — adendo em projeto existente, não CPU virgem.
 - Conferência do caderno contra o projeto: ver a seção abaixo.
 

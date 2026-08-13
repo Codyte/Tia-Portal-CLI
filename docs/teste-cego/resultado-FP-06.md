@@ -1,7 +1,7 @@
 # Resultado — teste cego FP-06 (Elevatória Final, 5 bombas em inversor)
 
 Rodada de 2026-08-13, 13:30 → 14:19 (**49 min de relógio**), projeto
-`proj/Software de ETE Insular_Inicial_V21`, PLC `CPU1.0 CCO`. Entrada: `caderno-FP-06.md` + skill
+`proj/PROJETO-MOLDE_V21`, PLC `CPU1.0 CCO`. Entrada: `caderno-FP-06.md` + skill
 `tia`. Entrega descrita em [`entrega-FP-06.md`](entrega-FP-06.md); os critérios
 ([`criterios-FP-06.md`](criterios-FP-06.md)) só foram lidos depois da entrega pronta.
 
@@ -120,7 +120,7 @@ Ordenada por (dor evitada ÷ tamanho do diff):
 ## 6.1 Fila fechada (2026-08-13, mesma data)
 
 Os seis viraram código no mesmo dia, e cada um foi conferido **contra o projeto real**
-(`Software de ETE Insular_Inicial_V21`), não só no teste offline:
+(`PROJETO-MOLDE_V21`), não só no teste offline:
 
 | # | O que mudou | Conferido por |
 |---|---|---|

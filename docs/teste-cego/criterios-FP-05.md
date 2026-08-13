@@ -69,7 +69,7 @@ torna o registro parte da entrega.
 
 ## Condução
 
-- **Projeto: o molde real já aberto** (`Software de ETE Insular_Inicial_V21`, PLC `CPU1.0 CCO`) —
+- **Projeto: o molde real já aberto** (`PROJETO-MOLDE_V21`, PLC `CPU1.0 CCO`) —
   decisão do usuário em 2026-08-12, contra o precedente das rodadas anteriores (projeto de teste).
   A rede de segurança é dura e não se negocia: **nunca `save-project`, nunca `close-project --save`**.
   O projeto vive em memória durante a rodada; fechar sem salvar reverte tudo, inclusive o que der

@@ -1,6 +1,6 @@
 # Banho de projeto real — Fase A/B (2026-07-18)
 
-Projeto: `Automação ETE Campo AsBuilt_1_V21` (cópia offline em `proj/`). PLC `CPU CCO`, 21 devices,
+Projeto: `PROJETO-ASBUILT_V21` (cópia offline em `proj/`). PLC `CPU CCO`, 21 devices,
 1011 blocos, 102 tabelas de tags. Inventários completos em `workspace/real-A/*.json`.
 
 **Contexto (user, 2026-07-18):** este projeto NÃO foi criado com a padronização dos scripts

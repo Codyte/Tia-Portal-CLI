@@ -1,7 +1,7 @@
 # Resultado FP-05 — recirculação de lodo, duas bombas em partida direta + válvula modulante
 
 Rodada cega de 2026-08-12 sobre [`caderno-FP-05.md`](caderno-FP-05.md), executada **no projeto-molde
-real** (`Software de ETE Insular_Inicial_V21`, CLP `CPU1.0 CCO`, 475 blocos no estado inicial) — a
+real** (`PROJETO-MOLDE_V21`, CLP `CPU1.0 CCO`, 475 blocos no estado inicial) — a
 primeira rodada em projeto grande de verdade. Nada foi salvo: o undo da rodada é fechar sem salvar.
 
 **Relógio: 07:51 → 08:23, 32 minutos, ~41 chamadas do CLI** (≈110 steps de verbo, quase todos

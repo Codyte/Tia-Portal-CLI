@@ -28,3 +28,6 @@ library/blocks/
 
 # global library = artefato de build (binário opaco, sem diff/merge). Fonte = .scl/.xml.
 src/Tia.Lib/
+
+# rascunho de sessao: nome de projeto de cliente, hostname, usuario. Local, nunca publicado.
+.handoff/

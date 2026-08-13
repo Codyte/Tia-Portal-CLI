@@ -99,7 +99,7 @@ Read-only, sem config. Acionamento = pasta de blocos com um FC `PARTIDA_*`; chec
 (sem acento/caixa/`(TAG)`) e `N=0` fora (é molde/painéis).
 
 Régua: este projeto passa **limpo** (36 acionamentos, 5/5 checks) — se reprovasse, a regra estaria
-errada. Discrimina de verdade: no `Automação ETE Campo AsBuilt` são 69 acionamentos, **69 sem `(TAG)`**
+errada. Discrimina de verdade: no `PROJETO-ASBUILT` são 69 acionamentos, **69 sem `(TAG)`**
 na pasta e 58 com contagem de blocos ≠ 6.
 
 ## `tia scaffold` — projeto novo recebe o padrão

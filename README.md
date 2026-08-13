@@ -29,6 +29,12 @@ Portuguese: [**the ruler and the stumbles**](docs/teste-cego/artigo.md).
 and SINAMICS telegrams · SCL→LAD converter · 6 field-proven code generators · installable block
 library · batch mode · one attach
 
+<sub>An independent open-source project. **Not affiliated with, authorized by, or endorsed by
+Siemens AG.** TIA Portal, SIMATIC, SINAMICS, STEP 7 and Openness are trademarks of Siemens AG,
+used here only to identify the software this tool drives. Requires your own licensed TIA Portal
+installation — no Siemens binaries, libraries or project data are distributed in this
+repository.</sub>
+
 </div>
 
 ---

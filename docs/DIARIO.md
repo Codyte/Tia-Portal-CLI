@@ -175,7 +175,7 @@ objeto no projeto do cliente pra repor o payload — nome de objeto, não payloa
 `docs/PADRAO.md`, `docs/DIARIO.md`, `docs/projeto-real-fase-A.md`, `library/README.md`,
 `scripts/raio-x.ps1`, os dois `__navi__.md`): as duas plantas viraram nomes fictícios pelo papel que
 cumprem — **`Software de ETE Modelo_Inicial_V21`** (projeto-molde, conforme ao padrão) e
-**`Automação ETE Campo AsBuilt_1_V21`** (o as-built de campo, fora da padronização). Consequência
+**`PROJETO-ASBUILT_V21`** (o as-built de campo, fora da padronização). Consequência
 aceita: comando copiado da prosa não casa com o nome do `.ap21` no disco de quem tem a cópia real —
 trocar o nome do projeto na chamada. **Histórico não foi reescrito**: o repo é público desde
 2026-07-20, então `.handoff/archive/` e os commits antigos já estão espelhados e `git-filter-repo`
@@ -740,7 +740,7 @@ na unha todo turno.
 ### F6.2 — `scripts/_common.ps1` + `Invoke-Tia` (o núcleo)
 
 Um arquivo novo, dot-sourced pelos macros. Mata as três duplicações de hoje
-(caminho do exe em 5 arquivos, `c:\Scripts\TIA Portal` hardcoded em 5, `TITANXNEXUS\Carlos_Ortiz`
+(caminho do exe em 5 arquivos, `c:\Scripts\TIA Portal` hardcoded em 5, `<HOST>\<user>`
 em 2 — e o repo é público como `tia-cli`, nada disso roda em clone de terceiro).
 
 ```powershell

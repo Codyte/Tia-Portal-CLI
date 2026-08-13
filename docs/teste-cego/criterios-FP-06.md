@@ -86,7 +86,7 @@ assumir 20 de cabeça é o caro se a estação usar outro.
 
 ## Condução
 
-- **Projeto: `proj/Software de ETE Insular_Inicial_V21`, PLC `CPU1.0 CCO`** — projeto de teste, com
+- **Projeto: `proj/PROJETO-MOLDE_V21`, PLC `CPU1.0 CCO`** — projeto de teste, com
   escrita liberada pelo usuário (2026-08-12). Ao contrário da FP-05, salvar é permitido; o que
   continua valendo é a etiqueta do `standing.md` e o registro do que foi mexido. Fechar sem salvar
   segue sendo o undo mais barato de uma rodada que der errado.

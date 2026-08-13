@@ -486,6 +486,31 @@ que era o undo previsto; o que ficou foi a fila de 7 tropeços, fechada no mesmo
 Método: os aceites ao vivo saíram de dois batches num projeto de teste (blocos `ZZ_TESTE_*` +
 pasta + ramo na `DB GLOBAL`), apagados depois, com compile limpo antes e depois.
 
+### FP-06 executada (2026-08-13) — elevatória de 5 bombas em inversor SINAMICS
+
+Rodada em [`resultado-FP-06.md`](teste-cego/resultado-FP-06.md); a entrega, em
+[`entrega-FP-06.md`](teste-cego/entrega-FP-06.md). **49 min**, projeto-molde real, área 24
+`Elevatória Final (EFE-01)`: 5 G120 PN com telegrama 20, uma ET 200SP nova, 46 blocos novos,
+**compile Success 0/0**, **`audit` 10/10** (476 → 522 blocos, 36 → 41 acionamentos), projeto salvo.
+
+O que a rodada mediu:
+
+- **As quatro armadilhas da `BOAS-PRATICAS.md` sem check que reprove (R3, R4, R5, R7) foram
+  recusadas com motivo escrito.** A doutrina sozinha orientou a decisão — é o que a rodada existia
+  para saber.
+- **80 % dos blocos vieram de gerador** (`replicate-fc` 24, `replicate-instruments` 10,
+  `gen-alarm-fc` 3). Contorno de CLI caiu de ~32 % (FP-05) para **~12 %**.
+- **Cinco dos sete consertos da FP-05 seguraram em projeto real** (`add-call` com pinos,
+  `add-db-member --path` → `DB GLOBAL` hierárquica, `list-io-map` com piso declarado,
+  `connect-subnet` com `existingSubnets`, `networksBefore/After`). `set-io-address --conflictCheck`
+  não foi exercitado; `add-call --fb` com prefixo de tipo doeu (T2 da fila nova).
+
+Fila aberta pela rodada (detalhe e ordem no resultado): **T3** `replicate-instruments` achar o tag
+`_PV_` no PLC inteiro (único tropeço que gerou bloco que não compila) · **T5** `set-retain` compilar
+o alvo antes de exportar · **T2** `add-call --fb` aceitar o prefixo `FB `/`FC ` · **T1**
+`plug-module` normalizar o MLFB (hoje exige `OrderNumber:` e cala) · **T6** escopo de área no
+`gen-alarm-fc` · **T4** mensagem do molde citar `MoldInstrumentId`.
+
 ## Histórico fechado
 
 As sagas já resolvidas (biblioteca, hardware do molde, telegrama, F6, migração para skill,

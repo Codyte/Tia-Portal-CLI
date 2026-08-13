@@ -1,75 +1,79 @@
 # Handoff · TIA Portal Openness API · 2026-08-13
 
 ## Goal
-Revisão da série de testes cegos FP-01→FP-06 (handoffs × cadernos × código), e as 5 primeiras metas
-que saíram dela. Entregue e commitado — não há tarefa em voo. O próximo passo natural é **executar a
-FP-07**, que já está escrita.
+Fila da revisão FP-01→FP-06 atacada: 5 de 7 itens fechados. O que resta é **executar a FP-07**,
+agora com o caderno conferido contra o projeto (a conferência achou e corrigiu 3 erros de fato).
 
 ## State
-- HEAD: `5886e8e` (`docs(plano): 78 verbos, e a regra do grep em rodada cega sai do resultado`);
-  antes dele `9897b38` (o conserto grande). **Não pushado** — os dois commits estão só locais.
-- Live state: **TIA Portal aberto na sessão 1, um processo só** (`--portal` desnecessário agora),
-  projeto `Software de ETE Insular_Inicial_V21` como a FP-06 o deixou. O smoke desta sessão
-  (`ZZ_TESTE_FRESH` + `ZZ_TESTE_FRESH_FB`) foi apagado no mesmo batch e **nada foi salvo**.
-  `rebuild.ps1` rodou 2× (hash do `tia.exe` mudou; nenhum diálogo modal apareceu, as chamadas
-  responderam normal). Shell do agente na sessão 1 → `tia` roda direto.
-- Done: metas 1–5 da revisão + 2 itens de fila (contagem de verbos, regra do grep).
+- HEAD: `7d7fffd` (`docs(teste-cego): regua-base fixa, e a conferencia do caderno FP-07 pega tres
+  erros de fato`). **`origin/main` == HEAD** — nada pendente de push (os commits anteriores foram
+  pushados durante a sessão).
+- Live state: **TIA Portal aberto na sessão 1, instância única** (`--portal` desnecessário), projeto
+  `Software de ETE Insular_Inicial_V21` como a FP-06 o deixou, **nada salvo** nesta sessão. Só
+  leitura foi feita contra ele (`list-io-map`, `find`, `list-tags`, `doctor`). `rebuild.ps1` rodou
+  1× (hash do `tia.exe` mudou; nenhum diálogo modal apareceu). Shell do agente na sessão 1 → `tia`
+  roda direto.
+- Done: itens 1, 3, 4, 5 e 6 da fila da revisão. Régua-base criada, telemetria do `ImportAndProve`
+  no código, caderno + critérios da FP-07 corrigidos, PLANO atualizado, navi regenerado, commitado.
 - In progress: nada.
+- Não commitado: `.handoff/archive/2026-08-13T160751.md` (untracked, do `--archive`).
 
 ## Decisions (and why)
-- **O pré-compile virou um helper só (`Ops.ExportFresh`, sobrecarga `PlcBlock` + `PlcType`), não um
-  guard por chamador.** Havia 3 políticas para o mesmo estado em 16 exports (2 compilavam, 1 lançava
-  erro traduzido, 13 exportavam cru). Um lugar compartilhado é diff menor que treze.
-- **Compila só o alvo, nunca o PLC no caminho normal.** Compile de bloco é de segundos; do PLC
-  inteiro foram ~20 dos 49 min da FP-06. O caro sobrou para o ramo raro: inconsistência vinda de
-  fora (UDT/DB usado pelo bloco) não é limpa pelo compile do bloco, e aí a mensagem manda
-  `compile --apply`. O casamento é pela frase `Inconsistent blocks` percorrendo `InnerException`.
-- **`ms` no `run --script`, não verbo de benchmark.** A medida tem que sobreviver no resultado da
-  rodada; `Measure-Command` por fora nunca sobreviveu.
-- **FP-07 desenhada por dívida, não por terreno novo.** O caderno força o uso de cada conserto que
-  nunca foi exercitado, sem citar verbo: endereço fixo do diagrama (`set-io-address`), cartão por
-  MLFB de compra (`plug-module --apply`), 3 acionamentos idênticos em área sem irmã populada
-  (`replicate-fc --template --apply`), diagnóstico de estação (`gen-fault-ob`), e **entrega em duas
-  etapas com `audit` ao fim de cada uma** — é a primeira chance real de ver check reprovando.
-- **`CLAUDE.md` enxugado tirando arqueologia, não regra.** O histórico já mora nos
-  `resultado-FP-*.md`; nada foi migrado para o `DIARIO.md` porque não havia o que salvar.
-- Tentado e descartado: teste offline para o `ExportFresh` — recebe `PlcBlock`/`PlcType` do Openness,
-  só roda com o Portal. A prova é a ao vivo (batch em `workspace/val-exportfresh.json`).
-- Errata do meu próprio diagnóstico: `clone` usa `--block` + `--replace OLD=NEW`, não `--to`.
-  Dois steps queimados até ler o `VERBS.md`.
+- **Régua-base fixa (`docs/teste-cego/regua-base.md`), arquivo por rodada vira anexo.** A régua era
+  reescrita inteira a cada rodada, então não havia série comparável. A base fixa carrega condução,
+  portões `G-A`…`G-D` e as seis métricas `M1`…`M6`; `criterios-FP-07.md` é o primeiro anexo. As
+  rodadas anteriores **ficam como estão** — são o registro do que valia na época, não se reescreve
+  história.
+- **`M3`/`M4` só se leem junto com uma linha sobre o terreno.** Era o defeito do único número que
+  se comparava (contorno de CLI, 32 % → 12 %).
+- **Telemetria do ramo caro do `ImportAndProve` = linha em `workspace/telemetry.log`, não contador
+  em memória.** Cada `tia` é processo novo; a contagem por rodada tem que sobreviver em disco
+  (`wc -l`). Escrita engolida em `catch {}` de propósito — telemetria não derruba verbo.
+- **Descartado: teste offline do `LogFallback`/`ExportFresh`** — dependem de objeto do Openness, só
+  rodam com o Portal.
+- **A conferência do caderno (item 4 da fila) pagou sozinha:** 4 verbos de leitura, 16 s, três erros
+  de fato. `%IB1100`/`%IB1110` caíam **em cima dos telegramas dos SINAMICS `BEF-01/02/04`**
+  (`%IB1100..1135`; `%I` ocupado até 1147) → portão `G2` era inalcançável, passaram para
+  `%IB1200`/`%IB1210`. `%QB420` livre, mantido. "Área nova no CLP" era falso: existem
+  `3. Partidas/3.19 Adensadores de Lodo` (dois SKID populados), `3.21 Elevatória Lodo Adensado` e a
+  pasta de alarme homônima → a unidade nova virou **`Adensador por Gravidade`**.
+- **Não conferido de propósito:** os 5 MLFB da lista de compra contra o catálogo — exigiria criar a
+  estação, que é trabalho da rodada. Fica como risco declarado no anexo.
+- **Esta sessão não podia executar a FP-07** (handoff carregado = contaminada). Rodada cega exige
+  sessão nova recebendo só o caderno + a skill.
 
 ## Next steps (ordered)
-1. **Executar a FP-07** — sessão nova, cega, recebendo só `docs/teste-cego/caderno-FP-07.md` + a
-   skill `tia`. `criterios-FP-07.md` **não** vai junto, e a busca da rodada exclui
+1. **Executar a FP-07** — sessão nova e cega, recebendo só `docs/teste-cego/caderno-FP-07.md` + a
+   skill `tia`. `criterios-FP-07.md` e `regua-base.md` **não** vão junto; a busca da rodada exclui
    `docs/teste-cego/`.
-2. Antes disso (ou como parte do relatório), decidir se o `git push` dos dois commits sai agora.
-3. Fila que sobrou da revisão, em `PLANO.md` (seção "Revisão da série FP-01→FP-06"): régua-base fixa
-   + anexo por rodada · re-teste do `import-master-copy --force --apply` (dívida mais antiga do
-   repo) · conferência do caderno contra o projeto antes da rodada · telemetria do ramo caro do
-   `ImportAndProve` · terreno da série sempre igual (4 rodadas cegas, todas ETE/acionamento).
+2. Commitar `.handoff/archive/2026-08-13T160751.md` (caminho explícito, nunca `git add -A`).
+3. Fila que resta (`PLANO.md`, seção "Revisão da série FP-01→FP-06"): **item 2** re-teste do
+   `import-master-copy --force --apply` em CPU virgem (dívida mais antiga do repo) e **item 7**
+   terreno da série sempre igual — os dois exigem rodada de **projeto novo**, que a FP-07 não é.
 
 ## Key files
-- `docs/teste-cego/caderno-FP-07.md` + `criterios-FP-07.md` — a próxima rodada, já escrita.
-- `docs/PLANO.md` (seção "Revisão da série FP-01→FP-06", antes de "Histórico fechado") — os 5 itens
-  feitos e os 7 da fila.
-- `src/Tia.Core/Ops.cs` — `ExportFresh` (2 sobrecargas) + `IsInconsistentExport`, logo depois de
-  `ExportBlock`; ver o `__navi__.md` da pasta, regenerado.
-- `src/Tia.Cli/Program.cs` — o cronômetro do batch fica no ramo `run` do `Run` (~L400).
-- `workspace/val-exportfresh.json` (gitignored) — o batch da prova ao vivo: clone → explain-block →
-  list-interface sem compile no meio, 6 steps / 0 falhas / 7,7 s.
+- `docs/teste-cego/regua-base.md` — parte fixa da régua (condução, `G-A`…`G-D`, `M1`…`M6`).
+- `docs/teste-cego/caderno-FP-07.md` — a rodada, já corrigida (endereços §3, área §1).
+- `docs/teste-cego/criterios-FP-07.md` — anexo: dívida perseguida, portões de terreno, armadilhas
+  B1–B3, e a seção "Conferência do caderno contra o projeto" com os três achados.
+- `docs/PLANO.md` (seção "Revisão da série FP-01→FP-06") — tabela dos 7 itens com estado.
+- `src/Tia.Core/Ops.cs` — `LogFallback` logo antes de `Prove`, chamado no `catch` do
+  `ImportAndProve`; ver `src/Tia.Core/__navi__.md` (regenerado).
+- `workspace/fp07-iomap.json`, `fp07-adensador.json`, `fp07-pv.json` (gitignored) — as leituras da
+  conferência, se alguém quiser reconferir sem chamar o Portal.
 
 ## Open / blockers
 - Nada bloqueando.
-- Os dois commits estão locais; o push é decisão do usuário.
-- Compile do PLC inteiro ainda leva ~5 min quando for mesmo necessário: sempre em background.
+- `workspace/telemetry.log` ainda não tem nenhuma linha — o ramo caro não disparou desde que a
+  telemetria entrou. A primeira medida real sai da FP-07.
 
 ## Skills
 - tia
 
 ## Effort
-**Médio** para o passo 1 — é rodada de engenharia de PLC ao vivo, com decisão de projeto e três
-armadilhas para recusar por escrito; não é trabalho mecânico. Suba para **alto** só se algum dos
-consertos exercitados contradisser o que foi medido hoje (em especial o `ExportFresh`: se um export
-falhar com `Inconsistent blocks` depois do pré-compile, é dependência externa e o diagnóstico muda).
-Reasoning não é o gargalo: o relógio é do Portal (compile, abertura de projeto) e do diálogo modal
-de autorização depois de qualquer `rebuild.ps1`.
+**Médio** para o passo 1 — rodada de engenharia de PLC ao vivo, com decisão de projeto e três
+armadilhas para recusar por escrito; não é trabalho mecânico. Suba para **alto** só se um export
+falhar com `Inconsistent blocks` mesmo depois do pré-compile do `ExportFresh` (aí é dependência
+externa e o diagnóstico muda), ou se `set-io-address --apply` recusar `%IB1200`/`%IB1210` apesar da
+conferência. Reasoning não é o gargalo: o relógio é do Portal (compile, abertura de projeto) e do
+diálogo modal de autorização depois de qualquer `rebuild.ps1`.

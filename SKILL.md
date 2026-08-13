@@ -79,9 +79,12 @@ pwsh "$env:TIA_CLI_HOME\scripts\tia.ps1" tree --plc "CPU1"      # de qualquer di
 
 - **Verbo de escrita é dry por padrão.** `--apply` explícito. Nunca contra projeto de produção.
 - **Uma chamada por vez.** Openness é single-session; nada de paralelizar `tia` (nem via agentes).
-- **Compile entre etapas.** Todo import deixa o alvo inconsistente e o Openness recusa exportar
-  bloco inconsistente — `compile --apply` antes de `clone`, `diff-block`, `explain-block` e dos
-  4 geradores.
+- **Compile entre etapas: os verbos fazem sozinhos desde 2026-08-13.** Todo import deixa o alvo
+  inconsistente e o Openness recusa exportar bloco inconsistente. Todo export do CLI passa por
+  `Ops.ExportFresh`, que compila **só o bloco** e segue — não é mais preciso `compile --apply` do
+  PLC inteiro entre etapas (eram ~20 dos 49 min da FP-06). O caro sobrou para o caso raro:
+  inconsistência que vem **de fora** (UDT ou DB que o bloco usa) volta com a mensagem mandando
+  `compile --apply`.
 - **Mais de um Portal aberto** → todo verbo exige `--portal <projeto|PID>`.
 - **Telegrama de drive SINAMICS é `insert-telegram`, não `plug-module`.** Família System
   (Startdrive) não tem TypeIdentifier de catálogo pra telegrama — o drive object tem
@@ -89,6 +92,18 @@ pwsh "$env:TIA_CLI_HOME\scripts\tia.ps1" tree --plc "CPU1"      # de qualquer di
   Procurar o identificador inexistente já custou várias sessões. **Drive novo já vem com
   `MainTelegram #1`**: trocar exige `--change` (telegrama Main não pode ser apagado, a troca é
   in-place).
+- **Área nova = `replicate-fc --template "<pasta molde>" --target-folder "<pasta da área>"`.** Sem
+  os dois, o molde é "a 1ª pasta irmã populada" e os alvos são "todas as irmãs" — área nova não tem
+  irmã com blocos, e derivar o acionamento-semente à mão custou ~10 min da FP-06.
+- **Escopo nos geradores.** `gen-alarm-fc --area NOME` (repetível) gera só a área pedida; sem ele,
+  criar 1 área regenera todas as existentes. `replicate-instruments` aceita `IgnoreFolders`.
+- **`add-call --fb` aceita o nome com ou sem o prefixo `FB `/`FC `.** `--inst` é exigido para FB e
+  recusado para FC. Pino de entrada sem valor é aviso; `InOut` sem valor é erro.
+- **`set-io-address` dry-run confere o `--start` contra o mapa** (`conflictCheck: occupied` +
+  `conflictsWith`, ou `free (pelo mapa)`). `free` é ausência de conflito no que o mapa lê, não
+  garantia: a autoridade é o `Next free address: N` do erro do Portal.
+- **`run --script` cronometra**: cada step traz `ms`, o batch traz o total, e `--summary` traz
+  `slowest[3]`. É a medida de onde o tempo foi, sem `Measure-Command` por fora.
 - **`rebuild.ps1` muda o hash do `tia.exe`** → o Portal já aberto abre um **diálogo modal de
   autorização** na tela. Chamada pendurada com CPU ~0 = alguém precisa clicar; não é bug de API.
 

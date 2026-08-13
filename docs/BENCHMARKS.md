@@ -94,9 +94,9 @@ Three things in that output are the whole design contract:
 3. **The warning is part of the result.** Deleting a member does not fix the code referencing it,
    and the tool says so in the payload instead of leaving it to be discovered at compile time.
 
-### The failure that is not a bug
+### The failure the CLI now absorbs
 
-An earlier run of the same batch, without a `compile` between the import and the next export:
+An older run of the same batch, without a `compile` between the import and the next export:
 
 ```
 "error": "Error when calling method 'Export' of type 'Siemens.Engineering.SW.Blocks.GlobalDB'.
@@ -104,7 +104,12 @@ An earlier run of the same batch, without a `compile` between the import and the
 "type": "EngineeringTargetInvocationException"
 ```
 
-Openness refuses to export an inconsistent block, and every import leaves its target — and anything
-referencing it — inconsistent. So a write verb that exports under the hood needs `compile --apply`
-before it. The CLI turns that bare message into the exact `tia compile` command to run, because
-discovering this rule by trial and error costs an afternoon.
+Openness refuses to export an inconsistent block, and every import leaves its target inconsistent.
+The rule used to be "run `compile --apply` on the whole PLC between steps" — which in a real
+project is minutes per step, and was 20 of the 49 minutes of one measured end-to-end run.
+
+Since 2026-08-13 every export in the CLI goes through one helper that compiles **the target block
+alone** and continues; a block compile is seconds. The expensive path is still there for the case
+that needs it: an inconsistency coming from *outside* the block (a UDT or DB it uses) is not
+cleared by compiling the block, and then the error message names the `compile --apply` to run.
+Paying the cheap cost always and the expensive one rarely is the whole change.

@@ -5,27 +5,27 @@
 //   L84    .DeleteNetwork
 //   L100   add-call
 //   L113   .AddCall
-//   L199   set-retain
-//   L207   .SetRetain
-//   L229   coreografia
-//   L235   .Patch
-//   L268   núcleo puro (sem Openness: testável offline)
-//   L270   class CallSpec
-//   L283   .StripTypePrefix
-//   L288   .CountNetworks
-//   L294   .RemoveNetworkFromXml
-//   L314   .InsertCallInXml
-//   L399   .SetRetainInXml
-//   L407   .RetainOf
-//   L413   .FindMember
-//   L431   helpers de FlgNet
-//   L433   .ParseParams
-//   L446   .Access
-//   L476   .Wire
-//   L485   .Text
-//   L500   .NextId
-//   L513   .Escape
-//   L519   .Safe
+//   L198   set-retain
+//   L206   .SetRetain
+//   L228   coreografia
+//   L234   .Patch
+//   L261   núcleo puro (sem Openness: testável offline)
+//   L263   class CallSpec
+//   L276   .StripTypePrefix
+//   L281   .CountNetworks
+//   L287   .RemoveNetworkFromXml
+//   L307   .InsertCallInXml
+//   L392   .SetRetainInXml
+//   L400   .RetainOf
+//   L406   .FindMember
+//   L424   helpers de FlgNet
+//   L426   .ParseParams
+//   L439   .Access
+//   L469   .Wire
+//   L478   .Text
+//   L493   .NextId
+//   L506   .Escape
+//   L512   .Safe
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX
@@ -139,8 +139,7 @@ namespace Tia.Core
 
             Directory.CreateDirectory(outDir);
             var ifaceFile = Path.GetFullPath(Path.Combine(outDir, "iface_" + Safe(called.Name) + ".xml"));
-            if (File.Exists(ifaceFile)) File.Delete(ifaceFile);
-            called.Export(new FileInfo(ifaceFile), ExportOptions.None);
+            Ops.ExportFresh(called, ifaceFile, ExportOptions.None);
             // FB sem pino é chamável: o Call carrega só o <Instance>. Era erro até 2026-08-12 e
             // obrigava a inventar um pino de entrada em bloco de área que só usa tag global e
             // estática retentiva (FP-05, T5).
@@ -244,15 +243,9 @@ namespace Tia.Core
 
             Directory.CreateDirectory(outDir);
             var file = Path.GetFullPath(Path.Combine(outDir, prefix + Safe(label) + ".xml"));
-            if (File.Exists(file)) File.Delete(file);
             // bloco recém-importado por outro verbo chega inconsistente e o Openness recusa exportar
-            // ("Inconsistent blocks ... cannot be exported") — mesmo pré-compile do DbMember.ExportFresh
-            if (!block.IsConsistent)
-            {
-                var pre = block.GetService<ICompilable>();
-                if (pre != null) pre.Compile();
-            }
-            block.Export(new FileInfo(file), ExportOptions.WithDefaults);
+            // ("Inconsistent blocks ... cannot be exported") — o pré-compile mora no Ops.ExportFresh
+            Ops.ExportFresh(block, file, ExportOptions.WithDefaults);
 
             var doc = XDocument.Load(file);
             patch(doc);

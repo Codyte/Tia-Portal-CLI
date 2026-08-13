@@ -29,15 +29,15 @@
 //   L612   .TopStructName
 //   L625   misc helpers
 //   L627   .ExportTo
-//   L635   .BlocksIdentical
-//   L640   .ReassignUids
-//   L655   .CollectTags
-//   L669   .CollectFcs
-//   L679   .WriteCsv
-//   L701   .Describe
-//   L725   .GetBaseName
-//   L733   .CleanName
-//   L745   .TargetSubFolderName
+//   L634   .BlocksIdentical
+//   L639   .ReassignUids
+//   L654   .CollectTags
+//   L668   .CollectFcs
+//   L678   .WriteCsv
+//   L700   .Describe
+//   L724   .GetBaseName
+//   L732   .CleanName
+//   L744   .TargetSubFolderName
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -627,8 +627,7 @@ namespace Tia.Core
         private static string ExportTo(PlcBlock block, string outDir, string fileName)
         {
             string path = Path.GetFullPath(Path.Combine(outDir, fileName));
-            if (File.Exists(path)) File.Delete(path);
-            block.Export(new FileInfo(path), ExportOptions.None);
+            Ops.ExportFresh(block, path, ExportOptions.None);
             return path;
         }
 

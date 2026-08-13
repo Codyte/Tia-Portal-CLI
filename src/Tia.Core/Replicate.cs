@@ -11,23 +11,23 @@
 //   L71    .TargetFolder
 //   L79    class ReplicateFc
 //   L81    .Run
-//   L270   .TemplateFor
-//   L282   .FindFolderByName
-//   L295   .FoldersOfType
-//   L304   .ReplicateInto
-//   L352   .RewireXml
-//   L447   .FindPathInDbXml
-//   L481   naming
-//   L483   .ExtractId
-//   L489   .InstanceDbNames
-//   L494   .ProposedBlockName
-//   L507   .MainBlockName
-//   L514   .FolderBaseName
-//   L522   .static
-//   L540   lookups
-//   L542   .DescendantGroups
-//   L556   .FindDataBlock
-//   L569   .FindTag
+//   L269   .TemplateFor
+//   L281   .FindFolderByName
+//   L294   .FoldersOfType
+//   L303   .ReplicateInto
+//   L351   .RewireXml
+//   L446   .FindPathInDbXml
+//   L480   naming
+//   L482   .ExtractId
+//   L488   .InstanceDbNames
+//   L493   .ProposedBlockName
+//   L506   .MainBlockName
+//   L513   .FolderBaseName
+//   L521   .static
+//   L539   lookups
+//   L541   .DescendantGroups
+//   L555   .FindDataBlock
+//   L568   .FindTag
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -95,8 +95,7 @@ namespace Tia.Core
             if (globalDb == null)
                 throw new InvalidOperationException("Global DB '" + config.GlobalDb + "' not found.");
             var dbXmlPath = Path.GetFullPath(Path.Combine(outDir, "replicate_globaldb_cache.xml"));
-            if (File.Exists(dbXmlPath)) File.Delete(dbXmlPath);
-            globalDb.Export(new FileInfo(dbXmlPath), ExportOptions.None);
+            Ops.ExportFresh(globalDb, dbXmlPath, ExportOptions.None);
             var dbXml = XDocument.Load(dbXmlPath);
 
             // TIA folder names may contain a literal '/' — exact-name match anywhere in the tree
@@ -313,7 +312,7 @@ namespace Tia.Core
                 string tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".xml");
                 try
                 {
-                    block.Export(new FileInfo(tmp), ExportOptions.None);
+                    Ops.ExportFresh(block, tmp, ExportOptions.None);
                     templateXmls.Add(new KeyValuePair<string, string>(block.Name, File.ReadAllText(tmp)));
                 }
                 catch (Exception ex)

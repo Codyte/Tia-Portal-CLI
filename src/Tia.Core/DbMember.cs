@@ -5,18 +5,18 @@
 //   L106   .Change
 //   L152   .Remove
 //   L182   coreografia comum: export → patch → Import Override → prova
-//   L190   .ExportFresh
-//   L202   .MemberOf
-//   L214   .RemoveFromXml
-//   L227   struct Delta
-//   L235   .ChangeInXml
-//   L273   struct Edit
-//   L286   .AddToXml
-//   L325   .ResolveSection
-//   L360   .NameOf
-//   L366   .Datatype
-//   L374   .Safe
-//   L379   .Report
+//   L191   .ExportFresh
+//   L197   .MemberOf
+//   L209   .RemoveFromXml
+//   L222   struct Delta
+//   L230   .ChangeInXml
+//   L268   struct Edit
+//   L281   .AddToXml
+//   L320   .ResolveSection
+//   L355   .NameOf
+//   L361   .Datatype
+//   L369   .Safe
+//   L374   .Report
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX
@@ -185,17 +185,12 @@ namespace Tia.Core
         /// Export pronto para patch. Bloco recém-importado por outro verbo chega
         /// modificado-não-compilado, e nesse estado o export devolve conteúdo defasado (ou recusa):
         /// o patch sairia calculado em cima de XML de outra época. Compilar antes é mais barato que
-        /// descobrir depois.
+        /// descobrir depois. A política mora em <see cref="Ops.ExportFresh(PlcBlock,string,ExportOptions)"/>,
+        /// uma só para os 16 exports do repo.
         /// </summary>
         private static void ExportFresh(DataBlock db, string file)
         {
-            if (!db.IsConsistent)
-            {
-                var pre = db.GetService<ICompilable>();
-                if (pre != null) pre.Compile();
-            }
-            if (File.Exists(file)) File.Delete(file);          // Openness recusa sobrescrever
-            db.Export(new FileInfo(file), ExportOptions.WithDefaults);
+            Ops.ExportFresh(db, file, ExportOptions.WithDefaults);
         }
 
         /// <summary>Membro no caminho, ou null — caminho inexistente conta como ausente.</summary>

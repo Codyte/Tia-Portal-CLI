@@ -10,17 +10,17 @@
 //   L62    class FaultOb
 //   L69    class Module
 //   L76    .Generate
-//   L156   .DiscoverTasks
-//   L185   .AllDeviceGroups
-//   L192   .WithSubGroups
-//   L200   .CollectModules
-//   L211   XML generation
-//   L213   .BuildObXml
-//   L243   .RewireNetwork
-//   L280   .AddMasterCommentEntry
-//   L309   .ReassignUids
-//   L329   .ModuleType
-//   L341   .WriteCsv
+//   L155   .DiscoverTasks
+//   L184   .AllDeviceGroups
+//   L191   .WithSubGroups
+//   L199   .CollectModules
+//   L210   XML generation
+//   L212   .BuildObXml
+//   L242   .RewireNetwork
+//   L279   .AddMasterCommentEntry
+//   L308   .ReassignUids
+//   L328   .ModuleType
+//   L340   .WriteCsv
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -99,8 +99,7 @@ namespace Tia.Core
 
             Directory.CreateDirectory(outDir);
             var templatePath = Path.GetFullPath(Path.Combine(outDir, "template_cache.xml"));
-            if (File.Exists(templatePath)) File.Delete(templatePath);
-            template.Export(new FileInfo(templatePath), ExportOptions.None);
+            Ops.ExportFresh(template, templatePath, ExportOptions.None);
             var templateXml = XDocument.Load(templatePath);
 
             var warnings = new List<string>();

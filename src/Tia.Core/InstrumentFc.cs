@@ -14,26 +14,26 @@
 //   L103   class Instrument
 //   L116   class AreaTask
 //   L124   .Run
-//   L341   generation
-//   L343   .BuildAreaFcXml
-//   L371   .RewireNetwork
-//   L425   .ImportAreaFc
-//   L465   call OB
-//   L467   .UpdateCallOb
-//   L531   .CallNetworkXml
-//   L562   .EmptyObXml
-//   L592   checks + helpers
-//   L595   .IsTaskComplete
-//   L609   .BlocksIdentical
-//   L614   .ReassignUids
-//   L630   .FindPathInDbXml
-//   L654   .CollectTags
-//   L662   .FindOb
-//   L676   .ExtractId
-//   L689   .GetBaseName
-//   L697   .FcName
-//   L704   .TargetFolderName
-//   L713   .WriteCommandCsv
+//   L339   generation
+//   L341   .BuildAreaFcXml
+//   L369   .RewireNetwork
+//   L423   .ImportAreaFc
+//   L463   call OB
+//   L465   .UpdateCallOb
+//   L528   .CallNetworkXml
+//   L559   .EmptyObXml
+//   L589   checks + helpers
+//   L592   .IsTaskComplete
+//   L606   .BlocksIdentical
+//   L611   .ReassignUids
+//   L627   .FindPathInDbXml
+//   L651   .CollectTags
+//   L659   .FindOb
+//   L673   .ExtractId
+//   L686   .GetBaseName
+//   L694   .FcName
+//   L701   .TargetFolderName
+//   L710   .WriteCommandCsv
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -142,8 +142,7 @@ namespace Tia.Core
             if (globalDb == null)
                 throw new InvalidOperationException("Global DB '" + config.GlobalDb + "' not found.");
             string dbXmlPath = Path.GetFullPath(Path.Combine(outDir, "instr_globaldb_cache.xml"));
-            if (File.Exists(dbXmlPath)) File.Delete(dbXmlPath);
-            globalDb.Export(new FileInfo(dbXmlPath), ExportOptions.None);
+            Ops.ExportFresh(globalDb, dbXmlPath, ExportOptions.None);
             var dbXml = XDocument.Load(dbXmlPath);
 
             // template = first FC found under the destination tree
@@ -164,8 +163,7 @@ namespace Tia.Core
                 throw new InvalidOperationException(
                     "No template FC found under '" + config.TargetBlocksFolder + "'.");
             string templatePath = Path.GetFullPath(Path.Combine(outDir, "instr_template_cache.xml"));
-            if (File.Exists(templatePath)) File.Delete(templatePath);
-            templateFc.Export(new FileInfo(templatePath), ExportOptions.None);
+            Ops.ExportFresh(templateFc, templatePath, ExportOptions.None);
             var templateXml = XDocument.Load(templatePath);
 
             // discovery: areas -> instruments (+ command numbering)
@@ -473,8 +471,7 @@ namespace Tia.Core
             if (targetOb != null)
             {
                 string cache = Path.GetFullPath(Path.Combine(outDir, config.TargetOb + "_ob_cache.xml"));
-                if (File.Exists(cache)) File.Delete(cache);
-                targetOb.Export(new FileInfo(cache), ExportOptions.None);
+                Ops.ExportFresh(targetOb, cache, ExportOptions.None);
                 obDoc = XDocument.Load(cache);
             }
             else

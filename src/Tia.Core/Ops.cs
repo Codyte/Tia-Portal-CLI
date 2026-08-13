@@ -1,72 +1,75 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L91    class Ops
-//   L93    lookup
-//   L95    .FindBlock
-//   L105   .FindGroup
-//   L120   .FindGroupByName
-//   L138   .FindTagGroup
-//   L153   .FindTagGroupByName
-//   L166   .FindBlockIn
-//   L179   .ResolveFolder
-//   L191   .SplitPath
-//   L215   .WalkFolders
-//   L242   .FindTagTable
-//   L255   .ResolveTagFolder
-//   L263   .ResolveTypeFolder
-//   L270   .FindType
-//   L282   structure
-//   L284   .CreateFolder
-//   L316   .CreateFolders
-//   L351   .DeleteFolder
-//   L378   .TypeFolderAction
-//   L399   .CountTypes
-//   L404   .CountBlocks
-//   L409   .CountTables
-//   L418   .CreateInstanceDb
-//   L455   .FbsLike
-//   L462   .NearestFbs
-//   L471   .AllFbs
-//   L479   .Squash
-//   L488   .DeleteBlock
-//   L503   .DeleteType
-//   L517   export
-//   L519   .ExportBlock
-//   L534   .ExportTagTable
-//   L544   .ExportType
-//   L554   .ExportPath
-//   L563   import
-//   L570   .FolderAction
-//   L576   .ImportBlock
-//   L608   .MoveBlock
-//   L672   .ImportTagTable
-//   L700   .AddTag
-//   L736   .DeleteTag
-//   L759   .SetTag
-//   L802   .Rename
-//   L828   .ImportType
-//   L852   .ImportSource
-//   L923   .Generated
-//   L929   .SourceDeclNames
-//   L945   .RequireUtf8Bom
-//   L958   .RequireFile
-//   L966   .XmlRootType
-//   L976   .RequireRootType
-//   L985   .XmlCultures
-//   L1000  .ProjectOf
-//   L1010  .EnsureCultures
-//   L1032  .XmlObjectName
-//   L1041  diff
-//   L1044  .DiffBlock
-//   L1062  .BlocksIdentical
-//   L1104  import com prova
-//   L1114  .ImportAndProve
-//   L1160  .Prove
-//   L1169  .FirstError
-//   L1181  compile
-//   L1184  .Compile
-//   L1226  .FlattenErrors
-//   L1249  .MessageTree
+//   L94    class Ops
+//   L96    lookup
+//   L98    .FindBlock
+//   L108   .FindGroup
+//   L123   .FindGroupByName
+//   L141   .FindTagGroup
+//   L156   .FindTagGroupByName
+//   L169   .FindBlockIn
+//   L182   .ResolveFolder
+//   L194   .SplitPath
+//   L218   .WalkFolders
+//   L245   .FindTagTable
+//   L258   .ResolveTagFolder
+//   L266   .ResolveTypeFolder
+//   L273   .FindType
+//   L285   structure
+//   L287   .CreateFolder
+//   L319   .CreateFolders
+//   L354   .DeleteFolder
+//   L381   .TypeFolderAction
+//   L402   .CountTypes
+//   L407   .CountBlocks
+//   L412   .CountTables
+//   L421   .CreateInstanceDb
+//   L458   .FbsLike
+//   L465   .NearestFbs
+//   L474   .AllFbs
+//   L482   .Squash
+//   L491   .DeleteBlock
+//   L506   .DeleteType
+//   L520   export
+//   L522   .ExportBlock
+//   L543   .ExportFresh
+//   L564   .ExportFresh
+//   L584   .IsInconsistentExport
+//   L592   .ExportTagTable
+//   L602   .ExportType
+//   L612   .ExportPath
+//   L621   import
+//   L628   .FolderAction
+//   L634   .ImportBlock
+//   L666   .MoveBlock
+//   L730   .ImportTagTable
+//   L758   .AddTag
+//   L794   .DeleteTag
+//   L817   .SetTag
+//   L860   .Rename
+//   L886   .ImportType
+//   L910   .ImportSource
+//   L981   .Generated
+//   L987   .SourceDeclNames
+//   L1003  .RequireUtf8Bom
+//   L1016  .RequireFile
+//   L1024  .XmlRootType
+//   L1034  .RequireRootType
+//   L1043  .XmlCultures
+//   L1058  .ProjectOf
+//   L1068  .EnsureCultures
+//   L1090  .XmlObjectName
+//   L1099  diff
+//   L1102  .DiffBlock
+//   L1120  .BlocksIdentical
+//   L1162  import com prova
+//   L1172  .ImportAndProve
+//   L1218  .Prove
+//   L1226  .FirstError
+//   L1238  compile
+//   L1241  .Compile
+//   L1283  .FlattenErrors
+//   L1306  .MessageTree
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -521,14 +524,69 @@ namespace Tia.Core
             var block = FindBlock(plc, name);
             if (block == null)
                 throw new InvalidOperationException("Block '" + name + "' not found.");
-            // export-block, explain-block, diff-block e clone passam por aqui; sem o guard o Openness
-            // devolve só "Inconsistent blocks and PLC data types (UDT) cannot be exported."
-            if (!block.IsConsistent)
-                throw new InvalidOperationException("Block '" + name + "' is inconsistent (imported or edited, "
-                    + "never compiled). Run: tia compile --block \"" + name + "\" --apply");
             var file = ExportPath(outDir, name);
-            block.Export(new FileInfo(file), ExportOptions.WithDefaults);
+            ExportFresh(block, file, ExportOptions.WithDefaults);
             return new Dictionary<string, object> { { "exported", name }, { "file", file } };
+        }
+
+        /// <summary>
+        /// Export único de bloco do repo: compila **só o alvo** quando ele está inconsistente e só
+        /// então exporta. Todo import deixa o alvo modificado-não-compilado, e nesse estado o
+        /// Openness recusa exportar ("Inconsistent blocks and PLC data types (UDT) cannot be
+        /// exported") — a saída era mandar o agente rodar `compile --apply` do PLC inteiro entre
+        /// etapas, que na FP-06 foram ~20 min dos 49 da rodada. Compilar um bloco custa segundos.
+        ///
+        /// Compilar o alvo **não** limpa inconsistência que vem de fora (UDT ou DB que ele usa):
+        /// nesse caso o export falha de novo e aí sim a mensagem manda compilar o PLC. É a diferença
+        /// entre o caminho barato (quase sempre) e o caro (raro), em vez de pagar o caro sempre.
+        /// </summary>
+        internal static void ExportFresh(PlcBlock block, string file, ExportOptions options)
+        {
+            if (!block.IsConsistent)
+            {
+                var pre = block.GetService<ICompilable>();
+                if (pre != null) pre.Compile();
+            }
+            if (File.Exists(file)) File.Delete(file);   // Openness recusa sobrescrever
+            try
+            {
+                block.Export(new FileInfo(file), options);
+            }
+            catch (Exception e) when (IsInconsistentExport(e))
+            {
+                throw new InvalidOperationException("Block '" + block.Name + "' continua inconsistente "
+                    + "depois de compilar só ele — a inconsistência vem de fora (UDT ou DB que o bloco "
+                    + "usa). Run: tia compile --apply", e);
+            }
+        }
+
+        /// <summary>Idem para UDT: <c>PlcType</c> não é <c>PlcBlock</c>, mas tem o mesmo estado.</summary>
+        internal static void ExportFresh(PlcType type, string file, ExportOptions options)
+        {
+            if (!type.IsConsistent)
+            {
+                var pre = type.GetService<ICompilable>();
+                if (pre != null) pre.Compile();
+            }
+            if (File.Exists(file)) File.Delete(file);
+            try
+            {
+                type.Export(new FileInfo(file), options);
+            }
+            catch (Exception e) when (IsInconsistentExport(e))
+            {
+                throw new InvalidOperationException("UDT '" + type.Name + "' continua inconsistente "
+                    + "depois de compilar só ele. Run: tia compile --apply", e);
+            }
+        }
+
+        /// <summary>A recusa do Openness chega embrulhada; casa pela frase, que é estável.</summary>
+        private static bool IsInconsistentExport(Exception e)
+        {
+            for (var cur = e; cur != null; cur = cur.InnerException)
+                if (cur.Message.IndexOf("Inconsistent blocks", StringComparison.OrdinalIgnoreCase) >= 0)
+                    return true;
+            return false;
         }
 
         public static object ExportTagTable(PlcSoftware plc, string tableName, string outDir)
@@ -547,7 +605,7 @@ namespace Tia.Core
             if (type == null)
                 throw new InvalidOperationException("UDT '" + name + "' not found.");
             var file = ExportPath(outDir, name);
-            type.Export(new FileInfo(file), ExportOptions.WithDefaults);
+            ExportFresh(type, file, ExportOptions.WithDefaults);
             return new Dictionary<string, object> { { "exported", name }, { "file", file } };
         }
 
@@ -1064,7 +1122,7 @@ namespace Tia.Core
             string tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".xml");
             try
             {
-                existing.Export(new FileInfo(tmp), ExportOptions.None);
+                ExportFresh(existing, tmp, ExportOptions.None);
                 var generated = XDocument.Load(newXmlPath).Descendants("ObjectList").FirstOrDefault();
                 var current = XDocument.Load(tmp).Descendants("ObjectList").FirstOrDefault();
                 if (generated == null || current == null) return false;
@@ -1159,8 +1217,7 @@ namespace Tia.Core
         /// <summary>Re-exporta o bloco e confere o patch no que voltou. Deixa o arquivo limpo.</summary>
         private static bool Prove(PlcBlock block, string proof, Func<XDocument, bool> patched)
         {
-            if (File.Exists(proof)) File.Delete(proof);
-            block.Export(new FileInfo(proof), ExportOptions.WithDefaults);
+            ExportFresh(block, proof, ExportOptions.WithDefaults);
             try { return patched(XDocument.Load(proof)); }
             finally { if (File.Exists(proof)) File.Delete(proof); }
         }

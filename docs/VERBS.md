@@ -62,7 +62,7 @@
 - `rename-block --name X --to NEW [--apply]  (bloco ou UDT; refs seguem, igual ao GUI)`
 - `set-tag --table T --name N [--type T] [--address %M10.0] [--comment C] [--rename NEW] [--apply]  (só o que for passado muda; --rename exige Openness V20+)`
 - `clone --block N | --table T --replace OLD=NEW [--replace ...] [--at %M432.0] [--folder A/B] [--with-instances] [--apply]  (--replace é troca de TEXTO no XML exportado: caminho de membro de DB lá é cadeia de <Component>, então troque um componente por vez e mantenha a mesma profundidade da origem. --with-instances cria os iDBs que o clone passa a referenciar; sem eles o compile morre em 'Missing instance DB')`
-- `add-call --block X --fb "FB Y|FC Y" [--inst iDB] [--param P=<tag|DB.caminho.membro|const>] [--after N] [--title T] [--comment C] [--out DIR] [--apply]  (rede LAD com a chamada, EN no powerrail; os pinos saem da interface do bloco chamado. --inst é exigido para FB e recusado para FC. --after 0 = primeira rede, omitido = no fim)`
+- `add-call --block X --fb NOME [--inst iDB] [--param P=<tag|DB.caminho.membro|const>] [--after N] [--title T] [--comment C] [--out DIR] [--apply]  (rede LAD com a chamada, EN no powerrail; os pinos saem da interface do bloco chamado. --fb aceita o nome com ou sem o prefixo 'FB '/'FC '. --inst é exigido para FB e recusado para FC. --after 0 = primeira rede, omitido = no fim)`
 - `delete-network --block X --index N [--out DIR] [--apply]  (N é 1-based, a numeração do explain-block)`
 - `set-retain --block FB --member M [--off] [--out DIR] [--apply]  (Remanence na declaração do FB; o Openness recusa em iDB e o import-source não expressa)`
 - `add-db-member --db X --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]`
@@ -95,7 +95,7 @@
 - `→ saída na casa das centenas de KB (snapshot = 251 KB, find de tag = 821 KB num projeto real). SEMPRE com --out-file, depois grep no arquivo. Não é leitura de orientação: pra isso é `tree``
 
 ## batch
-- `run --script ops.json [--summary]  (JSON array de arg-arrays, uma sessão só; step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou. --summary = só {steps,failed,errors[]}, sem o resultado de cada step. --plc/--out-file do processo NÃO descem pros steps: cada step carrega os seus. Exige projeto JÁ aberto: o attach é 1x, antes do 1º step, então open-project/create-project (e list-server-projects, que roda sem projeto) não podem ser step — chamar antes, sozinhos)`
+- `run --script ops.json [--summary]  (JSON array de arg-arrays, uma sessão só; step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou. --summary = só {steps,failed,ms,slowest[3],errors[]}, sem o resultado de cada step. Todo step traz `ms`, e o batch traz o total — é a medida de onde foi o tempo. --plc/--out-file do processo NÃO descem pros steps: cada step carrega os seus. Exige projeto JÁ aberto: o attach é 1x, antes do 1º step, então open-project/create-project (e list-server-projects, que roda sem projeto) não podem ser step — chamar antes, sozinhos)`
 
 ## meta
 - `--version  (versão do CLI + qual instalação do Openness este exe carrega; é a 1ª linha de qualquer bug report)`

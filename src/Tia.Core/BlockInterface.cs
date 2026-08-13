@@ -72,8 +72,7 @@ namespace Tia.Core
                     "iface_" + string.Join("_", block.Name.Split(Path.GetInvalidFileNameChars())) + ".xml"));
                 try
                 {
-                    if (File.Exists(xml)) File.Delete(xml);
-                    block.Export(new FileInfo(xml), ExportOptions.None);
+                    Ops.ExportFresh(block, xml, ExportOptions.None);
                     rows.Add(Describe(XDocument.Load(xml)));
                 }
                 catch (Exception ex)

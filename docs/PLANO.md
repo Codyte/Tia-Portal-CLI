@@ -516,6 +516,55 @@ Fora da fila, o **acionamento-semente** (seção 7 do resultado, ~10 min da roda
 `replicate-fc --template <pasta molde> --target-folder <pasta da área>` replica de qualquer área
 para a área nova, com escopo — antes o molde era "a 1ª irmã populada" e os alvos, "todas as irmãs".
 
+### Revisão da série FP-01→FP-06 (2026-08-13) — o que a série mede e o que ela deixou passar
+
+Revisão pedida depois de fechar a fila da FP-06, cruzando handoffs, cadernos, resultados e código.
+Achados que viraram trabalho no mesmo dia, e o que ficou de fila.
+
+**Feito (mesma data):**
+
+1. **Um pré-compile só para todo export** (`Ops.ExportFresh`, sobrecarga para `PlcBlock` e
+   `PlcType`). O repo tinha **três políticas para o mesmo estado**: `BlockEdit.Patch` e
+   `DbMember.ExportFresh` compilavam sozinhos, `Ops.ExportBlock` lançava erro pedindo
+   `compile --block`, e `AlarmFc`/`FaultOb`/`InstrumentFc`/`Replicate`/`BlockInterface` exportavam
+   cru (o agente recebia a mensagem bruta do Openness). Eram 16 exports: 2 com pré-compile, 1 com
+   erro traduzido, 13 sem nada. Agora os 16 passam pelo mesmo helper — compila **só o alvo** e
+   segue; inconsistência vinda de fora (UDT/DB usado pelo bloco) volta com a mensagem mandando
+   `compile --apply`. **Motivo medido:** compile do PLC inteiro foi ~20 dos 49 min da FP-06 (41 %
+   do relógio da rodada), e o compile de um bloco é de segundos. `CLAUDE.md`, `SKILL.md` e
+   `BENCHMARKS.md` corrigidos — os três ensinavam a regra antiga.
+2. **`run --script` cronometra.** Cada step traz `ms`, o batch traz o total, e `--summary` traz
+   `slowest[3]`. Sem isso, medir rodada exigia `Measure-Command` por fora e o número não
+   sobrevivia no resultado — que é por que "onde foi o tempo" nunca virou série comparável.
+3. **FP-07 escrita como rodada de dívida** ([`caderno-FP-07.md`](teste-cego/caderno-FP-07.md) +
+   [`criterios-FP-07.md`](teste-cego/criterios-FP-07.md)): adensador de lodo, três acionamentos
+   idênticos em partida direta, **endereços fixos do diagrama elétrico**, cartões por MLFB de lista
+   de compra, diagnóstico de falha de estação, e entrega **em duas etapas com `audit` ao fim de
+   cada uma**. O caminho natural da entrega passa por cima de cada conserto que nunca foi
+   exercitado — `replicate-fc --template --apply`, `set-io-address --conflictCheck` (2 ciclos
+   parado), `plug-module --apply`, `gen-fault-ob` (4 ciclos), e as **duas fotos do `audit`**, que é
+   a primeira chance real de ver check reprovando (aberto desde a FP-04).
+4. **`SKILL.md` alinhado ao código** — não trazia `replicate-fc --template`, `gen-alarm-fc --area`,
+   `set-io-address --conflictCheck` nem o prefixo opcional do `add-call --fb`. A sessão cega recebe
+   `SKILL.md`, então conserto que não chega lá não existe para quem executa (é a origem do T2 da
+   FP-06).
+5. **`CLAUDE.md` enxuto** de 22,9 KB para 19,6 KB, tirando a arqueologia de tropeço ("que até a
+   FP-04 ignorava…") e mantendo toda regra viva. O histórico não se perdeu: mora nos
+   `resultado-FP-*.md`. É arquivo re-enviado todo turno — o repo estava violando a própria regra de
+   orçamento de contexto no maior arquivo que tem.
+
+**Fila que sai da revisão (não feito):**
+
+| # | Item | Por quê |
+|---|---|---|
+| 1 | Régua-base fixa + anexo por rodada | A régua muda a cada rodada (`criterios.md` → `-FP-05` → `-FP-06` → `-FP-07`), então não há série comparável entre rodadas. O único número que se compara hoje (% de contorno de CLI, 32 % → 12 %) é confundido pelo terreno. |
+| 2 | Re-testar `import-master-copy --force --apply` em CPU virgem | Fix commitado em `a0df2f7` e **nunca re-testado** — dívida aberta mais antiga do repo. Junto com `install-lib`, exige rodada de projeto novo, que a FP-07 não é. |
+| 3 | "Busca em rodada cega exclui `docs/teste-cego/`" vira regra escrita | Hoje está só dentro do resultado da FP-04, que vazou por aí. Entrou no `criterios-FP-07.md`; falta subir para o protocolo geral. |
+| 4 | Conferência do caderno contra o projeto antes da rodada | O briefing da FP-04 afirmava que `LIB_TESTE` não tinha periferia nem inversor — tinha. Nada impede o próximo caderno de errar igual. |
+| 5 | Telemetria do ramo caro do `ImportAndProve` | Ele cai para compile do PLC inteiro na recuperação (`Ops.cs`) e ninguém sabe quantas vezes dispara por rodada. |
+| 6 | F9 diz 77 verbos; são **78** | `VERBS.md`, `SKILL.md` e `CLAUDE.md` já dizem 78, conferido 1:1 contra o `Program.cs`. |
+| 7 | Terreno da série é sempre o mesmo | 4 rodadas cegas, todas ETE, todas área de acionamento no mesmo projeto-molde. Máquina sequencial só na FP-01, que **não foi cega**. HMI, nunca. |
+
 ## Histórico fechado
 
 As sagas já resolvidas (biblioteca, hardware do molde, telegrama, F6, migração para skill,

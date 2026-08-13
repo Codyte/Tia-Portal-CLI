@@ -1,53 +1,57 @@
 # Handoff · TIA Portal Openness API · 2026-08-13
 
 ## Goal
-A fila da FP-05 está fechada por inteiro — 7 itens + o T2(b). Não há trabalho em vôo: a próxima
-sessão escolhe o alvo (FP-06, ou o que o usuário quiser).
+Executar a **rodada cega FP-06** no projeto-molde: elevatória final com cinco bombas em inversor
+SINAMICS. O caderno e os critérios já estão escritos e commitados; falta a execução e o
+`resultado-FP-06.md`.
 
 ## State
-- HEAD: `46ce12d` (`feat(set-io-address): dry-run confere o --start contra o mapa de I/O`).
-  Working tree limpo fora de `workspace/` (gitignored).
-- **Live state: TIA Portal aberto na sessão 1** com `proj/Software de ETE Insular_Inicial_V21`,
-  no estado de antes da FP-05 (a Área 24 morreu num reboot; os blocos `ZZ_TESTE_*` dos smokes foram
-  apagados, compile Success 0/0 depois). O shell do agente nasceu na **sessão 1**, então `tia` roda
-  direto — a rota da task não foi exercitada nesta máquina hoje.
-- Done: 5 commits. `add-call` (FB sem pino chamável, Input solto = aviso, `networksBefore/After`),
-  `list-io-map` (`nextFreeByteExact`/`Note`/`InDevice`), `add-db-member --path` (cria ramo Struct,
-  `structsCreated`), `clone` (`networks`), `delete-network` (`networksBefore/After`),
-  `connect-subnet` (`existingSubnets`), `set-io-address` (dry-run com `conflictCheck`).
-  `PLANO.md`, `CLAUDE.md` e `VERBS.md` atualizados; todos os 7 itens têm aceite ao vivo.
-- In progress: nada.
+- HEAD: `cb3caa6` (`docs(teste-cego): caderno e criterios da FP-06`). Working tree limpo fora de
+  `workspace/` (gitignored).
+- Live state: **TIA Portal aberto na sessão 1** com `proj/Software de ETE Insular_Inicial_V21`
+  (PLC `CPU1.0 CCO`), no estado de antes da FP-05 — a Área 24 morreu num reboot e os blocos
+  `ZZ_TESTE_*` foram apagados, com compile Success 0/0 depois. **Havia 2 processos
+  `Siemens.Automation.Portal` vivos** ao fim desta sessão (PIDs 15620 e 20852): conferir antes de
+  chamar qualquer verbo — com mais de um Portal aberto todo verbo exige `--portal <projeto|PID>`.
+  O shell do agente nasceu na sessão 1, então `tia` roda direto.
+- Done: fila da FP-05 fechada (7 itens + T2(b), 5 commits, tudo com aceite ao vivo). Caderno e
+  critérios da FP-06 escritos.
+- In progress: nada. A execução da FP-06 ainda não começou.
 
 ## Decisions (and why)
-- **`nextFreeByte` não virou verdade, virou piso declarado.** Não existe API de "next free address"
-  no Openness (`tia-help.py --sdk` só acha `Address.StartAddress`), e os 398 bytes que o Portal
-  enxerga a mais não saem de nenhuma composição que o verbo visita.
-- **Dry-run confere, não sonda.** `set-io-address` cruza o `--start` com o mapa de I/O e devolve
-  `conflictsWith` / `free (pelo mapa)`. Sondar de verdade exigiria escrever o endereço e reverter —
-  isso deixa de ser dry-run, em qualquer projeto.
-- **Input solto virou `warning`, `InOut` solto continua erro.** O molde da casa tem pino de entrada
-  sem fio e compila; InOut é referência e sem fio não compila.
-- **`--type Struct` continua recusado** — o ramo agora nasce pelo `--path`, no mesmo XML do
-  membro-folha, então Struct vazio nunca chega ao Portal.
-- Retirado do `standing.md`: a proibição de salvar o projeto-molde (é projeto de teste).
+- **FP-06 pressiona R3, R4, R5 e R7** — as regras da `BOAS-PRATICAS.md` que **nenhum dos 10 checks
+  do `audit` pega**. A FP-05 já provou que a régua automática funciona; o que falta medir é se a
+  doutrina escrita sozinha segura a decisão sob pressão de requisito de cliente.
+- **Tema é inversor SINAMICS** porque toda rodada anterior foi partida direta: exercita
+  `insert-telegram --change`, a ordem dos dois `connect-subnet` e o nascimento da constante
+  `~Standard_telegram_NN` — cadeia que hoje só existe descrita no `CLAUDE.md`.
+- **Cinco equipamentos idênticos de propósito**: a FP-05 fechou com zero uso de
+  `replicate-fc`/`gen-alarm-fc`/`install-lib` (duas bombas em partida direta não têm molde na casa).
+  Se a rodada replicar no braço com cinco `clone`, o achado é da ferramenta.
+- **A execução tem de ser sessão nova e cega**: só `caderno-FP-06.md` + skill `tia` entram.
+  `criterios-FP-06.md` **não se lê antes nem durante** — se ler, o teste vira gabarito.
 
 ## Next steps (ordered)
-1. Perguntar ao usuário o próximo alvo — não há fila pendente.
-2. Candidato: FP-06, nova rodada cega, se a ideia for continuar medindo a CLI contra trabalho real.
-   O método que funcionou: caderno → execução → `resultado-FP-0N.md` com os tropeços medidos → fila.
+1. **Executar a FP-06** lendo apenas `docs/teste-cego/caderno-FP-06.md`. Antes de tudo:
+   `pwsh scripts/prep-project.ps1 "Software de ETE Insular_Inicial_V21"` e conferir quantos Portais
+   estão abertos.
+2. Ao terminar a entrega, aí sim ler `docs/teste-cego/criterios-FP-06.md` e escrever
+   `docs/teste-cego/resultado-FP-06.md` no formato das rodadas anteriores (entregue / tropeços
+   medidos / portões / fila).
+3. Atualizar a tabela de fases do `PLANO.md` e abrir a fila de conserto que sair da rodada.
 
 ## Key files
-- `docs/PLANO.md` — seção "Fila da FP-05 executada (2026-08-12)": os 7 itens e o aceite de cada um.
-- `docs/teste-cego/resultado-FP-05.md` — a rodada que gerou a fila (seção 3 = tropeços medidos).
-- `src/Tia.Core/__navi__.md` — mapa da pasta; os tocados foram `BlockEdit.cs`, `Hardware.cs`,
-  `DbMember.cs`, `Clone.cs`.
-- `workspace/t5/*.json` (gitignored) — os batches de smoke que provaram os itens ao vivo.
+- `docs/teste-cego/caderno-FP-06.md` — a entrada da rodada (o único que a sessão executora lê).
+- `docs/teste-cego/criterios-FP-06.md` — portões G1–G7 e inspeções I1–I5. **Só depois da execução.**
+- `docs/teste-cego/resultado-FP-05.md` — formato do relatório e os 7 tropeços que o I5 remede.
+- `docs/BOAS-PRATICAS.md` — R1–R9, a régua que as armadilhas da seção 6 do caderno pressionam.
+- `src/Tia.Core/__navi__.md` — mapa da pasta, se a fila exigir conserto de verbo.
 
 ## Open / blockers
-- Nada bloqueando.
+- Nada bloqueando a execução.
 - **`rebuild.ps1` invalida a autorização do Portal já aberto**: a chamada seguinte trava ~10 min e
   morre com `EngineeringSecurityException: Security error. The operation has timed out.` Conserto:
-  `Start-ScheduledTask -TaskName TiaWhitelist` e repetir a chamada. Aconteceu 3x nesta sessão.
+  `Start-ScheduledTask -TaskName TiaWhitelist` e repetir. Não rebuildar no meio da rodada.
 - Compile do PLC inteiro passa de 10 min: batch com `compile --apply` vai em background, nunca em
   foreground com timeout de 600 s.
 
@@ -55,6 +59,8 @@ sessão escolhe o alvo (FP-06, ou o que o usuário quiser).
 - tia
 
 ## Effort
-**Baixo** para o passo 1 — é uma pergunta ao usuário. Se a resposta for FP-06, o esforço é da
-rodada, não do planejamento. Reasoning não é o gargalo neste repo: build, compile e attach do Portal
-dominam o relógio.
+**Médio** para o passo 1 — é engenharia de programa de PLC contra projeto grande, com decisão de
+padrão a tomar (as quatro exigências da seção 6 do caderno). **Alto** só se o telegrama do drive
+resistir: se `insert-telegram` recusar ou a constante `~Standard_telegram_NN` não nascer depois dos
+dois `connect-subnet`, é sondagem de API e aí `tia-help.py --sdk` vem antes de tentar no braço.
+Fora disso, reasoning não é o gargalo: attach, compile e import do Portal dominam o relógio.

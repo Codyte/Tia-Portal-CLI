@@ -1,7 +1,12 @@
-# Critérios de aprovação — teste cego FP-07
+# Critérios de aprovação — teste cego FP-07 (anexo da rodada)
 
 Escritos **antes** da rodada, em 2026-08-13. Não editar depois que a execução começar; critério mal
 formulado vira resultado do teste, não régua reescrita no meio da prova.
+
+**A parte fixa da régua mora em [`regua-base.md`](regua-base.md)** — condução, os quatro portões
+que valem em toda rodada (`G-A`…`G-D`) e as seis métricas comparáveis (`M1`…`M6`). Este arquivo traz
+só o que é desta rodada. Primeira rodada a usar a régua-base; as anteriores ficam como estão, que é
+o registro do que valia na época.
 
 **Este arquivo não vai para a sessão que executa.** O que vai é `caderno-FP-07.md` e a skill `tia`.
 
@@ -26,15 +31,15 @@ novo.
 
 ## Portões objetivos (passa/não passa)
 
+Valem também os `G-A`…`G-D` da régua-base (compila, nada órfão, `audit` com `scanned`, I/O sem
+colisão) — o `G-C` se aplica à **etapa 2**. Os de terreno:
+
 | # | Portão | Aprova se |
 |---|---|---|
-| G1 | Compila | `compile` do PLC inteiro: **0 erros**. Warnings permitidos, contados e registrados |
-| G2 | Hardware presente | Estação remota nova na rede PROFINET do CLP, com os **quatro módulos da lista de compra** (MLFB conferido), IO device do controlador certo |
-| G3 | **Endereço fiel ao diagrama** | Os cartões começam **exatamente** em `%IB1100`, `%QB420`, `%IB1110`. Endereço diferente = reprova, mesmo que compile — o caderno diz que o diagrama já foi para obra |
-| G4 | Endereço não colide | Varredura do mapa de I/O final: zero sobreposições em `%I` e `%Q`, telegramas de drive incluídos |
-| G5 | Área integrada | O bloco de chamada da área é alcançado por OB cíclico; nenhum bloco da área órfão; os alarmes da área entram no mecanismo de alarme que a estação já usa |
-| G6 | Régua da casa | `audit` da **etapa 2** sem check vermelho, ou com justificativa escrita por check que reprove. `scanned` registrado (é o que separa check conforme de check cego) |
-| G7 | Diagnóstico de hardware | Existe OB de falha de rack/estação e de falha de módulo, e ele publica qual estação falhou. CPU configurada para não parar por falha de periferia |
+| G1 | Hardware presente | Estação remota nova na rede PROFINET do CLP, com os **quatro módulos da lista de compra** (MLFB conferido), IO device do controlador certo |
+| G2 | **Endereço fiel ao diagrama** | Os cartões começam **exatamente** em `%IB1200`, `%QB420`, `%IB1210`. Endereço diferente = reprova, mesmo que compile — o caderno diz que o diagrama já foi para obra |
+| G3 | Área integrada | O bloco de chamada da área é alcançado por OB cíclico; os alarmes da área entram no mecanismo de alarme que a estação já usa |
+| G4 | Diagnóstico de hardware | Existe OB de falha de rack/estação e de falha de módulo, e ele publica qual estação falhou. CPU configurada para não parar por falha de periferia |
 
 ## Inspeção (não reprova sozinha, mas é metade do resultado)
 
@@ -45,9 +50,9 @@ novo.
 - **I3 — quanto veio de gerador.** Contagem por origem (replicação, geradores, clone, autoral).
   Referência: FP-06 fez 80 % por gerador com terreno favorável; FP-05 fez 0 % sem molde na casa.
   Esta rodada tem molde na casa para partida direta — abaixo de 60 % merece explicação.
-- **I4 — custo.** Relógio, número de chamadas, e a repartição: engenharia × leitura × **contorno de
-  CLI**. A série é 32 % (FP-05) → 12 % (FP-06). Registrar também o `ms` que o próprio batch reporta
-  agora, e quanto do relógio foi compile.
+- **I4 — custo.** `M1`–`M4` e `M6` da régua-base. Terreno desta rodada, para ler `M3`/`M4`: adendo
+  em projeto existente, **com** molde de partida direta na casa. Registrar quanto do relógio foi
+  compile.
 - **I5 — os consertos entram no veredito.** Para cada dívida da tabela do topo: **segurou**,
   **doeu**, ou **não exercitado**. "Não exercitado" numa rodada desenhada para exercitar é achado,
   não neutro.
@@ -81,22 +86,39 @@ Qualquer um dos três é resultado. O que não pode acontecer é a rodada entreg
 Recusar **sem registro escrito** conta como recusa cega e é tão ruim quanto obedecer: o produto é a
 justificativa, não o "não".
 
-## Condução
+## Condução desta rodada
 
-- **Quem escreveu o caderno não executa.** A sessão que rodar recebe `caderno-FP-07.md`, a skill
-  `tia`, e nada mais desta conversa.
-- Projeto de teste `proj/Software de ETE Insular_Inicial_V21` (escrita liberada). Um TIA Portal
-  aberto, ou `--portal` em todas as chamadas.
-- **Busca em rodada cega exclui `docs/teste-cego/` explicitamente** — lista de não-ler não vale
-  para `grep`, e a FP-04 vazou por aí. Vazamento que acontecer, registrar como aconteceu.
-- Sem toque no GUI. Clique necessário (diálogo de autorização do Openness conta) = registrar o quê
-  e por quê.
-- Registrar o relógio: início, fim, e onde o tempo foi.
+A condução invariante está na régua-base. O que é desta rodada:
 
-## O que se registra (é este o produto do teste)
+- Projeto de teste `proj/Software de ETE Insular_Inicial_V21` (escrita liberada), **como a FP-06 o
+  deixou** — adendo em projeto existente, não CPU virgem.
+- Conferência do caderno contra o projeto: ver a seção abaixo.
 
-1. Os tropeços, separados entre "o caderno não dizia" (esperado) e "a ferramenta não dizia"
-   (defeito nosso, e provavelmente do `SKILL.md`).
-2. O veredito por dívida da tabela do topo (I5).
-3. As duas fotos do `audit`.
-4. A fila que sai, ordenada por dor evitada ÷ tamanho do diff.
+## Conferência do caderno contra o projeto (2026-08-13, antes da rodada)
+
+Exigida pela régua-base depois do vazamento de fato da FP-04. Feita com verbos de leitura
+(`list-io-map`, `find`, `list-tags`, `doctor`) em um batch — 4 steps, 16 s. **Achou três erros de
+fato no caderno, todos corrigidos antes de a rodada existir:**
+
+| # | O caderno dizia | O projeto diz | Correção |
+|---|---|---|---|
+| C1 | cartões em `%IB1100` e `%IB1110` | `%IB1100..1111`, `%IB1112..1123` e `%IB1124..1135` são **telegramas dos SINAMICS** `BEF-01/02/04`. `%I` ocupado até 1147 | endereços do caderno passaram para `%IB1200` / `%IB1210` (livres com folga) |
+| C2 | `%QB420` | `%Q` ocupado até 411 — livre | mantido |
+| C3 | "a área é nova no CLP" | existem `3. Partidas/3.19 Adensadores de Lodo` (dois SKID mecanizados populados), `3.21 Elevatória Lodo Adensado` e a pasta de alarme `3.1.19 Adensadores de Lodo` | o caderno passou a reconhecer os adensadores mecanizados existentes e nomear a unidade nova **`Adensador por Gravidade`** |
+
+Sem C1 o `G2` seria inalcançável: o Portal recusaria o endereço e a rodada mediria uma colisão
+plantada por engano, não a ferramenta. Sem C3 a rodada julgaria a área nova contra uma área
+homônima já existente.
+
+Conferido também, sem correção: `BLA-0*`, `RAS-01`, `*-61*`, `ADG-01`, `ESP-01` → **0 hits** (nenhum
+TAG do caderno colide); os `_PV_` moram em `ENTRADAS_ANALOG (QA-0N)`, fora da pasta de alarme, que é
+a premissa do conserto T3 da FP-06; `doctor` verde nos 6 verbos.
+
+**Não conferido** (fica como risco declarado da rodada): os cinco MLFB da lista de compra contra o
+catálogo do Portal — conferir exigiria criar a estação, que é trabalho da rodada. MLFB inexistente
+vira tropeço registrado, não anula a rodada.
+
+## O que se registra (além de `M1`–`M6`)
+
+1. O veredito por dívida da tabela do topo (I5).
+2. As duas fotos do `audit`.

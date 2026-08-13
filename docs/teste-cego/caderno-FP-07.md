@@ -21,9 +21,10 @@ desidratação: o lodo entra pelo centro, a manta adensa por decantação, o **r
 lentamente empurrando o lodo adensado para o poço central, e **duas bombas de lodo adensado**
 recalcam para a desidratação. O sobrenadante volta por gravidade ao tratamento, sem bombeamento.
 
-A área é nova no CLP; nenhum equipamento das revisões anteriores muda de função. Na documentação da
-obra e nas placas de campo a área se chama **`Adensador`**; a numeração dela dentro do CLP fica a
-critério da integração.
+A ETE já opera dois **adensadores mecanizados** (`ADM-01A` e `ADM-01B`), que continuam como estão —
+o adensador por gravidade é unidade nova, em área própria, e nenhum equipamento das revisões
+anteriores muda de função. Na documentação da obra e nas placas de campo a área nova se chama
+**`Adensador por Gravidade`**; a numeração dela dentro do CLP fica a critério da integração.
 
 ## 2. Equipamento novo
 
@@ -54,12 +55,12 @@ estações.
 | Módulo | MLFB | Endereço inicial |
 |---|---|---|
 | Interface da estação remota | `6ES7 155-6AU02-0BN0` | — |
-| Entradas digitais 16 pontos | `6ES7 131-6BH01-0BA0` | `%IB1100` |
+| Entradas digitais 16 pontos | `6ES7 131-6BH01-0BA0` | `%IB1200` |
 | Saídas digitais 16 pontos | `6ES7 132-6BH01-0BA0` | `%QB420` |
-| Entradas analógicas 8 canais | `6ES7 134-6GF00-0AA1` | `%IB1110` |
+| Entradas analógicas 8 canais | `6ES7 134-6GF00-0AA1` | `%IB1210` |
 | Módulo servidor | `6ES7 193-6PA00-0AA0` | — |
 
-**Digitais de entrada** (`%I1100.0` em diante, nesta ordem): confirmação de marcha `BLA-01`,
+**Digitais de entrada** (`%I1200.0` em diante, nesta ordem): confirmação de marcha `BLA-01`,
 confirmação de marcha `BLA-02`, confirmação de marcha `RAS-01`, disjuntor `BLA-01`, disjuntor
 `BLA-02`, disjuntor `RAS-01`, `LSH-61`, `ZSH-61`, local/remoto do painel, reconhecimento de alarme
 do painel.
@@ -67,7 +68,7 @@ do painel.
 **Digitais de saída** (`%Q420.0` em diante, nesta ordem): comando `BLA-01`, comando `BLA-02`,
 comando `RAS-01`, sinaleiro de falha da área, sirene de transbordo.
 
-**Analógicas de entrada** (`%IW1110` em diante, nesta ordem): `LIT-61`, `FIT-61`, `DIT-61`.
+**Analógicas de entrada** (`%IW1210` em diante, nesta ordem): `LIT-61`, `FIT-61`, `DIT-61`.
 
 ## 4. Como a área tem que funcionar
 

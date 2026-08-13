@@ -558,17 +558,32 @@ Achados que viraram trabalho no mesmo dia, e o que ficou de fila.
    `resultado-FP-*.md`. É arquivo re-enviado todo turno — o repo estava violando a própria regra de
    orçamento de contexto no maior arquivo que tem.
 
-**Fila que sai da revisão (não feito):**
+**Fila que saiu da revisão — 5 de 7 fechados no mesmo dia:**
 
-| # | Item | Por quê |
+| # | Item | Estado |
 |---|---|---|
-| 1 | Régua-base fixa + anexo por rodada | A régua muda a cada rodada (`criterios.md` → `-FP-05` → `-FP-06` → `-FP-07`), então não há série comparável entre rodadas. O único número que se compara hoje (% de contorno de CLI, 32 % → 12 %) é confundido pelo terreno. |
-| 2 | Re-testar `import-master-copy --force --apply` em CPU virgem | Fix commitado em `a0df2f7` e **nunca re-testado** — dívida aberta mais antiga do repo. Junto com `install-lib`, exige rodada de projeto novo, que a FP-07 não é. |
-| 3 | "Busca em rodada cega exclui `docs/teste-cego/`" vira regra escrita | Hoje está só dentro do resultado da FP-04, que vazou por aí. Entrou no `criterios-FP-07.md`; falta subir para o protocolo geral. |
-| 4 | Conferência do caderno contra o projeto antes da rodada | O briefing da FP-04 afirmava que `LIB_TESTE` não tinha periferia nem inversor — tinha. Nada impede o próximo caderno de errar igual. |
-| 5 | Telemetria do ramo caro do `ImportAndProve` | Ele cai para compile do PLC inteiro na recuperação (`Ops.cs`) e ninguém sabe quantas vezes dispara por rodada. |
-| 6 | F9 diz 77 verbos; são **78** | `VERBS.md`, `SKILL.md` e `CLAUDE.md` já dizem 78, conferido 1:1 contra o `Program.cs`. |
-| 7 | Terreno da série é sempre o mesmo | 4 rodadas cegas, todas ETE, todas área de acionamento no mesmo projeto-molde. Máquina sequencial só na FP-01, que **não foi cega**. HMI, nunca. |
+| 1 | Régua-base fixa + anexo por rodada | ✅ [`regua-base.md`](teste-cego/regua-base.md): condução invariante, portões `G-A`…`G-D` e as **seis métricas comparáveis `M1`…`M6`** (relógio, chamadas, contorno de CLI, origem dos blocos, tropeços, cliques de GUI). O `criterios-FP-07.md` virou anexo e é o primeiro a usá-la; as rodadas anteriores ficam como estão, que é o registro do que valia na época. A régua vinha sendo reescrita inteira a cada rodada, e o único número que se comparava (contorno de CLI, 32 % → 12 %) era confundido pelo terreno — agora `M3`/`M4` só se leem junto com uma linha sobre o terreno. |
+| 2 | Re-testar `import-master-copy --force --apply` em CPU virgem | ⏳ Fix commitado em `a0df2f7` e **nunca re-testado** — dívida aberta mais antiga do repo. Junto com `install-lib`, exige rodada de projeto novo, que a FP-07 não é. |
+| 3 | "Busca em rodada cega exclui `docs/teste-cego/`" vira regra escrita | ✅ subiu para o protocolo geral (seção do teste cego, acima) e para a régua-base. |
+| 4 | Conferência do caderno contra o projeto antes da rodada | ✅ virou item de condução da régua-base, e foi feita na FP-07 — **achou três erros de fato** (ver abaixo). |
+| 5 | Telemetria do ramo caro do `ImportAndProve` | ✅ uma linha em `workspace/telemetry.log` por queda no compile-do-PLC-inteiro (`Ops.LogFallback`), com bloco, o que se editava e o erro do export. Contador em memória não serve: cada `tia` é processo novo, então "quantas vezes por rodada" é `wc -l` no arquivo. Telemetria nunca derruba verbo — falha de escrita é engolida. |
+| 6 | F9 diz 77 verbos; são **78** | ✅ conferido 1:1 contra o `Program.cs`; `VERBS.md` sai do help com 78. |
+| 7 | Terreno da série é sempre o mesmo | ⏳ 4 rodadas cegas, todas ETE, todas área de acionamento no mesmo projeto-molde. Máquina sequencial só na FP-01, que **não foi cega**. HMI, nunca. |
+
+**A conferência do caderno FP-07 pegou três erros de fato** (detalhe em
+[`criterios-FP-07.md`](teste-cego/criterios-FP-07.md)), o que fecha o item 4 provando o próprio
+motivo dele:
+
+1. Os endereços "fixos do diagrama" `%IB1100` e `%IB1110` caíam **em cima dos telegramas dos
+   SINAMICS `BEF-01/02/04`** (`%IB1100..1135`). O portão `G2` da rodada era inalcançável: o Portal
+   recusaria, e a rodada mediria uma colisão plantada por engano. Passaram para `%IB1200`/`%IB1210`.
+2. `%QB420` estava livre (`%Q` ocupado até 411) — mantido.
+3. "A área é nova no CLP" era falso: existem `3. Partidas/3.19 Adensadores de Lodo` com dois SKID
+   mecanizados populados, `3.21 Elevatória Lodo Adensado` e a pasta de alarme homônima. O caderno
+   passou a reconhecer os adensadores existentes e a unidade nova virou `Adensador por Gravidade`.
+
+O custo da conferência foi **um batch de 4 verbos de leitura, 16 s**. O custo de não a ter feito
+seria uma rodada inteira medindo o caderno em vez da ferramenta.
 
 ## Histórico fechado
 

@@ -1,75 +1,76 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L94    class Ops
-//   L96    lookup
-//   L98    .FindBlock
-//   L108   .FindGroup
-//   L123   .FindGroupByName
-//   L141   .FindTagGroup
-//   L156   .FindTagGroupByName
-//   L169   .FindBlockIn
-//   L182   .ResolveFolder
-//   L194   .SplitPath
-//   L218   .WalkFolders
-//   L245   .FindTagTable
-//   L258   .ResolveTagFolder
-//   L266   .ResolveTypeFolder
-//   L273   .FindType
-//   L285   structure
-//   L287   .CreateFolder
-//   L319   .CreateFolders
-//   L354   .DeleteFolder
-//   L381   .TypeFolderAction
-//   L402   .CountTypes
-//   L407   .CountBlocks
-//   L412   .CountTables
-//   L421   .CreateInstanceDb
-//   L458   .FbsLike
-//   L465   .NearestFbs
-//   L474   .AllFbs
-//   L482   .Squash
-//   L491   .DeleteBlock
-//   L506   .DeleteType
-//   L520   export
-//   L522   .ExportBlock
-//   L543   .ExportFresh
-//   L564   .ExportFresh
-//   L584   .IsInconsistentExport
-//   L592   .ExportTagTable
-//   L602   .ExportType
-//   L612   .ExportPath
-//   L621   import
-//   L628   .FolderAction
-//   L634   .ImportBlock
-//   L666   .MoveBlock
-//   L730   .ImportTagTable
-//   L758   .AddTag
-//   L794   .DeleteTag
-//   L817   .SetTag
-//   L860   .Rename
-//   L886   .ImportType
-//   L910   .ImportSource
-//   L981   .Generated
-//   L987   .SourceDeclNames
-//   L1003  .RequireUtf8Bom
-//   L1016  .RequireFile
-//   L1024  .XmlRootType
-//   L1034  .RequireRootType
-//   L1043  .XmlCultures
-//   L1058  .ProjectOf
-//   L1068  .EnsureCultures
-//   L1090  .XmlObjectName
-//   L1099  diff
-//   L1102  .DiffBlock
-//   L1120  .BlocksIdentical
-//   L1162  import com prova
-//   L1172  .ImportAndProve
-//   L1218  .Prove
-//   L1226  .FirstError
-//   L1238  compile
-//   L1241  .Compile
-//   L1283  .FlattenErrors
-//   L1306  .MessageTree
+//   L95    class Ops
+//   L97    lookup
+//   L99    .FindBlock
+//   L109   .FindGroup
+//   L124   .FindGroupByName
+//   L142   .FindTagGroup
+//   L157   .FindTagGroupByName
+//   L170   .FindBlockIn
+//   L183   .ResolveFolder
+//   L195   .SplitPath
+//   L219   .WalkFolders
+//   L246   .FindTagTable
+//   L259   .ResolveTagFolder
+//   L267   .ResolveTypeFolder
+//   L274   .FindType
+//   L286   structure
+//   L288   .CreateFolder
+//   L320   .CreateFolders
+//   L355   .DeleteFolder
+//   L382   .TypeFolderAction
+//   L403   .CountTypes
+//   L408   .CountBlocks
+//   L413   .CountTables
+//   L422   .CreateInstanceDb
+//   L459   .FbsLike
+//   L466   .NearestFbs
+//   L475   .AllFbs
+//   L483   .Squash
+//   L492   .DeleteBlock
+//   L507   .DeleteType
+//   L521   export
+//   L523   .ExportBlock
+//   L544   .ExportFresh
+//   L565   .ExportFresh
+//   L585   .IsInconsistentExport
+//   L593   .ExportTagTable
+//   L603   .ExportType
+//   L613   .ExportPath
+//   L622   import
+//   L629   .FolderAction
+//   L635   .ImportBlock
+//   L667   .MoveBlock
+//   L731   .ImportTagTable
+//   L759   .AddTag
+//   L795   .DeleteTag
+//   L818   .SetTag
+//   L861   .Rename
+//   L887   .ImportType
+//   L911   .ImportSource
+//   L982   .Generated
+//   L988   .SourceDeclNames
+//   L1004  .RequireUtf8Bom
+//   L1017  .RequireFile
+//   L1025  .XmlRootType
+//   L1035  .RequireRootType
+//   L1044  .XmlCultures
+//   L1059  .ProjectOf
+//   L1069  .EnsureCultures
+//   L1091  .XmlObjectName
+//   L1100  diff
+//   L1103  .DiffBlock
+//   L1121  .BlocksIdentical
+//   L1163  import com prova
+//   L1173  .ImportAndProve
+//   L1225  .LogFallback
+//   L1238  .Prove
+//   L1246  .FirstError
+//   L1258  compile
+//   L1261  .Compile
+//   L1303  .FlattenErrors
+//   L1326  .MessageTree
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -1196,6 +1197,7 @@ namespace Tia.Core
                 // fora (UDT, DB) — daí um `compile --plc` com `errors: 0` ser seguido de
                 // "Inconsistent blocks and PLC data types (UDT) cannot be exported" (FP-04, T4).
                 // Compilar o PLC inteiro é caro, então só neste ramo.
+                LogFallback(blockName, what, first.Message);
                 var soft = plc.GetService<ICompilable>();
                 if (soft != null) soft.Compile();
                 try { ok = Prove(block, proof, patched); }
@@ -1212,6 +1214,24 @@ namespace Tia.Core
                 throw new InvalidOperationException("O import de '" + blockName + "' passou, mas " + what
                     + " não está no bloco depois do compile: o patch foi calculado em cima de um "
                     + "export defasado. Rode `compile --apply` e repita o verbo.");
+        }
+
+        /// <summary>
+        /// Uma linha por queda no ramo caro do <see cref="ImportAndProve"/> (compile do PLC inteiro).
+        /// "Quantas vezes dispara por rodada" não cabe em contador de memória: cada `tia` é um
+        /// processo novo, então a contagem tem que sobreviver em disco — `wc -l` no arquivo responde.
+        /// Telemetria nunca derruba verbo: falha de escrita é engolida de propósito.
+        /// </summary>
+        private static void LogFallback(string blockName, string what, string why)
+        {
+            try
+            {
+                Directory.CreateDirectory("workspace");
+                File.AppendAllText(Path.Combine("workspace", "telemetry.log"),
+                    DateTime.Now.ToString("s") + "\timportAndProve.plcCompile\t" + blockName + "\t"
+                    + what + "\t" + (why ?? "").Replace('\n', ' ').Replace('\r', ' ') + Environment.NewLine);
+            }
+            catch { }
         }
 
         /// <summary>Re-exporta o bloco e confere o patch no que voltou. Deixa o arquivo limpo.</summary>

@@ -137,6 +137,15 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     (`structsCreated` lista o que nasceu). `--type Struct` continua recusado: struct vazio deixa o
     DB inconsistente e trava todo verbo que exporta.
   - **`connect-subnet` com nome que não existe lista as subnets do projeto** (`existingSubnets`).
+  - **Biblioteca da Siemens chega arquivada: `retrieve-library --file X.zal19 [--dir D] [--upgrade]`.**
+    O SIOS entrega `.zal1x` e todo o resto do CLI (`list-library`, `import-master-copy`,
+    `install-lib.ps1`) só abre `.al2x`. O Portal monta `<dir>/<nome>/<nome>.al2x` e **recusa destino
+    já existente** — por isso destino ocupado volta `action: exists` em vez de estourar. `--upgrade`
+    (`RetrieveWithUpgrade`) sobe a versão da library no mesmo passo, que é o caso de `.zal19` em V21.
+  - **`list-motion [--like X] [--params]`** = objetos tecnológicos (eixo, came, cinemática, PID):
+    nome, tipo (`TO_PositioningAxis`…) e versão. **Read-only por limite da API**, não por escolha:
+    `TechnologicalInstanceDBComposition` não tem `Create` — TO nasce na GUI ou vem no import de
+    projeto. `--params` traz os parâmetros, que são centenas por eixo.
   - **`clone --replace` é troca de texto no XML exportado, não caminho de membro.** Caminho de DB lá
     é cadeia de `<Component Name="…"/>`: `A.B.C=X.Y` casa zero vezes — trocar **um componente por
     vez**, e o destino tem que ter a **mesma profundidade** da origem.
@@ -176,6 +185,23 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
   - `tia doctor` = preflight dos 6 verbos antes de qualquer smoke.
 - Smoke test exige TIA Portal aberto com projeto de teste — confirmar com o usuário antes.
 
+## Antes de escrever programa de PLC: `--study`
+
+`python scripts/tia-help.py --study "<o que se vai fazer>"` é a **primeira parada de qualquer
+tarefa de engenharia** — antes de `tree`, antes de qualquer verbo de escrita. Roda **sem Portal
+aberto**. Devolve, para o tema: tópicos do F1 (`--topic` lê), membros do Openness, **a biblioteca
+oficial da Siemens que já resolve**, a restrição de hardware que afunda o projeto se descoberta
+tarde, as regras R1–R9 aplicáveis e o verbo seguinte. Tema sem domínio casado ainda devolve o
+`catalog` da plataforma — o ponto é saber que existe e onde procurar, não saber fazer tudo.
+
+O conhecimento curado é **dados**, não código: `docs/study-map.json`. Domínio novo = mais um objeto
+lá. O casamento é por palavra inteira e sem acento (`ob` não casa dentro de `robótico`,
+`código de barras` casa a chave `codigo de barras`).
+
+Guia oficial da Siemens, bibliotecas gratuitas (LGF 109479728, DriveLib 206539) e onde o padrão da
+casa é deliberadamente mais estrito: `docs/GUIA-SIEMENS.md`. **Biblioteca oficial antes de código
+autoral** — reescrever escala, filtro de média ou função de string é dívida sem ganho.
+
 ## Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza
 
 `python scripts/tia-help.py --search "termo"` → busca nos **45518 tópicos** da ajuda do TIA Portal
@@ -187,6 +213,11 @@ diferença entre famílias de CPU, assinatura de instrução. O custo é ~1 s e 
 descobrir no braço foi metade de uma sessão. Busca casa por **AND de palavras no título** (o índice
 não tem corpo): termo que só existe no texto dá 0 hits — achar o tópico plausível e ler com
 `--topic`.
+
+**Termo que só existe no corpo do tópico: `--deep`.** `python scripts/tia-help.py --deep "termo"`
+ranqueia candidatos pelo título (quebrando `camelCase`), **baixa o corpo** dos `--scan` melhores
+(default 40, ~6 s) e grepa lá, devolvendo trecho. O corpo lido fica em `workspace/help-cache/`, então
+a segunda busca é de graça. É o que responde pergunta em prosa, que o `--search` de título zera.
 
 **Para a API em si, `--sdk` vem antes do `--search`.** `python scripts/tia-help.py --sdk "termo"`
 busca nos **31448 membros documentados** do IntelliSense XML das 14 assemblies do Openness

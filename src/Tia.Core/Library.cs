@@ -1,17 +1,18 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L33    class Library
-//   L35    .Open
-//   L59    .Create
-//   L80    .List
-//   L95    .CollectMasterCopies
-//   L108   .CollectTypes
-//   L126   .ImportMasterCopy
-//   L214   .AddMasterCopy
-//   L272   .DeleteMasterCopy
-//   L291   .ResolveLibFolder
-//   L304   .FindMasterCopy
-//   L322   .Collect
+//   L34    class Library
+//   L36    .Open
+//   L60    .Create
+//   L87    .Retrieve
+//   L121   .List
+//   L136   .CollectMasterCopies
+//   L149   .CollectTypes
+//   L167   .ImportMasterCopy
+//   L255   .AddMasterCopy
+//   L313   .DeleteMasterCopy
+//   L332   .ResolveLibFolder
+//   L345   .FindMasterCopy
+//   L363   .Collect
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -72,6 +73,46 @@ namespace Tia.Core
             // real volta em "path" (não é necessariamente o --file que entrou)
             Directory.CreateDirectory(dir);
             var lib = session.Portal.GlobalLibraries.Create<UserGlobalLibrary>(new DirectoryInfo(dir), name);
+            result["path"] = lib.Path.FullName;
+            result["applied"] = true;
+            return result;
+        }
+
+        /// <summary>Dearquiva biblioteca .zal1x → .al2x. É o que falta para consumir biblioteca
+        /// oficial da Siemens (LGF, DriveLib): o SIOS entrega arquivada, e todo o resto do CLI
+        /// (list-library, import-master-copy, install-lib.ps1) só abre a dearquivada.
+        /// --upgrade usa RetrieveWithUpgrade: .zal19 de biblioteca antiga vira .al21 no mesmo passo.
+        /// Retrieve monta &lt;dir&gt;/&lt;nome&gt;/&lt;nome&gt;.al2x e recusa destino já existente, então
+        /// destino ocupado devolve action "exists" em vez de estourar.</summary>
+        public static object Retrieve(TiaSession session, string file, string dir, bool upgrade, bool apply)
+        {
+            var archive = Path.GetFullPath(file);
+            if (!File.Exists(archive))
+                throw new FileNotFoundException("Archived library not found: " + archive);
+            var name = Path.GetFileNameWithoutExtension(archive);
+            var target = Path.GetFullPath(dir ?? Path.GetDirectoryName(archive));
+            var landing = Path.Combine(target, name);
+            var existing = Directory.Exists(landing)
+                ? Directory.GetFiles(landing, "*.al2*").FirstOrDefault()
+                    ?? Directory.GetFiles(landing, "*.al1*").FirstOrDefault()
+                : null;
+            var result = new Dictionary<string, object>
+            {
+                { "archive", archive },
+                { "library", name },
+                { "targetDir", target },
+                { "upgrade", upgrade },
+                { "action", existing != null ? "exists" : "retrieve" },
+                { "path", existing },
+                { "applied", false },
+            };
+            if (existing != null || !apply) return result;
+            Directory.CreateDirectory(target);
+            var lib = upgrade
+                ? session.Portal.GlobalLibraries.RetrieveWithUpgrade(
+                    new FileInfo(archive), new DirectoryInfo(target), OpenMode.ReadWrite)
+                : session.Portal.GlobalLibraries.Retrieve(
+                    new FileInfo(archive), new DirectoryInfo(target), OpenMode.ReadWrite);
             result["path"] = lib.Path.FullName;
             result["applied"] = true;
             return result;

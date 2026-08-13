@@ -1,4 +1,4 @@
-# __navi__ · `src/Tia.Core/` — 25 files → symbols at exact line numbers
+# __navi__ · `src/Tia.Core/` — 26 files → symbols at exact line numbers
 <!-- navindex · 2026-08-13 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../../__navi__.md`](../../__navi__.md)
 
@@ -33,10 +33,12 @@
   <sub>L61:class Inventory  L63:.Info  L80:.Devices  L97:.CollectDeviceItems  L119:.FolderMatches  L133:.Blocks  L164:.CollectBlocks  L187:.Tree  L219:.AppendGrouped  L231:.AppendTree  L252:.BlockLabel  L260:.TagTables  L283:.FindTagTable  L295:.CollectTagTables  L308:.Types  L315:.CollectTypes  L328:find  L331:.Find  L365:.FindInTagTables  L405:snapshot  L408:.Snapshot  L426:cross-references  L433:.ResolveSymbol  L447:.FindTag …</sub>
 - **LadConverter.cs** (530 ln)
   <sub>L46:class LadConverter  L48:.Convert  L91:lexer  L93:class Tok  L99:.Lex  L143:AST  L145:class Node  L146:class Leaf  L147:class CmpN  L148:class Group  L149:class NotN  L150:class Operand  L153:class Stmt  L161:parser (recursive descent)  L163:class Parser  L304:normalize: push NOT down to leaves (De Morgan; comparators invert)  L306:.Normalize  L321:FlgNet emitter  L327:class Net  L334:class Emitter  L450:.EmitNetwork  L476:block XML assembly  L478:.BuildBlockXml  L516:.Hex …</sub>
-- **Library.cs** (331 ln)
-  <sub>L33:class Library  L35:.Open  L59:.Create  L80:.List  L95:.CollectMasterCopies  L108:.CollectTypes  L126:.ImportMasterCopy  L214:.AddMasterCopy  L272:.DeleteMasterCopy  L291:.ResolveLibFolder  L304:.FindMasterCopy  L322:.Collect</sub>
+- **Library.cs** (372 ln)
+  <sub>L34:class Library  L36:.Open  L60:.Create  L87:.Retrieve  L121:.List  L136:.CollectMasterCopies  L149:.CollectTypes  L167:.ImportMasterCopy  L255:.AddMasterCopy  L313:.DeleteMasterCopy  L332:.ResolveLibFolder  L345:.FindMasterCopy  L363:.Collect</sub>
 - **Memory.cs** (113 ln)
   <sub>L20:class Memory  L22:.FreeM  L47:.Occupied  L64:.Width  L85:.Gaps  L104:.CollectTags</sub>
+- **Motion.cs** (86 ln)
+  <sub>L18:class Motion  L22:.List  L34:.Collect  L58:.Parameters  L71:.Safe</sub>
 - **Multiuser.cs** (98 ln)
   <sub>L14:class Multiuser  L21:.ListServerProjects  L54:.ResolveServer  L69:.Describe</sub>
 - **Ops.cs** (1337 ln)

@@ -82,6 +82,19 @@ if (-not $SkipTests -and -not $WhitelistOnly) {
         Write-Host 'FAIL Resolve-RealPath achatou caminhos diferentes' -ForegroundColor Red; exit 1
     }
     Write-Host '  ok  init.Resolve-RealPath (sem link: identidade; caminhos distintos seguem distintos)'
+
+    # roteamento do --study: chave com acento nunca casa (o mapa e comparado dobrado) e palavra
+    # curta ("ob") nao pode casar dentro de outra ("robotico"). Offline, nao precisa do Portal.
+    $py = Get-Command python -ErrorAction SilentlyContinue
+    if ($py) {
+        $out = & python (Join-Path $PSScriptRoot 'tia-help.py') --selftest 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "FAIL tia-help --selftest`n$out" -ForegroundColor Red; exit 1
+        }
+        Write-Host '  ok  study.roteamento (mapa sem acento na chave; casamento por palavra inteira)'
+    } else {
+        Write-Host '  --  study.roteamento pulado (python fora do PATH)' -ForegroundColor DarkGray
+    }
 }
 
 # referencia de verbo derivada do proprio help — evita grep em Program.cs pra achar assinatura

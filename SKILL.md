@@ -1,7 +1,7 @@
 ---
 name: tia
 description: >-
-  Dirigir o TIA Portal (Siemens) pela linha de comando via Openness — CLI `tia`, 78 verbos com
+  Dirigir o TIA Portal (Siemens) pela linha de comando via Openness — CLI `tia`, 80 verbos com
   JSON na entrada e na saída: ler projeto, exportar/importar bloco, tags, hardware, compilar,
   replicar FC de acionamento/alarme/instrumento, instalar biblioteca de blocos num PLC.
   Use sempre que a conversa envolver TIA Portal, Openness, PLC S7-1500, bloco FB/FC/OB/DB, UDT,
@@ -75,7 +75,34 @@ tia doctor                                    # preflight, se o shim está no PA
 pwsh "$env:TIA_CLI_HOME\scripts\tia.ps1" tree --plc "CPU1"      # de qualquer diretório
 ```
 
-## 4. Invariantes (ignorar custa sessão)
+## 4. Antes de escrever código: estude
+
+**Toda tarefa de engenharia de PLC começa aqui, antes do primeiro verbo de escrita:**
+
+```powershell
+python "$env:TIA_CLI_HOME\scripts\tia-help.py" --study "<o que se vai fazer>"
+```
+
+Devolve, para o tema: tópicos do F1 para ler (`--topic <ItemId>`), membros da API Openness,
+**a biblioteca oficial da Siemens que já resolve** (LGF, DriveLib — não reescrever escala,
+filtro, string), a restrição de hardware que afunda o projeto se descoberta tarde, as regras
+R1–R9 que se aplicam e o verbo seguinte. Roda **sem TIA Portal aberto** — estudar não custa attach.
+
+Tema que não casa com domínio nenhum ainda devolve o `catalog` da plataforma. O princípio é o de
+engenharia: não é preciso saber fazer tudo, é preciso saber que existe, que é possível e onde
+procurar.
+
+Três coisas que só se descobrem lendo, e que já custaram projeto:
+
+- **Trajetória coordenada (braço, pórtico, delta) exige S7-1500T.** CPU 1500 comum faz eixo isolado.
+- **Posicionamento pode viver no drive** (EPos + telegrama 111 + `SINA_POS`), sem objeto tecnológico.
+- **Safety não é escopo do Openness.** F-runtime group e assinatura são GUI: recusar por escrito.
+
+Depois do `--study`, quando faltar detalhe: `--sdk` (assinatura exata, casa no corpo), `--search`
+(título dos 45518 tópicos), `--deep` (baixa e grepa o corpo dos tópicos mais plausíveis; é o que
+responde pergunta em prosa).
+
+## 5. Invariantes (ignorar custa sessão)
 
 - **Verbo de escrita é dry por padrão.** `--apply` explícito. Nunca contra projeto de produção.
 - **Uma chamada por vez.** Openness é single-session; nada de paralelizar `tia` (nem via agentes).
@@ -107,7 +134,7 @@ pwsh "$env:TIA_CLI_HOME\scripts\tia.ps1" tree --plc "CPU1"      # de qualquer di
 - **`rebuild.ps1` muda o hash do `tia.exe`** → o Portal já aberto abre um **diálogo modal de
   autorização** na tela. Chamada pendurada com CPU ~0 = alguém precisa clicar; não é bug de API.
 
-## 5. Orçamento de contexto (o CLI devolve volume que estoura sessão)
+## 6. Orçamento de contexto (o CLI devolve volume que estoura sessão)
 
 - **Orientação em projeto novo = `tia tree`** → `plc-navi.md` (39 KB para 476 blocos), e só isso.
   Depois vem verbo que responde pergunta: `trace`, `xref`, `explain-block`, `find --pattern`.
@@ -117,11 +144,14 @@ pwsh "$env:TIA_CLI_HOME\scripts\tia.ps1" tree --plc "CPU1"      # de qualquer di
 - **Nunca `list-blocks` sem filtro** (~480 blocos): use `--folder`, `--type` ou `--count`.
 - **`run --script ops.json --summary`** para lote: 1 attach (~3 s) em vez de um por chamada.
 
-## 6. Referência (ler no repo, não deduzir)
+## 7. Referência (ler no repo, não deduzir)
 
 | Preciso de | Arquivo |
 |---|---|
-| assinatura dos 78 verbos | `$env:TIA_CLI_HOME\docs\VERBS.md` (~90 linhas, gerado do help) |
+| assinatura dos 80 verbos | `$env:TIA_CLI_HOME\docs\VERBS.md` (~90 linhas, gerado do help) |
+| **o que estudar antes de fazer** | `python "$env:TIA_CLI_HOME\scripts\tia-help.py" --study "tema"` — **primeira parada de qualquer tarefa de engenharia**; roda sem Portal aberto |
+| guia oficial da Siemens + bibliotecas gratuitas | `$env:TIA_CLI_HOME\docs\GUIA-SIEMENS.md` (entry IDs do SIOS e onde a casa é mais estrita) |
+| domínios que o `--study` conhece | `$env:TIA_CLI_HOME\docs\study-map.json` — domínio novo é mais um objeto lá, nenhuma linha de código muda |
 | decisões, fases, o que já foi medido | `$env:TIA_CLI_HOME\docs\PLANO.md` |
 | regras de operação do repo | `$env:TIA_CLI_HOME\CLAUDE.md` |
 | macros de fluxo | `$env:TIA_CLI_HOME\scripts\` (`prep-project`, `raio-x`, `install-lib`, `bake-lib`) |

@@ -1,5 +1,5 @@
 # __navi__ · `library/` — 5 files → symbols at exact line numbers
-<!-- navindex · 2026-08-11 · DO NOT EDIT BY HAND; regen via navindex skill -->
+<!-- navindex · 2026-08-13 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../__navi__.md`](../__navi__.md)
 
 - **README.md** (150 ln) — `library/` — biblioteca de blocos instalável ("arsenal")

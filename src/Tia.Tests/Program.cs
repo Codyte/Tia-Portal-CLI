@@ -1,41 +1,42 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L66    class Program
-//   L70    .Check
-//   L77    .RepoRoot
-//   L86    .Fixture
-//   L88    .OutDir
-//   L95    .Main
-//   L136   .AlarmFc_BuildFcXml
-//   L164   .AlarmFc_BuildCallObXml
-//   L186   .FaultOb_BuildObXml
-//   L212   .InstrumentFc_BuildAreaFcXml
-//   L249   .LadConverter_Convert
-//   L272   .BlockExplain_Explain
-//   L296   .Ops_RequireRootType
-//   L306   class Folder
-//   L318   .Ops_WalkFolders
-//   L359   .Ops_SplitPath
-//   L376   .Inventory_FolderMatches
-//   L398   .Ops_RequireUtf8Bom
-//   L425   .InstrumentFc_FcName
-//   L436   .Profinet_TagName
-//   L446   .Audit_Naming
-//   L463   .DbMember_AddToXml
-//   L530   .Memory_Occupied
-//   L548   .Clone_Rewrite
-//   L590   .Scaffold_Plan
-//   L636   list-interface / add-call / delete-network / set-retain
-//   L639   .Fc
-//   L658   .BlockInterface_FromXml
-//   L674   .BlockEdit_InsertCallInXml
-//   L798   .BlockEdit_RemoveNetworkFromXml
-//   L810   .BlockEdit_SetRetainInXml
-//   L820   .Clone_InstancesInXml
-//   L832   .Audit_DriveShape
-//   L845   .Audit_LawChecks
-//   L874   .Ops_Squash
-//   L883   .Throws
+//   L67    class Program
+//   L71    .Check
+//   L78    .RepoRoot
+//   L87    .Fixture
+//   L89    .OutDir
+//   L96    .Main
+//   L138   .AlarmFc_BuildFcXml
+//   L166   .AlarmFc_BuildCallObXml
+//   L188   .FaultOb_BuildObXml
+//   L214   .InstrumentFc_BuildAreaFcXml
+//   L251   .LadConverter_Convert
+//   L274   .BlockExplain_Explain
+//   L298   .Ops_RequireRootType
+//   L308   class Folder
+//   L320   .Ops_WalkFolders
+//   L361   .Ops_SplitPath
+//   L378   .Inventory_FolderMatches
+//   L400   .Ops_RequireUtf8Bom
+//   L427   .InstrumentFc_FcName
+//   L438   .Profinet_TagName
+//   L448   .Audit_Naming
+//   L465   .DbMember_AddToXml
+//   L542   .Memory_Occupied
+//   L560   .Clone_Rewrite
+//   L602   .Scaffold_Plan
+//   L648   list-interface / add-call / delete-network / set-retain
+//   L651   .Fc
+//   L670   .BlockInterface_FromXml
+//   L686   .BlockEdit_InsertCallInXml
+//   L829   .BlockEdit_StripTypePrefix
+//   L841   .BlockEdit_RemoveNetworkFromXml
+//   L853   .BlockEdit_SetRetainInXml
+//   L863   .Clone_InstancesInXml
+//   L875   .Audit_DriveShape
+//   L888   .Audit_LawChecks
+//   L917   .Ops_Squash
+//   L926   .Throws
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX

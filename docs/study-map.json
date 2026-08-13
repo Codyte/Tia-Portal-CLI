@@ -1,0 +1,308 @@
+{
+  "_comment": "Mapa de estudo do verbo `--study`. Cada domínio diz onde procurar ANTES de escrever código: termos que casam no índice do F1, termos do SDK Openness, bibliotecas oficiais da Siemens (entry ID do SIOS), restrição de hardware que muda o projeto inteiro se descoberta tarde, e o que o CLI não faz. Domínio novo = mais um objeto aqui; nada de código muda. Termo que não casa em domínio nenhum cai no caminho genérico (busca F1 + SDK crua + regras da casa).",
+
+  "domains": [
+    {
+      "name": "estrutura de programa",
+      "match": ["bloco", "fb", "fc", "ob", "db", "udt", "multi-instance", "instancia", "estrutura", "organizacao", "arquitetura", "block", "structure"],
+      "f1": ["Blocks (S7-1500)", "Organization blocks", "Data blocks", "PLC data type"],
+      "sdk": ["PlcBlockGroup", "PlcType", "InstanceDB"],
+      "libs": [],
+      "hardware": [],
+      "warn": ["Bloco nasce na pasta certa (R6) — mover depois custa export/delete/import e quebra o vínculo chamada↔iDB."],
+      "rules": ["R1", "R2", "R3", "R4", "R6", "R9"],
+      "next": ["tia tree", "tia list-interface --folder \"1. FB Bibliotecas\"", "tia audit"]
+    },
+    {
+      "name": "motion / eixos / cinemática",
+      "match": ["motion", "eixo", "eixos", "axis", "servo", "cinematica", "kinematics", "braco", "robo", "posicionamento", "came", "cam", "encoder", "pick and place", "pick-and-place"],
+      "f1": ["Motion Control", "Kinematics functions", "Motion Control OBs", "MC_Power", "MC_MoveAbsolute", "MC_MoveLinearAbsolute", "TO_PositioningAxis"],
+      "sdk": ["TechnologicalObjects Motion", "AxisEncoderHardwareConnection", "TechnologicalInstanceDB"],
+      "libs": [],
+      "hardware": [
+        "Trajetória com mais de um eixo coordenado (braço, pórtico, delta) exige S7-1500T — a CPU 1500 comum só faz eixo isolado.",
+        "Eixo real = drive + telegrama PROFIdrive (normalmente 3 ou 105 para posicionamento); telegrama 20 é só velocidade."
+      ],
+      "warn": [
+        "O Openness NÃO cria objeto tecnológico: `TechnologicalInstanceDBComposition` não tem Create. TO nasce na GUI ou vem no import do projeto. `tia list-motion` lê o que existe.",
+        "Braço com pessoa no alcance é escopo de safety, não de motion — ver o domínio safety antes de prometer qualquer coisa."
+      ],
+      "rules": ["R8", "R9"],
+      "next": ["tia list-motion", "tia list-motion --like TO_ --params", "tia list-telegrams --device X"]
+    },
+    {
+      "name": "drives / inversores",
+      "match": ["drive", "inversor", "sinamics", "g120", "g220", "s120", "v90", "telegrama", "telegram", "vfd", "partida", "soft starter"],
+      "f1": ["SINAMICS Motion Control", "Standard telegram", "PROFIdrive"],
+      "sdk": ["TelegramComposition", "InsertMainTelegram", "Telegram Addresses"],
+      "libs": ["DriveLib", "LSINAExt"],
+      "hardware": [
+        "Drive da família System (Startdrive) já nasce com MainTelegram #1: trocar exige `insert-telegram --change`, o Portal recusa apagar o Main.",
+        "G120X GSD é outra família: lá o telegrama é submódulo de catálogo, então é `plug-module`."
+      ],
+      "warn": [
+        "A constante `<drive>~PROFINET_interface~Standard_telegram_20` só nasce quando o drive é IO device daquele controlador — dois `connect-subnet` na ordem (PLC cria o IO system, drive junta).",
+        "O programa usa o HWID da constante, nunca o endereço de I/O do telegrama."
+      ],
+      "rules": ["R8"],
+      "next": ["tia list-telegrams --device X", "tia insert-telegram --device X --change", "tia connect-subnet"]
+    },
+    {
+      "name": "PROFINET / I/O",
+      "match": ["profinet", "profibus", "io", "i/o", "endereco", "address", "cartao", "modulo", "et200", "rede", "subnet", "gsd"],
+      "f1": ["PROFINET IO", "Assigning addresses", "IO system"],
+      "sdk": ["DeviceItem Addresses", "IoConnectorComposition", "Subnet"],
+      "libs": [],
+      "hardware": ["Nome de IO system é por PLC: duas CPUs na mesma subnet e o device entra no controlador errado."],
+      "warn": ["`nextFreeByte` do `list-io-map` é piso, não garantia (não lê os `unassigned`). A autoridade é o `Next free address: N` do erro do Portal."],
+      "rules": [],
+      "next": ["tia list-io-map", "tia set-io-address --start N", "tia plug-module --device X --pos P"]
+    },
+    {
+      "name": "safety",
+      "match": ["safety", "seguranca", "f-cpu", "failsafe", "fail-safe", "emergencia", "sto", "categoria", "sil", "ple", "cortina", "rele de seguranca"],
+      "f1": ["Safety Administration", "F-runtime group", "Fail-safe"],
+      "sdk": ["FailSafe"],
+      "libs": [],
+      "hardware": ["Exige CPU F (F-CPU) + módulos F. Não se acrescenta safety depois: muda CPU, muda cartão, muda fiação."],
+      "warn": [
+        "O Openness quase não expõe safety: senha de safety, F-runtime group e assinatura coletiva são GUI. Um agente deve RECUSAR por escrito, não improvisar.",
+        "Guia oficial separado: Programming Guideline Safety, SIOS 109750255."
+      ],
+      "rules": [],
+      "next": ["(nenhum verbo cobre safety — escalar para humano)"]
+    },
+    {
+      "name": "regulação / PID",
+      "match": ["pid", "malha", "controle", "regulacao", "setpoint", "pid_compact", "temperatura", "pressao", "nivel", "vazao", "dosagem"],
+      "f1": ["PID_Compact", "PID control", "Technology objects PID"],
+      "sdk": ["TechnologicalInstanceDB"],
+      "libs": ["LGF"],
+      "hardware": ["PID_Compact é objeto tecnológico: mesma limitação do motion — o Openness não cria, só lê."],
+      "warn": ["Autotuning é operação de comissionamento, não de engenharia offline."],
+      "rules": ["R9"],
+      "next": ["tia list-motion --like PID"]
+    },
+    {
+      "name": "alarmes e diagnóstico",
+      "match": ["alarme", "alarm", "diagnostico", "diagnostic", "falha", "fault", "prodiag", "ob 82", "ob82", "pull", "plug"],
+      "f1": ["Program_Alarm", "Diagnostic error interrupt", "ProDiag", "Get_Alarm"],
+      "sdk": ["PlcBlockGroup", "GetAttribute"],
+      "libs": [],
+      "hardware": [],
+      "warn": ["`gen-alarm-fc` sem `--area` regenera TODAS as áreas — criar uma área nova mexeria em todo o resto."],
+      "rules": ["R5", "R7"],
+      "next": ["tia gen-alarm-fc --area NOME", "tia gen-fault-ob", "tia audit"]
+    },
+    {
+      "name": "comunicação (Modbus, serial, TCP)",
+      "match": ["modbus", "rs485", "rs232", "serial", "tcp", "iso-on-tcp", "socket", "mb_client", "mb_server", "comunicacao", "protocolo"],
+      "f1": ["MB_CLIENT", "MB_SERVER", "Modbus RTU", "Open user communication", "TSEND_C"],
+      "sdk": ["DeviceItem", "PlcSoftware"],
+      "libs": ["LCom"],
+      "hardware": ["Modbus RTU exige CM PtP (ex.: CM 1241 / CM PtP do ET 200SP); Modbus TCP roda na interface PN da própria CPU."],
+      "warn": [],
+      "rules": [],
+      "next": ["tia list-io-map --device X", "tia plug-module --device X --type <MLFB>"]
+    },
+    {
+      "name": "OPC UA / conectividade TI",
+      "match": ["opc", "opcua", "opc ua", "mqtt", "rest", "cloud", "sql", "banco de dados", "servidor"],
+      "f1": ["OPC UA server", "OPC UA client", "Server interface"],
+      "sdk": ["OpcUa", "ServerInterfaceGroup"],
+      "libs": [],
+      "hardware": ["Servidor OPC UA da S7-1500 exige licença de runtime (SIMATIC OPC UA S7-1500, small/medium/large conforme a CPU)."],
+      "warn": [],
+      "rules": [],
+      "next": ["tia find --kind constant --pattern \"*OPC*\""]
+    },
+    {
+      "name": "HMI / supervisório",
+      "match": ["hmi", "ihm", "tela", "wincc", "unified", "comfort", "supervisorio", "scada", "faceplate"],
+      "f1": ["WinCC Unified", "Screens", "HMI tags"],
+      "sdk": ["HmiSoftware", "HmiUnified"],
+      "libs": [],
+      "hardware": [],
+      "warn": ["Openness não exporta tela do WinCC Unified — `list-hmi` só enumera."],
+      "rules": [],
+      "next": ["tia list-hmi --device X"]
+    },
+    {
+      "name": "matemática, string, conversão, escala",
+      "match": ["escala", "escalar", "scale", "normalizacao", "norm_x", "string", "conversao", "matematica", "media", "filtro", "rampa", "totalizador", "contador", "analogico", "4-20ma", "transmissor", "instrumento", "sinal"],
+      "f1": ["NORM_X", "SCALE_X", "String functions", "Math functions"],
+      "sdk": [],
+      "libs": ["LGF"],
+      "hardware": [],
+      "warn": ["Antes de escrever FB de escala/filtro/rampa: a LGF já traz o bloco testado. Reescrever é dívida sem ganho."],
+      "rules": ["R3", "R4"],
+      "next": ["tia retrieve-library --file LGF.zal19 --apply", "tia list-library --file LGF.al21"]
+    },
+    {
+      "name": "tempo, relógio e sincronismo",
+      "match": ["relogio", "clock", "hora", "ntp", "timestamp", "data", "rtc", "sincronismo", "fuso"],
+      "f1": ["RD_SYS_T", "Time of day", "NTP"],
+      "sdk": [],
+      "libs": ["LSNTP", "LGF"],
+      "hardware": ["Clock memory byte é atributo da CPU e precisa estar habilitado — o `install-lib.ps1` liga porque bloco-base depende dele."],
+      "warn": [],
+      "rules": [],
+      "next": ["tia list-attrs --device CPU --like Clock"]
+    },
+    {
+      "name": "receita, dados e arquivos",
+      "match": ["receita", "recipe", "batch", "csv", "datalog", "log", "arquivo", "cartao de memoria", "memory card"],
+      "f1": ["DataLogCreate", "Recipe", "FileReadC"],
+      "sdk": [],
+      "libs": ["LGF"],
+      "hardware": ["DataLog grava no cartão de memória da CPU — sem cartão, não existe."],
+      "warn": [],
+      "rules": [],
+      "next": []
+    },
+    {
+      "name": "energia e medição",
+      "match": ["energia", "energy", "sentron", "pac", "medidor", "consumo", "potencia", "corrente"],
+      "f1": ["Energy Suite", "SENTRON PAC"],
+      "sdk": [],
+      "libs": [],
+      "hardware": ["Energy Suite é opção licenciada do STEP 7 Professional."],
+      "warn": [],
+      "rules": [],
+      "next": []
+    },
+    {
+      "name": "posicionamento por drive (EPos)",
+      "match": ["epos", "sina_pos", "posicionar", "posicionamento por inversor", "telegrama 111", "curso", "fim de curso", "referenciamento", "homing"],
+      "f1": ["SINA_POS", "Basic positioner", "EPos", "Telegram 111"],
+      "sdk": ["TelegramComposition"],
+      "libs": ["DriveLib"],
+      "hardware": [
+        "Posicionamento pode viver no DRIVE (EPos do SINAMICS, telegrama 111 + SINA_POS) em vez de na CPU — é mais barato que objeto tecnológico e não exige 1500T.",
+        "Eixo pela CPU (TO_PositioningAxis) só compensa quando há coordenação entre eixos ou came."
+      ],
+      "warn": ["Escolher entre EPos e TO é decisão de arquitetura: trocar depois refaz programa e parametrização do drive."],
+      "rules": ["R8"],
+      "next": ["tia list-telegrams --device X", "tia retrieve-library --file DriveLib.zal19 --apply"]
+    },
+    {
+      "name": "visão / câmera / leitura de código",
+      "match": ["visao", "vision", "camera", "mv500", "mv540", "codigo de barras", "barcode", "qr", "datamatrix", "inspecao", "ocr", "leitor optico"],
+      "f1": ["SIMATIC MV500", "Ident profile", "Reading code"],
+      "sdk": [],
+      "libs": ["Ident Profile (IID_*)"],
+      "hardware": [
+        "Leitor óptico SIMATIC MV500 é IO device PROFINET: entra como qualquer device, e a leitura chega por bloco do Ident Profile — não é 'câmera fora do PLC'.",
+        "Inspeção de imagem de verdade (medida, presença, OCR complexo) é a linha SIMATIC Vision / parceiros; o PLC recebe o resultado, não processa a imagem."
+      ],
+      "warn": ["Posicionamento guiado por visão (visual servoing) não é função de PLC padrão — o PLC recebe a correção de posição de quem processa a imagem."],
+      "rules": [],
+      "next": ["tia list-devices", "tia list-io-map --device <leitor>"]
+    },
+    {
+      "name": "identificação / RFID",
+      "match": ["rfid", "ident", "tag rfid", "rf200", "rf600", "rastreabilidade", "transponder"],
+      "f1": ["Ident profile", "RF200", "RF600"],
+      "sdk": [],
+      "libs": ["Ident Profile (IID_*)"],
+      "hardware": ["Leitor RFID = IO device PROFINET ou módulo de comunicação; a lógica sai dos blocos do Ident Profile, iguais para leitor óptico e RFID."],
+      "warn": [],
+      "rules": [],
+      "next": ["tia list-devices"]
+    },
+    {
+      "name": "pesagem e dosagem por peso",
+      "match": ["pesagem", "peso", "balanca", "siwarex", "celula de carga", "dosagem gravimetrica", "batelada"],
+      "f1": ["SIWAREX", "Weighing"],
+      "sdk": [],
+      "libs": ["SIWAREX blocks"],
+      "hardware": ["Célula de carga não entra em entrada analógica comum: exige módulo SIWAREX (WP231/WP251/FTA) — decisão de hardware, não de programa."],
+      "warn": ["Pesagem para uso comercial exige aprovação metrológica (no Brasil, INMETRO) — muda o módulo e o procedimento."],
+      "rules": [],
+      "next": ["tia list-devices", "tia plug-module --device X --type <MLFB SIWAREX>"]
+    },
+    {
+      "name": "módulos tecnológicos (contagem, medição, pulso)",
+      "match": ["tm count", "tm posinput", "tm pulse", "encoder incremental", "contagem rapida", "high speed counter", "hsc", "pwm", "medicao de frequencia"],
+      "f1": ["TM Count", "TM PosInput", "TM Pulse", "High_Speed_Counter"],
+      "sdk": ["DeviceItem"],
+      "libs": [],
+      "hardware": ["Contagem rápida, leitura de encoder incremental e PWM têm módulo dedicado (TM Count / TM PosInput / TM Pulse). Fazer na CPU por interrupção é gambiarra com teto de frequência."],
+      "warn": [],
+      "rules": [],
+      "next": ["tia plug-module --device X --type <MLFB TM>"]
+    },
+    {
+      "name": "robótica",
+      "match": ["robo", "robot", "manipulador", "delta", "scara", "portico", "gantry", "integrador de robo"],
+      "f1": ["Kinematics functions", "MC_MoveLinearAbsolute", "Robot"],
+      "sdk": ["TechnologicalObjects Motion"],
+      "libs": [],
+      "hardware": [
+        "Dois caminhos: cinemática dentro da CPU (S7-1500T + TO_Kinematics: pórtico, delta, SCARA) ou robô de terceiro comandado pelo PLC (SIMATIC Robot Integrator / Robot Library, o robô mantém o próprio controlador).",
+        "Braço articulado de 5–6 eixos comercial quase sempre é o segundo caminho."
+      ],
+      "warn": ["Escolher o caminho errado no início custa o projeto inteiro: TO_Kinematics exige 1500T e eixos Siemens; robô de terceiro exige integração e não usa MC_*."],
+      "rules": [],
+      "next": ["tia list-motion", "tia list-devices"]
+    },
+    {
+      "name": "IA na borda / edge",
+      "match": ["ia", "inteligencia artificial", "machine learning", "npu", "tm npu", "edge", "industrial edge", "inferencia", "modelo"],
+      "f1": ["TM NPU", "AI"],
+      "sdk": [],
+      "libs": [],
+      "hardware": ["Existe módulo de inferência no rack (TM NPU) e a plataforma Industrial Edge fora do PLC. O PLC entrega dado e recebe resultado; não treina modelo."],
+      "warn": [],
+      "rules": [],
+      "next": []
+    },
+    {
+      "name": "redundância e disponibilidade",
+      "match": ["redundancia", "redundant", "r1500", "h-cpu", "s7-1500r", "media redundancy", "mrp", "anel"],
+      "f1": ["Redundant system", "MRP", "System redundancy"],
+      "sdk": [],
+      "libs": [],
+      "hardware": ["S7-1500R/H exige CPUs específicas e topologia em anel — decisão de arquitetura, não de programa."],
+      "warn": [],
+      "rules": [],
+      "next": []
+    }
+  ],
+
+  "_catalogComment": "Sai em TODA resposta, inclusive quando nenhum domínio casa. Serve ao princípio de engenharia: não é preciso saber fazer, é preciso saber que existe, que é possível e onde procurar. Domínio sem entrada em `domains` ainda aparece aqui.",
+  "catalog": [
+    "motion e cinemática (S7-1500T, TO_*, MC_*)",
+    "posicionamento pelo próprio drive (SINAMICS EPos, SINA_POS)",
+    "drives e telegramas PROFIdrive (SINAMICS G/S/V, Startdrive)",
+    "safety (F-CPU, F-módulos, Safety Advanced) — GUI, fora do Openness",
+    "visão e leitura de código (SIMATIC MV500, linha Vision)",
+    "identificação RFID (RF200/RF600, Ident Profile)",
+    "pesagem (SIWAREX)",
+    "módulos tecnológicos (TM Count, TM PosInput, TM Pulse, TM NPU)",
+    "robótica (TO_Kinematics na CPU ou robô de terceiro pelo Robot Integrator)",
+    "comunicação (Modbus RTU/TCP, Open User Communication, S7, LCom)",
+    "OPC UA (servidor e cliente, licença de runtime por CPU)",
+    "HMI/SCADA (WinCC Unified, Comfort, Basic)",
+    "energia (Energy Suite, SENTRON PAC)",
+    "redundância (S7-1500R/H, MRP)",
+    "IA e edge (TM NPU, Industrial Edge)",
+    "processo contínuo (PCS neo / PCS 7 — fora do STEP 7 puro)",
+    "CNC (SINUMERIK — plataforma própria, não é TIA/STEP 7)"
+  ],
+
+  "readFirst": [
+    { "file": "docs/BOAS-PRATICAS.md", "why": "R1–R9, o padrão da casa. É o aceite, junto com `tia audit` — compilar não basta." },
+    { "file": "docs/GUIA-SIEMENS.md", "why": "o que a própria Siemens manda fazer (Programming Guideline/Styleguide) e onde ele diverge do padrão da casa." },
+    { "file": "docs/PADRAO.md", "why": "a árvore de pastas e a nomenclatura em que o bloco tem que nascer." },
+    { "file": "docs/VERBS.md", "why": "assinatura dos verbos, para não inventar flag." }
+  ],
+
+  "workflow": [
+    "1. `tia tree` → plc-navi.md: o que já existe no PLC (não recriar o que está lá).",
+    "2. `tia list-interface --folder \"1. FB Bibliotecas\"`: as assinaturas dos FB da casa.",
+    "3. Biblioteca oficial antes de código autoral: `retrieve-library` + `list-library`.",
+    "4. Escrever seguindo R1–R9; chamada em LAD é `add-call`, nunca FlgNet na mão.",
+    "5. Aceite: `tia audit` (10 checks), não `compile`."
+  ]
+}

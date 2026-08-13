@@ -1,99 +1,101 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L115   class Program
-//   L117   .Main
-//   L320   .ExitCodeFor
-//   L331   .RunLadderDryRun
-//   L341   .RunExplainFile
-//   L349   .RunInterfaceFile
-//   L363   .Run
-//   L470   .ParseScript
-//   L490   .DispatchWithRetry
-//   L504   .IsBusy
-//   L510   .Dispatch
-//   L520   case "save-project"
-//   L523   case "close-project"
-//   L526   case "info"
-//   L529   case "list-devices"
-//   L532   case "list-blocks"
-//   L536   case "list-tags"
-//   L539   case "tree"
-//   L543   case "list-types"
-//   L546   case "find"
-//   L550   case "snapshot"
-//   L553   case "xref"
-//   L556   case "trace"
-//   L559   case "list-hmi"
-//   L562   case "free-memory"
-//   L568   case "export-block"
-//   L571   case "explain-block"
-//   L576   case "export-tags"
-//   L579   case "list-interface"
-//   L585   case "import-block"
-//   L592   case "import-ladder"
-//   L600   case "import-source"
-//   L605   case "create-folder"
-//   L610   case "delete-folder"
-//   L615   case "delete-block"
-//   L619   case "move-block"
-//   L624   case "delete-type"
-//   L628   case "export-type"
-//   L631   case "import-type"
-//   L635   case "scaffold"
-//   L644   case "clone"
-//   L651   case "add-call"
-//   L658   case "delete-network"
-//   L663   case "set-retain"
-//   L668   case "add-db-member"
-//   L674   case "import-tags"
-//   L681   case "create-library"
-//   L685   case "list-library"
-//   L688   case "import-master-copy"
-//   L694   case "add-master-copy"
-//   L700   case "create-instance-db"
-//   L705   case "delete-master-copy"
-//   L710   case "add-device"
-//   L715   case "delete-device"
-//   L719   case "add-tag"
-//   L725   case "delete-tag"
-//   L730   case "edit-db-member"
-//   L736   case "delete-db-member"
-//   L741   case "rename-block"
-//   L746   case "set-tag"
-//   L753   case "set-attr"
-//   L759   case "list-attrs"
-//   L763   case "plug-module"
-//   L769   case "list-telegrams"
-//   L772   case "insert-telegram"
-//   L779   case "set-address"
-//   L785   case "set-io-address"
-//   L791   case "list-io-map"
-//   L795   case "set-memory-bytes"
-//   L801   case "connect-subnet"
-//   L806   case "export-cax"
-//   L809   case "import-cax"
-//   L813   case "compile"
-//   L828   case "diff-block"
-//   L832   case "audit"
-//   L837   case "doctor"
-//   L845   case "gen-profinet"
-//   L851   case "standardize-tags"
-//   L859   case "gen-fault-ob"
-//   L867   case "replicate-fc"
-//   L878   case "gen-alarm-fc"
-//   L888   case "replicate-instruments"
-//   L901   .OptionValue
-//   L907   .ParseInt
-//   L913   .ParseByte
-//   L920   .OptionValues
-//   L929   .WriteLock
-//   L934   .Require
-//   L966   .Print
-//   L982   .Sanitize
-//   L989   .WriteOut
-//   L1008  .CountOf
-//   L1030  .ResolveSiemensAssembly
-//   L1041  .SiemensProbeDirs
+//   L117   class Program
+//   L119   .Main
+//   L329   .ExitCodeFor
+//   L340   .RunLadderDryRun
+//   L350   .RunExplainFile
+//   L358   .RunInterfaceFile
+//   L372   .Run
+//   L479   .ParseScript
+//   L499   .DispatchWithRetry
+//   L513   .IsBusy
+//   L519   .Dispatch
+//   L529   case "save-project"
+//   L532   case "close-project"
+//   L535   case "info"
+//   L538   case "list-devices"
+//   L541   case "list-blocks"
+//   L545   case "list-tags"
+//   L548   case "tree"
+//   L552   case "list-types"
+//   L555   case "find"
+//   L559   case "snapshot"
+//   L562   case "xref"
+//   L565   case "trace"
+//   L568   case "list-hmi"
+//   L571   case "list-motion"
+//   L575   case "free-memory"
+//   L581   case "export-block"
+//   L584   case "explain-block"
+//   L589   case "export-tags"
+//   L592   case "list-interface"
+//   L598   case "import-block"
+//   L605   case "import-ladder"
+//   L613   case "import-source"
+//   L618   case "create-folder"
+//   L623   case "delete-folder"
+//   L628   case "delete-block"
+//   L632   case "move-block"
+//   L637   case "delete-type"
+//   L641   case "export-type"
+//   L644   case "import-type"
+//   L648   case "scaffold"
+//   L657   case "clone"
+//   L664   case "add-call"
+//   L671   case "delete-network"
+//   L676   case "set-retain"
+//   L681   case "add-db-member"
+//   L687   case "import-tags"
+//   L694   case "retrieve-library"
+//   L699   case "create-library"
+//   L703   case "list-library"
+//   L706   case "import-master-copy"
+//   L712   case "add-master-copy"
+//   L718   case "create-instance-db"
+//   L723   case "delete-master-copy"
+//   L728   case "add-device"
+//   L733   case "delete-device"
+//   L737   case "add-tag"
+//   L743   case "delete-tag"
+//   L748   case "edit-db-member"
+//   L754   case "delete-db-member"
+//   L759   case "rename-block"
+//   L764   case "set-tag"
+//   L771   case "set-attr"
+//   L777   case "list-attrs"
+//   L781   case "plug-module"
+//   L787   case "list-telegrams"
+//   L790   case "insert-telegram"
+//   L797   case "set-address"
+//   L803   case "set-io-address"
+//   L809   case "list-io-map"
+//   L813   case "set-memory-bytes"
+//   L819   case "connect-subnet"
+//   L824   case "export-cax"
+//   L827   case "import-cax"
+//   L831   case "compile"
+//   L846   case "diff-block"
+//   L850   case "audit"
+//   L855   case "doctor"
+//   L863   case "gen-profinet"
+//   L869   case "standardize-tags"
+//   L877   case "gen-fault-ob"
+//   L885   case "replicate-fc"
+//   L896   case "gen-alarm-fc"
+//   L906   case "replicate-instruments"
+//   L919   .OptionValue
+//   L925   .ParseInt
+//   L931   .ParseByte
+//   L938   .OptionValues
+//   L947   .WriteLock
+//   L952   .Require
+//   L984   .Print
+//   L1000  .Sanitize
+//   L1007  .WriteOut
+//   L1026  .CountOf
+//   L1048  .ResolveSiemensAssembly
+//   L1059  .SiemensProbeDirs
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -159,6 +161,9 @@ namespace Tia.Cli
                         "xref --name X  (bloco, tag, tabela ou UDT → o que ele usa)",
                         "trace --equipment AG-01  (símbolos do equipamento + quem referencia; ~9s em projeto grande)",
                         "list-hmi [--device X]  (WinCC Unified: telas + tag tables)",
+                        "list-motion [--like X] [--params]  (objetos tecnológicos: eixo, came, cinemática — "
+                            + "nome, tipo (TO_PositioningAxis...) e versão; --params traz os parâmetros, "
+                            + "centenas por eixo. Read-only: o Openness não cria TO)",
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]",
                         "explain-block --name X | --file F.xml  (LAD/FBD → texto compacto; --file roda sem TIA)",
                         "list-interface [--folder A/B] [--name X] [--file F.xml] [--out DIR]  "
@@ -245,6 +250,10 @@ namespace Tia.Cli
                         "gen-alarm-fc [--config F] [--area NOME]* [--out DIR] [--apply]",
                         "replicate-instruments --config F [--out DIR] [--apply]" } },
                     { "library", new[] { "list-library --file X.al19",
+                        "retrieve-library --file X.zal19 [--dir D] [--upgrade] [--apply]" +
+                        "  (dearquiva .zal1x → .al2x; é como se consome biblioteca oficial da Siemens " +
+                        "(LGF 109479728, DriveLib 206539), que o SIOS entrega arquivada; " +
+                        "--upgrade sobe a versão da library junto)",
                         "create-library --file X.al21 [--apply]" +
                         "  (library vazia; o Portal cria <pasta>/<nome>/<nome>.al21 — caminho real volta em \"path\")",
                         "import-master-copy --file X.al19 --name M [--folder A/B] [--apply] [--force]" +
@@ -559,6 +568,10 @@ namespace Tia.Cli
                     case "list-hmi":
                         result = Core.Hmi.List(session, OptionValue(args, "--device"));
                         break;
+                    case "list-motion":
+                        result = Core.Motion.List(session, session.GetPlc(plcName),
+                            OptionValue(args, "--like"), args.Contains("--params"));
+                        break;
                     case "free-memory":
                         result = Core.Memory.FreeM(session.GetPlc(plcName),
                             int.Parse(OptionValue(args, "--bytes") ?? "1"),
@@ -677,6 +690,11 @@ namespace Tia.Cli
                                 Core.Clone.RewriteFile(Require(args, "--file"),
                                     Core.Clone.ParseReplaces(OptionValues(args, "--replace")), outDir),
                                 OptionValue(args, "--folder"), apply);
+                        break;
+                    case "retrieve-library":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Library.Retrieve(session, Require(args, "--file"),
+                                OptionValue(args, "--dir"), args.Contains("--upgrade"), apply);
                         break;
                     case "create-library":
                         using (WriteLock(session, apply, verb))

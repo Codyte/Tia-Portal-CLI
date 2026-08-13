@@ -19,6 +19,7 @@
 - `xref --name X  (bloco, tag, tabela ou UDT → o que ele usa)`
 - `trace --equipment AG-01  (símbolos do equipamento + quem referencia; ~9s em projeto grande)`
 - `list-hmi [--device X]  (WinCC Unified: telas + tag tables)`
+- `list-motion [--like X] [--params]  (objetos tecnológicos: eixo, came, cinemática — nome, tipo (TO_PositioningAxis...) e versão; --params traz os parâmetros, centenas por eixo. Read-only: o Openness não cria TO)`
 - `export-block --name X [--out DIR]`
 - `export-tags --table X [--out DIR]`
 - `explain-block --name X | --file F.xml  (LAD/FBD → texto compacto; --file roda sem TIA)`
@@ -81,6 +82,7 @@
 
 ## library
 - `list-library --file X.al19`
+- `retrieve-library --file X.zal19 [--dir D] [--upgrade] [--apply]  (dearquiva .zal1x → .al2x; é como se consome biblioteca oficial da Siemens (LGF 109479728, DriveLib 206539), que o SIOS entrega arquivada; --upgrade sobe a versão da library junto)`
 - `create-library --file X.al21 [--apply]  (library vazia; o Portal cria <pasta>/<nome>/<nome>.al21 — caminho real volta em "path")`
 - `import-master-copy --file X.al19 --name M [--folder A/B] [--apply] [--force]  (--force: apaga o de mesmo nome e recria — é como se atualiza pacote já instalado)`
 - `add-master-copy --file X.al21 (--name BLOCO | --folder A/B) [--lib-folder L] [--apply]  (PLC → library; --folder = pasta inteira = pacote; substitui se já existir)`

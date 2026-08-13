@@ -2,15 +2,11 @@
 """
 Lê a ajuda oficial do TIA Portal (o que o F1 abre) como texto, sem navegador.
 
-NAV INDEX
-   1-46   contrato/protocolo (por que não dá pra usar curl nem Invoke-WebRequest)
-  48-57   api() / _params()     — HTTP/2 + TLS sem verificação
-  59-84   topic()               — ItemId "PKG/TOC/ID.htm" -> texto limpo
-  86-116  index()               — TOC inteiro -> arquivo "ItemId|Título" por linha (grep depois)
- 118-166  _sdk_dirs/sdk_index/sdk_search — IntelliSense XML das assemblies (busca no corpo)
- 168-206  ensure() / _listening()
- 208-217  search()              — grep no índice do TOC
- 219-249  main()
+Quatro modos, do mais barato ao mais caro:
+  --study  o que ler antes de escrever código sobre um tema (mapa curado + os dois índices)
+  --sdk    assinatura de API no IntelliSense XML das assemblies — local, casa no corpo
+  --search grep no título dos tópicos do F1
+  --deep   baixa e grepa o CORPO dos tópicos mais plausíveis (cache em disco)
 
 Protocolo (descoberto em runtime, não documentado):
   - O viewer é um SPA em https://localhost:<porta>/ ; a API fica em /<api>/HelpViewer/...
@@ -26,10 +22,42 @@ O servidor é o serviço do Windows "Siemens TIA Help Viewer Service" (StartMode
 sozinho, **não** depende do F1 estar aberto. `--ensure` sobe se estiver parado.
 
 Uso:
-  python scripts/tia-help.py --search "clock memory"      # o caminho normal: sobe, indexa, busca
+  python scripts/tia-help.py --study "braço de 5 eixos"   # COMECE AQUI numa tarefa de engenharia
+  python scripts/tia-help.py --search "clock memory"      # título; sobe o serviço e indexa se preciso
+  python scripts/tia-help.py --deep "MC_Transformation"   # corpo dos tópicos plausíveis
+  python scripts/tia-help.py --sdk "insert main telegram" # assinatura da API Openness
   python scripts/tia-help.py --topic ProgKOP2MenUS/10867183243/10383119371.htm
   python scripts/tia-help.py --ensure                     # só o preflight (serviço + índice)
 """
+# ====================== BEGIN NAV INDEX ======================
+# NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+#   L74    DEFAULT_BASE
+#   L75    DEFAULT_API
+#   L76    CULTURE
+#   L79    api
+#   L85    _params
+#   L90    topic
+#   L117   index
+#   L140   índice do SDK (IntelliSense XML das assemblies Openness) ----------
+#   L149   _sdk_dirs
+#   L160   sdk_index
+#   L189   sdk_search
+#   L199   SERVICE
+#   L202   ensure
+#   L226   _listening
+#   L239   search
+#   L250   busca no corpo, sob demanda ----------
+#   L258   _cache_path
+#   L262   body
+#   L274   deep
+#   L310   study: o que ler antes de escrever código ----------
+#   L315   _repo_root
+#   L319   _fold
+#   L326   study
+#   L383   selftest
+#   L409   main
+# ======================= END NAV INDEX =======================
+
 import argparse
 import html
 import json
@@ -219,6 +247,165 @@ def search(base, name, out, term, limit):
     return hits[:limit], len(hits)
 
 
+# ---------- busca no corpo, sob demanda ----------
+#
+# O índice do TOC só tem título, então pergunta em linguagem natural dá 0 hits. Aqui: candidatos por
+# OR de palavras no título (ranqueados por quantas casaram), corpo baixado só desses e guardado em
+# disco. Custa N requisições na 1ª vez e nada nas seguintes.
+# ponytail: crawl completo dos 45 mil tópicos daria busca instantânea, mas são horas de download e
+# um cache que envelhece a cada versão do Portal. Sob demanda cobre o uso real.
+
+def _cache_path(cache_dir, item_id):
+    return os.path.join(cache_dir, re.sub(r"[^A-Za-z0-9]+", "_", item_id) + ".txt")
+
+
+def body(base, name, item_id, cache_dir):
+    """Texto do tópico, do cache se já tiver sido lido."""
+    path = _cache_path(cache_dir, item_id)
+    if os.path.exists(path):
+        return open(path, encoding="utf-8").read()
+    text = topic(base, name, item_id)
+    os.makedirs(cache_dir, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write(text)
+    return text
+
+
+def deep(base, name, out, term, limit, scan, cache_dir):
+    """Busca no corpo dos `scan` tópicos mais plausíveis. Devolve (hits, candidatos lidos)."""
+    ensure(base, name, out)
+    words = [w for w in term.split() if len(w) > 2]
+    if not words:
+        return [], 0
+    res = [re.compile(re.escape(w), re.I) for w in words]
+    # candidato sai do título, e título não tem "DisableENO" inteiro: quebrar camelCase/underscore
+    # dá "Disable" + "ENO", que aparecem. Sem isso, termo colado devolve zero candidatos.
+    parts = [p for w in words for p in re.split(r"[_\W]+|(?<=[a-z])(?=[A-Z])", w) if len(p) > 2]
+    cand = [re.compile(re.escape(p), re.I) for p in parts] or res
+    ranked = []
+    for line in open(out, encoding="utf-8"):
+        score = sum(1 for r in cand if r.search(line))
+        if score:
+            ranked.append((score, line.rstrip("\n")))
+    ranked.sort(key=lambda t: -t[0])
+    hits, read = [], 0
+    for _, line in ranked[:scan]:
+        item_id, _, title = line.partition("|")
+        try:
+            text = body(base, name, item_id, cache_dir)
+        except Exception as exc:                      # tópico que a API recusa não derruba a busca
+            hits.append({"topic": item_id, "title": title, "error": str(exc)[:120]})
+            continue
+        read += 1
+        if not all(r.search(text) for r in res):
+            continue
+        where = res[0].search(text)
+        hits.append({"topic": item_id, "title": title,
+                     "excerpt": " ".join(text[max(0, where.start() - 200):where.start() + 300].split())})
+        if len(hits) >= limit:
+            break
+    return hits, read
+
+
+# ---------- study: o que ler antes de escrever código ----------
+#
+# Roteador sobre o que já existe (índice do F1 + índice do SDK + docs do repo). O conhecimento
+# curado mora em docs/study-map.json — domínio novo é mais um objeto lá, nenhuma linha aqui muda.
+
+def _repo_root():
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def _fold(s):
+    """minúscula sem acento — a pergunta vem em português, as chaves do mapa são ASCII."""
+    import unicodedata
+    return "".join(c for c in unicodedata.normalize("NFD", s.lower())
+                   if not unicodedata.combining(c))
+
+
+def study(base, name, out, sdk_out, term, limit, map_file=None):
+    path = map_file or os.path.join(_repo_root(), "docs", "study-map.json")
+    with open(path, encoding="utf-8") as fh:
+        smap = json.load(fh)
+    low = _fold(term)
+    # palavra inteira: com `in` cru, "ob" casa dentro de "robótico" e o domínio errado ganha.
+    # E sem dobrar acento, "código de barras" não casa a chave "codigo de barras".
+    def hits_kw(kw):
+        return re.search(r"(?<![a-z0-9])" + re.escape(_fold(kw)) + r"(?![a-z0-9])", low) is not None
+    matched = [d for d in smap["domains"] if any(hits_kw(k) for k in d["match"])]
+
+    # termos de busca: os do domínio quando casou, senão o próprio termo do usuário.
+    # Intercala entre domínios — concatenar deixa o 1º domínio comer todo o orçamento de busca.
+    def interleave(key):
+        rows = [d.get(key, []) for d in matched]
+        return [r[i] for i in range(max((len(r) for r in rows), default=0)) for r in rows if i < len(r)]
+    f1_terms = interleave("f1") or [term]
+    sdk_terms = interleave("sdk") or [term]
+
+    topics, seen = [], set()
+    for t in f1_terms[:6]:
+        try:
+            hits, _ = search(base, name, out, t, 4)
+        except SystemExit:                             # serviço fora do ar não zera o resto do study
+            break
+        for h in hits:
+            item_id, _, title = h.partition("|")
+            if item_id in seen:
+                continue
+            seen.add(item_id)
+            topics.append({"topic": item_id, "title": title})
+    api = []
+    for t in sdk_terms[:4]:
+        hits, _ = sdk_search(sdk_out, t, 3)
+        api.extend(hits)
+
+    return {
+        "term": term,
+        "domains": [d["name"] for d in matched] or ["(nenhum domínio casou — caminho genérico)"],
+        "readFirst": smap["readFirst"],
+        "workflow": smap["workflow"],
+        "hardware": [h for d in matched for h in d.get("hardware", [])],
+        "warnings": [w for d in matched for w in d.get("warn", [])],
+        "rules": sorted({r for d in matched for r in d.get("rules", [])}),
+        "libraries": sorted({l for d in matched for l in d.get("libs", [])}),
+        "verbs": [v for d in matched for v in d.get("next", [])],
+        "topics": topics[:limit],
+        "api": api[:limit],
+        "catalog": smap["catalog"],
+        "note": "topics = ItemId para `--topic`; api = membros do Openness. Nada aqui é a resposta: "
+                "é onde procurar antes de escrever código."
+                + ("" if matched else " Nenhum domínio casou: o índice do F1 é em inglês e casa só "
+                   "no título — repetir com o termo técnico em inglês, ou usar `--deep` (busca no "
+                   "corpo). `catalog` diz o que existe na plataforma."),
+    }
+
+
+def selftest():
+    """Offline: só o roteamento do --study, que é onde mora a lógica que quebra calada."""
+    import json as _json
+    smap = _json.load(open(os.path.join(_repo_root(), "docs", "study-map.json"), encoding="utf-8"))
+    names = [d["name"] for d in smap["domains"]]
+    assert len(names) == len(set(names)), "domínio duplicado no study-map"
+    for d in smap["domains"]:
+        assert d["match"] and d.get("f1") is not None, d["name"]
+        assert all(k == _fold(k) for k in d["match"]), "chave com acento/maiúscula: " + d["name"]
+
+    def domains(term):
+        low = _fold(term)
+        return [d["name"] for d in smap["domains"]
+                if any(re.search(r"(?<![a-z0-9])" + re.escape(_fold(k)) + r"(?![a-z0-9])", low)
+                       for k in d["match"])]
+
+    # o bug que já aconteceu: "ob" casando dentro de "robótico"
+    assert "estrutura de programa" not in domains("braço robótico de 5 eixos")
+    assert "motion / eixos / cinemática" in domains("braço robótico de 5 eixos")
+    # acento na pergunta, chave em ASCII
+    assert "visão / câmera / leitura de código" in domains("ler código de barras")
+    # camelCase quebrado para achar candidato no título
+    assert "Transformation" in re.split(r"[_\W]+|(?<=[a-z])(?=[A-Z])", "MC_Transformation")
+    print(_json.dumps({"selftest": "ok", "domains": len(names)}))
+
+
 def main():
     p = argparse.ArgumentParser(description="Ajuda do TIA Portal (F1) como texto.")
     p.add_argument("--base", default=DEFAULT_BASE, help="default " + DEFAULT_BASE)
@@ -233,9 +420,27 @@ def main():
                                  "(assinatura + summary, casa no corpo; local, sem serviço)")
     p.add_argument("--sdk-index", action="store_true", help="(re)gera o índice do SDK")
     p.add_argument("--sdk-out", default=os.path.join("workspace", "sdk-index.txt"))
+    p.add_argument("--deep", help="busca no CORPO dos tópicos mais plausíveis (custa download na "
+                                  "1ª vez, cache depois) — é o que responde pergunta em prosa")
+    p.add_argument("--scan", type=int, default=40, help="tópicos que o --deep abre (default 40)")
+    p.add_argument("--cache", default=os.path.join("workspace", "help-cache"))
+    p.add_argument("--study", help="o que ler antes de escrever código sobre um tema: tópicos do F1, "
+                                   "API do Openness, biblioteca oficial, restrição de hardware, "
+                                   "regra da casa e o verbo seguinte")
+    p.add_argument("--study-map", help="outro docs/study-map.json")
+    p.add_argument("--selftest", action="store_true", help="checa o roteamento do --study (offline)")
     a = p.parse_args()
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # ajuda tem CJK; console é cp1252
-    if a.sdk:
+    if a.selftest:
+        selftest()
+    elif a.study:
+        print(json.dumps(study(a.base, a.api, a.out, a.sdk_out, a.study, a.limit, a.study_map),
+                         ensure_ascii=False, indent=2))
+    elif a.deep:
+        hits, read = deep(a.base, a.api, a.out, a.deep, a.limit, a.scan, a.cache)
+        print(json.dumps({"term": a.deep, "hits": len(hits), "topicsRead": read,
+                          "results": hits}, ensure_ascii=False, indent=2))
+    elif a.sdk:
         hits, total = sdk_search(a.sdk_out, a.sdk, a.limit)
         print(json.dumps({"term": a.sdk, "hits": total, "shown": len(hits)}, ensure_ascii=False))
         for h in hits:

@@ -25,7 +25,7 @@ machine spec delivered a **compiling PLC program**. Spec and pass criteria were 
 run, by someone who did not execute it: [`docs/teste-cego/`](docs/teste-cego/) — write-up in
 Portuguese: [**the ruler and the stumbles**](docs/teste-cego/artigo.md).
 
-**78 verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML, catalog modules
+**80 verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML, catalog modules
 and SINAMICS telegrams · SCL→LAD converter · 6 field-proven code generators · installable block
 library · batch mode · one attach
 
@@ -72,6 +72,30 @@ Openness is Siemens' API, under Siemens' terms. This project stays on the docume
   gitignored by policy. What is versioned is either original or sanitized.
 - **MIT**, and not affiliated with, endorsed by, or distributed by Siemens.
 
+## Study before doing
+
+An agent that starts typing SCL before knowing what the platform already offers writes worse code
+than an engineer who reads first. So the toolchain answers that question in one call:
+
+```powershell
+python scripts/tia-help.py --study "5-axis arm that sorts parts"
+```
+
+Returns, for that topic: which F1 manual pages to open (`--topic` reads them as plain text), which
+Openness API members exist, **which official Siemens library already solves it** (LGF, DriveLib),
+the hardware constraint that would sink the project if found late (a coordinated multi-axis path
+needs an S7-1500**T**), which house rules apply, and which verb comes next. When the topic matches
+no domain, it still returns the platform catalog — the point is not knowing how to do everything,
+it is knowing what exists and where to look.
+
+Behind it: 45 518 F1 help topics, 31 448 documented Openness members, and a curated map in
+[`docs/study-map.json`](docs/study-map.json) — a new domain is one more JSON object, no code change.
+`--search` matches titles, `--deep` downloads and greps the bodies of the most plausible topics
+(cached), `--sdk` matches API signatures and summaries.
+
+See [`docs/GUIA-SIEMENS.md`](docs/GUIA-SIEMENS.md) for the official Siemens guideline and libraries,
+and where this repo's own rules are deliberately stricter.
+
 ## Design contract
 
 - **Dry-run by default.** Every write verb previews its changes as JSON; nothing mutates the
@@ -93,12 +117,12 @@ Run `tia --help` for the full, always-current list.
 | Group | Verbs |
 |-------|-------|
 | 🔌 Session | `open-project` · `create-project` · `save-project` · `close-project` |
-| 🔍 Read | **`tree`** (start here: whole-PLC outline as markdown) · `info` · `list-devices` · `list-blocks` (`--folder` · `--type` · `--count`) · `list-tags` · `list-types` · `list-hmi` · `find` · `snapshot` · `xref` · `trace` (every symbol of one equipment + who references it) · `explain-block` (LAD/FBD → compact text) · `free-memory` (free holes in `%M`) · `export-block` · `export-tags` · `export-type` |
+| 🔍 Read | **`tree`** (start here: whole-PLC outline as markdown) · `info` · `list-devices` · `list-blocks` (`--folder` · `--type` · `--count`) · `list-tags` · `list-types` · `list-hmi` · `list-motion` (technology objects: axes, cams, kinematics) · `find` · `snapshot` · `xref` · `trace` (every symbol of one equipment + who references it) · `explain-block` (LAD/FBD → compact text) · `free-memory` (free holes in `%M`) · `export-block` · `export-tags` · `export-type` |
 | 🗂️ Structure | `create-folder` · `delete-folder` (`--tags`/`--types`) · `delete-block` · `delete-type` · `create-instance-db` · `move-block` (export→delete→import; Openness has no move) · `import-type` · `scaffold` (folder tree + template blocks from a manifest, idempotent) |
 | 🛠️ Hardware | `add-device` · `delete-device` · `list-attrs` / `set-attr` (any device-item attribute) · `plug-module` (catalog submodules) · `list-telegrams` / `insert-telegram` (SINAMICS drives) · `set-address` · `list-io-map` / `set-io-address` (every I/O address in the project, and the one way to move one) · `connect-subnet` · `set-memory-bytes` (clock/system byte) · `export-cax` · `import-cax` (AML) |
 | ✍️ Write | `import-block` · `import-source` · `import-ladder` (SCL subset → LAD) · `import-tags` · `add-tag` / `set-tag` / `delete-tag` · `rename-block` · `clone` · `add-db-member` / `edit-db-member` / `delete-db-member` · `compile` · `diff-block` |
 | ⚙️ Generators | `gen-profinet` · `standardize-tags` · `gen-fault-ob` · `replicate-fc` · `gen-alarm-fc` · `replicate-instruments` — plus `doctor`, a read-only preflight that checks every template/folder they need, and `audit`, project × naming law |
-| 📚 Library | `list-library` · `import-master-copy` · `add-master-copy` · `delete-master-copy` — a block library that travels as a single `.al21` and installs into a bare CPU in one command (see [`library/`](library/README.md); manifest is versioned, XML payload is not) |
+| 📚 Library | `retrieve-library` (`.zal1x` → `.al2x`, how you consume Siemens' own free libraries — LGF, DriveLib — which SIOS ships archived) · `list-library` · `import-master-copy` · `add-master-copy` · `delete-master-copy` — a block library that travels as a single `.al21` and installs into a bare CPU in one command (see [`library/`](library/README.md); manifest is versioned, XML payload is not) |
 | 👥 Multiuser | `list-server-projects` — read-only inventory of a TIA Project Server (locks, local sessions) |
 | 📦 Batch | `run --script ops.json [--summary]` — array of verb calls, one attach for all; a failing step becomes `{ok:false,error}` and the batch keeps going |
 

@@ -1,66 +1,66 @@
 # Handoff · TIA Portal Openness API · 2026-08-13
 
 ## Goal
-Executar a **rodada cega FP-06** no projeto-molde: elevatória final com cinco bombas em inversor
-SINAMICS. O caderno e os critérios já estão escritos e commitados; falta a execução e o
-`resultado-FP-06.md`.
+FP-06 executada e documentada. O que sobra é **a fila de 6 tropeços que a rodada abriu** —
+conserto de verbo em `src/Tia.Core/`, na ordem do `resultado-FP-06.md`.
 
 ## State
-- HEAD: `cb3caa6` (`docs(teste-cego): caderno e criterios da FP-06`). Working tree limpo fora de
-  `workspace/` (gitignored).
-- Live state: **TIA Portal aberto na sessão 1** com `proj/Software de ETE Insular_Inicial_V21`
-  (PLC `CPU1.0 CCO`), no estado de antes da FP-05 — a Área 24 morreu num reboot e os blocos
-  `ZZ_TESTE_*` foram apagados, com compile Success 0/0 depois. **Havia 2 processos
-  `Siemens.Automation.Portal` vivos** ao fim desta sessão (PIDs 15620 e 20852): conferir antes de
-  chamar qualquer verbo — com mais de um Portal aberto todo verbo exige `--portal <projeto|PID>`.
-  O shell do agente nasceu na sessão 1, então `tia` roda direto.
-- Done: fila da FP-05 fechada (7 itens + T2(b), 5 commits, tudo com aceite ao vivo). Caderno e
-  critérios da FP-06 escritos.
-- In progress: nada. A execução da FP-06 ainda não começou.
+- HEAD: `0a64f4d` (`docs(teste-cego): FP-06 executada`). Working tree limpo fora de `workspace/`.
+- Live state: **TIA Portal aberto na sessão 1 com 2 processos** (`Siemens.Automation.Portal`) —
+  todo verbo exige `--portal "Software de ETE Insular_Inicial_V21"`. O projeto está **salvo** e
+  agora **contém a Área 24 (Elevatória Final, EFE-01) inteira**: 6 devices novos
+  (`SINAMICS G_49..G_53`, `ET 200SP station_5`), 46 blocos, 12 tabelas de tags, ramo
+  `ELEVATÓRIA_FINAL` na `DB GLOBAL`, UDT `ElevatoriaDados`, OB `CHAMADA_INVERSORES_CCM4`.
+  Compile Success 0/0, `audit` 10/10. Diferente da FP-05, **isto não foi revertido**.
+- Done: rodada FP-06 (49 min), `entrega-FP-06.md`, `resultado-FP-06.md`, tabela do PLANO, commit.
+- In progress: nada.
 
 ## Decisions (and why)
-- **FP-06 pressiona R3, R4, R5 e R7** — as regras da `BOAS-PRATICAS.md` que **nenhum dos 10 checks
-  do `audit` pega**. A FP-05 já provou que a régua automática funciona; o que falta medir é se a
-  doutrina escrita sozinha segura a decisão sob pressão de requisito de cliente.
-- **Tema é inversor SINAMICS** porque toda rodada anterior foi partida direta: exercita
-  `insert-telegram --change`, a ordem dos dois `connect-subnet` e o nascimento da constante
-  `~Standard_telegram_NN` — cadeia que hoje só existe descrita no `CLAUDE.md`.
-- **Cinco equipamentos idênticos de propósito**: a FP-05 fechou com zero uso de
-  `replicate-fc`/`gen-alarm-fc`/`install-lib` (duas bombas em partida direta não têm molde na casa).
-  Se a rodada replicar no braço com cinco `clone`, o achado é da ferramenta.
-- **A execução tem de ser sessão nova e cega**: só `caderno-FP-06.md` + skill `tia` entram.
-  `criterios-FP-06.md` **não se lê antes nem durante** — se ler, o teste vira gabarito.
+- **As 4 armadilhas do caderno (R3/R4/R5/R7) foram recusadas com motivo escrito**, não obedecidas:
+  pinos agrupados em UDT, nomes sem prefixo de tipo, palavra de alarme em vez de `Array[1..16]`,
+  área 24 em vez de pasta `10.` de 1º nível. O registro é a seção 3 da `entrega-FP-06.md`.
+- **Acionamento-semente derivado à mão** (export do `PARTIDA_BOMBA (B-10A)` → patch de texto no XML
+  → `import-block` + 5 `create-instance-db`) porque `replicate-fc` replica **entre pastas irmãs** e
+  a área nova não tinha irmã com blocos. Depois disso o gerador fez as outras 4 bombas.
+- **Horímetro retentivo ficou dentro do `FB CASCATA DE BOMBAS`**, não no `FB_HORÍMETRO` da
+  biblioteca: aquele é `NonRetain` e é compartilhado pelos 36 acionamentos — mudar lá mudaria a
+  planta inteira.
+- **`gen-alarm-fc` rodado sem escopo** (regenerou as 19 áreas existentes como `update`): é o
+  desenho do verbo hoje. Compile 0/0 depois, nenhum dano observado — virou item T6 da fila.
+- Tentado e descartado: `--fb "FC NOME"` no `add-call` (o prefixo de tipo não entra no valor);
+  `--type` do `plug-module` sem `OrderNumber:` (devolve `canPlug:false` mudo).
 
 ## Next steps (ordered)
-1. **Executar a FP-06** lendo apenas `docs/teste-cego/caderno-FP-06.md`. Antes de tudo:
-   `pwsh scripts/prep-project.ps1 "Software de ETE Insular_Inicial_V21"` e conferir quantos Portais
-   estão abertos.
-2. Ao terminar a entrega, aí sim ler `docs/teste-cego/criterios-FP-06.md` e escrever
-   `docs/teste-cego/resultado-FP-06.md` no formato das rodadas anteriores (entregue / tropeços
-   medidos / portões / fila).
-3. Atualizar a tabela de fases do `PLANO.md` e abrir a fila de conserto que sair da rodada.
+1. **T3** — `replicate-instruments` procurar o tag `_PV_` no PLC inteiro quando não achar na pasta
+   de alarme da área (`InstrumentFc.cs`, campo `PvTag`, ~L217). É o único tropeço que gerou bloco
+   que não compila. Espelhar o fallback que `Replicate.cs` já usa para `MODO_LOCAL`/`MODO_REMOTO`.
+2. **T5** — `set-retain` compilar o alvo antes de exportar, como `add-call`/`delete-network`/
+   `add-db-member` fazem (`BlockEdit.cs`).
+3. **T2** — `add-call --fb` aceitar o prefixo `FB `/`FC ` (ou corrigir o texto do help).
+4. **T1** — `plug-module` normalizar MLFB sem `OrderNumber:`, ou devolver `reason` no `canPlug:false`.
+5. **T6** — escopo de área no `gen-alarm-fc` (`--area`/`IncludeFolders`).
+6. **T4** — mensagem "mold instrument" citar `MoldInstrumentId`.
+7. `pwsh scripts/rebuild.ps1` ao fim (muda o hash do `tia.exe` → o Portal aberto abre diálogo modal
+   de autorização; não rebuildar com verbo em voo).
 
 ## Key files
-- `docs/teste-cego/caderno-FP-06.md` — a entrada da rodada (o único que a sessão executora lê).
-- `docs/teste-cego/criterios-FP-06.md` — portões G1–G7 e inspeções I1–I5. **Só depois da execução.**
-- `docs/teste-cego/resultado-FP-05.md` — formato do relatório e os 7 tropeços que o I5 remede.
-- `docs/BOAS-PRATICAS.md` — R1–R9, a régua que as armadilhas da seção 6 do caderno pressionam.
-- `src/Tia.Core/__navi__.md` — mapa da pasta, se a fila exigir conserto de verbo.
+- `docs/teste-cego/resultado-FP-06.md` — tropeços T1–T6 com custo medido e a fila ordenada.
+- `docs/teste-cego/entrega-FP-06.md` — o que foi entregue e as 4 recusas registradas.
+- `src/Tia.Core/InstrumentFc.cs` (T3, `PvTag` ~L217 e `RewireNetwork` ~L395), `BlockEdit.cs` (T5, T2),
+  `Hardware.cs` (T1), `AlarmFc.cs` (T6).
+- `src/Tia.Core/__navi__.md` — mapa da pasta.
+- `workspace/fp06/` — todos os batches e saídas da rodada (gitignored), útil para reproduzir um caso.
 
 ## Open / blockers
-- Nada bloqueando a execução.
-- **`rebuild.ps1` invalida a autorização do Portal já aberto**: a chamada seguinte trava ~10 min e
-  morre com `EngineeringSecurityException: Security error. The operation has timed out.` Conserto:
-  `Start-ScheduledTask -TaskName TiaWhitelist` e repetir. Não rebuildar no meio da rodada.
-- Compile do PLC inteiro passa de 10 min: batch com `compile --apply` vai em background, nunca em
-  foreground com timeout de 600 s.
+- Nada bloqueando.
+- Compile do PLC inteiro leva ~5 min: sempre em background, nunca em foreground com timeout curto.
+- `set-io-address --conflictCheck` (conserto 6 da FP-05) segue **não exercitado** em projeto real.
 
 ## Skills
 - tia
 
 ## Effort
-**Médio** para o passo 1 — é engenharia de programa de PLC contra projeto grande, com decisão de
-padrão a tomar (as quatro exigências da seção 6 do caderno). **Alto** só se o telegrama do drive
-resistir: se `insert-telegram` recusar ou a constante `~Standard_telegram_NN` não nascer depois dos
-dois `connect-subnet`, é sondagem de API e aí `tia-help.py --sdk` vem antes de tentar no braço.
-Fora disso, reasoning não é o gargalo: attach, compile e import do Portal dominam o relógio.
+**Baixo** para o passo 1 — é conserto mecânico de um fallback que já existe em `Replicate.cs`, com o
+caso de falha reproduzido e conhecido. Suba para **médio** se o `PvTag` precisar de desempate quando
+mais de um tag `_PV_` casar com o mesmo instrumento. Reasoning não é o gargalo: o relógio é do
+`rebuild.ps1` e do compile do Portal.

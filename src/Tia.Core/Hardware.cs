@@ -316,6 +316,26 @@ namespace Tia.Core
             };
             if (start == null) return result;
             result["start"] = start.Value;
+            // O dry-run só ecoava o --start: o --apply era a primeira coisa que validava, e o erro do
+            // Portal ("This address is already being used") só chegava depois de escrever (FP-05, T2).
+            // Conferir contra o mapa é leitura pura — sondar de verdade exigiria escrever e reverter.
+            var target = addresses[0];
+            var conflicts = ListIoMapRows(session.AllDevices())
+                .Where(r => (int)r["startByte"] >= 0
+                    && (string)r["ioType"] == target.IoType.ToString()
+                    && (int)r["startByte"] < start.Value + (target.Length + 7) / 8
+                    && start.Value < (int)r["startByte"] + (int)r["lengthBytes"]
+                    // o próprio alvo não conflita consigo: o item do mapa é caminho, o --item é folha
+                    && !((string)r["device"] == device.Name && (itemName == null
+                        || ((string)r["item"]).IndexOf(itemName, StringComparison.OrdinalIgnoreCase) >= 0)))
+                .Select(r => (object)((string)r["device"] + " " + (string)r["item"] + " " + (string)r["range"]))
+                .ToList();
+            if (conflicts.Count > 0)
+                result["conflictsWith"] = conflicts;
+            result["conflictCheck"] = conflicts.Count > 0 ? "occupied" : "free (pelo mapa)";
+            if (conflicts.Count == 0)
+                result["conflictNote"] = "o mapa não lê todo endereço do projeto — livre aqui não "
+                    + "garante que o Portal aceite; ele responde com \"Next free address: N\".";
             if (apply)
             {
                 addresses[0].StartAddress = start.Value;
@@ -346,13 +366,7 @@ namespace Tia.Core
                 ? session.AllDevices()
                 : new List<Device> { FindDevice(session, deviceName) };
 
-            var rows = new List<Dictionary<string, object>>();
-            foreach (var device in devices)
-            {
-                foreach (DeviceItem top in device.DeviceItems)
-                    CollectMap(device.Name, top, top.Name, rows);
-                CollectTelegramMap(device, rows);
-            }
+            var rows = ListIoMapRows(devices);
 
             // StartAddress -1 = endereço existe no modelo mas não está atribuído (interface e portas
             // de um ET200SP sem cartão devolvem 4 desses). Contar não é mentira, mas entram no
@@ -390,6 +404,19 @@ namespace Tia.Core
                     + "dizendo \"Next free address: N\" — esse N é a autoridade.";
             result["map"] = rows.Cast<object>().ToList();   // por último: a nota tem que sair no head
             return result;
+        }
+
+        /// <summary>Linhas cruas do mapa (inclusive as de startByte -1), sem filtro nem ordenação.</summary>
+        private static List<Dictionary<string, object>> ListIoMapRows(IEnumerable<Device> devices)
+        {
+            var rows = new List<Dictionary<string, object>>();
+            foreach (var device in devices)
+            {
+                foreach (DeviceItem top in device.DeviceItems)
+                    CollectMap(device.Name, top, top.Name, rows);
+                CollectTelegramMap(device, rows);
+            }
+            return rows;
         }
 
         private static void CollectMap(string deviceName, DeviceItem item, string path,

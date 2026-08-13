@@ -98,6 +98,10 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     Desde 2026-08-12 o verbo declara isso: `nextFreeByteExact: false` + `nextFreeByteNote` quando há
     `unassigned` ou filtro, e com `--device` o campo se chama **`nextFreeByteInDevice`** (é o próximo
     livre daquele device, não do projeto). A autoridade é o `Next free address: N` do erro do Portal.
+  - **`set-io-address` dry-run confere o `--start` contra o mapa** (`conflictCheck: occupied` +
+    `conflictsWith`, ou `free (pelo mapa)` + a ressalva). Antes só ecoava o valor pedido e o
+    `--apply` era a primeira coisa a validar. Continua sendo conferência de leitura: `free` não é
+    garantia, é ausência de conflito no que o mapa enxerga.
   - **`audit` são 10 checks** e o R2 **exporta a DB global** para `--out` (só o export mostra o
     datatype dos membros) — não é mais 100% read-only. Check que não pode rodar devolve `skipped`
     com o motivo e **não reprova** o projeto. `--db "DB GLOBAL"` nomeia a DB quando a heurística

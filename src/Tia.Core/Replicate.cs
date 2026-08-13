@@ -1,29 +1,33 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L43    class ReplicateFcConfig
-//   L46    .BlocksFolder
-//   L48    .EquipmentTypes
-//   L50    .UdtNames
-//   L52    .SourceNumbersToReplace
-//   L53    .GlobalDb
-//   L55    .StartNumber
-//   L63    class ReplicateFc
-//   L65    .Run
-//   L209   .FoldersOfType
-//   L218   .ReplicateInto
-//   L266   .RewireXml
-//   L361   .FindPathInDbXml
-//   L395   naming
-//   L397   .ExtractId
-//   L403   .InstanceDbNames
-//   L408   .ProposedBlockName
-//   L421   .MainBlockName
-//   L428   .FolderBaseName
-//   L436   .static
-//   L454   lookups
-//   L456   .DescendantGroups
-//   L470   .FindDataBlock
-//   L483   .FindTag
+//   L47    class ReplicateFcConfig
+//   L50    .BlocksFolder
+//   L52    .EquipmentTypes
+//   L54    .UdtNames
+//   L56    .SourceNumbersToReplace
+//   L57    .GlobalDb
+//   L59    .StartNumber
+//   L65    .TemplateFolder
+//   L71    .TargetFolder
+//   L79    class ReplicateFc
+//   L81    .Run
+//   L270   .TemplateFor
+//   L282   .FindFolderByName
+//   L295   .FoldersOfType
+//   L304   .ReplicateInto
+//   L352   .RewireXml
+//   L447   .FindPathInDbXml
+//   L481   naming
+//   L483   .ExtractId
+//   L489   .InstanceDbNames
+//   L494   .ProposedBlockName
+//   L507   .MainBlockName
+//   L514   .FolderBaseName
+//   L522   .static
+//   L540   lookups
+//   L542   .DescendantGroups
+//   L556   .FindDataBlock
+//   L569   .FindTag
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -53,6 +57,18 @@ namespace Tia.Core
         public string GlobalDb { get; set; } = "DB GLOBAL";
         /// <summary>First assigned equipment number; increments per target across all groups.</summary>
         public int StartNumber { get; set; } = 300;
+        /// <summary>
+        /// Pasta-molde explícita ("Bomba Submersível (B-10A)"), em vez da primeira populada entre as
+        /// irmãs. Área nova não tem irmã com blocos: sem isso o molde-semente saía do braço — export,
+        /// patch de texto no XML, import-block e um create-instance-db por iDB (FP-06, §7, ~10 min).
+        /// </summary>
+        public string TemplateFolder { get; set; }
+        /// <summary>
+        /// Escopo dos alvos: só as pastas de equipamento sob esta pasta (ela mesma incluída) são
+        /// escritas. É o par do <see cref="TemplateFolder"/> — replicar de uma área para outra sem
+        /// alcançar as 32 pastas prontas do resto do projeto.
+        /// </summary>
+        public string TargetFolder { get; set; }
     }
 
     /// <summary>
@@ -97,6 +113,34 @@ namespace Tia.Core
             var natural = new NaturalStringComparer();
             var groups = new List<object>();
 
+            // molde explícito e escopo de alvos: sem os dois, replicar de uma área para a área nova
+            // não era expressável (o molde é "a 1ª irmã populada" e os alvos são "todas as irmãs")
+            PlcBlockUserGroup forcedTemplate = null;
+            if (!string.IsNullOrEmpty(config.TemplateFolder))
+            {
+                forcedTemplate = FindFolderByName(allSubFolders, config.TemplateFolder);
+                if (forcedTemplate == null)
+                    throw new InvalidOperationException("Template folder '" + config.TemplateFolder
+                        + "' not found under '" + config.BlocksFolder + "'. Pastas com blocos: "
+                        + string.Join(" | ", allSubFolders.Where(f => f.Blocks.Any())
+                            .Select(f => f.Name).Take(15)));
+                if (!forcedTemplate.Blocks.Any())
+                    throw new InvalidOperationException("Template folder '" + forcedTemplate.Name
+                        + "' has no blocks — o molde é a pasta de onde os blocos são exportados.");
+            }
+            bool forcedUsed = false;
+            var targetScope = allSubFolders;
+            if (!string.IsNullOrEmpty(config.TargetFolder))
+            {
+                var scopeRoot = FindFolderByName(allSubFolders, config.TargetFolder);
+                if (scopeRoot == null)
+                    throw new InvalidOperationException("Target folder '" + config.TargetFolder
+                        + "' not found under '" + config.BlocksFolder + "'. Pastas: "
+                        + string.Join(" | ", allSubFolders.Select(f => f.Name).Take(20)));
+                targetScope = DescendantGroups(scopeRoot);
+                targetScope.Insert(0, scopeRoot);   // a própria pasta pode ser o equipamento
+            }
+
             // este verbo copia o molde de cada tipo por cima de TODAS as pastas irmãs. Num projeto
             // já completo (o de referência tem 32 equipamentos prontos) isso apaga o trabalho todo,
             // e a checagem tem que vir antes da 1ª escrita — abortar no meio deixa o projeto misto.
@@ -105,8 +149,8 @@ namespace Tia.Core
                 var populated = new List<string>();
                 foreach (var equipmentType in config.EquipmentTypes)
                 {
-                    var candidates = FoldersOfType(allSubFolders, equipmentType, natural);
-                    var template = candidates.FirstOrDefault(f => f.Blocks.Any());
+                    var candidates = FoldersOfType(targetScope, equipmentType, natural);
+                    var template = TemplateFor(forcedTemplate, equipmentType, candidates);
                     if (template == null) continue;
                     populated.AddRange(candidates.Where(f => f != template && f.Blocks.Any()).Select(f => f.Name));
                 }
@@ -120,20 +164,23 @@ namespace Tia.Core
 
             foreach (var equipmentType in config.EquipmentTypes)
             {
-                var folders = FoldersOfType(allSubFolders, equipmentType, natural);
-                int noId = allSubFolders.Count(f =>
+                var folders = FoldersOfType(targetScope, equipmentType, natural);
+                int noId = targetScope.Count(f =>
                     f.Name.IndexOf(equipmentType, StringComparison.OrdinalIgnoreCase) >= 0
                     && string.IsNullOrEmpty(ExtractId(f.Name)));
                 if (noId > 0)
                     warnings.Add("Type '" + equipmentType + "': " + noId +
                         " folder(s) match the keyword but have no '(ID)' in the name. Skipped.");
-                var templateFolder = folders.FirstOrDefault(f => f.Blocks.Any());
+                var templateFolder = TemplateFor(forcedTemplate, equipmentType, folders);
                 if (templateFolder == null)
                 {
                     if (folders.Any())
-                        warnings.Add("No populated template folder for type '" + equipmentType + "'.");
+                        warnings.Add("No populated template folder for type '" + equipmentType + "'"
+                            + (forcedTemplate == null ? "." : " ('" + forcedTemplate.Name
+                                + "' não casa com a palavra-chave do tipo)."));
                     continue;
                 }
+                if (templateFolder == forcedTemplate) forcedUsed = true;
 
                 string sourceId = ExtractId(templateFolder.Name);
                 string sourceDbPath;
@@ -196,13 +243,52 @@ namespace Tia.Core
                 });
             }
 
-            return new Dictionary<string, object>
+            // molde pedido e não usado = escrita com o molde errado; melhor falhar que replicar calado
+            if (forcedTemplate != null && !forcedUsed)
+                throw new InvalidOperationException("Template folder '" + forcedTemplate.Name
+                    + "' não casa com nenhum 'EquipmentTypes' ("
+                    + string.Join(", ", config.EquipmentTypes) + ") — a palavra-chave do tipo tem que "
+                    + "aparecer no nome da pasta-molde.");
+
+            var result = new Dictionary<string, object>
             {
                 { "blocksFolder", config.BlocksFolder },
                 { "applied", apply },
                 { "groups", groups },
                 { "warnings", warnings },
             };
+            if (forcedTemplate != null) result["templateFolder"] = forcedTemplate.Name;
+            if (!string.IsNullOrEmpty(config.TargetFolder))
+            {
+                result["targetFolder"] = config.TargetFolder;
+                result["scopedFolders"] = targetScope.Count;
+            }
+            return result;
+        }
+
+        /// <summary>Molde: o explícito quando casa com a palavra-chave do tipo, senão a 1ª irmã populada.</summary>
+        private static PlcBlockUserGroup TemplateFor(PlcBlockUserGroup forced, string equipmentType,
+            List<PlcBlockUserGroup> folders)
+        {
+            if (forced != null && forced.Name.IndexOf(equipmentType, StringComparison.OrdinalIgnoreCase) >= 0)
+                return forced;
+            return folders.FirstOrDefault(f => f.Blocks.Any());
+        }
+
+        /// <summary>
+        /// Nome exato primeiro; depois "contém". Casamento múltiplo falha listando os candidatos —
+        /// escolher o primeiro escreveria em cima da pasta errada.
+        /// </summary>
+        private static PlcBlockUserGroup FindFolderByName(List<PlcBlockUserGroup> all, string name)
+        {
+            var hits = all.Where(f => f.Name.Equals(name, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (hits.Count == 0)
+                hits = all.Where(f => f.Name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            if (hits.Count > 1)
+                throw new InvalidOperationException("'" + name + "' casa com " + hits.Count
+                    + " pastas: " + string.Join(" | ", hits.Select(f => f.Name).Take(10))
+                    + ". Passe o nome completo.");
+            return hits.FirstOrDefault();
         }
 
         /// <summary>Pastas "NOME (ID)" cujo nome contém a palavra-chave do tipo, em ordem natural.</summary>
@@ -480,7 +566,7 @@ namespace Tia.Core
             return null;
         }
 
-        private static PlcTag FindTag(PlcTagTableGroup group, string idPrefix, string keyword)
+        internal static PlcTag FindTag(PlcTagTableGroup group, string idPrefix, string keyword)
         {
             foreach (PlcTagTable table in group.TagTables)
             {

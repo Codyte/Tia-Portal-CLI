@@ -117,6 +117,25 @@ Ordenada por (dor evitada ÷ tamanho do diff):
    redução de raio de ação, não por bug.
 6. **T4 — mensagem do molde do `replicate-instruments` cita `MoldInstrumentId`.** Uma string.
 
+## 6.1 Fila fechada (2026-08-13, mesma data)
+
+Os seis viraram código no mesmo dia, e cada um foi conferido **contra o projeto real**
+(`Software de ETE Insular_Inicial_V21`), não só no teste offline:
+
+| # | O que mudou | Conferido por |
+|---|---|---|
+| T3 | `replicate-instruments` procura `<ID>_*_PV_*` no PLC inteiro quando a pasta da área não tem (`ReplicateFc.FindTag`), declara **`pvTag`** por instrumento no dry-run e avisa quando o molde usa PV e o alvo não tem tag | dry-run da área 24 saiu `in-sync` com o FC que a FP-06 consertou à mão, e os símbolos gerados são `LIT-51_PV_MEDIDOR_DE_NIVEL_POCO_ELEVATORIA_FINAL` (o nome real), não a substituição de nome |
+| T5 | `BlockEdit.Patch` compila o alvo antes de exportar quando `!IsConsistent` — vale para `set-retain`, `add-call` e `delete-network` de uma vez | `clone --apply` + `set-retain --apply` no **mesmo batch**: `was: Retain → now: NonRetain`, era `Inconsistent blocks ... cannot be exported` |
+| T2 | `add-call --fb` aceita o prefixo `FB `/`FC ` (`BlockEdit.StripTypePrefix`, com teste offline) | `--fb "FC PARTIDA_BOMBA (BEF-01)"` resolveu (`fb: PARTIDA_BOMBA (BEF-01)`, `networksBefore: 6 → 7`) |
+| T1 | `plug-module` normaliza MLFB sem `OrderNumber:`, cruza prefixo × versão no `plugAs` e devolve `reason` no `canPlug: false` (o `name` do módulo continua o MLFB pedido) | `6ES7 131-6BH00-0BA0/V1.1` no slot 6 do `Rack_0`: `canPlug: true`; sem versão: `plugAs: OrderNumber:6ES7 131-6BH00-0BA0/V1.0` |
+| T6 | `gen-alarm-fc --area NOME` (repetível; `IncludeFolders` no config). Escopo que não casa falha listando as pastas | 1 área gerada em vez de 20, e o `CHAMADA_ALARMES` continuou com as 20 chamadas |
+| T4 | a mensagem do molde cita `MoldInstrumentId` com exemplo | — |
+
+Fora da fila, o item da seção 7 (**acionamento-semente**) virou verbo: `replicate-fc` ganhou
+`--template` (molde de qualquer pasta, não só a 1ª irmã populada) e `--target-folder` (escopo dos
+alvos). Dry-run no projeto real: molde `Bomba Submersível (B-10A)` (área 20) replicando sobre as 5
+pastas de `4.4.1 Elevatória Final (EFE-01)` numa chamada — os ~10 min de derivação manual da FP-06.
+
 ## 7. Leitura da rodada
 
 A rodada anterior mediu se a régua automática funciona; esta mediu se a doutrina escrita segura a

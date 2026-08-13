@@ -1,30 +1,31 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L58    class BlockEdit
-//   L76    delete-network
-//   L82    .DeleteNetwork
-//   L96    add-call
-//   L108   .AddCall
-//   L173   set-retain
-//   L181   .SetRetain
-//   L203   coreografia
-//   L209   .Patch
-//   L235   núcleo puro (sem Openness: testável offline)
-//   L237   class CallSpec
-//   L249   .CountNetworks
-//   L255   .RemoveNetworkFromXml
-//   L275   .InsertCallInXml
-//   L361   .SetRetainInXml
-//   L369   .RetainOf
-//   L375   .FindMember
-//   L393   helpers de FlgNet
-//   L395   .ParseParams
-//   L408   .Access
-//   L438   .Wire
-//   L447   .Text
-//   L462   .NextId
-//   L475   .Escape
-//   L481   .Safe
+//   L60    class BlockEdit
+//   L78    delete-network
+//   L84    .DeleteNetwork
+//   L100   add-call
+//   L113   .AddCall
+//   L199   set-retain
+//   L207   .SetRetain
+//   L229   coreografia
+//   L235   .Patch
+//   L268   núcleo puro (sem Openness: testável offline)
+//   L270   class CallSpec
+//   L283   .StripTypePrefix
+//   L288   .CountNetworks
+//   L294   .RemoveNetworkFromXml
+//   L314   .InsertCallInXml
+//   L399   .SetRetainInXml
+//   L407   .RetainOf
+//   L413   .FindMember
+//   L431   helpers de FlgNet
+//   L433   .ParseParams
+//   L446   .Access
+//   L476   .Wire
+//   L485   .Text
+//   L500   .NextId
+//   L513   .Escape
+//   L519   .Safe
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX
@@ -44,6 +45,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Siemens.Engineering;
+using Siemens.Engineering.Compiler;
 using Siemens.Engineering.SW;
 using Siemens.Engineering.SW.Blocks;
 
@@ -115,10 +117,17 @@ namespace Tia.Core
             var called = Ops.FindBlock(plc, fbName);
             if (!(called is FB) && !(called is FC))
             {
-                var near = Ops.FbsLike(plc, fbName);
-                if (near.Count != 1)
-                    throw new InvalidOperationException("FB/FC '" + fbName + "' not found.");
-                called = near[0];
+                // o help escreve `--fb "FB Y|FC Y"` e isso se lê como "passe o tipo junto" (FP-06, T2):
+                // aceitar o prefixo em vez de perder o batch inteiro
+                var bare = StripTypePrefix(fbName);
+                if (bare != fbName) called = Ops.FindBlock(plc, bare);
+                if (!(called is FB) && !(called is FC))
+                {
+                    var near = Ops.FbsLike(plc, bare);
+                    if (near.Count != 1)
+                        throw new InvalidOperationException("FB/FC '" + fbName + "' not found.");
+                    called = near[0];
+                }
             }
             bool isFb = called is FB;
             if (isFb && string.IsNullOrEmpty(instance))
@@ -236,6 +245,13 @@ namespace Tia.Core
             Directory.CreateDirectory(outDir);
             var file = Path.GetFullPath(Path.Combine(outDir, prefix + Safe(label) + ".xml"));
             if (File.Exists(file)) File.Delete(file);
+            // bloco recém-importado por outro verbo chega inconsistente e o Openness recusa exportar
+            // ("Inconsistent blocks ... cannot be exported") — mesmo pré-compile do DbMember.ExportFresh
+            if (!block.IsConsistent)
+            {
+                var pre = block.GetService<ICompilable>();
+                if (pre != null) pre.Compile();
+            }
             block.Export(new FileInfo(file), ExportOptions.WithDefaults);
 
             var doc = XDocument.Load(file);
@@ -261,6 +277,12 @@ namespace Tia.Core
             public string Comment;
             public List<Param> Params;
             public Dictionary<string, string> Values;
+        }
+
+        /// <summary>"FC PARTIDA_BOMBA (BEF-01)" -> "PARTIDA_BOMBA (BEF-01)" (o help sugere o prefixo).</summary>
+        internal static string StripTypePrefix(string name)
+        {
+            return name == null ? null : Regex.Replace(name, @"^F[BC]\s+", "");
         }
 
         internal static int CountNetworks(XDocument doc)

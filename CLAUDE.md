@@ -121,7 +121,9 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
   - **Chamada em LAD (R8) = `add-call`, nunca FlgNet na mão.** A ordem que funciona:
     `list-interface --folder "1. FB Bibliotecas"` (todas as assinaturas numa chamada; é o que se lê
     antes de escrever a chamada) → `clone` do molde → `delete-network --index N` para as redes que
-    não servem → `add-call --block X --fb "FB Y|FC Y" [--inst iDB] --param P=<tag|DB.caminho.membro|const>`
+    não servem → `add-call --block X --fb NOME [--inst iDB] --param P=<tag|DB.caminho.membro|const>`
+    (o `--fb` aceita o nome com ou sem o prefixo `FB `/`FC ` desde 2026-08-13 — o help antigo sugeria
+    o prefixo e ele derrubava os 5 steps do batch, FP-06 T2)
     (rede LAD com EN no powerrail; pino de entrada sem valor é erro). `--inst` é **exigido para FB e
     recusado para FC** — o `CHAMADA_*` do padrão é sequência de chamadas de FC. **FB sem pino
     nenhum é chamável** (só o `<Instance>` no `Call`) desde 2026-08-12: era erro
@@ -136,6 +138,22 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     `add-call`, `delete-network` e `clone` devolvem **`networksBefore`/`networksAfter`** (o `clone`,
     `networks`): planejar `--index` de cabeça foi como a FP-05 apagou a rede errada — molde com rede
     vazia chega ao clone **sem rede nenhuma**, porque rede vazia não sobrevive ao export.
+  - **Área nova = `replicate-fc --template "<pasta molde>" --target-folder "<pasta da área>"`.**
+    Sem os dois, o molde é "a 1ª pasta irmã populada" e os alvos são "todas as irmãs": área nova não
+    tem irmã com blocos, e derivar o acionamento-semente à mão (export + patch de texto no XML +
+    `import-block` + um `create-instance-db` por iDB) custou ~10 min dos 49 da FP-06. Com molde de
+    outra área e escopo, as 5 bombas saem numa chamada. O `--template` tem que conter a palavra-chave
+    de `EquipmentTypes` (senão o verbo falha em vez de replicar com o molde errado), e nome de pasta
+    ambíguo falha listando os candidatos. Os dois campos também valem no config
+    (`TemplateFolder`/`TargetFolder`).
+  - **`gen-alarm-fc --area NOME` (repetível) limita a geração à área.** Sem escopo, criar 1 área
+    regenerava as 19 existentes (FP-06, T6). O OB `CHAMADA_ALARMES` continua saindo com **todas** as
+    FCs que existem sob a pasta-raiz, não só a do escopo. `--area` que não casa com nada falha
+    listando as pastas de `2. Alarmes`.
+  - **`replicate-instruments` acha o `_PV_` no PLC inteiro** quando a tag não está na pasta de alarme
+    da área (o projeto real guarda os PV em `1. I/OS/QA-0N`) — antes o FC saía apontando para tag
+    inexistente e só o compile pegava (FP-06, T3). O dry-run agora declara **`pvTag`** por
+    instrumento (`(nenhuma)` quando não achou) e avisa quando o molde usa PV e o alvo não tem tag.
   - **`add-db-member --path` cria o ramo que faltar**, como Struct, já com o membro-folha dentro
     (`--path AREA.ALARMES --name ALM_X --type Bool` num import só; `structsCreated` lista o que
     nasceu). É o que destrava reproduzir a hierarquia de área do molde. `--type Struct` continua
@@ -182,6 +200,11 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     só nasce quando o drive é IO device daquele controlador — dois `connect-subnet` na ordem, PLC
     (`--io-system NOME`, cria) e depois o drive (junta). Nome de IO system por PLC, senão o drive
     entra no controlador errado quando duas CPUs dividem a subnet.
+  - **`plug-module --type` aceita o MLFB sem o prefixo `OrderNumber:`** (normaliza e responde com o
+    valor que passou) e, quando o `canPlug` é `false`, devolve **`reason`** — antes o MLFB puro
+    devolvia o mesmo `false` mudo de "este slot não aceita este módulo" (FP-06, T1). Sem versão,
+    `plugAs` sai já com o prefixo (`OrderNumber:6ES7 131-6BH00-0BA0/V1.0`). Slot é do rack:
+    `--item Rack_0`, e a posição é **`--pos`**.
   - `tia doctor` = preflight dos 6 verbos antes de qualquer smoke.
 - Smoke test exige TIA Portal aberto com projeto de teste — confirmar com o usuário antes.
 

@@ -75,8 +75,8 @@
 - `gen-profinet --config F [--apply]`
 - `standardize-tags [--config F] [--apply]`
 - `gen-fault-ob [--config F] [--out DIR] [--apply]`
-- `replicate-fc --config F [--out DIR] [--apply] [--force]  (--force: sobrescreve pasta já populada)`
-- `gen-alarm-fc [--config F] [--out DIR] [--apply]`
+- `replicate-fc --config F [--template PASTA] [--target-folder PASTA] [--out DIR] [--apply] [--force]  (--template: molde de outra área; --target-folder: só escreve sob ela; --force: sobrescreve pasta populada)`
+- `gen-alarm-fc [--config F] [--area NOME]* [--out DIR] [--apply]`
 - `replicate-instruments --config F [--out DIR] [--apply]`
 
 ## library

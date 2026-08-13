@@ -1,43 +1,44 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L56    class Hardware
-//   L62    .FindDevice
-//   L74    .HasItemNamed
-//   L84    .Interface
-//   L92    add-device
-//   L95    .AddDevice
-//   L120   delete-device
-//   L122   .DeleteDevice
-//   L135   plug-module
-//   L143   .PlugModule
-//   L212   .CollectSlots
-//   L224   .FindItem
-//   L237   .FindItem
-//   L248   set-address
-//   L250   .SetAddress
-//   L279   set-io-address
-//   L287   .SetIoAddress
-//   L327   .CollectAddresses
-//   L333   list-io-map
-//   L343   .ListIoMap
-//   L384   .CollectMap
-//   L412   .CollectTelegramMap
-//   L439   .Range
-//   L445   list-attrs
-//   L452   .ListAttrs
-//   L477   set-attr
-//   L485   .SetAttr
-//   L518   .Coerce
-//   L526   .TryGet
-//   L532   set-memory-bytes
-//   L541   .SetMemoryBytes
-//   L586   .IsMemoryAttribute
-//   L594   .FindMemoryItem
-//   L609   connect-subnet
-//   L615   .ConnectSubnet
-//   L729   CAx (AML)
-//   L731   .CaxExport
-//   L744   .CaxImport
+//   L57    class Hardware
+//   L63    .FindDevice
+//   L75    .HasItemNamed
+//   L85    .Interface
+//   L93    add-device
+//   L96    .AddDevice
+//   L121   delete-device
+//   L123   .DeleteDevice
+//   L136   plug-module
+//   L144   .PlugModule
+//   L230   .CollectSlots
+//   L242   .FindItem
+//   L255   .FindItem
+//   L266   set-address
+//   L268   .SetAddress
+//   L297   set-io-address
+//   L305   .SetIoAddress
+//   L365   .CollectAddresses
+//   L371   list-io-map
+//   L381   .ListIoMap
+//   L428   .ListIoMapRows
+//   L440   .CollectMap
+//   L468   .CollectTelegramMap
+//   L495   .Range
+//   L501   list-attrs
+//   L508   .ListAttrs
+//   L533   set-attr
+//   L541   .SetAttr
+//   L574   .Coerce
+//   L582   .TryGet
+//   L588   set-memory-bytes
+//   L597   .SetMemoryBytes
+//   L642   .IsMemoryAttribute
+//   L650   .FindMemoryItem
+//   L665   connect-subnet
+//   L671   .ConnectSubnet
+//   L789   CAx (AML)
+//   L791   .CaxExport
+//   L804   .CaxImport
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -175,19 +176,36 @@ namespace Tia.Core
                         { { "position", l.PositionNumber }, { "label", l.Label } }).ToList();
                 return result;
             }
+            // nome do módulo sai do MLFB pedido, não do normalizado: senão o item plugado nasceria
+            // chamado "OrderNumber:6ES7 …"
+            var plugName = name ?? typeId;
+            // MLFB puro (sem o prefixo `OrderNumber:`) devolvia `canPlug: false` mudo — o mesmo valor
+            // de "este slot não aceita este módulo" (FP-06, T1)
+            if (typeId.IndexOf(':') < 0 && !target.CanPlugNew(typeId, plugName, pos))
+            {
+                var prefixed = "OrderNumber:" + typeId;
+                if (target.CanPlugNew(prefixed, plugName, pos)) typeId = prefixed;
+            }
             result["typeIdentifier"] = typeId;
-            result["name"] = name ?? typeId;
+            result["name"] = plugName;
             result["position"] = pos;
-            result["canPlug"] = target.CanPlugNew(typeId, name ?? typeId, pos);
+            result["canPlug"] = target.CanPlugNew(typeId, plugName, pos);
+            if (!(bool)result["canPlug"])
+                result["reason"] = "CanPlugNew disse não — pode ser o slot (ocupado/incompatível) ou o "
+                    + "typeIdentifier (forma esperada: \"OrderNumber:6ES7 131-6BH00-0BA0/V1.1\", com "
+                    + "versão). O Openness não expõe catálogo: copie o typeIdentifier de um item igual "
+                    + "já plugado (tia list-devices).";
             // MLFB sem sufixo de versão é recusado, e não há regra: o mesmo ET200SP quer /V0.0 no DI,
             // /V2.0 no AI e /V1.0 no módulo servidor. O Openness não expõe o catálogo do slot
             // (`CanPlugNew` é a única pergunta que ele responde), então sondar aqui é o que resta —
             // 11 tentativas locais contra a bateria manual da FP-04, T9.
             if (!(bool)result["canPlug"] && typeId.IndexOf("/V", StringComparison.OrdinalIgnoreCase) < 0)
             {
-                var hit = FirmwareVersions
-                    .Select(v => typeId + "/V" + v)
-                    .FirstOrDefault(candidate => target.CanPlugNew(candidate, name ?? typeId, pos));
+                var bases = typeId.IndexOf(':') < 0
+                    ? new[] { typeId, "OrderNumber:" + typeId }
+                    : new[] { typeId };
+                var hit = bases.SelectMany(b => FirmwareVersions.Select(v => b + "/V" + v))
+                    .FirstOrDefault(candidate => target.CanPlugNew(candidate, plugName, pos));
                 if (hit != null) result["plugAs"] = hit;   // repassar em --type; --apply não adivinha
             }
             if (apply)
@@ -204,7 +222,7 @@ namespace Tia.Core
                               + "então o typeIdentifier tem que vir de um item igual já plugado "
                               + "(tia list-devices num projeto que tenha o módulo) e costuma exigir a versão "
                               + "no fim (ex.: \"6ES7 155-6AU01-0BN0/V4.2\")."));
-                result["plugged"] = target.PlugNew(typeId, name ?? typeId, pos).Name;
+                result["plugged"] = target.PlugNew(typeId, plugName, pos).Name;
             }
             return result;
         }

@@ -240,8 +240,8 @@ namespace Tia.Cli
                         "gen-profinet --config F [--apply]",
                         "standardize-tags [--config F] [--apply]",
                         "gen-fault-ob [--config F] [--out DIR] [--apply]",
-                        "replicate-fc --config F [--out DIR] [--apply] [--force]  (--force: sobrescreve pasta já populada)",
-                        "gen-alarm-fc [--config F] [--out DIR] [--apply]",
+                        "replicate-fc --config F [--template PASTA] [--target-folder PASTA] [--out DIR] [--apply] [--force]  (--template: molde de outra área; --target-folder: só escreve sob ela; --force: sobrescreve pasta populada)",
+                        "gen-alarm-fc [--config F] [--area NOME]* [--out DIR] [--apply]",
                         "replicate-instruments --config F [--out DIR] [--apply]" } },
                     { "library", new[] { "list-library --file X.al19",
                         "create-library --file X.al21 [--apply]" +
@@ -849,6 +849,10 @@ namespace Tia.Cli
                     case "replicate-fc":
                         var repConfig = JsonConvert.DeserializeObject<Core.ReplicateFcConfig>(
                             File.ReadAllText(Require(args, "--config")));
+                        // molde de outra área + escopo: é o que dispensa derivar o acionamento-semente
+                        // no braço quando a área nova não tem irmã populada (FP-06, §7)
+                        repConfig.TemplateFolder = OptionValue(args, "--template") ?? repConfig.TemplateFolder;
+                        repConfig.TargetFolder = OptionValue(args, "--target-folder") ?? repConfig.TargetFolder;
                         using (WriteLock(session, apply, verb))
                             result = Core.ReplicateFc.Run(session.GetPlc(plcName), repConfig, outDir, apply,
                                 args.Contains("--force"));
@@ -858,6 +862,8 @@ namespace Tia.Cli
                         var almConfig = almPath != null
                             ? JsonConvert.DeserializeObject<Core.AlarmFcConfig>(File.ReadAllText(almPath))
                             : new Core.AlarmFcConfig();
+                        // escopo: sem --area, gerar 1 área regenerava as 19 existentes (FP-06, T6)
+                        almConfig.IncludeFolders.AddRange(OptionValues(args, "--area"));
                         using (WriteLock(session, apply, verb))
                             result = Core.AlarmFc.Generate(session, session.GetPlc(plcName), almConfig, outDir, apply);
                         break;

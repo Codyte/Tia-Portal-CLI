@@ -505,11 +505,16 @@ O que a rodada mediu:
   `connect-subnet` com `existingSubnets`, `networksBefore/After`). `set-io-address --conflictCheck`
   não foi exercitado; `add-call --fb` com prefixo de tipo doeu (T2 da fila nova).
 
-Fila aberta pela rodada (detalhe e ordem no resultado): **T3** `replicate-instruments` achar o tag
-`_PV_` no PLC inteiro (único tropeço que gerou bloco que não compila) · **T5** `set-retain` compilar
-o alvo antes de exportar · **T2** `add-call --fb` aceitar o prefixo `FB `/`FC ` · **T1**
-`plug-module` normalizar o MLFB (hoje exige `OrderNumber:` e cala) · **T6** escopo de área no
-`gen-alarm-fc` · **T4** mensagem do molde citar `MoldInstrumentId`.
+**Fila fechada no mesmo dia (2026-08-13)**, cada item conferido contra o projeto real — tabela em
+[`resultado-FP-06.md` §6.1](teste-cego/resultado-FP-06.md): **T3** `replicate-instruments` acha o
+`_PV_` no PLC inteiro e declara `pvTag` · **T5** `BlockEdit.Patch` compila o alvo antes de exportar
+(`set-retain`/`add-call`/`delete-network` de uma vez) · **T2** `add-call --fb` aceita o prefixo
+`FB `/`FC ` · **T1** `plug-module` normaliza o MLFB e explica o `canPlug: false` · **T6**
+`gen-alarm-fc --area` · **T4** a mensagem do molde cita `MoldInstrumentId`.
+
+Fora da fila, o **acionamento-semente** (seção 7 do resultado, ~10 min da rodada) virou verbo:
+`replicate-fc --template <pasta molde> --target-folder <pasta da área>` replica de qualquer área
+para a área nova, com escopo — antes o molde era "a 1ª irmã populada" e os alvos, "todas as irmãs".
 
 ## Histórico fechado
 

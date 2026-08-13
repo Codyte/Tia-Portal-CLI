@@ -14,26 +14,26 @@
 //   L103   class Instrument
 //   L116   class AreaTask
 //   L124   .Run
-//   L323   generation
-//   L325   .BuildAreaFcXml
-//   L353   .RewireNetwork
-//   L407   .ImportAreaFc
-//   L447   call OB
-//   L449   .UpdateCallOb
-//   L513   .CallNetworkXml
-//   L544   .EmptyObXml
-//   L574   checks + helpers
-//   L577   .IsTaskComplete
-//   L591   .BlocksIdentical
-//   L596   .ReassignUids
-//   L612   .FindPathInDbXml
-//   L636   .CollectTags
-//   L644   .FindOb
-//   L658   .ExtractId
-//   L671   .GetBaseName
-//   L679   .FcName
-//   L686   .TargetFolderName
-//   L695   .WriteCommandCsv
+//   L341   generation
+//   L343   .BuildAreaFcXml
+//   L371   .RewireNetwork
+//   L425   .ImportAreaFc
+//   L465   call OB
+//   L467   .UpdateCallOb
+//   L531   .CallNetworkXml
+//   L562   .EmptyObXml
+//   L592   checks + helpers
+//   L595   .IsTaskComplete
+//   L609   .BlocksIdentical
+//   L614   .ReassignUids
+//   L630   .FindPathInDbXml
+//   L654   .CollectTags
+//   L662   .FindOb
+//   L676   .ExtractId
+//   L689   .GetBaseName
+//   L697   .FcName
+//   L704   .TargetFolderName
+//   L713   .WriteCommandCsv
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -214,8 +214,13 @@ namespace Tia.Core
                     {
                         Id = group.Key,
                         GlobalDbPath = path,
+                        // o _PV_ costuma morar em outra pasta (1. I/OS/QA-0N), não na pasta de
+                        // alarme da área — sem o fallback o FC sai apontando para tag inexistente
                         PvTag = group.Select(x => x.Tag.Name)
-                            .FirstOrDefault(n => n.IndexOf("_PV_", StringComparison.OrdinalIgnoreCase) >= 0),
+                                .FirstOrDefault(n => n.IndexOf("_PV_", StringComparison.OrdinalIgnoreCase) >= 0)
+                            // prefixo com o separador: sem ele o id "LIT-5" casaria "LIT-51_PV_..."
+                            ?? ReplicateFc.FindTag((PlcTagTableGroup)plc.TagTableGroup,
+                                    group.Key + "_", "_PV_")?.Name,
                         TagCount = group.Count(),
                         CmdAfericao = cmdA,
                         CmdLimites = cmdL,
@@ -245,7 +250,18 @@ namespace Tia.Core
             if (source == null)
                 throw new InvalidOperationException(
                     "Could not identify the template's mold instrument — the template FC must reference " +
-                    "at least one instrument that exists in the source tag folders and the global DB.");
+                    "at least one instrument that exists in the source tag folders and the global DB. " +
+                    "Se a área do molde está em 'IgnoreFolders', nomeie o instrumento no campo " +
+                    "'MoldInstrumentId' do config (ex.: \"MoldInstrumentId\": \"FQIT-01\").");
+
+            // PV sem tag: o rewire cai na substituição de nome e escreve referência que não existe —
+            // foi o que gerou 3 erros de compile na FP-06 (T3). Melhor barulho no dry-run.
+            if (componentNames.Any(n => n.IndexOf("_PV_", StringComparison.OrdinalIgnoreCase) >= 0))
+                foreach (var instrument in tasks.SelectMany(t => t.Instruments)
+                             .Where(i => string.IsNullOrEmpty(i.PvTag)))
+                    warnings.Add("Instrumento '" + instrument.Id + "': nenhuma tag '" + instrument.Id
+                        + "_*_PV_*' no PLC — a referência de PV sai por substituição de nome e "
+                        + "provavelmente não compila.");
 
             // instance DB names each instrument will need
             var fbCalls = templateXml.Descendants(FlgNs + "CallInfo")
@@ -292,6 +308,8 @@ namespace Tia.Core
                             { "id", i.Id },
                             { "tags", i.TagCount },
                             { "dbPath", i.GlobalDbPath },
+                            // qual tag virou o PV: é o que o dry-run não dizia e só o compile pegava
+                            { "pvTag", string.IsNullOrEmpty(i.PvTag) ? "(nenhuma)" : i.PvTag },
                             { "cmdAfericao", i.CmdAfericao },
                             { "cmdLimites", i.CmdLimites },
                             { "instanceDbs", i.InstanceDbs },

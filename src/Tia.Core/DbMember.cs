@@ -2,21 +2,21 @@
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L48    class DbMember
 //   L57    .Add
-//   L103   .Change
-//   L149   .Remove
-//   L179   coreografia comum: export → patch → Import Override → prova
-//   L187   .ExportFresh
-//   L199   .MemberOf
-//   L211   .RemoveFromXml
-//   L224   struct Delta
-//   L232   .ChangeInXml
-//   L270   struct Edit
-//   L281   .AddToXml
-//   L311   .ResolveSection
-//   L338   .NameOf
-//   L344   .Datatype
-//   L352   .Safe
-//   L357   .Report
+//   L106   .Change
+//   L152   .Remove
+//   L182   coreografia comum: export → patch → Import Override → prova
+//   L190   .ExportFresh
+//   L202   .MemberOf
+//   L214   .RemoveFromXml
+//   L227   struct Delta
+//   L235   .ChangeInXml
+//   L273   struct Edit
+//   L286   .AddToXml
+//   L325   .ResolveSection
+//   L360   .NameOf
+//   L366   .Datatype
+//   L374   .Safe
+//   L379   .Report
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX

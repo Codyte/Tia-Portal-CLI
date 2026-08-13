@@ -1,42 +1,43 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L58    class AlarmFcConfig
-//   L60    .TargetRootFolder
-//   L61    .TemplateFc
-//   L62    .TemplateFolder
-//   L63    .ObTemplate
-//   L64    .GlobalDb
-//   L65    .AlarmTagsFolder
-//   L66    .StartTagsFolder
-//   L67    .MasterFb
-//   L68    .CallObName
-//   L69    .CallObNumber
-//   L70    .IgnoreFolders
-//   L72    .Structs
-//   L83    class AlarmFc
-//   L93    class TagRef
-//   L99    .Generate
-//   L317   FC XML
-//   L319   .BuildFcXml
-//   L356   .RewireWordNetwork
-//   L465   call OB
-//   L467   .BuildCallObXml
-//   L517   global DB comments
-//   L519   .WriteDbComments
-//   L549   .FindParentStruct
-//   L579   .TopStructNames
-//   L589   .TopStructName
-//   L602   misc helpers
-//   L604   .ExportTo
-//   L612   .BlocksIdentical
-//   L617   .ReassignUids
-//   L632   .CollectTags
-//   L646   .CollectFcs
-//   L656   .WriteCsv
-//   L678   .Describe
-//   L702   .GetBaseName
-//   L710   .CleanName
-//   L722   .TargetSubFolderName
+//   L59    class AlarmFcConfig
+//   L61    .TargetRootFolder
+//   L62    .TemplateFc
+//   L63    .TemplateFolder
+//   L64    .ObTemplate
+//   L65    .GlobalDb
+//   L66    .AlarmTagsFolder
+//   L67    .StartTagsFolder
+//   L68    .MasterFb
+//   L69    .CallObName
+//   L70    .CallObNumber
+//   L71    .IgnoreFolders
+//   L78    .IncludeFolders
+//   L80    .Structs
+//   L91    class AlarmFc
+//   L101   class TagRef
+//   L107   .Generate
+//   L340   FC XML
+//   L342   .BuildFcXml
+//   L379   .RewireWordNetwork
+//   L488   call OB
+//   L490   .BuildCallObXml
+//   L540   global DB comments
+//   L542   .WriteDbComments
+//   L572   .FindParentStruct
+//   L602   .TopStructNames
+//   L612   .TopStructName
+//   L625   misc helpers
+//   L627   .ExportTo
+//   L635   .BlocksIdentical
+//   L640   .ReassignUids
+//   L655   .CollectTags
+//   L669   .CollectFcs
+//   L679   .WriteCsv
+//   L701   .Describe
+//   L725   .GetBaseName
+//   L733   .CleanName
+//   L745   .TargetSubFolderName
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -68,6 +69,13 @@ namespace Tia.Core
         public string CallObName { get; set; } = "CHAMADA_ALARMES";
         public int CallObNumber { get; set; } = 1;
         public List<string> IgnoreFolders { get; set; } = new List<string>();
+        /// <summary>
+        /// Escopo: quando não vazia, só estas pastas de alarme (nome da pasta ou nome-base da área)
+        /// são geradas. Sem isso, criar 1 área regenerava as 19 existentes — o raio de ação de uma
+        /// escrita de área era o projeto inteiro (FP-06, T6). O OB de chamada continua saindo com
+        /// TODAS as FCs que existem sob a pasta-raiz, não só as do escopo.
+        /// </summary>
+        public List<string> IncludeFolders { get; set; } = new List<string>();
         /// <summary>Area base name -> global-DB top struct. Overrides the tag-name heuristic.</summary>
         public Dictionary<string, string> Structs { get; set; } =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -147,12 +155,21 @@ namespace Tia.Core
             var areas = new List<object>();
             var commentTasks = new List<(string ParentStruct, string Member, string Comment)>();
             var documentation = new Dictionary<string, List<string>>();
+            int scoped = 0;   // --area que não casa com nada seria no-op silencioso
 
             foreach (PlcTagTableUserGroup alarmGroup in alarmsRoot.Groups)
             {
                 if (config.IgnoreFolders.Any(f => alarmGroup.Name.Equals(f, StringComparison.OrdinalIgnoreCase)))
                     continue;
                 string areaBase = GetBaseName(alarmGroup.Name);
+                // nome da pasta ("2.24 Elevatória Final (EFE-01)"), nome-base ou pedaço dele: o
+                // escopo é explícito, e o resultado lista as áreas geradas
+                if (config.IncludeFolders.Any() && !config.IncludeFolders.Any(f =>
+                        alarmGroup.Name.Equals(f, StringComparison.OrdinalIgnoreCase)
+                        || areaBase.Equals(GetBaseName(f), StringComparison.OrdinalIgnoreCase)
+                        || areaBase.IndexOf(f, StringComparison.OrdinalIgnoreCase) >= 0))
+                    continue;
+                scoped++;
                 var startGroup = startsRoot.Groups.Cast<PlcTagTableUserGroup>()
                     .FirstOrDefault(p => GetBaseName(p.Name).Equals(areaBase, StringComparison.OrdinalIgnoreCase));
                 if (startGroup == null) continue;
@@ -241,6 +258,12 @@ namespace Tia.Core
                     { "xml", fcXmlPath },
                 });
             }
+
+            if (config.IncludeFolders.Any() && scoped == 0)
+                throw new InvalidOperationException("Nenhuma pasta de alarme casa com o escopo pedido ("
+                    + string.Join(", ", config.IncludeFolders) + "). Pastas em '" + config.AlarmTagsFolder
+                    + "': " + string.Join(" | ", alarmsRoot.Groups.Cast<PlcTagTableUserGroup>()
+                        .Select(g => g.Name)) + ".");
 
             // word comments in the global DB (rewrite + reimport only when comments changed —
             // delete/reimport of the central DB is the riskiest step of the run)

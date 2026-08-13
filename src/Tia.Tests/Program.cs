@@ -117,6 +117,7 @@ namespace Tia.Tests
                 { "BlockInterface.FromXml", BlockInterface_FromXml },
                 { "BlockEdit.InsertCallInXml", BlockEdit_InsertCallInXml },
                 { "BlockEdit.RemoveNetworkFromXml", BlockEdit_RemoveNetworkFromXml },
+                { "BlockEdit.StripTypePrefix", BlockEdit_StripTypePrefix },
                 { "BlockEdit.SetRetainInXml", BlockEdit_SetRetainInXml },
                 { "Clone.InstancesInXml", Clone_InstancesInXml },
                 { "Audit.DriveShape", Audit_DriveShape },
@@ -822,6 +823,18 @@ namespace Tia.Tests
             Check(enxuto.Descendants().Count(e => e.Name.LocalName == "Wire")
                 == enxutoCall.Elements().Count(e => e.Name.LocalName == "Parameter") + 1,
                 "wires == parâmetros declarados + o en, como em todo export do Portal");
+        }
+
+        private static void BlockEdit_StripTypePrefix()
+        {
+            // o help escreve `--fb "FB Y|FC Y"`; passar o prefixo custou 5 steps na FP-06 (T2)
+            Check(BlockEdit.StripTypePrefix("FC PARTIDA_BOMBA (BEF-01)") == "PARTIDA_BOMBA (BEF-01)",
+                "prefixo FC sai");
+            Check(BlockEdit.StripTypePrefix("FB CASCATA DE BOMBAS") == "CASCATA DE BOMBAS",
+                "prefixo FB sai");
+            Check(BlockEdit.StripTypePrefix("FC_ALARMES_ETA") == "FC_ALARMES_ETA",
+                "sem espaço não é prefixo — nome real de bloco fica intacto");
+            Check(BlockEdit.StripTypePrefix("FBS DE ALGO") == "FBS DE ALGO", "FBS não é FB");
         }
 
         private static void BlockEdit_RemoveNetworkFromXml()

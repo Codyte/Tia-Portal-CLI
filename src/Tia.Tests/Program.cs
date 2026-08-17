@@ -302,6 +302,26 @@ namespace Tia.Tests
             Check(Throws(() => Ops.RequireRootType(Fixture("StdBombaA.xml"), "SW.Blocks.")),
                 "tag table recusada como bloco (era falso positivo no dry-run)");
             Check(!Throws(() => Ops.RequireRootType(Fixture("BombaTemplateFc.xml"), "SW.Blocks.")), "FC aceito como bloco");
+
+            // HMI: import-screen só aceita raiz Hmi.Screen.*, e tabela de tag de IHM (Hmi.Tag.TagTable)
+            // é o vizinho que passa despercebido — os dois saem do mesmo `workspace/exports`.
+            // XML sintético de propósito: export real de tela carrega nome de área de cliente.
+            var screen = TempXml("<Document><Engineering version='V21' /><Hmi.Screen.Screen ID='0'>"
+                + "<AttributeList><Name>Tela</Name></AttributeList></Hmi.Screen.Screen></Document>");
+            var hmiTags = TempXml("<Document><Engineering version='V21' /><Hmi.Tag.TagTable ID='0'>"
+                + "<AttributeList><Name>Tag_aux</Name></AttributeList></Hmi.Tag.TagTable></Document>");
+            Check(Ops.XmlRootType(screen) == "Hmi.Screen.Screen", "root de tela de HMI");
+            Check(!Throws(() => Ops.RequireRootType(screen, "Hmi.Screen.")), "tela aceita no import-screen");
+            Check(Throws(() => Ops.RequireRootType(hmiTags, "Hmi.Screen.")),
+                "tabela de tag de HMI recusada como tela");
+            Check(Throws(() => Ops.RequireRootType(screen, "SW.Blocks.")), "tela recusada como bloco de PLC");
+        }
+
+        private static string TempXml(string xml)
+        {
+            var path = Path.Combine(Path.GetTempPath(), "tia-test-" + Guid.NewGuid().ToString("N") + ".xml");
+            File.WriteAllText(path, xml);
+            return path;
         }
 
         /// <summary>Nó de pasta em memória: os delegados de WalkFolders isolam a regra do PlcSoftware.</summary>

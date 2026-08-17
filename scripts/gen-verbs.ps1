@@ -34,14 +34,16 @@ Set-Content $out ($sb.ToString().TrimEnd() + "`n") -Encoding utf8
 "gen-verbs: $out ($verbs verbos)"
 
 # O numero de verbos aparece a mao no SKILL.md (2x) e no README — era o tipo de dado que envelhece
-# calado (ficou em 69 com 72 no help). Aqui a verdade e' o help; o resto so' precisa ser avisado.
+# calado (ficou em 69 com 72 no help). Aqui a verdade e' o help, entao o numero e' corrigido no
+# lugar em vez de avisado: avisar so' empurrava a edicao a mao pro fim da sessao.
 # CLAUDE.md fica de fora: la' "6 verbos" e' o preflight do doctor, nao o total.
 foreach ($f in @('SKILL.md', 'README.md')) {
     $path = Join-Path $repo $f
     if (-not (Test-Path $path)) { continue }
-    $stale = Select-String -LiteralPath $path -Pattern '(\d+)\s+verb' -AllMatches |
-        ForEach-Object { $_.Matches } | Where-Object { [int]$_.Groups[1].Value -ne $verbs }
-    foreach ($m in $stale) {
-        Write-Host "  AVISO $f diz '$($m.Value)' — o help tem $verbs" -ForegroundColor Yellow
+    $text = Get-Content -LiteralPath $path -Raw
+    $fixed = [regex]::Replace($text, '(\d+)(\s+verb)', { param($m) "$verbs$($m.Groups[2].Value)" })
+    if ($fixed -ne $text) {
+        Set-Content -LiteralPath $path $fixed -NoNewline -Encoding utf8
+        Write-Host "  ${f}: contagem de verbos -> $verbs" -ForegroundColor Yellow
     }
 }

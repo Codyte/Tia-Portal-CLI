@@ -8,27 +8,27 @@
 //   L133   .Blocks
 //   L164   .CollectBlocks
 //   L187   .Tree
-//   L219   .AppendGrouped
-//   L231   .AppendTree
-//   L252   .BlockLabel
-//   L260   .TagTables
-//   L283   .FindTagTable
-//   L295   .CollectTagTables
-//   L308   .Types
-//   L315   .CollectTypes
-//   L328   find
-//   L331   .Find
-//   L365   .FindInTagTables
-//   L405   snapshot
-//   L408   .Snapshot
-//   L426   cross-references
-//   L433   .ResolveSymbol
-//   L447   .FindTag
-//   L461   .Xref
-//   L500   trace
-//   L509   .Trace
-//   L548   .AllSources
-//   L564   .CollectBlockObjects
+//   L223   .AppendGrouped
+//   L235   .AppendTree
+//   L256   .BlockLabel
+//   L264   .TagTables
+//   L287   .FindTagTable
+//   L299   .CollectTagTables
+//   L312   .Types
+//   L319   .CollectTypes
+//   L332   find
+//   L335   .Find
+//   L369   .FindInTagTables
+//   L409   snapshot
+//   L412   .Snapshot
+//   L430   cross-references
+//   L437   .ResolveSymbol
+//   L451   .FindTag
+//   L465   .Xref
+//   L504   trace
+//   L513   .Trace
+//   L552   .AllSources
+//   L568   .CollectBlockObjects
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX
@@ -215,8 +215,12 @@ namespace Tia.Core
             };
         }
 
-        /// <summary>Seção agrupada por pasta, itens inline — mesmo formato dos blocos.</summary>
-        private static void AppendGrouped(StringBuilder body, string section,
+        /// <summary>
+        /// Seção agrupada por pasta, itens inline — mesmo formato dos blocos.
+        /// `internal` porque `Hmi.Tree` emite o `hmi-navi.md` no mesmo formato: um agrupador só
+        /// mantém os dois mapas legíveis do mesmo jeito.
+        /// </summary>
+        internal static void AppendGrouped(StringBuilder body, string section,
             List<Dictionary<string, object>> items, Func<Dictionary<string, object>, string> label)
         {
             foreach (var g in items.GroupBy(d => (string)d["folder"]))

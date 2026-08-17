@@ -162,6 +162,7 @@ namespace Tia.Cli
                         "xref --name X  (bloco, tag, tabela ou UDT → o que ele usa)",
                         "trace --equipment AG-01  (símbolos do equipamento + quem referencia; ~9s em projeto grande)",
                         "list-hmi [--device X]  (WinCC clássico e Unified: telas + tag tables; `api` diz qual)",
+                        "hmi-tree  (outline de todas as IHMs → hmi-navi.md, agrupado por pasta; irmão do `tree`)",
                         "list-motion [--like X] [--params]  (objetos tecnológicos: eixo, came, cinemática — "
                             + "nome, tipo (TO_PositioningAxis...) e versão; --params traz os parâmetros, "
                             + "centenas por eixo. Read-only: o Openness não cria TO)",
@@ -579,6 +580,9 @@ namespace Tia.Cli
                         break;
                     case "list-hmi":
                         result = Core.Hmi.List(session, OptionValue(args, "--device"));
+                        break;
+                    case "hmi-tree":
+                        result = Core.Hmi.Tree(session, Path.Combine(outDir, "hmi-navi.md"));
                         break;
                     case "list-motion":
                         result = Core.Motion.List(session, session.GetPlc(plcName),

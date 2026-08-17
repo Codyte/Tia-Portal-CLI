@@ -25,12 +25,12 @@
   <sub>L40:class FaultObConfig  L43:.GroupPrefix  L45:.Devices  L46:.TemplateOb  L47:.ObNamePrefix  L53:.AlarmDb  L54:.CommentCultures  L62:class FaultOb  L69:class Module  L76:.Generate  L155:.DiscoverTasks  L184:.AllDeviceGroups  L191:.WithSubGroups  L199:.CollectModules  L210:XML generation  L212:.BuildObXml  L242:.RewireNetwork  L279:.AddMasterCommentEntry  L308:.ReassignUids  L328:.ModuleType  L340:.WriteCsv</sub>
 - **Hardware.cs** (820 ln)
   <sub>L57:class Hardware  L63:.FindDevice  L75:.HasItemNamed  L85:.Interface  L93:add-device  L96:.AddDevice  L121:delete-device  L123:.DeleteDevice  L136:plug-module  L144:.PlugModule  L230:.CollectSlots  L242:.FindItem  L255:.FindItem  L266:set-address  L268:.SetAddress  L297:set-io-address  L305:.SetIoAddress  L365:.CollectAddresses  L371:list-io-map  L381:.ListIoMap  L428:.ListIoMapRows  L440:.CollectMap  L468:.CollectTelegramMap  L495:.Range …</sub>
-- **Hmi.cs** (107 ln)
-  <sub>L23:class Hmi  L26:.Targets  L37:.List  L51:.Describe  L87:.CollectScreens  L96:.CollectTables</sub>
+- **Hmi.cs** (185 ln)
+  <sub>L25:class Hmi  L28:.Targets  L39:.List  L53:.Describe  L94:.Tree  L146:.SplitPath  L156:.Row  L165:.CollectScreens  L174:.CollectTables</sub>
 - **InstrumentFc.cs** (721 ln)
   <sub>L54:class InstrumentFcConfig  L57:.SourceTagsFolder  L59:.TargetBlocksFolder  L60:.GlobalDb  L62:.TargetOb  L69:.FcSuffix  L70:.IgnoreFolders  L72:.TagFilters  L78:.MoldInstrumentId  L80:.NextCommandIds  L93:class InstrumentFc  L103:class Instrument  L116:class AreaTask  L124:.Run  L339:generation  L341:.BuildAreaFcXml  L369:.RewireNetwork  L423:.ImportAreaFc  L463:call OB  L465:.UpdateCallOb  L528:.CallNetworkXml  L559:.EmptyObXml  L589:checks + helpers  L592:.IsTaskComplete …</sub>
-- **Inventory.cs** (572 ln)
-  <sub>L61:class Inventory  L63:.Info  L80:.Devices  L97:.CollectDeviceItems  L119:.FolderMatches  L133:.Blocks  L164:.CollectBlocks  L187:.Tree  L219:.AppendGrouped  L231:.AppendTree  L252:.BlockLabel  L260:.TagTables  L283:.FindTagTable  L295:.CollectTagTables  L308:.Types  L315:.CollectTypes  L328:find  L331:.Find  L365:.FindInTagTables  L405:snapshot  L408:.Snapshot  L426:cross-references  L433:.ResolveSymbol  L447:.FindTag …</sub>
+- **Inventory.cs** (576 ln)
+  <sub>L61:class Inventory  L63:.Info  L80:.Devices  L97:.CollectDeviceItems  L119:.FolderMatches  L133:.Blocks  L164:.CollectBlocks  L187:.Tree  L223:.AppendGrouped  L235:.AppendTree  L256:.BlockLabel  L264:.TagTables  L287:.FindTagTable  L299:.CollectTagTables  L312:.Types  L319:.CollectTypes  L332:find  L335:.Find  L369:.FindInTagTables  L409:snapshot  L412:.Snapshot  L430:cross-references  L437:.ResolveSymbol  L451:.FindTag …</sub>
 - **LadConverter.cs** (530 ln)
   <sub>L46:class LadConverter  L48:.Convert  L91:lexer  L93:class Tok  L99:.Lex  L143:AST  L145:class Node  L146:class Leaf  L147:class CmpN  L148:class Group  L149:class NotN  L150:class Operand  L153:class Stmt  L161:parser (recursive descent)  L163:class Parser  L304:normalize: push NOT down to leaves (De Morgan; comparators invert)  L306:.Normalize  L321:FlgNet emitter  L327:class Net  L334:class Emitter  L450:.EmitNetwork  L476:block XML assembly  L478:.BuildBlockXml  L516:.Hex …</sub>
 - **Library.cs** (372 ln)

@@ -197,6 +197,10 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     point que serve o Advanced: daí o default `--pc-interface PLCSIM`.
     **O download é ~91% do verbo** (45-52 s de 49-57 s medidos): iterar observação no mesmo programa
     vai com **`--no-download`**, que pula direto pros passos. `download.ms` e `ms` saem no JSON.
+    **O host desfaz só o que fez**: instância que já existia é reusada (`-5, AlreadyExists` vira
+    `CreateInterface`) e continua ligada no `-Stop`; só a que ele registrou/ligou é que ele
+    desliga. `-Start` com host de pé é no-op. **`-Ui`** abre o control panel junto — é a mesma
+    vista do mesmo Runtime Manager, e fechar a janela não desliga nada.
   - **`plug-module --type` aceita o MLFB sem o prefixo `OrderNumber:`** e, quando `canPlug` é
     `false`, devolve **`reason`**. Sem versão, `plugAs` sai com o prefixo e o firmware sondado
     (`OrderNumber:6ES7 131-6BH00-0BA0/V1.0`). Slot é do rack: `--item Rack_0`, posição em **`--pos`**.

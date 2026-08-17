@@ -1,7 +1,7 @@
 # ====================== BEGIN NAV INDEX ======================
 # NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 #   L41    Write-Log
-#   L94    host: sem switch nenhum, este processo E o host e so volta no -Stop --
+#   L98    host: sem switch nenhum, este processo E o host e so volta no -Stop --
 # ======================= END NAV INDEX =======================
 
 # NAV INDEX
@@ -74,6 +74,10 @@ if ($Stop) {
 }
 
 if ($Start) {
+    # host ja de pe: -Start de novo so criaria um 2o processo dormindo (a task tem
+    # MultipleInstancesPolicy IgnoreNew, a rota da sessao 1 nao tem). No-op e o certo.
+    $last = Get-Content $log -Tail 1 -ErrorAction SilentlyContinue
+    if ($last -and $last -notmatch 'done|ERRO') { "host ja rodando ($last)"; return }
     Remove-Item $log, $flag, $uiOn -ErrorAction SilentlyContinue
     # marcador em vez de argumento: Start-ScheduledTask nao passa parametro pra task
     if ($Ui) { New-Item -ItemType File -Force $uiOn | Out-Null }
@@ -96,9 +100,23 @@ try {
     Add-Type -Path $dll
     $mgr = [Siemens.Simatic.Simulation.Runtime.SimulationRuntimeManager]
     Write-Log "session=$((Get-Process -Id $PID).SessionId) pid=$PID mgrVersion=$($mgr::Version)"
-    $inst = $mgr::RegisterInstance($Article, $Name)
-    Write-Log "registered $Name"
-    Write-Log "powerOn=$($inst.PowerOn(60000)) state=$($inst.OperatingState)"
+    # instancia com o mesmo nome ja registrada (control panel aberto, host anterior que nao saiu
+    # limpo) devolve `-5, AlreadyExists`: reusar e melhor que falhar — o dono continua sendo quem
+    # registrou, entao este host nao a desliga na saida.
+    # Regra: desfazer no fim exatamente o que este host fez, nada mais. Instancia que ja estava
+    # ligada continua ligada no -Stop; a que este host ligou, ele desliga.
+    $registered = $true
+    try {
+        $inst = $mgr::RegisterInstance($Article, $Name)
+        Write-Log "registered $Name"
+    } catch {
+        $registered = $false
+        $inst = $mgr::CreateInterface($Name)
+        Write-Log "reusando $Name ja registrada (state=$($inst.OperatingState))"
+    }
+    $poweredOn = "$($inst.OperatingState)" -eq 'Off'
+    if ($poweredOn) { Write-Log "powerOn=$($inst.PowerOn(60000))" }
+    Write-Log "state=$($inst.OperatingState)"
     # o control panel e so uma vista do mesmo Runtime Manager: ele lista a instancia que este host
     # registrou, e fechar a janela nao desliga nada (quem segura a instancia e este processo).
     if ($Ui -or (Test-Path $uiOn)) {
@@ -107,9 +125,9 @@ try {
         else { Write-Log "control panel nao encontrado em $cp" }
     }
     while (-not (Test-Path $flag)) { Start-Sleep -Seconds 2 }
-    Write-Log 'stop requested; powering off'
-    $inst.PowerOff(30000)
-    $inst.UnregisterInstance()
+    Write-Log "stop requested (poweredOn=$poweredOn registered=$registered)"
+    if ($poweredOn) { $inst.PowerOff(30000) }
+    if ($registered) { $inst.UnregisterInstance() }
     Write-Log 'done'
 } catch {
     Write-Log "ERRO: $($_.Exception.GetType().Name) $($_.Exception.Message)"

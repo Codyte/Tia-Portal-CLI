@@ -617,6 +617,23 @@ namespace Tia.Tests
             Check(shifted.SequenceEqual(new[] { "%M432.3", "%MW434", "%MD436" }),
                 "tabela mista desloca em bloco (" + string.Join(",", shifted) + ")");
             Check(Throws(() => Clone.Readdress(mixed(), "%M432.6")), "--at com bit != 0 em tabela mista falha");
+
+            // tela de IHM: o vínculo com a tag é por NOME (TargetID="@OpenLink"), não por ID —
+            // é o que faz replicar tela de área ser troca de texto (import-screen --replace)
+            const string hns = "http://www.siemens.com/automation/Openness/SW/Interface/v5";
+            var screen = XDocument.Parse("<Document xmlns='" + hns + "'><Hmi.Screen.Screen ID='0'>" +
+                "<AttributeList><Name>Gradeamento PRELIMINAR</Name></AttributeList>" +
+                "<ObjectList><Hmi.Dynamic.TagConnectionDynamic ID='E'><LinkList>" +
+                "<Tag TargetID='@OpenLink'><Name>DB GLOBAL_PRELIMINAR_SKID_RT-01A_STS_STATUS_MOTOR</Name></Tag>" +
+                "</LinkList></Hmi.Dynamic.TagConnectionDynamic></ObjectList></Hmi.Screen.Screen></Document>");
+            XNamespace hn = hns;
+            var screenHits = Clone.Rewrite(screen, Clone.ParseReplaces(new[] { "PRELIMINAR=SECUNDARIO" }));
+            Check(screenHits == 2, "tela: nome da tela + nome da tag trocados, era " + screenHits);
+            Check(screen.Descendants(hn + "Name").All(e => !e.Value.Contains("PRELIMINAR")) &&
+                  screen.Descendants(hn + "Name").Any(e => e.Value.Contains("SECUNDARIO_SKID_RT-01A")),
+                "tela: tag remapeada por nome, TargetID intocado");
+            Check(screen.Descendants().Any(e => (string)e.Attribute("TargetID") == "@OpenLink"),
+                "tela: @OpenLink sobrevive ao --replace");
         }
 
         private static void Scaffold_Plan()

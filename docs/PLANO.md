@@ -351,9 +351,41 @@ modelo de objetos tipado (`HmiScreenBase`), sem export de tela. O projeto real �
   de telas, `folderAction: create|reuse`). Raiz do XML é `Hmi.Screen.Screen`. Roundtrip provado no
   projeto-molde: export (14138 B) → import `--apply` `override` → re-export byte-idêntico.
 
-**Etapa 2 — gerar tela de área a partir de molde** (não iniciada), como `replicate-fc` faz com FC.
-A árvore da IHM **espelha a do PLC** (`3. Partidas/3.1 Preliminar (P-GM-01)`), então o vínculo
-tela↔área já existe no nome.
+**Etapa 2 — gerar tela de área a partir de molde: fechada com `import-screen --replace`**
+(2026-08-17), sem verbo novo. A árvore da IHM **espelha a do PLC**
+(`3. Partidas/3.1 Preliminar (P-GM-01)`), então o vínculo tela↔área já existe no nome.
+
+O probe da tela real de área (`QA-01/1. Preliminar (P-GM-01)/Gradeamento Mecanizada`, 540 KB /
+11114 linhas) decidiu o tamanho da etapa, e ela é menor do que os três ramos previstos:
+
+- **Não há faceplate** (0 ocorrências) — é desenho solto: `TextField` (59), `Rectangle` (33),
+  `GraphicIOField` (15), `SymbolicIOField` (12). Descartado o caminho
+  `ScreenComposition.CreateFrom(MasterCopy)`.
+- **Nenhum vínculo é por ID.** Toda referência é por **nome**:
+  `<Tag TargetID="@OpenLink"><Name>…</Name></Tag>` — `@OpenLink` é marcador de resolução, e o
+  `ID=` de cada objeto é contador local do arquivo. **Não há remapeamento a fazer.**
+- **O nome da área não aparece como pasta**: `QA-01` = 0 hits. A área só existe **dentro do nome
+  das tags** (`DB GLOBAL_PRELIMINAR_SKID_GRADEAMENTO_MECANIZADA_…`), que é texto puro no XML.
+- 21 tags distintas, 3 delas placeholders (`tag`, `tag1`, `aux`); as outras 18 carregam o
+  equipamento (`B-13A`, `GM-01A/B`, `RT-01A/B`, `XV-10/11`). **Confirma a restrição já enquadrada:
+  replicar só serve para área com o mesmo elenco do molde.**
+- ~90% do arquivo é `MultilingualTextItem`/`FontItem` — volume, não estrutura.
+
+Logo, replicar tela = **troca de texto**, que é o `--replace` que o `clone` já tem. A implementação
+foi ligar `Clone.RewriteFile` no `import-screen` (2 linhas em `Program.cs`), em vez de um
+`replicate-screen` novo. Fluxo:
+
+```
+export-screen --screen "<molde>"
+import-screen --file X.xml --folder "<pasta da área destino>" \
+  --replace PRELIMINAR=<AREA> --replace "Gradeamento Mecanizada=<nome novo>" --apply
+```
+
+`--replace` também reescreve o **nome do arquivo** de saída (comportamento do `RewriteFile`), então
+a cópia reescrita nunca sobrepõe o XML de origem. Dry-run medido no projeto-molde:
+`{screen: "ZZ_TESTE Gradeamento", action: "create", folderAction: "reuse", applied: false}`.
+Check offline em `Clone.Rewrite` prova a forma da tela (nome da tela + nome da tag trocados,
+`@OpenLink` intocado).
 
 - `export-hmi-tags --table "Pasta/Tabela"` — SimaticML da tabela de tags da IHM. **É por aqui que
   se vê o vínculo com o PLC**: dump de atributo não serve, `GetAttributeInfos` numa tag de HMI

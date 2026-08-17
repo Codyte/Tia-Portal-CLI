@@ -22,7 +22,7 @@
 - `export-hmi-tags --table "Pasta/Tabela" [--device X]  (SimaticML da tabela de tags da IHM; é onde aparece a conexão e a tag do PLC por trás de cada tag de tela)`
 - `hmi-tree  (outline de todas as IHMs → hmi-navi.md, agrupado por pasta; irmão do `tree`)`
 - `export-screen --screen "Pasta/Sub/Tela" [--device X]  (SimaticML da tela; só WinCC clássico — Unified não exporta tela)`
-- `import-screen --file F.xml [--device X] [--folder "Pasta/Sub"] [--apply]  (--folder é caminho completo a partir da raiz de telas, como no import-block)`
+- `import-screen --file F.xml [--device X] [--folder "Pasta/Sub"] [--replace OLD=NEW ...] [--apply]  (--folder é caminho completo a partir da raiz de telas, como no import-block; --replace troca texto no XML antes do import — é assim que se replica tela de área, porque a tela liga tag por NOME (TargetID="@OpenLink"), sem ID a remapear)`
 - `list-motion [--like X] [--params]  (objetos tecnológicos: eixo, came, cinemática — nome, tipo (TO_PositioningAxis...) e versão; --params traz os parâmetros, centenas por eixo. Read-only: o Openness não cria TO)`
 - `export-block --name X [--out DIR]`
 - `export-tags --table X [--out DIR]`

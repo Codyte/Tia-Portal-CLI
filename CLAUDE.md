@@ -290,6 +290,12 @@ O runner é `scripts/taskrun.ps1`. Não exige janela interativa aberta pelo user
 O portal só morre junto com a task se tiver sido *iniciado por ela* (fica na árvore de processos);
 portal aberto à mão pelo user sobrevive.
 
+**`EngineeringSecurityException` + `The operation has timed out` = diálogo modal de autorização
+esperando clique na tela, não falha.** Acontece sempre que o hash do `tia.exe` muda (todo
+`rebuild.ps1`) com o Portal já aberto. O usuário clica em OK depois de o verbo já ter estourado o
+timeout, então o que chega ao agente é sempre o erro. **Rodar o mesmo verbo de novo antes de
+relatar falha** — a permissão já foi dada. Só insistir num diagnóstico se a 2ª tentativa repetir.
+
 Whitelist stale = `EngineeringSecurityException`. Refazer com
 `Start-ScheduledTask -TaskName TiaWhitelist` (SYSTEM, sem UAC); `rebuild.ps1` já compara contra
 o hash gravado no registro e falha alto se continuar divergente.

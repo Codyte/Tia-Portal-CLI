@@ -25,7 +25,7 @@ machine spec delivered a **compiling PLC program**. Spec and pass criteria were 
 run, by someone who did not execute it: [`docs/teste-cego/`](docs/teste-cego/) — write-up in
 Portuguese: [**the ruler and the stumbles**](docs/teste-cego/artigo.md).
 
-**87 verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML, catalog modules
+**90 verbs** · inventory & xref · SimaticML export/import · hardware via CAx/AML, catalog modules
 and SINAMICS telegrams · SCL→LAD converter · 6 field-proven code generators · installable block
 library · batch mode · one attach
 

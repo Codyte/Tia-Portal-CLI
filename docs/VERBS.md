@@ -24,6 +24,9 @@
 - `export-screen --screen "Pasta/Sub/Tela" [--device X]  (SimaticML da tela; só WinCC clássico — Unified não exporta tela)`
 - `import-screen --file F.xml [--device X] [--folder "Pasta/Sub"] [--replace OLD=NEW ...] [--apply]  (--folder é caminho completo a partir da raiz de telas, como no import-block; --replace troca texto no XML antes do import — é assim que se replica tela de área, porque a tela liga tag por NOME (TargetID="@OpenLink"), sem ID a remapear)`
 - `delete-screen --screen "Pasta/Sub/Tela" [--device X] [--apply]  (par do import-screen; sem ele tela de smoke só sai pela GUI)`
+- `list-screen-items --screen "Pasta/Sub/Tela" [--device X] [--like P] [--group]  (um objeto por linha: nome, tipo, x, y, w, h, tag — 150 objetos cabem em 7 KB, contra 800 KB do XML da tela. --group agrega por equipamento lido do nome da tag e devolve a `region` de cada um, que é o recorte pronto p/ copy-screen-items; o bbox é só dos objetos COM tag, então fundo e rótulo pedem alargar a região)`
+- `set-screen-items --screen "Pasta/Sub/Tela" --set "Nome:x=530,y=356" [--set ...] [--device X] [--apply]  (move/redimensiona; campos x,y,w,h em qualquer combinação. Um export e um import para N objetos — import de tela custa ~20 s. Nome ausente vai p/ `missing` e os outros seguem; nome repetido na tela é erro)`
+- `copy-screen-items --from-screen "<molde>" --region x,y,w,h --screen "<destino>" --at x,y [--replace BF-01=BF-05] [--device X] [--apply]  (estampa: copia os objetos INTEIRAMENTE contidos na região, deslocados, renumerando ID e desduplicando ObjectName. Não há catálogo de estampas no CLI — cada tela da casa tem seu dialeto, então o grupo sai da tela que serve de molde)`
 - `list-motion [--like X] [--params]  (objetos tecnológicos: eixo, came, cinemática — nome, tipo (TO_PositioningAxis...) e versão; --params traz os parâmetros, centenas por eixo. Read-only: o Openness não cria TO)`
 - `export-block --name X [--out DIR]`
 - `export-tags --table X [--out DIR]`

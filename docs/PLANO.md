@@ -415,6 +415,50 @@ Checks offline: `Clone.Rewrite` na forma da tela (nome + tag trocados, `@OpenLin
 `export-hmi-tags`. Não bloqueia a etapa 2 — o nome da conexão está no XML que a própria etapa
 vai clonar.
 
+## F13 — objetos de dentro da tela ✅ (2026-08-17)
+
+Três verbos que fecham "montar tela complexa", todos por SimaticML (export → edita → import
+`Override`), porque a API do WinCC clássico não expõe o objeto de tela:
+
+- **`list-screen-items --screen X [--like P] [--group]`** — uma linha por objeto (nome, tipo,
+  x, y, w, h, tag). **150 objetos = 7,4 KB contra 798 KB do XML** (medido na tela Biofiltro).
+  `--group` agrega pelo **1º código de equipamento da tag** (`..._BF-02-EC-01_STS_x` → `BF-02`) e
+  devolve a `region` de cada um, que é o recorte pronto do `copy-screen-items`. O bbox é só dos
+  objetos **com tag** — fundo e rótulo não carregam equipamento, então a região quase sempre precisa
+  ser alargada até o retângulo de fundo, que aparece na lista.
+- **`set-screen-items --set "Nome:x=,y=,w=,h="`** (repetível) — move/redimensiona. Um export e um
+  import para N objetos; por objeto seria inviável (import de tela custou 70-168 s neste projeto).
+  Nome ausente vira `missing` e os outros seguem; nome repetido na tela é erro, porque mover "um dos
+  dois" seria adivinhação.
+- **`copy-screen-items --from-screen <molde> --region x,y,w,h --screen <destino> --at x,y
+  [--replace BF-01=BF-05]`** — a estampa. Copia o que está **inteiramente contido** na região
+  (critério que faz "o cartão do motor" virar seleção sem nomear 13 objetos), desloca, renumera `ID`
+  e desduplica `ObjectName`.
+
+**Objeto de tela não fica na `ObjectList` da tela: fica dentro de `Hmi.Screen.ScreenLayer`.** Colar
+no nível da tela passa no XML e o **Portal recusa no import** — *"The 'ScreenItems' composition at
+line 17646 … is not supported"*. A cola vai na camada de **mesmo índice** do destino, que é o que
+preserva visibilidade e ordem de desenho; camada que não existe no destino é erro com a contagem.
+
+**Não há catálogo de estampas no CLI, e é decisão.** O cartão de motor do Biofiltro usa símbolo
+`GraphicIOField` 77x63 com `Switch` 94x36 em dy +95/+138; o do Gradeamento, 87x58 com `Button`
+93x39 em dy +208 — mesmo equipamento, dialetos diferentes, e o Gradeamento ainda por cima com tags
+placeholder (`tag`, `tag1`, `aux`). Catálogo embutido envelheceria na primeira tela nova e mentiria
+sobre qual é o padrão. O grupo sai da tela que serve de molde, em runtime — o molde é o projeto.
+
+Smoke ponta a ponta no projeto-molde (`run --script`, 5 steps): `list --group` (4 skids
+`BF-01..BF-04`) → `import-screen --replace` clonando a tela → `copy-screen-items` da região
+`233,100,232,654` com `--replace BF-01=BF-05` → `list --group` na cópia: **150 → 187 objetos
+(+37 = a coluna inteira)** e o skid **BF-05** presente com os mesmos 11 objetos com tag → `delete-screen`.
+Checks offline em `ScreenItems.Core`: `Parse`, `Groups`, `Patch` (inclusive `missing`), `CopyInto`
+(contenção, deslocamento, `--replace`, ID sem colisão, sufixo de `ObjectName`, cola dentro da camada).
+
+O que a análise da tela real deixou medido e ainda não virou verbo: a tela é **4 colunas estampadas
+à mão com deriva** — passo 244/244/**245** e derivas internas de (-1,+1), (-2,-1), (-4,-3) em ~8
+objetos por coluna, mais um `TextField` 17x25 órfão em (966,100). É exatamente o que
+`set-screen-items` corrige em lote, e é o argumento de por que estampar mecanicamente: cópia à mão
+erra, cópia mecânica não.
+
 ## F12 — `sim-diag` camada 1 ✅ (2026-08-17)
 
 **`sim-diag [--instance plc_1500_1] [--watch SEG]`** — diagnóstico do PLC virtual. Roda **antes do

@@ -201,6 +201,16 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     `CreateInterface`) e continua ligada no `-Stop`; só a que ele registrou/ligou é que ele
     desliga. `-Start` com host de pé é no-op. **`-Ui`** abre o control panel junto — é a mesma
     vista do mesmo Runtime Manager, e fechar a janela não desliga nada.
+  - **Objeto de dentro da tela: `list-screen-items` → `copy-screen-items` → `set-screen-items`.**
+    A lista é 1 linha por objeto (150 objetos = 7,4 KB contra 798 KB do XML); **`--group`** agrega
+    pelo 1º código de equipamento da tag e devolve a `region` pronta pra estampar (bbox só dos
+    objetos **com tag** — fundo e rótulo pedem alargar). `copy-screen-items` copia o que está
+    **inteiramente contido** na região, desloca, renumera `ID` e desduplica `ObjectName`.
+    **Objeto de tela vive dentro de `Hmi.Screen.ScreenLayer`, não na `ObjectList` da tela** — colar
+    no nível errado passa no XML e o Portal recusa no import (`'ScreenItems' composition … is not
+    supported`); a cola vai na camada de mesmo índice. **Não há catálogo de estampas**: cada tela da
+    casa tem seu dialeto (Biofiltro usa `Switch` 94x36, Gradeamento `Button` 93x39 para o mesmo
+    motor), então o grupo sai sempre da tela-molde em runtime.
   - **`plug-module --type` aceita o MLFB sem o prefixo `OrderNumber:`** e, quando `canPlug` é
     `false`, devolve **`reason`**. Sem versão, `plugAs` sai com o prefixo e o firmware sondado
     (`OrderNumber:6ES7 131-6BH00-0BA0/V1.0`). Slot é do rack: `--item Rack_0`, posição em **`--pos`**.

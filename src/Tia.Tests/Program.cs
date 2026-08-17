@@ -1,42 +1,45 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L67    class Program
-//   L71    .Check
-//   L78    .RepoRoot
-//   L87    .Fixture
-//   L89    .OutDir
-//   L96    .Main
-//   L138   .AlarmFc_BuildFcXml
-//   L166   .AlarmFc_BuildCallObXml
-//   L188   .FaultOb_BuildObXml
-//   L214   .InstrumentFc_BuildAreaFcXml
-//   L251   .LadConverter_Convert
-//   L274   .BlockExplain_Explain
-//   L298   .Ops_RequireRootType
-//   L308   class Folder
-//   L320   .Ops_WalkFolders
-//   L361   .Ops_SplitPath
-//   L378   .Inventory_FolderMatches
-//   L400   .Ops_RequireUtf8Bom
-//   L427   .InstrumentFc_FcName
-//   L438   .Profinet_TagName
-//   L448   .Audit_Naming
-//   L465   .DbMember_AddToXml
-//   L542   .Memory_Occupied
-//   L560   .Clone_Rewrite
-//   L602   .Scaffold_Plan
-//   L648   list-interface / add-call / delete-network / set-retain
-//   L651   .Fc
-//   L670   .BlockInterface_FromXml
-//   L686   .BlockEdit_InsertCallInXml
-//   L829   .BlockEdit_StripTypePrefix
-//   L841   .BlockEdit_RemoveNetworkFromXml
-//   L853   .BlockEdit_SetRetainInXml
-//   L863   .Clone_InstancesInXml
-//   L875   .Audit_DriveShape
-//   L888   .Audit_LawChecks
-//   L917   .Ops_Squash
-//   L926   .Throws
+//   L70    class Program
+//   L74    .Check
+//   L81    .RepoRoot
+//   L90    .Fixture
+//   L92    .OutDir
+//   L99    .Main
+//   L143   .AlarmFc_BuildFcXml
+//   L171   .AlarmFc_BuildCallObXml
+//   L193   .FaultOb_BuildObXml
+//   L219   .InstrumentFc_BuildAreaFcXml
+//   L256   .LadConverter_Convert
+//   L279   .BlockExplain_Explain
+//   L303   .Ops_RequireRootType
+//   L325   .TempXml
+//   L333   class Folder
+//   L345   .Ops_WalkFolders
+//   L386   .Ops_SplitPath
+//   L403   .Inventory_FolderMatches
+//   L425   .Ops_RequireUtf8Bom
+//   L452   .InstrumentFc_FcName
+//   L463   .Profinet_TagName
+//   L473   .Audit_Naming
+//   L490   .DbMember_AddToXml
+//   L567   .Memory_Occupied
+//   L585   .Clone_Rewrite
+//   L646   .Hmi_StripScreenNumber
+//   L674   .ScreenItems_Core
+//   L740   .Scaffold_Plan
+//   L786   list-interface / add-call / delete-network / set-retain
+//   L789   .Fc
+//   L808   .BlockInterface_FromXml
+//   L824   .BlockEdit_InsertCallInXml
+//   L967   .BlockEdit_StripTypePrefix
+//   L979   .BlockEdit_RemoveNetworkFromXml
+//   L991   .BlockEdit_SetRetainInXml
+//   L1001  .Clone_InstancesInXml
+//   L1013  .Audit_DriveShape
+//   L1026  .Audit_LawChecks
+//   L1055  .Ops_Squash
+//   L1064  .Throws
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX
@@ -125,6 +128,7 @@ namespace Tia.Tests
                 { "Audit.DriveShape", Audit_DriveShape },
                 { "Audit.LawChecks", Audit_LawChecks },
                 { "Ops.Squash", Ops_Squash },
+                { "ScreenItems.Core", ScreenItems_Core },
             };
             foreach (var t in tests)
             {
@@ -662,6 +666,75 @@ namespace Tia.Tests
                 "<AttributeList><Name>Tela</Name></AttributeList></Hmi.Screen.Screen></Document>");
             Check(Tia.Core.Hmi.StripScreenNumber(src) == null, "sem <Number>, nada é copiado");
             File.Delete(src); File.Delete(outFile);
+        }
+
+
+        // Estampa de tela: listar, agrupar por equipamento, mover e copiar região. Tudo XML puro —
+        // o Portal só entra no export/import ao redor.
+        private static void ScreenItems_Core()
+        {
+            const string ns = "http://www.siemens.com/automation/Openness/SW/Interface/v5";
+            Func<string, string> screen = body =>
+                "<Document xmlns='" + ns + "'><Hmi.Screen.Screen ID='0'>" +
+                "<AttributeList><Name>Tela</Name></AttributeList><ObjectList>" +
+                "<Hmi.Screen.ScreenLayer ID='1' CompositionName='Layers'><ObjectList>" + body +
+                "</ObjectList></Hmi.Screen.ScreenLayer>" +
+                "</ObjectList></Hmi.Screen.Screen></Document>";
+            Func<string, string, int, int, int, int, string, string> item = (kind, name, x, y, w, h, tag) =>
+                "<Hmi.Screen." + kind + " ID='" + name.GetHashCode().ToString("X").Substring(0, 3) + "'>" +
+                "<AttributeList><Height>" + h + "</Height><Left>" + x + "</Left>" +
+                "<ObjectName>" + name + "</ObjectName><Top>" + y + "</Top><Width>" + w + "</Width>" +
+                "</AttributeList>" +
+                (tag == null ? "" : "<LinkList><Tag TargetID='@OpenLink'><Name>" + tag + "</Name></Tag></LinkList>") +
+                "</Hmi.Screen." + kind + ">";
+
+            var molde = XDocument.Parse(screen(
+                item("Rectangle", "Fundo_1", 100, 100, 200, 400, null) +
+                item("GraphicIOField", "Simbolo_1", 120, 150, 80, 60, "DB_SKID_BF-01-EC-01_STS_STATUS_MOTOR") +
+                item("Switch", "Liga_1", 120, 250, 90, 36, "DB_SKID_BF-01-B-01_CMD_LIGA") +
+                item("TextField", "Fora_1", 500, 150, 50, 20, null)));
+
+            var items = Tia.Core.ScreenItems.Parse(molde);
+            Check(items.Count == 4, "Parse: 4 objetos com geometria (veio " + items.Count + ")");
+            Check(items[1].Kind == "GraphicIOField" && items[1].X == 120 && items[1].W == 80,
+                "Parse: tipo e geometria do símbolo");
+
+            var groups = Tia.Core.ScreenItems.Groups(items);
+            var keys = groups.Cast<Dictionary<string, object>>().Select(g => (string)g["equipment"]).ToList();
+            Check(keys.SequenceEqual(new[] { "BF-01" }),
+                "Groups: skid é o 1º código da tag, os dois motores caem no mesmo (" + string.Join(",", keys) + ")");
+            Check((string)((Dictionary<string, object>)groups[0])["region"] == "120,150,90,136",
+                "Groups: region é o bbox dos objetos COM tag");
+
+            var moved = XDocument.Parse(molde.ToString());
+            var patch = Tia.Core.ScreenItems.Patch(moved, new[] { "Liga_1:x=124,y=252", "Nao_existe:x=1" });
+            Check(((List<string>)patch["missing"]).SequenceEqual(new[] { "Nao_existe" }),
+                "Patch: nome ausente vira missing, não exceção");
+            var liga = Tia.Core.ScreenItems.Parse(moved).First(i => i.Name == "Liga_1");
+            Check(liga.X == 124 && liga.Y == 252 && liga.W == 90, "Patch: x,y mudam e w fica");
+
+            var destino = XDocument.Parse(screen(item("TextField", "Titulo", 10, 10, 100, 20, null)));
+            var copy = Tia.Core.ScreenItems.CopyInto(molde, destino, new[] { 100, 100, 200, 400 },
+                new[] { 400, 100 }, new[] { "BF-01=BF-05" });
+            Check((int)copy["count"] == 3, "CopyInto: só o que está inteiro na região (veio " + copy["count"] + ")");
+            var alvo = Tia.Core.ScreenItems.Parse(destino);
+            Check(alvo.Count == 4 && alvo.Any(i => i.Name == "Simbolo_1" && i.X == 420 && i.Y == 150),
+                "CopyInto: colado com o deslocamento pedido");
+            Check(alvo.Any(i => i.Tag != null && i.Tag.Contains("BF-05")) &&
+                  !alvo.Any(i => i.Tag != null && i.Tag.Contains("BF-01")),
+                "CopyInto: --replace trocou a tag no fragmento colado");
+            Check(destino.Descendants().First(e => e.Name.LocalName == "Hmi.Screen.ScreenLayer")
+                    .Descendants().Any(e => e.Name.LocalName == "Hmi.Screen.GraphicIOField"),
+                "CopyInto: colado DENTRO da ScreenLayer (fora dela o Portal recusa o import)");
+            var ids = destino.Descendants().Select(e => (string)e.Attribute("ID")).Where(v => v != null).ToList();
+            Check(ids.Count == ids.Distinct().Count(), "CopyInto: ID renumerado, sem colisão");
+
+            var again = Tia.Core.ScreenItems.CopyInto(molde, destino, new[] { 100, 100, 200, 400 },
+                new[] { 700, 100 }, new string[0]);
+            var names = Tia.Core.ScreenItems.Parse(destino).Select(i => i.Name).ToList();
+            Check(names.Count == names.Distinct().Count() && names.Contains("Simbolo_1_1"),
+                "CopyInto: ObjectName repetido ganha sufixo");
+            Check((int)again["count"] == 3, "CopyInto: 2ª colagem copia o mesmo grupo");
         }
 
         private static void Scaffold_Plan()

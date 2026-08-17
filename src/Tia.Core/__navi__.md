@@ -1,4 +1,4 @@
-# __navi__ · `src/Tia.Core/` — 27 files → symbols at exact line numbers
+# __navi__ · `src/Tia.Core/` — 28 files → symbols at exact line numbers
 <!-- navindex · 2026-08-17 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../../__navi__.md`](../../__navi__.md)
 
@@ -49,6 +49,8 @@
   <sub>L47:class ReplicateFcConfig  L50:.BlocksFolder  L52:.EquipmentTypes  L54:.UdtNames  L56:.SourceNumbersToReplace  L57:.GlobalDb  L59:.StartNumber  L65:.TemplateFolder  L71:.TargetFolder  L79:class ReplicateFc  L81:.Run  L269:.TemplateFor  L281:.FindFolderByName  L294:.FoldersOfType  L303:.ReplicateInto  L351:.RewireXml  L446:.FindPathInDbXml  L480:naming  L482:.ExtractId  L488:.InstanceDbNames  L493:.ProposedBlockName  L506:.MainBlockName  L513:.FolderBaseName  L521:.static …</sub>
 - **Scaffold.cs** (350 ln)
   <sub>L51:class ScaffoldManifest  L54:.Source  L57:.Folders  L60:.TagFolders  L63:.Replace  L70:.Cpu  L72:.Items  L75:class ScaffoldItem  L77:.File  L80:.Folder  L84:class ScaffoldPlanItem  L97:class Scaffold  L100:.Rank  L114:.Plan  L145:.Merge  L155:.Apply  L164:.Run  L238:.CheckFamily  L252:.SameFamily  L259:.AlreadyInAnotherFolder  L267:.DeleteObject  L278:.FolderAction  L301:.ResolveBlockPath  L318:.ResolveTypePath …</sub>
+- **ScreenItems.cs** (365 ln)
+  <sub>L55:class ScreenItems  L57:class Item  L68:núcleo puro (sem Openness, testável offline)  L71:.Parse  L98:.Groups  L128:.Patch  L156:case "x"  L157:case "y"  L158:case "w"  L159:case "h"  L180:.CopyInto  L245:verbos  L248:.List  L276:.Set  L302:.Copy  L327:utilidades  L330:.Layers  L338:.LayerIndex  L345:.FolderOf  L352:.Coords  L360:.FirstTag  L368:.Attr  L374:.Num  L381:.SetNum …</sub>
 - **Sim.cs** (529 ln)
   <sub>L68:class Sim  L76:.Run  L200:.Diag  L263:.Watch  L308:.Try  L314:.RegisteredInstances  L324:.WaitReady  L341:.Execute  L351:case "write"  L355:case "read"  L359:case "wait"  L363:case "run"  L367:case "stop"  L371:case "state"  L374:case "tags"  L402:.Write  L426:.ParseBool  L434:.Plain  L455:class Target  L466:.FindTarget  L478:.Interfaces  L492:.DeviceItemOf  L519:.Resolve</sub>
 - **Standardize.cs** (654 ln)

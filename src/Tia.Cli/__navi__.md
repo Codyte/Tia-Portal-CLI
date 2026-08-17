@@ -1,7 +1,7 @@
 # __navi__ · `src/Tia.Cli/` — 1 files → symbols at exact line numbers
-<!-- navindex · 2026-08-13 · DO NOT EDIT BY HAND; regen via navindex skill -->
+<!-- navindex · 2026-08-17 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../../__navi__.md`](../../__navi__.md)
 
-- **Program.cs** (1073 ln)
-  <sub>L117:class Program  L119:.Main  L329:.ExitCodeFor  L340:.RunLadderDryRun  L350:.RunExplainFile  L358:.RunInterfaceFile  L372:.Run  L479:.ParseScript  L499:.DispatchWithRetry  L513:.IsBusy  L519:.Dispatch  L529:case "save-project"  L532:case "close-project"  L535:case "info"  L538:case "list-devices"  L541:case "list-blocks"  L545:case "list-tags"  L548:case "tree"  L552:case "list-types"  L555:case "find"  L559:case "snapshot"  L562:case "xref"  L565:case "trace"  L568:case "list-hmi" …</sub>
+- **Program.cs** (1094 ln)
+  <sub>L118:class Program  L120:.Main  L337:.ExitCodeFor  L348:.RunLadderDryRun  L358:.RunExplainFile  L366:.RunInterfaceFile  L380:.Run  L487:.ParseScript  L509:.DispatchWithRetry  L523:.IsBusy  L529:.Dispatch  L539:case "save-project"  L542:case "close-project"  L545:case "info"  L548:case "list-devices"  L551:case "list-blocks"  L555:case "list-tags"  L558:case "tree"  L562:case "list-types"  L565:case "find"  L569:case "snapshot"  L572:case "xref"  L575:case "trace"  L578:case "list-hmi" …</sub>
 

@@ -1,5 +1,5 @@
-# __navi__ · `src/Tia.Core/` — 26 files → symbols at exact line numbers
-<!-- navindex · 2026-08-13 · DO NOT EDIT BY HAND; regen via navindex skill -->
+# __navi__ · `src/Tia.Core/` — 27 files → symbols at exact line numbers
+<!-- navindex · 2026-08-17 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../../__navi__.md`](../../__navi__.md)
 
 - **AlarmFc.cs** (750 ln)
@@ -49,6 +49,8 @@
   <sub>L47:class ReplicateFcConfig  L50:.BlocksFolder  L52:.EquipmentTypes  L54:.UdtNames  L56:.SourceNumbersToReplace  L57:.GlobalDb  L59:.StartNumber  L65:.TemplateFolder  L71:.TargetFolder  L79:class ReplicateFc  L81:.Run  L269:.TemplateFor  L281:.FindFolderByName  L294:.FoldersOfType  L303:.ReplicateInto  L351:.RewireXml  L446:.FindPathInDbXml  L480:naming  L482:.ExtractId  L488:.InstanceDbNames  L493:.ProposedBlockName  L506:.MainBlockName  L513:.FolderBaseName  L521:.static …</sub>
 - **Scaffold.cs** (350 ln)
   <sub>L51:class ScaffoldManifest  L54:.Source  L57:.Folders  L60:.TagFolders  L63:.Replace  L70:.Cpu  L72:.Items  L75:class ScaffoldItem  L77:.File  L80:.Folder  L84:class ScaffoldPlanItem  L97:class Scaffold  L100:.Rank  L114:.Plan  L145:.Merge  L155:.Apply  L164:.Run  L238:.CheckFamily  L252:.SameFamily  L259:.AlreadyInAnotherFolder  L267:.DeleteObject  L278:.FolderAction  L301:.ResolveBlockPath  L318:.ResolveTypePath …</sub>
+- **Sim.cs** (360 ln)
+  <sub>L61:class Sim  L67:.Run  L169:.RegisteredInstances  L179:.WaitReady  L196:.Execute  L206:case "write"  L210:case "read"  L214:case "wait"  L218:case "run"  L222:case "stop"  L226:case "state"  L229:case "tags"  L257:.Write  L281:.ParseBool  L289:.Plain  L310:class Target  L321:.FindTarget  L333:.Interfaces  L347:.DeviceItemOf  L374:.Resolve</sub>
 - **Standardize.cs** (654 ln)
   <sub>L59:class StandardizeConfig  L61:.RootFolder  L64:.MemorySets  L72:.SetMapping  L83:.PrefixMappings  L102:.CommentMappings  L167:.AlarmOrder  L173:class PrefixMapping  L175:.Keyword  L176:.Prefix  L179:class TagTemplate  L186:class NaturalStringComparer  L188:.Compare  L215:class AlarmTagComparer  L220:.AlarmTagComparer  L225:.Compare  L233:.Key  L244:class AddressAllocator  L248:.CurrentByte  L249:.CurrentBit  L251:.AddressAllocator  L257:.Next  L283:class MemoryManager  L287:.MemoryManager …</sub>
 - **TiaSession.cs** (231 ln)

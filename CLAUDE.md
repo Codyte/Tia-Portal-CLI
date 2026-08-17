@@ -179,6 +179,19 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     só nasce quando o drive é IO device daquele controlador — dois `connect-subnet` na ordem, PLC
     (`--io-system NOME`, cria) e depois o drive (junta). Nome de IO system por PLC, senão o drive
     entra no controlador errado quando duas CPUs dividem a subnet.
+  - **Rodar o programa e observar = `sim-run`, com a instância ligada pelo usuário.** O verbo faz
+    attach numa instância do **control panel do S7-PLCSIM Advanced**
+    (`Siemens.Simatic.PlcSim.Advanced.UserInterface.exe`), baixa o programa por Openness e roda os
+    passos do `--script` (`write`/`read`/`wait`/`run`/`stop`/`state`/`tags`; tag de DB vai com as
+    aspas do Portal: `"\"DB GLOBAL\".AREA.EQUIP.CMD_LIGA"`). Provado no projeto-molde: download
+    `Success`, 41550 tags, Bool escrito e relido.
+    **O PLCSIM clássico tem que estar fechado** — ele toma o mesmo canal (`-48,
+    CommunicationInterfaceNotAvailable`) e sequestra o access point `PLCSIM` do S7ONLINE, onde o
+    download sai `Success` com a instância Advanced vazia. Fechado o clássico, é esse mesmo access
+    point que serve o Advanced: daí o default `--pc-interface PLCSIM`.
+    **Registrar instância dentro do `tia.exe` foi tentado e descartado**: morre com o processo (o
+    Runtime Manager sobe in-proc, não há serviço) e o download não conecta nela nem com ping e porta
+    102 respondendo. Instância emprestada não se desliga no fim.
   - **`plug-module --type` aceita o MLFB sem o prefixo `OrderNumber:`** e, quando `canPlug` é
     `false`, devolve **`reason`**. Sem versão, `plugAs` sai com o prefixo e o firmware sondado
     (`OrderNumber:6ES7 131-6BH00-0BA0/V1.0`). Slot é do rack: `--item Rack_0`, posição em **`--pos`**.

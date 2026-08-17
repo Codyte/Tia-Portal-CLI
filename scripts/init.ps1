@@ -189,6 +189,18 @@ foreach ($dll in $dllNames) {
     if ($found) { Copy-Item $found $dest; Write-Host "lib/: copiado $dll de $found" }
     else { $missing += $dll }
 }
+# PLCSIM Advanced nao mora com o Openness: a API fica em Common Files (x86), versionada por pasta.
+# Sem ela o `sim-run` nao compila; com ela, o build copia a DLL pro lado do exe (Private=true no csproj).
+$simDest = Join-Path $libDir 'Siemens.Simatic.Simulation.Runtime.Api.x64.dll'
+if (-not (Test-Path $simDest)) {
+    $simFound = Get-ChildItem (Join-Path ${env:ProgramFiles(x86)} 'Common Files\Siemens\PLCSIMADV\API') -Directory -ErrorAction SilentlyContinue |
+        Sort-Object { [version]$_.Name } -Descending |
+        ForEach-Object { Join-Path $_.FullName 'Siemens.Simatic.Simulation.Runtime.Api.x64.dll' } |
+        Where-Object { Test-Path $_ } | Select-Object -First 1
+    if ($simFound) { Copy-Item $simFound $simDest; Write-Host "lib/: copiado API do PLCSIM Advanced de $simFound" }
+    else { $missing += 'Siemens.Simatic.Simulation.Runtime.Api.x64.dll (S7-PLCSIM Advanced instalado?)' }
+}
+
 if ($missing.Count -gt 0) {
     Write-Warning "DLLs Siemens.Engineering nao encontradas (TIA Portal V21+ com Openness instalado?): $($missing -join ', ')"
     $ok = $false

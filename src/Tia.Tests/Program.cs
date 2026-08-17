@@ -764,6 +764,21 @@ namespace Tia.Tests
                 "Group: agrupar não some com objeto nem mexe em geometria");
             var gids = edit.Descendants().Select(e => (string)e.Attribute("ID")).Where(v => v != null).ToList();
             Check(gids.Count == gids.Distinct().Count(), "Group: ID do grupo não colide");
+            Check(Tia.Core.ScreenItems.Parse(edit).All(i => i.Group == "SKID_BF-01"),
+                "Parse: objeto agrupado sai com o nome do grupo (senão conferir agrupamento pede o XML cru)");
+
+            var batismo = XDocument.Parse(screen(
+                item("Switch", "Switch_18", 120, 250, 90, 36, "DB_SKID_BIOFILTRO_BF-01-EC-01_CMD_LIGA") +
+                item("IOField", "I/O field_9", 120, 300, 80, 25, "tag1") +
+                item("Rectangle", "Fundo_1", 100, 100, 200, 400, null)));
+            var auto = Tia.Core.ScreenItems.RenameFromTag(batismo);
+            Check(((List<object>)auto["renamed"]).Count == 1 &&
+                  Tia.Core.ScreenItems.Parse(batismo).Any(i => i.Name == "BF-01-EC-01_CMD_LIGA"),
+                "RenameFromTag: nome sai da tag a partir do 1º código de equipamento");
+            Check(((List<object>)auto["skippedRename"]).Count == 1,
+                "RenameFromTag: tag placeholder vira skipped com motivo; objeto sem tag nem entra");
+            Check(((List<object>)Tia.Core.ScreenItems.RenameFromTag(batismo)["renamed"]).Count == 0,
+                "RenameFromTag: idempotente (2ª passada não renomeia nada)");
         }
 
         private static void Scaffold_Plan()

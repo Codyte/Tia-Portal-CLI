@@ -1,36 +1,38 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L61    class ScreenItems
-//   L63    class Item
-//   L74    núcleo puro (sem Openness, testável offline)
-//   L77    .Parse
-//   L104   .Groups
-//   L134   .Patch
-//   L162   case "x"
-//   L163   case "y"
-//   L164   case "w"
-//   L165   case "h"
-//   L181   .Remove
-//   L208   .Rename
-//   L245   .Group
-//   L305   .CopyInto
-//   L370   verbos
-//   L373   .List
-//   L401   .Set
-//   L434   .Copy
-//   L459   utilidades
-//   L462   .ScreenElements
-//   L468   .NameOf
-//   L475   .Inside
-//   L485   .Layers
-//   L493   .LayerIndex
-//   L500   .FolderOf
-//   L507   .Coords
-//   L515   .FirstTag
-//   L523   .Attr
-//   L529   .Num
-//   L536   .SetNum
-//   L543   .ParseId
+//   L63    class ScreenItems
+//   L65    class Item
+//   L76    núcleo puro (sem Openness, testável offline)
+//   L79    .Parse
+//   L107   .Groups
+//   L137   .Patch
+//   L165   case "x"
+//   L166   case "y"
+//   L167   case "w"
+//   L168   case "h"
+//   L184   .Remove
+//   L211   .Rename
+//   L249   .RenameFromTag
+//   L298   .Group
+//   L358   .CopyInto
+//   L423   verbos
+//   L426   .List
+//   L454   .Set
+//   L492   .Copy
+//   L517   utilidades
+//   L520   .ScreenElements
+//   L530   .GroupOf
+//   L536   .NameOf
+//   L543   .Inside
+//   L553   .Layers
+//   L561   .LayerIndex
+//   L568   .FolderOf
+//   L575   .Coords
+//   L583   .FirstTag
+//   L591   .Attr
+//   L597   .Num
+//   L604   .SetNum
+//   L611   .ParseId
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -62,7 +64,7 @@ namespace Tia.Core
     {
         public sealed class Item
         {
-            public string Name, Kind, Tag;
+            public string Name, Kind, Tag, Group;
             public int X, Y, W, H;
         }
 
@@ -90,6 +92,7 @@ namespace Tia.Core
                     X = Num(attrs, "Left"), Y = Num(attrs, "Top"),
                     W = Num(attrs, "Width"), H = Num(attrs, "Height"),
                     Tag = FirstTag(el),
+                    Group = GroupOf(el),
                 });
             }
             return rows;
@@ -231,6 +234,56 @@ namespace Tia.Core
                 renamed.Add(new Dictionary<string, object> { { "from", old }, { "to", now } });
             }
             return new Dictionary<string, object> { { "renamed", renamed }, { "missingRename", missing } };
+        }
+
+        /// <summary>
+        /// Nome auto-descritivo tirado da própria tag: o pedaço da tag a partir do 1º código de
+        /// equipamento (`..._BF-01-EC-01_CMD_LIGA` → `BF-01-EC-01_CMD_LIGA`). É a padronização em
+        /// massa — na tela Biofiltro foram 44 objetos, e derivá-los à mão fora do CLI foi o maior
+        /// trabalho manual daquela rodada.
+        ///
+        /// Objeto **sem tag** (botão, fundo, rótulo) fica com o nome do editor de propósito: sem
+        /// tag, batizar é adivinhação. Tag placeholder (`tag1`) não casa o padrão e cai no mesmo
+        /// `skipped`, com o motivo.
+        /// </summary>
+        internal static Dictionary<string, object> RenameFromTag(XDocument doc)
+        {
+            var pairs = new List<string>();
+            var skipped = new List<object>();
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            // Nome já em uso por OUTRO objeto viraria exceção no Rename e mataria a chamada inteira;
+            // aqui vira `skipped` e os outros 40+ seguem.
+            var taken = new HashSet<string>(ScreenElements(doc).Select(NameOf).Where(n => n != null),
+                StringComparer.Ordinal);
+            foreach (var it in Parse(doc))
+            {
+                if (string.IsNullOrEmpty(it.Tag)) continue; // sem tag não se batiza
+                var m = EquipRe.Match(it.Tag);
+                if (!m.Success)
+                {
+                    skipped.Add(new Dictionary<string, object>
+                        { { "item", it.Name }, { "tag", it.Tag }, { "why", "tag has no equipment code" } });
+                    continue;
+                }
+                var wanted = it.Tag.Substring(m.Index);
+                if (wanted == it.Name) continue;
+                if (!seen.Add(wanted))
+                {
+                    skipped.Add(new Dictionary<string, object>
+                        { { "item", it.Name }, { "tag", it.Tag }, { "why", "two objects share the tag '" + wanted + "'" } });
+                    continue;
+                }
+                if (taken.Contains(wanted))
+                {
+                    skipped.Add(new Dictionary<string, object>
+                        { { "item", it.Name }, { "tag", it.Tag }, { "why", "'" + wanted + "' is already another object's name" } });
+                    continue;
+                }
+                pairs.Add(it.Name + "=" + wanted);
+            }
+            var done = Rename(doc, pairs);
+            done["skippedRename"] = skipped;
+            return done;
         }
 
         /// <summary>
@@ -387,7 +440,7 @@ namespace Tia.Core
                     {
                         { "item", i.Name }, { "kind", i.Kind },
                         { "x", i.X }, { "y", i.Y }, { "w", i.W }, { "h", i.H },
-                        { "tag", i.Tag },
+                        { "tag", i.Tag }, { "group", i.Group },
                     }).ToList() },
             };
             if (group) result["equipment"] = Groups(items);
@@ -400,10 +453,10 @@ namespace Tia.Core
         /// </summary>
         public static object Set(TiaSession session, string device, string screenPath,
             List<string> sets, List<string> removes, List<string> renames, List<string> groups,
-            bool apply, string outDir)
+            bool fromTag, bool apply, string outDir)
         {
-            if (sets.Count + removes.Count + renames.Count + groups.Count == 0)
-                throw new ArgumentException("set-screen-items requires at least one of --set, --remove, --rename, --group.");
+            if (sets.Count + removes.Count + renames.Count + groups.Count == 0 && !fromTag)
+                throw new ArgumentException("set-screen-items requires at least one of --set, --remove, --rename, --rename-from-tag, --group.");
             var export = (Dictionary<string, object>)Hmi.ExportScreen(session, device, screenPath, outDir);
             var file = (string)export["file"];
             var doc = XDocument.Load(file);
@@ -412,6 +465,11 @@ namespace Tia.Core
             var patch = Patch(doc, sets);
             foreach (var kv in Remove(doc, removes)) patch[kv.Key] = kv.Value;
             foreach (var kv in Rename(doc, renames)) patch[kv.Key] = kv.Value;
+            if (fromTag)
+                foreach (var kv in RenameFromTag(doc))
+                    patch[kv.Key] = kv.Key == "renamed" && patch.ContainsKey("renamed")
+                        ? ((List<object>)patch["renamed"]).Concat((List<object>)kv.Value).ToList()
+                        : kv.Value;
             foreach (var kv in Group(doc, groups)) patch[kv.Key] = kv.Value;
             var edited = Path.Combine(Path.GetDirectoryName(file),
                 Path.GetFileNameWithoutExtension(file) + ".edit.xml");
@@ -463,6 +521,16 @@ namespace Tia.Core
         {
             return doc.Descendants().Where(e => e.Name.LocalName.StartsWith("Hmi.Screen.")
                 && e.Elements().Any(c => c.Name.LocalName == "AttributeList")).ToList();
+        }
+
+        /// <summary>
+        /// Nome do `Hmi.Screen.Group` que contém o objeto, ou null. Sem isso, conferir agrupamento
+        /// exigia abrir o XML de 800 KB na mão — foi o que aconteceu na 1ª rodada da tela Biofiltro.
+        /// </summary>
+        static string GroupOf(XElement el)
+        {
+            var g = el.Ancestors().FirstOrDefault(a => a.Name.LocalName == "Hmi.Screen.Group");
+            return g == null ? null : NameOf(g);
         }
 
         static string NameOf(XElement el)

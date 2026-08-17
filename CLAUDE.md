@@ -219,6 +219,13 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     absoluta no SimaticML). `--rename` para destino ocupado é erro (o Portal recusa `ObjectName`
     duplicado) — e o nome bom sai da própria tag (`Switch_18` → `BF-01-EC-01_CMD_LIGA`), o que só
     dá para fazer em objeto **com** tag; sem tag, batizar é adivinhação.
+    **`--rename-from-tag` faz isso na tela inteira** e é idempotente: o que não dá vai p/
+    `skippedRename` com motivo, então tag placeholder (`tag1`) aparece nominalmente — o comando que
+    padroniza é o mesmo que denuncia a pendência. A lista traz **`group`** (de que
+    `Hmi.Screen.Group` o objeto faz parte), que é como se confere agrupamento sem abrir o XML.
+    **Não há `--align`, e é decisão**: derivar os `--set` comparando coluna contra coluna pede
+    parear objeto com objeto, e par errado move o objeto errado. Coluna torta se **regenera** com
+    `copy-screen-items --replace`, onde o molde é a coluna boa; `--set` é para a exceção.
   - **`plug-module --type` aceita o MLFB sem o prefixo `OrderNumber:`** e, quando `canPlug` é
     `false`, devolve **`reason`**. Sem versão, `plugAs` sai com o prefixo e o firmware sondado
     (`OrderNumber:6ES7 131-6BH00-0BA0/V1.0`). Slot é do rack: `--item Rack_0`, posição em **`--pos`**.

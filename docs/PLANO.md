@@ -491,6 +491,31 @@ determinístico. Botão, retângulo e rótulo não têm tag — batizá-los seri
 o nome do editor de propósito. Restam **3 `I/O field` com a tag placeholder `tag1`** (um por coluna,
 BF-02/03/04), que é questão de engenharia da tela, não de ferramenta.
 
+### F13c — o que a rodada da Biofiltro mostrou que faltava ✅ (2026-08-17)
+
+Duas coisas foram feitas **fora do CLI**, em script descartável, e voltaram como verbo:
+
+- **`list-screen-items` agora traz `group`** (nome do `Hmi.Screen.Group` que contém o objeto).
+  Sem isso, conferir se o agrupamento pegou exigia abrir o XML de 800 KB na mão — foi exatamente o
+  que aconteceu na 1ª rodada. Confirmado na tela real: `"group": "SKID_BF-04"`.
+- **`set-screen-items --rename-from-tag`** — os 44 `--rename` saíram de um regex de sessão. Agora o
+  nome sai da própria tag a partir do 1º código de equipamento, na tela inteira, **idempotente**:
+  rodado de novo na Biofiltro já padronizada, `renamed: []` e `skippedRename` com os **3 `tag1`**
+  nominalmente listados. Ou seja, o mesmo comando que padroniza também **denuncia o placeholder** —
+  a pendência de engenharia aparece sozinha em vez de depender de alguém lembrar de procurar.
+
+**O que ficou de fora, e por quê.** Um `--align` que derive os `--set` sozinho (comparar coluna
+contra coluna) foi **rejeitado**: o plano desta rodada saiu de um pareamento por índice depois de
+ordenar por (y, x), que só é confiável quando as colunas têm exatamente o mesmo elenco — e não
+tinham (a coluna 04 vinha com o órfão). Errar o par significa **mover o objeto errado**. O caminho
+canônico continua sendo o do F13: **regenerar a coluna** com `copy-screen-items --replace`, onde o
+molde é a coluna boa e não há pareamento nenhum a adivinhar. Corrigir objeto a objeto é a exceção,
+e para a exceção `--set` já basta.
+
+**O custo continua sendo o import** (58-123 s por chamada, ~95% do verbo): a otimização real não é
+verbo mais esperto, é **juntar tudo num `run --script`** — as 102 edições da tela foram 1 export e 1
+import.
+
 ## F12 — `sim-diag` camada 1 ✅ (2026-08-17)
 
 **`sim-diag [--instance plc_1500_1] [--watch SEG]`** — diagnóstico do PLC virtual. Roda **antes do

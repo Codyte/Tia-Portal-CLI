@@ -185,13 +185,18 @@ namespace Tia.Cli
                             + "(um objeto por linha: nome, tipo, x, y, w, h, tag — 150 objetos cabem em 7 KB, "
                             + "contra 800 KB do XML da tela. --group agrega por equipamento lido do nome da tag "
                             + "e devolve a `region` de cada um, que é o recorte pronto p/ copy-screen-items; "
+                            + "a coluna `group` diz de que Hmi.Screen.Group o objeto faz parte; "
                             + "o bbox é só dos objetos COM tag, então fundo e rótulo pedem alargar a região)",
                         "set-screen-items --screen \"Pasta/Sub/Tela\" [--set \"Nome:x=530,y=356\"] "
-                            + "[--remove Nome] [--rename Velho=Novo] [--group NOME=x,y,w,h] "
+                            + "[--remove Nome] [--rename Velho=Novo] [--rename-from-tag] [--group NOME=x,y,w,h] "
                             + "[--device X] [--apply]  (todos repetíveis, um export e um import para N "
                             + "edições — import de tela custa 20-170 s. --set move/redimensiona (x,y,w,h em "
                             + "qualquer combinação); --remove apaga; --rename dá nome auto-descritivo no lugar "
-                            + "do contador do editor (Switch_18 -> BF-01_EC-01_CMD_LIGA); --group embrulha num "
+                            + "do contador do editor (Switch_18 -> BF-01-EC-01_CMD_LIGA); --rename-from-tag faz "
+                            + "isso na tela inteira, tirando o nome da própria tag a partir do 1º código de "
+                            + "equipamento (objeto SEM tag fica com o nome do editor: batizar seria "
+                            + "adivinhação; é idempotente e o que não dá vai p/ `skippedRename` com o motivo); "
+                            + "--group embrulha num "
                             + "Hmi.Screen.Group os objetos INTEIRAMENTE contidos na região, sem mexer em "
                             + "geometria (coordenada de filho é absoluta). Ordem fixa: set, remove, rename, "
                             + "group. Nome ausente vai p/ `missing` e os outros seguem; nome repetido na tela "
@@ -667,7 +672,8 @@ namespace Tia.Cli
                             result = Core.ScreenItems.Set(session, OptionValue(args, "--device"),
                                 Require(args, "--screen"), OptionValues(args, "--set"),
                                 OptionValues(args, "--remove"), OptionValues(args, "--rename"),
-                                OptionValues(args, "--group"), apply, outDir);
+                                OptionValues(args, "--group"), args.Contains("--rename-from-tag"),
+                                apply, outDir);
                         break;
                     case "copy-screen-items":
                         using (WriteLock(session, apply, verb))

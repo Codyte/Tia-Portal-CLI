@@ -537,6 +537,17 @@ Dois checks e um `skipped`:
   mas `_` também vive dentro de nome de membro — reverter seria adivinhação, e adivinhar num verbo
   de auditoria é pior que não checar.
 
+**Gradeamento Mecanizada com a cadeia nova** (2026-08-17, tela real, IHM_1.1): 142 objetos, 50 com
+tag, **35 placeholders** (`tag`, `tag1`, `aux`) contra 3 da Biofiltro — os 15 restantes foram
+renomeados e o `--rename-from-tag` repetido depois voltou `renamed: []`, provando idempotência
+contra tela já padronizada.
+
+**`--group` não se aplicou ali, e o motivo é o achado**: a tela **já vinha agrupada**, com 9
+`Hmi.Screen.Group` de nome de editor (`Group`, `Group_1`, …), e **nenhum** dos objetos agrupados tem
+tag com código de equipamento — são justamente os placeholders. Batizar grupo a partir dos filhos
+seria adivinhação, exatamente o que o `--rename` recusa fazer para objeto sem tag. Grupo se batiza
+depois que as tags forem ligadas; antes disso o verbo não tem de onde tirar o nome.
+
 ## F12 — `sim-diag` camada 1 ✅ (2026-08-17)
 
 **`sim-diag [--instance plc_1500_1] [--watch SEG]`** — diagnóstico do PLC virtual. Roda **antes do

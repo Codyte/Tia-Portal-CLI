@@ -130,6 +130,9 @@ responde pergunta em prosa).
   sai `Success` e a instância Advanced continua **vazia** — falso positivo que já custou meia sessão.
   Com o clássico fechado, esse mesmo access point é a rota do Advanced (`--pc-interface PLCSIM`, o
   default). **`--no-download`** roda os passos no programa que já está lá: o download é ~91% do verbo.
+  `-Start` é idempotente e o host **desfaz só o que fez** (instância que já existia fica de pé no
+  `-Stop`). Usuário quer **ver** a simulação: `-Start -Ui` abre o control panel junto — mesma vista
+  do mesmo Runtime Manager, e fechar a janela não desliga nada.
 - **Área nova = `replicate-fc --template "<pasta molde>" --target-folder "<pasta da área>"`.** Sem
   os dois, o molde é "a 1ª pasta irmã populada" e os alvos são "todas as irmãs" — área nova não tem
   irmã com blocos, e derivar o acionamento-semente à mão custou ~10 min da FP-06.

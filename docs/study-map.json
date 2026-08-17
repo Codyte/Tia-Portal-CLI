@@ -87,12 +87,16 @@
       "name": "alarmes e diagnóstico",
       "match": ["alarme", "alarm", "diagnostico", "diagnostic", "falha", "fault", "prodiag", "ob 82", "ob82", "pull", "plug"],
       "f1": ["Program_Alarm", "Diagnostic error interrupt", "ProDiag", "Get_Alarm"],
-      "sdk": ["PlcBlockGroup", "GetAttribute"],
+      "sdk": ["PlcBlockGroup", "GetAttribute", "OnlineProvider.State", "PlcWatchTableComposition.Import"],
       "libs": [],
       "hardware": [],
-      "warn": ["`gen-alarm-fc` sem `--area` regenera TODAS as áreas — criar uma área nova mexeria em todo o resto."],
+      "warn": [
+        "`gen-alarm-fc` sem `--area` regenera TODAS as áreas — criar uma área nova mexeria em todo o resto.",
+        "Diagnóstico ONLINE não existe no Openness: sem buffer de diagnóstico, sem valor de tag, sem RUN/STOP. Isso é limite de API, não falta de verbo — não sondar de novo, ver docs/LIMITES.md.",
+        "Ver o programa reagir só via S7-PLCSIM Advanced (`sim-host.ps1 -Start` + `sim-run`), e só para S7-1500/ET200SP/1200 G2. PLCSIM clássico não tem API."
+      ],
       "rules": ["R5", "R7"],
-      "next": ["tia gen-alarm-fc --area NOME", "tia gen-fault-ob", "tia audit"]
+      "next": ["tia gen-alarm-fc --area NOME", "tia gen-fault-ob", "tia audit", "pwsh scripts/sim-host.ps1 -Start"]
     },
     {
       "name": "comunicação (Modbus, serial, TCP)",
@@ -120,12 +124,16 @@
       "name": "HMI / supervisório",
       "match": ["hmi", "ihm", "tela", "wincc", "unified", "comfort", "supervisorio", "scada", "faceplate"],
       "f1": ["WinCC Unified", "Screens", "HMI tags"],
-      "sdk": ["HmiSoftware", "HmiUnified"],
+      "sdk": ["HmiTarget", "ScreenComposition", "Screen.Export", "HmiSoftware.Screens", "HmiScreenBase", "HmiTagComposition"],
       "libs": [],
       "hardware": [],
-      "warn": ["Openness não exporta tela do WinCC Unified — `list-hmi` só enumera."],
+      "warn": [
+        "São DUAS APIs diferentes e a escolha muda tudo. WinCC clássico (Comfort/Advanced/Professional, assembly `Siemens.Engineering.WinCC`): tela tem roundtrip SimaticML — `Screen.Export` + `ScreenComposition.Import` — igual a bloco de PLC. WinCC Unified (`Siemens.Engineering.WinCCUnified`): tela NÃO exporta SimaticML, é modelo de objetos tipado (`HmiScreenBase`, `HmiScreenItemBase`); só tag e script exportam.",
+        "`Siemens.Engineering.WinCC.dll` (clássico) não está em `lib/` — o gate 3 do `init.ps1` copia só 4 das 14 assemblies. Achou API no `--sdk` e não compila? É isso. Ver docs/LIMITES.md.",
+        "`list-hmi` de hoje só fala com WinCC Unified."
+      ],
       "rules": [],
-      "next": ["tia list-hmi --device X"]
+      "next": ["tia list-hmi --device X", "ler docs/LIMITES.md seção HMI"]
     },
     {
       "name": "matemática, string, conversão, escala",

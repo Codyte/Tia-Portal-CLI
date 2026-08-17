@@ -316,6 +316,19 @@ download.
   `SafetyValidation` (F-blocks), `TeamcenterGateway`, `WinCC` clássico (só temos Unified) e as 5 de
   `AddIn`. Nenhuma necessária hoje; acrescentar quando um verbo pedir — o `--sdk` do `tia-help.py`
   já indexa as 14, então dá pra confirmar a API antes de mexer no csproj.
+  **Atualização 2026-08-17:** `WinCC` clássico deixou de ser hipotética — é ela que tem o roundtrip
+  SimaticML de tela (`Screen.Export` / `ScreenComposition.Import`), então entra assim que a fase de
+  HMI começar. Ver `docs/LIMITES.md`, seção HMI.
+- ~~**`docs/LIMITES.md`**~~ ✅ **escrito 2026-08-17.** O que Openness/PLCSIM não fazem, com evidência
+  (termo sondado / mensagem exata), natureza (limite de API × decisão do repo × DLL faltando ×
+  limite de produto/SO) e saída. Motivo: a sondagem de diagnóstico online custou meia sessão na F10
+  e ia custar de novo. Apontado do `CLAUDE.md`, do `SKILL.md` e dos `warn` de dois domínios do
+  `study-map.json`.
+- **F11 `sim-diag` — aberta, não iniciada, e agora se sabe que é 1500-only.** Camada 1
+  (`OperatingState`/LED/eventos) e camada 2 (ler tag de alarme e cruzar com o texto dos blocos)
+  dependem as duas da API do PLCSIM Advanced. Não alcança PLCSIM clássico nem S7-1200 de 1ª
+  geração, S7-300 ou S7-400 — ver `docs/LIMITES.md`, seção Simulação. Despriorizada em favor de HMI
+  (decisão do user, 2026-08-17): o gargalo do produto passou a ser tela.
 
 ## Teste cego ponta a ponta — caderno escrito (2026-08-07)
 

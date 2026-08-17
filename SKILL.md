@@ -165,6 +165,7 @@ responde pergunta em prosa).
 | assinatura dos 81 verbos | `$env:TIA_CLI_HOME\docs\VERBS.md` (~90 linhas, gerado do help) |
 | **o que estudar antes de fazer** | `python "$env:TIA_CLI_HOME\scripts\tia-help.py" --study "tema"` — **primeira parada de qualquer tarefa de engenharia**; roda sem Portal aberto |
 | guia oficial da Siemens + bibliotecas gratuitas | `$env:TIA_CLI_HOME\docs\GUIA-SIEMENS.md` (entry IDs do SIOS e onde a casa é mais estrita) |
+| **o que a API NÃO faz** | `$env:TIA_CLI_HOME\docs\LIMITES.md` — limite de API × decisão do repo × DLL faltando, cada um com evidência e saída. **Ler antes de sondar API que "devia existir".** |
 | domínios que o `--study` conhece | `$env:TIA_CLI_HOME\docs\study-map.json` — domínio novo é mais um objeto lá, nenhuma linha de código muda |
 | decisões, fases, o que já foi medido | `$env:TIA_CLI_HOME\docs\PLANO.md` |
 | regras de operação do repo | `$env:TIA_CLI_HOME\CLAUDE.md` |

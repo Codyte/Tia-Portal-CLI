@@ -224,6 +224,11 @@ Guia oficial da Siemens, bibliotecas gratuitas (LGF 109479728, DriveLib 206539) 
 casa é deliberadamente mais estrito: `docs/GUIA-SIEMENS.md`. **Biblioteca oficial antes de código
 autoral** — reescrever escala, filtro de média ou função de string é dívida sem ganho.
 
+**O que Openness/PLCSIM NÃO fazem: `docs/LIMITES.md`.** Cada linha traz a evidência (termo sondado,
+mensagem exata), a natureza (limite de API × decisão do repo × falta de DLL em `lib/` × limite de
+produto/SO) e a saída. **Ler antes de sondar API que "devia existir"** — diagnóstico online, valor
+de tag, RUN/STOP, criação de TO, PLCSIM clássico e as duas APIs de HMI já estão lá com medição.
+
 ## Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza
 
 `python scripts/tia-help.py --search "termo"` → busca nos **45518 tópicos** da ajuda do TIA Portal

@@ -459,6 +459,38 @@ objetos por coluna, mais um `TextField` 17x25 órfão em (966,100). É exatament
 `set-screen-items` corrige em lote, e é o argumento de por que estampar mecanicamente: cópia à mão
 erra, cópia mecânica não.
 
+### F13b — `set-screen-items` fecha o ciclo: `--remove`, `--rename`, `--group` ✅ (2026-08-17)
+
+Três opções repetíveis no mesmo verbo, no mesmo par export/import (import de tela custou 58-123 s
+nesta rodada — verbo separado por operação seria pagar isso três vezes). Ordem fixa **set → remove
+→ rename → group**: agrupar por último porque a região se confere contra a geometria **já
+corrigida** pelos `--set` da mesma chamada.
+
+- **`--remove Nome`** — nome ausente vai p/ `missingRemove` e os outros seguem; repetido é erro.
+- **`--rename Velho=Novo`** — destino já ocupado é erro (o Portal recusa `ObjectName` duplicado).
+- **`--group NOME=x,y,w,h`** — embrulha num `Hmi.Screen.Group` os objetos **inteiramente contidos**
+  na região (mesmo critério do `CopyInto`), dentro da própria camada. **Coordenada de filho é
+  absoluta** no SimaticML (medido na tela Gradeamento, que já vem agrupada), então embrulhar não
+  mexe em geometria nenhuma. Só objeto de 1º nível da camada entra — o que já está num grupo fica
+  onde está. Região vazia devolve `items: 0` com nota, não exceção.
+
+**Tela Biofiltro padronizada e agrupada (o teste real).** Plano derivado por comparação mecânica
+contra a coluna 1: **53 `--set`** (passo exato 244 e as derivas internas), **1 `--remove`** (o
+`TextField` órfão), **44 `--rename`** (`Switch_18` → `BF-01-EC-01_CMD_LIGA`, o nome saindo da
+própria tag — R4 de `BOAS-PRATICAS.md` aplicado à tela) e **4 `--group`** (`SKID_BF-01..04`,
+`233|477|721|965,100,232,654`). Rodado primeiro numa cópia (`import-screen --replace
+Biofiltro=ZZ_TESTE Biofiltro`) e só então na tela real; a cópia morreu no `delete-screen`.
+
+Aceite: `list-screen-items --group` devolve os 4 skids com **`region` idêntica** —
+`244|488|732|976,154,209,529`, passo 244 exato e mesmo bbox nos quatro, contra o 244/244/245 com
+deriva de antes — e 150 → **149 objetos** (o órfão). No XML, 4 `Hmi.Screen.Group` de **37 filhos**
+cada; sobra `Text preliminar`, que é o título da tela.
+
+**Só objeto com tag foi renomeado** (44 de 149): o nome vem do equipamento lido da tag e é
+determinístico. Botão, retângulo e rótulo não têm tag — batizá-los seria adivinhação, e ficaram com
+o nome do editor de propósito. Restam **3 `I/O field` com a tag placeholder `tag1`** (um por coluna,
+BF-02/03/04), que é questão de engenharia da tela, não de ferramenta.
+
 ## F12 — `sim-diag` camada 1 ✅ (2026-08-17)
 
 **`sim-diag [--instance plc_1500_1] [--watch SEG]`** — diagnóstico do PLC virtual. Roda **antes do

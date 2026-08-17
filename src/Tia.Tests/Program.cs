@@ -735,6 +735,35 @@ namespace Tia.Tests
             Check(names.Count == names.Distinct().Count() && names.Contains("Simbolo_1_1"),
                 "CopyInto: ObjectName repetido ganha sufixo");
             Check((int)again["count"] == 3, "CopyInto: 2ª colagem copia o mesmo grupo");
+
+            var edit = XDocument.Parse(molde.ToString());
+            var rm = Tia.Core.ScreenItems.Remove(edit, new[] { "Fora_1", "Nao_existe" });
+            Check(((List<string>)rm["missingRemove"]).SequenceEqual(new[] { "Nao_existe" }),
+                "Remove: nome ausente vira missingRemove, não exceção");
+            Check(Tia.Core.ScreenItems.Parse(edit).Count == 3, "Remove: objeto saiu do XML");
+
+            var rn = Tia.Core.ScreenItems.Rename(edit, new[] { "Liga_1=BF-01_B-01_CMD_LIGA" });
+            Check(((List<object>)rn["renamed"]).Count == 1 &&
+                  Tia.Core.ScreenItems.Parse(edit).Any(i => i.Name == "BF-01_B-01_CMD_LIGA"),
+                "Rename: ObjectName trocado");
+            Check(Throws(() => Tia.Core.ScreenItems.Rename(edit, new[] { "Fundo_1=BF-01_B-01_CMD_LIGA" })),
+                "Rename: destino ocupado é erro (o Portal recusa duplicata)");
+
+            var gr = (List<object>)Tia.Core.ScreenItems.Group(edit,
+                new[] { "SKID_BF-01=100,100,200,400", "VAZIO=900,900,10,10" })["grouped"];
+            Check((int)((Dictionary<string, object>)gr[0])["items"] == 3,
+                "Group: embrulha os 3 contidos na região (veio " + ((Dictionary<string, object>)gr[0])["items"] + ")");
+            Check((int)((Dictionary<string, object>)gr[1])["items"] == 0,
+                "Group: região vazia devolve 0 com nota, não exceção");
+            var layerList = edit.Descendants().First(e => e.Name.LocalName == "Hmi.Screen.ScreenLayer")
+                .Elements().First(e => e.Name.LocalName == "ObjectList");
+            Check(layerList.Elements().Count() == 1 &&
+                  layerList.Elements().First().Name.LocalName == "Hmi.Screen.Group",
+                "Group: os membros saíram do nível da camada e viraram filhos do grupo");
+            Check(Tia.Core.ScreenItems.Parse(edit).Count == 3,
+                "Group: agrupar não some com objeto nem mexe em geometria");
+            var gids = edit.Descendants().Select(e => (string)e.Attribute("ID")).Where(v => v != null).ToList();
+            Check(gids.Count == gids.Distinct().Count(), "Group: ID do grupo não colide");
         }
 
         private static void Scaffold_Plan()

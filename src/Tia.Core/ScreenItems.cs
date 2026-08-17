@@ -1,30 +1,36 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L55    class ScreenItems
-//   L57    class Item
-//   L68    núcleo puro (sem Openness, testável offline)
-//   L71    .Parse
-//   L98    .Groups
-//   L128   .Patch
-//   L156   case "x"
-//   L157   case "y"
-//   L158   case "w"
-//   L159   case "h"
-//   L180   .CopyInto
-//   L245   verbos
-//   L248   .List
-//   L276   .Set
-//   L302   .Copy
-//   L327   utilidades
-//   L330   .Layers
-//   L338   .LayerIndex
-//   L345   .FolderOf
-//   L352   .Coords
-//   L360   .FirstTag
-//   L368   .Attr
-//   L374   .Num
-//   L381   .SetNum
-//   L388   .ParseId
+//   L61    class ScreenItems
+//   L63    class Item
+//   L74    núcleo puro (sem Openness, testável offline)
+//   L77    .Parse
+//   L104   .Groups
+//   L134   .Patch
+//   L162   case "x"
+//   L163   case "y"
+//   L164   case "w"
+//   L165   case "h"
+//   L181   .Remove
+//   L208   .Rename
+//   L245   .Group
+//   L305   .CopyInto
+//   L370   verbos
+//   L373   .List
+//   L401   .Set
+//   L434   .Copy
+//   L459   utilidades
+//   L462   .ScreenElements
+//   L468   .NameOf
+//   L475   .Inside
+//   L485   .Layers
+//   L493   .LayerIndex
+//   L500   .FolderOf
+//   L507   .Coords
+//   L515   .FirstTag
+//   L523   .Attr
+//   L529   .Num
+//   L536   .SetNum
+//   L543   .ParseId
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -169,6 +175,125 @@ namespace Tia.Core
         }
 
         /// <summary>
+        /// Apaga objetos pelo `ObjectName`. Nome ausente entra em `missing`; nome repetido é erro,
+        /// pela mesma razão do `Patch` — apagar "um dos dois" seria adivinhação.
+        /// </summary>
+        internal static Dictionary<string, object> Remove(XDocument doc, IEnumerable<string> names)
+        {
+            var removed = new List<object>();
+            var missing = new List<string>();
+            foreach (var name in names)
+            {
+                var hits = ScreenElements(doc).Where(e => NameOf(e) == name).ToList();
+                if (hits.Count == 0) { missing.Add(name); continue; }
+                if (hits.Count > 1)
+                    throw new InvalidOperationException("ObjectName '" + name + "' appears "
+                        + hits.Count + " times in this screen — cannot tell which one to remove.");
+                removed.Add(new Dictionary<string, object>
+                {
+                    { "item", name },
+                    { "kind", hits[0].Name.LocalName.Substring("Hmi.Screen.".Length) },
+                });
+                hits[0].Remove();
+            }
+            return new Dictionary<string, object> { { "removed", removed }, { "missingRemove", missing } };
+        }
+
+        /// <summary>
+        /// `OLD=NEW` no `ObjectName`. Nome auto-descritivo (`BF-01_EC-01_CMD_LIGA`) é o que faz o
+        /// `list-screen-items` ser legível sem cruzar com a tag, e o que tira `--set`/`--remove` da
+        /// dependência do contador do editor (`Switch_18`). Destino já ocupado é erro: o Portal
+        /// recusa `ObjectName` repetido na tela.
+        /// </summary>
+        internal static Dictionary<string, object> Rename(XDocument doc, IEnumerable<string> pairs)
+        {
+            var taken = new HashSet<string>(ScreenElements(doc).Select(NameOf).Where(n => n != null),
+                StringComparer.Ordinal);
+            var renamed = new List<object>();
+            var missing = new List<string>();
+            foreach (var pair in pairs)
+            {
+                var eq = pair.IndexOf('=');
+                if (eq <= 0) throw new ArgumentException("--rename expects OLD=NEW, got: " + pair);
+                var old = pair.Substring(0, eq); var now = pair.Substring(eq + 1);
+                if (now.Length == 0) throw new ArgumentException("--rename expects OLD=NEW, got: " + pair);
+                var hits = ScreenElements(doc).Where(e => NameOf(e) == old).ToList();
+                if (hits.Count == 0) { missing.Add(old); continue; }
+                if (hits.Count > 1)
+                    throw new InvalidOperationException("ObjectName '" + old + "' appears "
+                        + hits.Count + " times in this screen — cannot tell which one to rename.");
+                if (taken.Contains(now))
+                    throw new InvalidOperationException("ObjectName '" + now
+                        + "' already exists in this screen — the Portal rejects duplicates.");
+                var attrs = hits[0].Elements().First(c => c.Name.LocalName == "AttributeList");
+                attrs.Elements().First(c => c.Name.LocalName == "ObjectName").Value = now;
+                taken.Remove(old); taken.Add(now);
+                renamed.Add(new Dictionary<string, object> { { "from", old }, { "to", now } });
+            }
+            return new Dictionary<string, object> { { "renamed", renamed }, { "missingRename", missing } };
+        }
+
+        /// <summary>
+        /// `NOME=x,y,w,h` — embrulha num `Hmi.Screen.Group` os objetos **inteiramente contidos** na
+        /// região (mesmo critério do `CopyInto`), dentro da própria camada. Só objeto de primeiro
+        /// nível da camada entra: objeto que já está num grupo continua onde está.
+        ///
+        /// O grupo é o que faz o operador mover/copiar o skid inteiro na GUI como uma peça, e o que
+        /// dá nome ao conjunto — a coordenada dos filhos é **absoluta** no SimaticML (medido na tela
+        /// Gradeamento, que já vem agrupada), então embrulhar não mexe em geometria nenhuma.
+        /// </summary>
+        internal static Dictionary<string, object> Group(XDocument doc, IEnumerable<string> specs)
+        {
+            var taken = new HashSet<string>(ScreenElements(doc).Select(NameOf).Where(n => n != null),
+                StringComparer.Ordinal);
+            long nextId = doc.Descendants().Select(e => (string)e.Attribute("ID"))
+                .Where(v => v != null).Select(ParseId).DefaultIfEmpty(0).Max() + 1;
+            var grouped = new List<object>();
+            foreach (var spec in specs)
+            {
+                var eq = spec.IndexOf('=');
+                if (eq <= 0) throw new ArgumentException("--group expects NAME=x,y,w,h, got: " + spec);
+                var name = spec.Substring(0, eq);
+                var region = Coords(spec.Substring(eq + 1), 4, "--group");
+                if (taken.Contains(name))
+                    throw new InvalidOperationException("ObjectName '" + name
+                        + "' already exists in this screen — pick another group name.");
+
+                foreach (var layer in Layers(doc))
+                {
+                    var members = layer.Elements()
+                        .Where(e => e.Name.LocalName.StartsWith("Hmi.Screen.") && Inside(e, region)).ToList();
+                    if (members.Count == 0) continue;
+                    var xn = layer.Name.Namespace; // export real vem sem namespace; fixture tem — segue o pai
+                    var group = new XElement(xn + "Hmi.Screen.Group",
+                        new XAttribute("ID", nextId++.ToString("X", CultureInfo.InvariantCulture)),
+                        new XAttribute("CompositionName", "ScreenItems"),
+                        new XElement(xn + "AttributeList",
+                            new XElement(xn + "ObjectName", name),
+                            new XElement(xn + "TabIndex", -1)),
+                        new XElement(xn + "ObjectList"));
+                    members[0].AddBeforeSelf(group);
+                    var list = group.Elements().First(c => c.Name.LocalName == "ObjectList");
+                    foreach (var m in members) { m.Remove(); list.Add(m); }
+                    taken.Add(name);
+                    grouped.Add(new Dictionary<string, object>
+                    {
+                        { "group", name }, { "items", members.Count },
+                        { "members", members.Select(NameOf).ToList() },
+                    });
+                    break; // um grupo por spec: região que atravessa camadas seria grupo por camada
+                }
+                if (!taken.Contains(name))
+                    grouped.Add(new Dictionary<string, object>
+                    {
+                        { "group", name }, { "items", 0 },
+                        { "note", "nothing fully inside the region — check it with list-screen-items --group" },
+                    });
+            }
+            return new Dictionary<string, object> { { "grouped", grouped } };
+        }
+
+        /// <summary>
         /// Copia para `to` todo objeto de `from` **inteiramente contido** na região, deslocado por
         /// `at`. Conter inteiro é o critério porque é o que faz "o cartão do motor" virar uma seleção
         /// sem nomear 13 objetos — objeto que atravessa a borda fica de fora, de propósito.
@@ -274,13 +399,20 @@ namespace Tia.Core
         /// inviável (import de tela mediu ~20 s).
         /// </summary>
         public static object Set(TiaSession session, string device, string screenPath,
-            List<string> sets, bool apply, string outDir)
+            List<string> sets, List<string> removes, List<string> renames, List<string> groups,
+            bool apply, string outDir)
         {
-            if (sets.Count == 0) throw new ArgumentException("set-screen-items requires at least one --set.");
+            if (sets.Count + removes.Count + renames.Count + groups.Count == 0)
+                throw new ArgumentException("set-screen-items requires at least one of --set, --remove, --rename, --group.");
             var export = (Dictionary<string, object>)Hmi.ExportScreen(session, device, screenPath, outDir);
             var file = (string)export["file"];
             var doc = XDocument.Load(file);
+            // Ordem fixa: mover, apagar, renomear, agrupar. Agrupar por último porque a região se
+            // confere contra a geometria JÁ corrigida pelos --set desta mesma chamada.
             var patch = Patch(doc, sets);
+            foreach (var kv in Remove(doc, removes)) patch[kv.Key] = kv.Value;
+            foreach (var kv in Rename(doc, renames)) patch[kv.Key] = kv.Value;
+            foreach (var kv in Group(doc, groups)) patch[kv.Key] = kv.Value;
             var edited = Path.Combine(Path.GetDirectoryName(file),
                 Path.GetFileNameWithoutExtension(file) + ".edit.xml");
             doc.Save(edited);
@@ -325,6 +457,29 @@ namespace Tia.Core
         }
 
         // ---------- utilidades ----------
+
+        /// <summary>Todo `Hmi.Screen.*` que tem `AttributeList` (a própria tela e camadas ficam fora).</summary>
+        static IEnumerable<XElement> ScreenElements(XDocument doc)
+        {
+            return doc.Descendants().Where(e => e.Name.LocalName.StartsWith("Hmi.Screen.")
+                && e.Elements().Any(c => c.Name.LocalName == "AttributeList")).ToList();
+        }
+
+        static string NameOf(XElement el)
+        {
+            var attrs = el.Elements().FirstOrDefault(c => c.Name.LocalName == "AttributeList");
+            return attrs == null ? null : Attr(attrs, "ObjectName");
+        }
+
+        /// <summary>Objeto inteiramente dentro de `x,y,w,h`. Sem geometria = fora.</summary>
+        static bool Inside(XElement el, int[] region)
+        {
+            var attrs = el.Elements().FirstOrDefault(c => c.Name.LocalName == "AttributeList");
+            if (attrs == null || attrs.Elements().All(c => c.Name.LocalName != "Left")) return false;
+            int x = Num(attrs, "Left"), y = Num(attrs, "Top"), w = Num(attrs, "Width"), h = Num(attrs, "Height");
+            return x >= region[0] && y >= region[1]
+                && x + w <= region[0] + region[2] && y + h <= region[1] + region[3];
+        }
 
         /// <summary>A `ObjectList` de cada `ScreenLayer`, na ordem do arquivo (índice = camada).</summary>
         static List<XElement> Layers(XDocument doc)

@@ -2,109 +2,109 @@
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L126   class Program
 //   L128   .Main
-//   L378   .ExitCodeFor
-//   L389   .RunLadderDryRun
-//   L399   .RunExplainFile
-//   L407   .RunInterfaceFile
-//   L421   .Run
-//   L537   .ParseScript
-//   L559   .DispatchWithRetry
-//   L573   .IsBusy
-//   L579   .Dispatch
-//   L589   case "save-project"
-//   L592   case "close-project"
-//   L595   case "info"
-//   L598   case "list-devices"
-//   L601   case "list-blocks"
-//   L605   case "list-tags"
-//   L608   case "tree"
-//   L612   case "list-types"
-//   L615   case "find"
-//   L619   case "snapshot"
-//   L622   case "xref"
-//   L625   case "trace"
-//   L628   case "list-hmi"
-//   L631   case "export-hmi-tags"
-//   L635   case "hmi-tree"
-//   L638   case "export-screen"
-//   L642   case "import-screen"
-//   L649   case "delete-screen"
-//   L654   case "list-screen-items"
-//   L659   case "set-screen-items"
-//   L664   case "copy-screen-items"
-//   L672   case "list-motion"
-//   L676   case "free-memory"
-//   L682   case "export-block"
-//   L685   case "explain-block"
-//   L690   case "export-tags"
-//   L693   case "list-interface"
-//   L699   case "import-block"
-//   L706   case "import-ladder"
-//   L714   case "import-source"
-//   L719   case "create-folder"
-//   L724   case "delete-folder"
-//   L729   case "delete-block"
-//   L733   case "move-block"
-//   L738   case "delete-type"
-//   L742   case "export-type"
-//   L745   case "import-type"
-//   L749   case "scaffold"
-//   L758   case "clone"
-//   L765   case "add-call"
-//   L772   case "delete-network"
-//   L777   case "set-retain"
-//   L782   case "add-db-member"
-//   L788   case "import-tags"
-//   L795   case "retrieve-library"
-//   L800   case "create-library"
-//   L804   case "list-library"
-//   L807   case "import-master-copy"
-//   L813   case "add-master-copy"
-//   L819   case "create-instance-db"
-//   L824   case "delete-master-copy"
-//   L829   case "add-device"
-//   L834   case "delete-device"
-//   L838   case "add-tag"
-//   L844   case "delete-tag"
-//   L849   case "edit-db-member"
-//   L855   case "delete-db-member"
-//   L860   case "rename-block"
-//   L865   case "set-tag"
-//   L872   case "set-attr"
-//   L878   case "list-attrs"
-//   L882   case "plug-module"
-//   L888   case "list-telegrams"
-//   L891   case "insert-telegram"
-//   L898   case "set-address"
-//   L904   case "set-io-address"
-//   L910   case "list-io-map"
-//   L914   case "set-memory-bytes"
-//   L920   case "connect-subnet"
-//   L925   case "export-cax"
-//   L928   case "import-cax"
-//   L932   case "compile"
-//   L947   case "sim-run"
-//   L956   case "diff-block"
-//   L960   case "audit"
-//   L965   case "doctor"
-//   L973   case "gen-profinet"
-//   L979   case "standardize-tags"
-//   L987   case "gen-fault-ob"
-//   L995   case "replicate-fc"
-//   L1006  case "gen-alarm-fc"
-//   L1016  case "replicate-instruments"
-//   L1029  .OptionValue
-//   L1035  .ParseInt
-//   L1041  .ParseByte
-//   L1048  .OptionValues
-//   L1057  .WriteLock
-//   L1062  .Require
-//   L1094  .Print
-//   L1110  .Sanitize
-//   L1117  .WriteOut
-//   L1136  .CountOf
-//   L1158  .ResolveSiemensAssembly
-//   L1169  .SiemensProbeDirs
+//   L384   .ExitCodeFor
+//   L395   .RunLadderDryRun
+//   L405   .RunExplainFile
+//   L413   .RunInterfaceFile
+//   L427   .Run
+//   L543   .ParseScript
+//   L565   .DispatchWithRetry
+//   L579   .IsBusy
+//   L585   .Dispatch
+//   L595   case "save-project"
+//   L598   case "close-project"
+//   L601   case "info"
+//   L604   case "list-devices"
+//   L607   case "list-blocks"
+//   L611   case "list-tags"
+//   L614   case "tree"
+//   L618   case "list-types"
+//   L621   case "find"
+//   L625   case "snapshot"
+//   L628   case "xref"
+//   L631   case "trace"
+//   L634   case "list-hmi"
+//   L637   case "export-hmi-tags"
+//   L641   case "hmi-tree"
+//   L644   case "export-screen"
+//   L648   case "import-screen"
+//   L655   case "delete-screen"
+//   L660   case "list-screen-items"
+//   L665   case "set-screen-items"
+//   L672   case "copy-screen-items"
+//   L680   case "list-motion"
+//   L684   case "free-memory"
+//   L690   case "export-block"
+//   L693   case "explain-block"
+//   L698   case "export-tags"
+//   L701   case "list-interface"
+//   L707   case "import-block"
+//   L714   case "import-ladder"
+//   L722   case "import-source"
+//   L727   case "create-folder"
+//   L732   case "delete-folder"
+//   L737   case "delete-block"
+//   L741   case "move-block"
+//   L746   case "delete-type"
+//   L750   case "export-type"
+//   L753   case "import-type"
+//   L757   case "scaffold"
+//   L766   case "clone"
+//   L773   case "add-call"
+//   L780   case "delete-network"
+//   L785   case "set-retain"
+//   L790   case "add-db-member"
+//   L796   case "import-tags"
+//   L803   case "retrieve-library"
+//   L808   case "create-library"
+//   L812   case "list-library"
+//   L815   case "import-master-copy"
+//   L821   case "add-master-copy"
+//   L827   case "create-instance-db"
+//   L832   case "delete-master-copy"
+//   L837   case "add-device"
+//   L842   case "delete-device"
+//   L846   case "add-tag"
+//   L852   case "delete-tag"
+//   L857   case "edit-db-member"
+//   L863   case "delete-db-member"
+//   L868   case "rename-block"
+//   L873   case "set-tag"
+//   L880   case "set-attr"
+//   L886   case "list-attrs"
+//   L890   case "plug-module"
+//   L896   case "list-telegrams"
+//   L899   case "insert-telegram"
+//   L906   case "set-address"
+//   L912   case "set-io-address"
+//   L918   case "list-io-map"
+//   L922   case "set-memory-bytes"
+//   L928   case "connect-subnet"
+//   L933   case "export-cax"
+//   L936   case "import-cax"
+//   L940   case "compile"
+//   L955   case "sim-run"
+//   L964   case "diff-block"
+//   L968   case "audit"
+//   L973   case "doctor"
+//   L981   case "gen-profinet"
+//   L987   case "standardize-tags"
+//   L995   case "gen-fault-ob"
+//   L1003  case "replicate-fc"
+//   L1014  case "gen-alarm-fc"
+//   L1024  case "replicate-instruments"
+//   L1037  .OptionValue
+//   L1043  .ParseInt
+//   L1049  .ParseByte
+//   L1056  .OptionValues
+//   L1065  .WriteLock
+//   L1070  .Require
+//   L1102  .Print
+//   L1118  .Sanitize
+//   L1125  .WriteOut
+//   L1144  .CountOf
+//   L1166  .ResolveSiemensAssembly
+//   L1177  .SiemensProbeDirs
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -186,10 +186,16 @@ namespace Tia.Cli
                             + "contra 800 KB do XML da tela. --group agrega por equipamento lido do nome da tag "
                             + "e devolve a `region` de cada um, que é o recorte pronto p/ copy-screen-items; "
                             + "o bbox é só dos objetos COM tag, então fundo e rótulo pedem alargar a região)",
-                        "set-screen-items --screen \"Pasta/Sub/Tela\" --set \"Nome:x=530,y=356\" [--set ...] "
-                            + "[--device X] [--apply]  (move/redimensiona; campos x,y,w,h em qualquer "
-                            + "combinação. Um export e um import para N objetos — import de tela custa ~20 s. "
-                            + "Nome ausente vai p/ `missing` e os outros seguem; nome repetido na tela é erro)",
+                        "set-screen-items --screen \"Pasta/Sub/Tela\" [--set \"Nome:x=530,y=356\"] "
+                            + "[--remove Nome] [--rename Velho=Novo] [--group NOME=x,y,w,h] "
+                            + "[--device X] [--apply]  (todos repetíveis, um export e um import para N "
+                            + "edições — import de tela custa 20-170 s. --set move/redimensiona (x,y,w,h em "
+                            + "qualquer combinação); --remove apaga; --rename dá nome auto-descritivo no lugar "
+                            + "do contador do editor (Switch_18 -> BF-01_EC-01_CMD_LIGA); --group embrulha num "
+                            + "Hmi.Screen.Group os objetos INTEIRAMENTE contidos na região, sem mexer em "
+                            + "geometria (coordenada de filho é absoluta). Ordem fixa: set, remove, rename, "
+                            + "group. Nome ausente vai p/ `missing` e os outros seguem; nome repetido na tela "
+                            + "é erro)",
                         "copy-screen-items --from-screen \"<molde>\" --region x,y,w,h --screen \"<destino>\" "
                             + "--at x,y [--replace BF-01=BF-05] [--device X] [--apply]  (estampa: copia os "
                             + "objetos INTEIRAMENTE contidos na região, deslocados, renumerando ID e "
@@ -659,7 +665,9 @@ namespace Tia.Cli
                     case "set-screen-items":
                         using (WriteLock(session, apply, verb))
                             result = Core.ScreenItems.Set(session, OptionValue(args, "--device"),
-                                Require(args, "--screen"), OptionValues(args, "--set"), apply, outDir);
+                                Require(args, "--screen"), OptionValues(args, "--set"),
+                                OptionValues(args, "--remove"), OptionValues(args, "--rename"),
+                                OptionValues(args, "--group"), apply, outDir);
                         break;
                     case "copy-screen-items":
                         using (WriteLock(session, apply, verb))

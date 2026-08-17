@@ -211,6 +211,14 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     supported`); a cola vai na camada de mesmo índice. **Não há catálogo de estampas**: cada tela da
     casa tem seu dialeto (Biofiltro usa `Switch` 94x36, Gradeamento `Button` 93x39 para o mesmo
     motor), então o grupo sai sempre da tela-molde em runtime.
+    **`set-screen-items` também apaga, renomeia e agrupa**: `--remove Nome`, `--rename Velho=Novo`,
+    `--group NOME=x,y,w,h` (todos repetíveis, um export/import para tudo — import de tela custa
+    58-123 s). Ordem fixa **set → remove → rename → group**, porque a região do grupo se confere
+    contra a geometria já corrigida pelos `--set`. `--group` embrulha num `Hmi.Screen.Group` o que
+    está **inteiramente contido** na região, **sem mexer em geometria** (coordenada de filho é
+    absoluta no SimaticML). `--rename` para destino ocupado é erro (o Portal recusa `ObjectName`
+    duplicado) — e o nome bom sai da própria tag (`Switch_18` → `BF-01-EC-01_CMD_LIGA`), o que só
+    dá para fazer em objeto **com** tag; sem tag, batizar é adivinhação.
   - **`plug-module --type` aceita o MLFB sem o prefixo `OrderNumber:`** e, quando `canPlug` é
     `false`, devolve **`reason`**. Sem versão, `plugAs` sai com o prefixo e o firmware sondado
     (`OrderNumber:6ES7 131-6BH00-0BA0/V1.0`). Slot é do rack: `--item Rack_0`, posição em **`--pos`**.

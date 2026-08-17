@@ -18,7 +18,7 @@
 - `find --pattern P* [--kind block|table|tag|type|constant]  (constant = constantes de sistema e de usuário; é como se confere <drive>~PROFINET_interface~Standard_telegram_20 sem ler o compile)`
 - `xref --name X  (bloco, tag, tabela ou UDT → o que ele usa)`
 - `trace --equipment AG-01  (símbolos do equipamento + quem referencia; ~9s em projeto grande)`
-- `list-hmi [--device X]  (WinCC Unified: telas + tag tables)`
+- `list-hmi [--device X]  (WinCC clássico e Unified: telas + tag tables; `api` diz qual)`
 - `list-motion [--like X] [--params]  (objetos tecnológicos: eixo, came, cinemática — nome, tipo (TO_PositioningAxis...) e versão; --params traz os parâmetros, centenas por eixo. Read-only: o Openness não cria TO)`
 - `export-block --name X [--out DIR]`
 - `export-tags --table X [--out DIR]`

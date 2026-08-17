@@ -39,7 +39,7 @@ $prebuilt = -not (Test-Path (Join-Path $repo 'src\Tia.Cli\Tia.Cli.csproj'))
 
 $libDir = Join-Path $repo 'lib'
 $dllNames = @('Siemens.Engineering.Base.dll', 'Siemens.Engineering.Step7.dll', 'Siemens.Engineering.WinCCUnified.dll',
-              'Siemens.Engineering.Startdrive.dll')
+              'Siemens.Engineering.WinCC.dll', 'Siemens.Engineering.Startdrive.dll')
 $programFiles = [Environment]::GetFolderPath('ProgramFiles')
 $portalDirs = Get-ChildItem (Join-Path $programFiles 'Siemens\Automation') -Directory -Filter 'Portal V*' -ErrorAction SilentlyContinue |
     Sort-Object Name -Descending

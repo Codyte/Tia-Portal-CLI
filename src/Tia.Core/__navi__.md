@@ -25,8 +25,8 @@
   <sub>L40:class FaultObConfig  L43:.GroupPrefix  L45:.Devices  L46:.TemplateOb  L47:.ObNamePrefix  L53:.AlarmDb  L54:.CommentCultures  L62:class FaultOb  L69:class Module  L76:.Generate  L155:.DiscoverTasks  L184:.AllDeviceGroups  L191:.WithSubGroups  L199:.CollectModules  L210:XML generation  L212:.BuildObXml  L242:.RewireNetwork  L279:.AddMasterCommentEntry  L308:.ReassignUids  L328:.ModuleType  L340:.WriteCsv</sub>
 - **Hardware.cs** (820 ln)
   <sub>L57:class Hardware  L63:.FindDevice  L75:.HasItemNamed  L85:.Interface  L93:add-device  L96:.AddDevice  L121:delete-device  L123:.DeleteDevice  L136:plug-module  L144:.PlugModule  L230:.CollectSlots  L242:.FindItem  L255:.FindItem  L266:set-address  L268:.SetAddress  L297:set-io-address  L305:.SetIoAddress  L365:.CollectAddresses  L371:list-io-map  L381:.ListIoMap  L428:.ListIoMapRows  L440:.CollectMap  L468:.CollectTelegramMap  L495:.Range …</sub>
-- **Hmi.cs** (185 ln)
-  <sub>L25:class Hmi  L28:.Targets  L39:.List  L53:.Describe  L94:.Tree  L146:.SplitPath  L156:.Row  L165:.CollectScreens  L174:.CollectTables</sub>
+- **Hmi.cs** (285 ln)
+  <sub>L25:class Hmi  L28:.Targets  L39:.List  L53:.Describe  L94:.Tree  L146:.SplitPath  L156:.Row  L163:roundtrip SimaticML de tela (só clássico)  L166:.ExportScreen  L188:.ImportScreen  L224:.ClassicTarget  L243:.ResolveScreenFolder  L265:.CollectScreens  L274:.CollectTables</sub>
 - **InstrumentFc.cs** (721 ln)
   <sub>L54:class InstrumentFcConfig  L57:.SourceTagsFolder  L59:.TargetBlocksFolder  L60:.GlobalDb  L62:.TargetOb  L69:.FcSuffix  L70:.IgnoreFolders  L72:.TagFilters  L78:.MoldInstrumentId  L80:.NextCommandIds  L93:class InstrumentFc  L103:class Instrument  L116:class AreaTask  L124:.Run  L339:generation  L341:.BuildAreaFcXml  L369:.RewireNetwork  L423:.ImportAreaFc  L463:call OB  L465:.UpdateCallOb  L528:.CallNetworkXml  L559:.EmptyObXml  L589:checks + helpers  L592:.IsTaskComplete …</sub>
 - **Inventory.cs** (576 ln)

@@ -160,6 +160,106 @@ namespace Tia.Core
             return row;
         }
 
+        // ---------- roundtrip SimaticML de tela (só clássico) ----------
+
+        /// <summary>Export de uma tela: `Pasta/Sub/Tela`, o mesmo caminho que `list-hmi`/`hmi-tree` imprimem.</summary>
+        public static object ExportScreen(TiaSession session, string device, string screenPath, string outDir)
+        {
+            var target = ClassicTarget(session, device);
+            var cut = screenPath.LastIndexOf('/');
+            var screens = ResolveScreenFolder(target.Value, cut < 0 ? null : screenPath.Substring(0, cut), false);
+            var screen = screens == null ? null : screens.Find(screenPath.Substring(cut + 1));
+            if (screen == null)
+                throw new System.InvalidOperationException("Screen '" + screenPath + "' not found in '"
+                    + target.Value.Name + "'.");
+            var file = Ops.ExportPath(outDir, screenPath);
+            screen.Export(new FileInfo(file), Siemens.Engineering.ExportOptions.WithDefaults);
+            return new Dictionary<string, object>
+            {
+                { "device", target.Key }, { "hmi", target.Value.Name },
+                { "screen", screenPath }, { "file", file },
+            };
+        }
+
+        /// <summary>
+        /// Import de tela. Mesmo contrato do `import-block`: dry por padrão, `--folder` é caminho
+        /// completo a partir da raiz de telas e o dry-run diz em `folderAction` se vai criar ou reusar.
+        /// </summary>
+        public static object ImportScreen(TiaSession session, string device, string file,
+            string folderPath, bool apply)
+        {
+            var target = ClassicTarget(session, device);
+            var full = Path.GetFullPath(file);
+            if (!File.Exists(full)) throw new FileNotFoundException("Import file not found: " + full);
+            Ops.RequireRootType(full, "Hmi.Screen.");
+            var name = Ops.XmlObjectName(full);
+            var screens = ResolveScreenFolder(target.Value, folderPath, false);
+            var result = new Dictionary<string, object>
+            {
+                { "file", full },
+                { "device", target.Key },
+                { "hmi", target.Value.Name },
+                { "screen", name },
+                { "folder", folderPath ?? "" },
+                { "action", screens != null && name != null && screens.Find(name) != null
+                    ? "override" : "create" },
+                { "applied", apply },
+            };
+            if (!string.IsNullOrEmpty(folderPath))
+                result["folderAction"] = screens == null ? "create" : "reuse";
+            if (apply)
+            {
+                result["languagesActivated"] =
+                    Ops.EnsureCultures(session.Project, Ops.XmlCultures(full), true);
+                ResolveScreenFolder(target.Value, folderPath, true)
+                    .Import(new FileInfo(full), Siemens.Engineering.ImportOptions.Override);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// A IHM do verbo de escrita: uma só, e clássica. Unified não tem roundtrip SimaticML de tela
+        /// (docs/LIMITES.md), então recusar cedo é melhor que falhar dentro do Import.
+        /// </summary>
+        static KeyValuePair<string, Classic.HmiTarget> ClassicTarget(TiaSession session, string device)
+        {
+            var hits = Targets(session)
+                .Where(t => device == null || t.Key.Equals(device, System.StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            if (hits.Count == 0)
+                throw new System.InvalidOperationException(device == null
+                    ? "No HMI target in the project." : "HMI device '" + device + "' not found.");
+            if (hits.Count > 1)
+                throw new System.InvalidOperationException("--device required, candidates: "
+                    + string.Join(", ", hits.Select(t => t.Key)));
+            var classic = hits[0].Value as Classic.HmiTarget;
+            if (classic == null)
+                throw new System.InvalidOperationException("'" + hits[0].Key + "' is WinCC Unified: "
+                    + "screen has no SimaticML export/import there. Ver docs/LIMITES.md, seção HMI.");
+            return new KeyValuePair<string, Classic.HmiTarget>(hits[0].Key, classic);
+        }
+
+        /// <summary>Caminho de pasta de tela → a composition onde a tela vive. `create:false` devolve null se faltar.</summary>
+        static Classic.Screen.ScreenComposition ResolveScreenFolder(Classic.HmiTarget target,
+            string path, bool create)
+        {
+            var screens = target.ScreenFolder.Screens;
+            var folders = target.ScreenFolder.Folders;
+            if (string.IsNullOrEmpty(path)) return screens;
+            foreach (var part in path.Trim('/').Split('/'))
+            {
+                var next = folders.Find(part);
+                if (next == null)
+                {
+                    if (!create) return null;
+                    next = folders.Create(part);
+                }
+                screens = next.Screens;
+                folders = next.Folders;
+            }
+            return screens;
+        }
+
         // A árvore do WinCC clássico é sistema-folder + pastas de usuário recursivas; o caminho
         // "Pasta/Sub/Tela" é o que identifica a tela para export/import, não o nome solto.
         static void CollectScreens(Classic.Screen.ScreenComposition screens,

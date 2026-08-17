@@ -610,7 +610,7 @@ namespace Tia.Core
             return new Dictionary<string, object> { { "exported", name }, { "file", file } };
         }
 
-        private static string ExportPath(string outDir, string name)
+        internal static string ExportPath(string outDir, string name)
         {
             Directory.CreateDirectory(outDir);
             var safe = string.Join("_", name.Split(Path.GetInvalidFileNameChars()));

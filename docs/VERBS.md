@@ -20,6 +20,8 @@
 - `trace --equipment AG-01  (símbolos do equipamento + quem referencia; ~9s em projeto grande)`
 - `list-hmi [--device X]  (WinCC clássico e Unified: telas + tag tables; `api` diz qual)`
 - `hmi-tree  (outline de todas as IHMs → hmi-navi.md, agrupado por pasta; irmão do `tree`)`
+- `export-screen --screen "Pasta/Sub/Tela" [--device X]  (SimaticML da tela; só WinCC clássico — Unified não exporta tela)`
+- `import-screen --file F.xml [--device X] [--folder "Pasta/Sub"] [--apply]  (--folder é caminho completo a partir da raiz de telas, como no import-block)`
 - `list-motion [--like X] [--params]  (objetos tecnológicos: eixo, came, cinemática — nome, tipo (TO_PositioningAxis...) e versão; --params traz os parâmetros, centenas por eixo. Read-only: o Openness não cria TO)`
 - `export-block --name X [--out DIR]`
 - `export-tags --table X [--out DIR]`

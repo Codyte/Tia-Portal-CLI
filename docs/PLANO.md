@@ -316,9 +316,9 @@ download.
   `SafetyValidation` (F-blocks), `TeamcenterGateway`, `WinCC` clássico (só temos Unified) e as 5 de
   `AddIn`. Nenhuma necessária hoje; acrescentar quando um verbo pedir — o `--sdk` do `tia-help.py`
   já indexa as 14, então dá pra confirmar a API antes de mexer no csproj.
-  **Atualização 2026-08-17:** `WinCC` clássico deixou de ser hipotética — é ela que tem o roundtrip
-  SimaticML de tela (`Screen.Export` / `ScreenComposition.Import`), então entra assim que a fase de
-  HMI começar. Ver `docs/LIMITES.md`, seção HMI.
+  **Atualização 2026-08-17:** `WinCC` clássico **entrou** no `lib/` e no `Tia.Core.csproj` — é ela
+  que tem o roundtrip SimaticML de tela (`Screen.Export` / `ScreenComposition.Import`). Máquina que
+  der pull precisa re-rodar `init.ps1`. Ver `docs/LIMITES.md`, seção HMI.
 - ~~**`docs/LIMITES.md`**~~ ✅ **escrito 2026-08-17.** O que Openness/PLCSIM não fazem, com evidência
   (termo sondado / mensagem exata), natureza (limite de API × decisão do repo × DLL faltando ×
   limite de produto/SO) e saída. Motivo: a sondagem de diagnóstico online custou meia sessão na F10
@@ -329,6 +329,35 @@ download.
   dependem as duas da API do PLCSIM Advanced. Não alcança PLCSIM clássico nem S7-1200 de 1ª
   geração, S7-300 ou S7-400 — ver `docs/LIMITES.md`, seção Simulação. Despriorizada em favor de HMI
   (decisão do user, 2026-08-17): o gargalo do produto passou a ser tela.
+
+## F11 — IHM (em andamento, 2026-08-17)
+
+Gargalo do produto deixou de ser PLC/estrutura e passou a ser tela. **WinCC clássico antes de
+Unified, e não por preferência: é a única das duas com roundtrip SimaticML de tela** — Unified é
+modelo de objetos tipado (`HmiScreenBase`), sem export de tela. O projeto real é 100% clássico.
+
+**Etapa 1 — leitura + roundtrip ✅ (2026-08-17)**
+
+- `Siemens.Engineering.WinCC.dll` em `lib/`, `<Reference>` e `$dllNames` do `init.ps1`.
+- `list-hmi` fala as duas APIs (campo `api: classic|unified`) e imprime caminho de pasta
+  (`Pasta/Sub/Tela`). Medido no projeto real: 4 IHMs, 76 telas, 73 tabelas, 4354 tags, todas
+  `classic`.
+- `hmi-tree` → `hmi-navi.md` agrupado por pasta, irmão do `plc-navi.md`. **10,0 KB contra 14,3 KB
+  do JSON = 1,4x**, longe dos 4,5x do `plc-navi.md`: o JSON de HMI já é compacto (tela é string,
+  não dicionário de 6 campos como bloco). O verbo fica **pela forma** — agrupamento por área —,
+  não pelo tamanho. Escrito aqui para não vender ganho que não existe.
+- `export-screen --screen "Pasta/Sub/Tela"` e `import-screen --file X.xml [--folder P] [--apply]`,
+  mesmo contrato do `import-block` (dry por padrão, `--folder` é caminho completo a partir da raiz
+  de telas, `folderAction: create|reuse`). Raiz do XML é `Hmi.Screen.Screen`. Roundtrip provado no
+  projeto-molde: export (14138 B) → import `--apply` `override` → re-export byte-idêntico.
+
+**Etapa 2 — gerar tela de área a partir de molde** (não iniciada), como `replicate-fc` faz com FC.
+A árvore da IHM **espelha a do PLC** (`3. Partidas/3.1 Preliminar (P-GM-01)`), então o vínculo
+tela↔área já existe no nome.
+
+Aberto: `connections: []` nas 4 IHMs. Tag de IHM precisa de conexão para chegar no PLC — ou elas
+não vivem em `HmiTarget.Connections`, ou conexão integrada mora noutro lugar do modelo. Não
+bloqueia leitura; bloqueia gerar tela nova que leia tag do PLC.
 
 ## Teste cego ponta a ponta — caderno escrito (2026-08-07)
 

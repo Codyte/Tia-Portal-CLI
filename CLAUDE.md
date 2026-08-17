@@ -229,8 +229,10 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
   - **Tag de tela quebrada = `audit-screen`**, que hoje só aparecia no compile do HMI (e o compile não
     diz qual objeto a usa). Cruza tag do objeto × tags **da IHM**: existe, e tem código de equipamento
     (é assim que o placeholder `tag1` do editor sai nominalmente). Sem `--screen` varre toda tela do
-    device — um export por tela. Cruzar com a tag **do PLC** sai `skipped`: a tag de HMI clássica só
-    expõe `Name` e o SimaticML da tabela traz só a `Connection` (`docs/LIMITES.md`).
+    device — um export por tela, **~9,5 s cada** (medido: IHM_2.1, 9 telas, 591 objetos, 86 s), então
+    varrer as 4 IHMs é ~12 min de banho, e iterar vai com `--screen`. Cruzar com a tag **do PLC** sai
+    `skipped`: a tag de HMI clássica só expõe `Name` e o SimaticML da tabela traz só a `Connection`
+    (`docs/LIMITES.md`).
   - **`plug-module --type` aceita o MLFB sem o prefixo `OrderNumber:`** e, quando `canPlug` é
     `false`, devolve **`reason`**. Sem versão, `plugAs` sai com o prefixo e o firmware sondado
     (`OrderNumber:6ES7 131-6BH00-0BA0/V1.0`). Slot é do rack: `--item Rack_0`, posição em **`--pos`**.

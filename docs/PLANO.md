@@ -537,6 +537,18 @@ Dois checks e um `skipped`:
   mas `_` também vive dentro de nome de membro — reverter seria adivinhação, e adivinhar num verbo
   de auditoria é pior que não checar.
 
+**Varredura de device inteiro medida** (2026-08-17, IHM_2.1): 9 telas, 591 objetos, 175 com tag,
+**86 s** — ~9,5 s por tela, que é um export cada. Escala linear: as 76 telas das 4 IHMs do projeto
+dariam ~12 min. Serve como banho ocasional (o `raio-x` do lado da IHM), não como passo de iteração —
+para iterar, `--screen`. Achado: **0 tag inexistente** em 175 objetos com tag nas duas IHMs varridas,
+e 62 sem código de equipamento numa só (uma tela inteira de `tag1`, o Decantador Secundário). O
+buraco real do projeto não é tag quebrada, é tag **não ligada**.
+
+**Ressalva honesta**: o check "tag existe na IHM" ainda não acusou nada em nenhuma tela real. Pela
+regra do repo (check que nunca acusa é indistinguível de check cego), o que o distingue hoje é o
+`scanned.hmiTags` (427 e 1196) — mas ele merece uma prova negativa quando houver tela de smoke com
+tag inventada.
+
 **Gradeamento Mecanizada com a cadeia nova** (2026-08-17, tela real, IHM_1.1): 142 objetos, 50 com
 tag, **35 placeholders** (`tag`, `tag1`, `aux`) contra 3 da Biofiltro — os 15 restantes foram
 renomeados e o `--rename-from-tag` repetido depois voltou `renamed: []`, provando idempotência

@@ -119,6 +119,14 @@ responde pergunta em prosa).
   Procurar o identificador inexistente já custou várias sessões. **Drive novo já vem com
   `MainTelegram #1`**: trocar exige `--change` (telegrama Main não pode ser apagado, a troca é
   in-place).
+- **Rodar o programa (`sim-run`) exige o PLCSIM CLÁSSICO FECHADO e a instância ligada pelo usuário**
+  no control panel do S7-PLCSIM Advanced (`Siemens.Simatic.PlcSim.Advanced.UserInterface.exe`). O
+  clássico toma o mesmo canal (`-48, CommunicationInterfaceNotAvailable`) e sequestra o access point
+  `PLCSIM` do S7ONLINE: o download sai `Success` e a instância Advanced continua **vazia** — falso
+  positivo que já custou meia sessão. Com o clássico fechado, esse mesmo access point é a rota do
+  Advanced (`--pc-interface PLCSIM`, o default). O verbo dá **attach**, baixa por Openness e roda os
+  passos do `--script`; registrar instância dentro do `tia.exe` não funciona (morre com o processo, e
+  o download não conecta nela nem com ping e porta 102 respondendo).
 - **Área nova = `replicate-fc --template "<pasta molde>" --target-folder "<pasta da área>"`.** Sem
   os dois, o molde é "a 1ª pasta irmã populada" e os alvos são "todas as irmãs" — área nova não tem
   irmã com blocos, e derivar o acionamento-semente à mão custou ~10 min da FP-06.

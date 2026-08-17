@@ -45,7 +45,7 @@ Register-ScheduledTask -TaskName TiaSmokeRun -Action $action -Principal $princip
 $sh = Join-Path $PSScriptRoot 'sim-host.ps1'
 Register-ScheduledTask -TaskName TiaSimHost -Force `
     -Action (New-ScheduledTaskAction -Execute "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" `
-        -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$sh`"") `
+        -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$sh`"") `
     -Principal $principal `
     -Settings (New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -AllowStartIfOnBatteries)
 

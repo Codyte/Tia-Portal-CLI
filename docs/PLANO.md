@@ -544,10 +544,16 @@ para iterar, `--screen`. Achado: **0 tag inexistente** em 175 objetos com tag na
 e 62 sem código de equipamento numa só (uma tela inteira de `tag1`, o Decantador Secundário). O
 buraco real do projeto não é tag quebrada, é tag **não ligada**.
 
-**Ressalva honesta**: o check "tag existe na IHM" ainda não acusou nada em nenhuma tela real. Pela
-regra do repo (check que nunca acusa é indistinguível de check cego), o que o distingue hoje é o
-`scanned.hmiTags` (427 e 1196) — mas ele merece uma prova negativa quando houver tela de smoke com
-tag inventada.
+**Prova negativa do check 1** (2026-08-17): o check "tag existe na IHM" fechou 0 achados em 175
+objetos com tag nas telas reais, e check que nunca acusa é indistinguível de check cego. Montada
+tela de smoke a partir da menor tela real (`1_Telas_Menu/4.Ajustes` da IHM_1.1: 18 objetos, 1 com
+tag) — `export-screen` → `import-screen --folder ZZ_TESTE --replace "4.Ajustes=ZZ_TESTE_AUDIT"
+--replace "Calibração=BF-01-EC-99_CMD_FAKE"`. A tag falsa leva **código de equipamento de
+propósito**, para que só o check 1 possa acusar: o resultado foi `ok: false` com
+`"Symbolic I/O field_1 : BF-01-EC-99_CMD_FAKE"` no check 1 e o check 2 **verde**, que é a prova de
+que os dois checks são independentes e não um só disfarçado de dois. Tela apagada com
+`delete-screen --apply` e ausência conferida no `list-hmi` (a pasta `ZZ_TESTE`, vazia, fica — não há
+verbo de apagar pasta de tela).
 
 **Gradeamento Mecanizada com a cadeia nova** (2026-08-17, tela real, IHM_1.1): 142 objetos, 50 com
 tag, **35 placeholders** (`tag`, `tag1`, `aux`) contra 3 da Biofiltro — os 15 restantes foram

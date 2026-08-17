@@ -2,101 +2,101 @@
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L118   class Program
 //   L120   .Main
-//   L337   .ExitCodeFor
-//   L348   .RunLadderDryRun
-//   L358   .RunExplainFile
-//   L366   .RunInterfaceFile
-//   L380   .Run
-//   L487   .ParseScript
-//   L509   .DispatchWithRetry
-//   L523   .IsBusy
-//   L529   .Dispatch
-//   L539   case "save-project"
-//   L542   case "close-project"
-//   L545   case "info"
-//   L548   case "list-devices"
-//   L551   case "list-blocks"
-//   L555   case "list-tags"
-//   L558   case "tree"
-//   L562   case "list-types"
-//   L565   case "find"
-//   L569   case "snapshot"
-//   L572   case "xref"
-//   L575   case "trace"
-//   L578   case "list-hmi"
-//   L581   case "list-motion"
-//   L585   case "free-memory"
-//   L591   case "export-block"
-//   L594   case "explain-block"
-//   L599   case "export-tags"
-//   L602   case "list-interface"
-//   L608   case "import-block"
-//   L615   case "import-ladder"
-//   L623   case "import-source"
-//   L628   case "create-folder"
-//   L633   case "delete-folder"
-//   L638   case "delete-block"
-//   L642   case "move-block"
-//   L647   case "delete-type"
-//   L651   case "export-type"
-//   L654   case "import-type"
-//   L658   case "scaffold"
-//   L667   case "clone"
-//   L674   case "add-call"
-//   L681   case "delete-network"
-//   L686   case "set-retain"
-//   L691   case "add-db-member"
-//   L697   case "import-tags"
-//   L704   case "retrieve-library"
-//   L709   case "create-library"
-//   L713   case "list-library"
-//   L716   case "import-master-copy"
-//   L722   case "add-master-copy"
-//   L728   case "create-instance-db"
-//   L733   case "delete-master-copy"
-//   L738   case "add-device"
-//   L743   case "delete-device"
-//   L747   case "add-tag"
-//   L753   case "delete-tag"
-//   L758   case "edit-db-member"
-//   L764   case "delete-db-member"
-//   L769   case "rename-block"
-//   L774   case "set-tag"
-//   L781   case "set-attr"
-//   L787   case "list-attrs"
-//   L791   case "plug-module"
-//   L797   case "list-telegrams"
-//   L800   case "insert-telegram"
-//   L807   case "set-address"
-//   L813   case "set-io-address"
-//   L819   case "list-io-map"
-//   L823   case "set-memory-bytes"
-//   L829   case "connect-subnet"
-//   L834   case "export-cax"
-//   L837   case "import-cax"
-//   L841   case "compile"
-//   L856   case "sim-run"
-//   L865   case "diff-block"
-//   L869   case "audit"
-//   L874   case "doctor"
-//   L882   case "gen-profinet"
-//   L888   case "standardize-tags"
-//   L896   case "gen-fault-ob"
-//   L904   case "replicate-fc"
-//   L915   case "gen-alarm-fc"
-//   L925   case "replicate-instruments"
-//   L938   .OptionValue
-//   L944   .ParseInt
-//   L950   .ParseByte
-//   L957   .OptionValues
-//   L966   .WriteLock
-//   L971   .Require
-//   L1003  .Print
-//   L1019  .Sanitize
-//   L1026  .WriteOut
-//   L1045  .CountOf
-//   L1067  .ResolveSiemensAssembly
-//   L1078  .SiemensProbeDirs
+//   L339   .ExitCodeFor
+//   L350   .RunLadderDryRun
+//   L360   .RunExplainFile
+//   L368   .RunInterfaceFile
+//   L382   .Run
+//   L489   .ParseScript
+//   L511   .DispatchWithRetry
+//   L525   .IsBusy
+//   L531   .Dispatch
+//   L541   case "save-project"
+//   L544   case "close-project"
+//   L547   case "info"
+//   L550   case "list-devices"
+//   L553   case "list-blocks"
+//   L557   case "list-tags"
+//   L560   case "tree"
+//   L564   case "list-types"
+//   L567   case "find"
+//   L571   case "snapshot"
+//   L574   case "xref"
+//   L577   case "trace"
+//   L580   case "list-hmi"
+//   L583   case "list-motion"
+//   L587   case "free-memory"
+//   L593   case "export-block"
+//   L596   case "explain-block"
+//   L601   case "export-tags"
+//   L604   case "list-interface"
+//   L610   case "import-block"
+//   L617   case "import-ladder"
+//   L625   case "import-source"
+//   L630   case "create-folder"
+//   L635   case "delete-folder"
+//   L640   case "delete-block"
+//   L644   case "move-block"
+//   L649   case "delete-type"
+//   L653   case "export-type"
+//   L656   case "import-type"
+//   L660   case "scaffold"
+//   L669   case "clone"
+//   L676   case "add-call"
+//   L683   case "delete-network"
+//   L688   case "set-retain"
+//   L693   case "add-db-member"
+//   L699   case "import-tags"
+//   L706   case "retrieve-library"
+//   L711   case "create-library"
+//   L715   case "list-library"
+//   L718   case "import-master-copy"
+//   L724   case "add-master-copy"
+//   L730   case "create-instance-db"
+//   L735   case "delete-master-copy"
+//   L740   case "add-device"
+//   L745   case "delete-device"
+//   L749   case "add-tag"
+//   L755   case "delete-tag"
+//   L760   case "edit-db-member"
+//   L766   case "delete-db-member"
+//   L771   case "rename-block"
+//   L776   case "set-tag"
+//   L783   case "set-attr"
+//   L789   case "list-attrs"
+//   L793   case "plug-module"
+//   L799   case "list-telegrams"
+//   L802   case "insert-telegram"
+//   L809   case "set-address"
+//   L815   case "set-io-address"
+//   L821   case "list-io-map"
+//   L825   case "set-memory-bytes"
+//   L831   case "connect-subnet"
+//   L836   case "export-cax"
+//   L839   case "import-cax"
+//   L843   case "compile"
+//   L858   case "sim-run"
+//   L867   case "diff-block"
+//   L871   case "audit"
+//   L876   case "doctor"
+//   L884   case "gen-profinet"
+//   L890   case "standardize-tags"
+//   L898   case "gen-fault-ob"
+//   L906   case "replicate-fc"
+//   L917   case "gen-alarm-fc"
+//   L927   case "replicate-instruments"
+//   L940   .OptionValue
+//   L946   .ParseInt
+//   L952   .ParseByte
+//   L959   .OptionValues
+//   L968   .WriteLock
+//   L973   .Require
+//   L1005  .Print
+//   L1021  .Sanitize
+//   L1028  .WriteOut
+//   L1047  .CountOf
+//   L1069  .ResolveSiemensAssembly
+//   L1080  .SiemensProbeDirs
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -277,9 +277,11 @@ namespace Tia.Cli
                         "Exige projeto JÁ aberto: o attach é 1x, antes do 1º step, então open-project/create-project " +
                         "(e list-server-projects, que roda sem projeto) não podem ser step — chamar antes, sozinhos)" } },
                     { "sim", new[] { "sim-run [--plc X] [--instance plc_1500_1] [--pc-interface PLCSIM] " +
-                        "[--script sim.json] [--apply]  (PLC virtual do S7-PLCSIM Advanced: attach na instância " +
-                        "que o control panel do PLCSIM Advanced já ligou, baixa o programa do projeto por Openness, " +
-                        "roda os passos. Exige o PLCSIM CLÁSSICO FECHADO — ele toma o mesmo canal. Passos do script: " +
+                        "[--script sim.json] [--no-download] [--apply]  (PLC virtual do S7-PLCSIM Advanced: attach " +
+                        "na instância ligada por 'pwsh scripts/sim-host.ps1 -Start' (ou pelo control panel), baixa " +
+                        "o programa do projeto por Openness, roda os passos. Exige o PLCSIM CLÁSSICO FECHADO — ele " +
+                        "toma o mesmo canal. --no-download pula o download e roda os passos no programa que já está " +
+                        "na instância (o download é ~80% do tempo). Passos do script: " +
                         "[\"write\",\"tag\",\"valor\"], [\"read\",\"tag\"], [\"wait\",\"ms\"], [\"run\"], [\"stop\"], " +
                         "[\"state\"], [\"tags\",\"filtro\"]; tag de DB vai com as aspas do Portal. " +
                         "Dry-run lista as instâncias registradas e as interfaces de PC do download)" } },
@@ -860,7 +862,7 @@ namespace Tia.Cli
                             OptionValue(args, "--script") == null
                                 ? new List<string[]>()
                                 : ParseScript(OptionValue(args, "--script"), false),
-                            apply);
+                            apply, args.Contains("--no-download"));
                         break;
                     case "diff-block":
                         result = Core.Ops.DiffBlock(session.GetPlc(plcName),

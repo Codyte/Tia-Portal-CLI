@@ -15,7 +15,7 @@
 # 118-124 gate 2: .NET SDK presente
 # 126-143 gate 3: lib/*.dll (build-time) — copia da instalacao local do TIA Portal
 # 146-149 gates falharam -> para com instrucoes
-# 151-163 gate 4: tasks TiaWhitelist/TiaSmokeRun (setup-tasks elevado, 1 UAC) — re-registra se o
+# 151-163 gate 4: tasks TiaWhitelist/TiaSmokeRun/TiaSimHost (setup-tasks elevado, 1 UAC) — re-registra se o
 #         caminho gravado na task diverge deste repo (repo movido mata a rota da sessao 0)
 # 165-166 rebuild.ps1 (build + testes offline + whitelist)
 # 168-180 gate 5: shim tia no PATH do usuario + TIA_CLI_HOME
@@ -93,7 +93,7 @@ function Test-TasksCurrent {
     # A task grava o caminho absoluto do taskrun.ps1. Mover o repo mata a rota da sessao 0
     # ("No running TIA Portal instance found") ate re-registrar — sintoma identico ao de portal fechado.
     $here = Resolve-RealPath $PSScriptRoot
-    foreach ($n in 'TiaWhitelist', 'TiaSmokeRun') {
+    foreach ($n in 'TiaWhitelist', 'TiaSmokeRun', 'TiaSimHost') {
         $t = Get-ScheduledTask -TaskName $n -ErrorAction SilentlyContinue
         if (-not $t) { return $false }
         # a task guarda o caminho como foi registrado; comparar depois de resolver os dois lados
@@ -126,7 +126,7 @@ if ($Check) {
         (Test-Path $exe) 'pwsh scripts/rebuild.ps1'
     Show 'whitelist do registro bate com o hash atual' (Test-Whitelisted) `
         "$(if (Test-Path $exe) { 'Start-ScheduledTask -TaskName TiaWhitelist' } else { 'sai junto com o build: pwsh scripts/rebuild.ps1' })"
-    Show 'tasks TiaWhitelist/TiaSmokeRun apontando pra este repo' (Test-TasksCurrent) `
+    Show 'tasks TiaWhitelist/TiaSmokeRun/TiaSimHost apontando pra este repo' (Test-TasksCurrent) `
         'rodar init.ps1 sem -Check (1 UAC)'
     Show 'shim tia no PATH do usuario' `
         (([Environment]::GetEnvironmentVariable('Path', 'User') -split ';' |
@@ -214,11 +214,11 @@ if (-not $ok) {
     exit 1
 }
 
-# tasks TiaWhitelist/TiaSmokeRun: unico passo que exige elevacao (HKLM + registro de task).
+# tasks TiaWhitelist/TiaSmokeRun/TiaSimHost: unico passo que exige elevacao (HKLM + registro de task).
 # rebuild.ps1 depende da TiaWhitelist; sem ela cai no fallback RunAs, que da sessao 0 nao mostra UAC.
 # Re-registra tambem quando a task aponta pro caminho de um checkout antigo (repo movido).
 if (-not (Test-TasksCurrent)) {
-    Write-Host "registrando tasks TiaWhitelist/TiaSmokeRun para $PSScriptRoot — vai pedir UAC uma vez"
+    Write-Host "registrando tasks TiaWhitelist/TiaSmokeRun/TiaSimHost para $PSScriptRoot — vai pedir UAC uma vez"
     Start-Process pwsh -Verb RunAs -Wait -ArgumentList `
         '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $PSScriptRoot 'setup-tasks.ps1')
     if (-not (Get-ScheduledTask -TaskName TiaWhitelist -ErrorAction SilentlyContinue)) {
@@ -226,7 +226,7 @@ if (-not (Test-TasksCurrent)) {
         exit 1
     }
 }
-Write-Host "gate 4 ok: tasks TiaWhitelist/TiaSmokeRun registradas"
+Write-Host "gate 4 ok: tasks TiaWhitelist/TiaSmokeRun/TiaSimHost registradas"
 
 & (Join-Path $repo 'scripts\rebuild.ps1') -WhitelistOnly:$prebuilt
 if ($LASTEXITCODE -ne 0) { exit 1 }

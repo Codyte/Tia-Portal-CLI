@@ -179,19 +179,24 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     só nasce quando o drive é IO device daquele controlador — dois `connect-subnet` na ordem, PLC
     (`--io-system NOME`, cria) e depois o drive (junta). Nome de IO system por PLC, senão o drive
     entra no controlador errado quando duas CPUs dividem a subnet.
-  - **Rodar o programa e observar = `sim-run`, com a instância ligada pelo usuário.** O verbo faz
-    attach numa instância do **control panel do S7-PLCSIM Advanced**
-    (`Siemens.Simatic.PlcSim.Advanced.UserInterface.exe`), baixa o programa por Openness e roda os
-    passos do `--script` (`write`/`read`/`wait`/`run`/`stop`/`state`/`tags`; tag de DB vai com as
-    aspas do Portal: `"\"DB GLOBAL\".AREA.EQUIP.CMD_LIGA"`). Provado no projeto-molde: download
-    `Success`, 41550 tags, Bool escrito e relido.
+  - **Rodar o programa e observar = `pwsh scripts/sim-host.ps1 -Start` e depois `sim-run`.** O host
+    segura uma instância do **S7-PLCSIM Advanced** viva (`-Start`/`-Stop`/`-Status`, task
+    `TiaSimHost`) e o verbo faz attach nela, baixa o programa por Openness e roda os passos do
+    `--script` (`write`/`read`/`wait`/`run`/`stop`/`state`/`tags`; tag de DB vai com as aspas do
+    Portal: `"\"DB GLOBAL\".AREA.EQUIP.CMD_LIGA"`). Provado no projeto-molde: download `Success`,
+    41550 tags, Bool escrito e relido.
+    **Instância registrada dentro do `tia.exe` morre com o processo** (o Runtime Manager sobe
+    in-proc, não há serviço) — daí um host longevo separado. O **control panel da Siemens não é
+    necessário**: o host sobe o Runtime Manager sozinho (medido 2026-08-17 com control panel e
+    manager mortos). O host **tem que rodar na sessão 1** — da sessão 0 a API do PLCSIM tem a mesma
+    parede do Openness (`SimulationRuntimeManager.Version` vazio, `RegisterInstance` = `-1,
+    InvalidErrorCode`), por isso o `-Start` roteia pela task quando o shell nasce na sessão 0.
     **O PLCSIM clássico tem que estar fechado** — ele toma o mesmo canal (`-48,
     CommunicationInterfaceNotAvailable`) e sequestra o access point `PLCSIM` do S7ONLINE, onde o
     download sai `Success` com a instância Advanced vazia. Fechado o clássico, é esse mesmo access
     point que serve o Advanced: daí o default `--pc-interface PLCSIM`.
-    **Registrar instância dentro do `tia.exe` foi tentado e descartado**: morre com o processo (o
-    Runtime Manager sobe in-proc, não há serviço) e o download não conecta nela nem com ping e porta
-    102 respondendo. Instância emprestada não se desliga no fim.
+    **O download é ~91% do verbo** (45-52 s de 49-57 s medidos): iterar observação no mesmo programa
+    vai com **`--no-download`**, que pula direto pros passos. `download.ms` e `ms` saem no JSON.
   - **`plug-module --type` aceita o MLFB sem o prefixo `OrderNumber:`** e, quando `canPlug` é
     `false`, devolve **`reason`**. Sem versão, `plugAs` sai com o prefixo e o firmware sondado
     (`OrderNumber:6ES7 131-6BH00-0BA0/V1.0`). Slot é do rack: `--item Rack_0`, posição em **`--pos`**.

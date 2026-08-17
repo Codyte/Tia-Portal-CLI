@@ -1,25 +1,25 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L61    class Sim
-//   L67    .Run
-//   L169   .RegisteredInstances
-//   L179   .WaitReady
-//   L196   .Execute
-//   L206   case "write"
-//   L210   case "read"
-//   L214   case "wait"
-//   L218   case "run"
-//   L222   case "stop"
-//   L226   case "state"
-//   L229   case "tags"
-//   L257   .Write
-//   L281   .ParseBool
-//   L289   .Plain
-//   L310   class Target
-//   L321   .FindTarget
-//   L333   .Interfaces
-//   L347   .DeviceItemOf
-//   L374   .Resolve
+//   L65    class Sim
+//   L73    .Run
+//   L188   .RegisteredInstances
+//   L198   .WaitReady
+//   L215   .Execute
+//   L225   case "write"
+//   L229   case "read"
+//   L233   case "wait"
+//   L237   case "run"
+//   L241   case "stop"
+//   L245   case "state"
+//   L248   case "tags"
+//   L276   .Write
+//   L300   .ParseBool
+//   L308   .Plain
+//   L329   class Target
+//   L340   .FindTarget
+//   L352   .Interfaces
+//   L366   .DeviceItemOf
+//   L393   .Resolve
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -43,12 +43,16 @@ namespace Tia.Core
     /// escrever entrada, ler saída, avançar o tempo. Fecha o ciclo que `compile` + `audit` não
     /// fecham — os dois medem forma, este mede comportamento.
     ///
-    /// A instância é do usuário, não deste processo: quem a liga é o control panel do PLCSIM
-    /// Advanced (`Siemens.Simatic.PlcSim.Advanced.UserInterface.exe`), que hospeda o Runtime Manager
-    /// e mantém a instância viva entre chamadas. Registrar instância aqui dentro foi tentado e
-    /// descartado — ela morre com o `tia.exe` (o manager sobe in-proc, não há serviço), e o download
-    /// do Openness não conectava nela nem com ping e porta 102 respondendo. Este verbo então **pega
-    /// emprestado**: attach, download, passos — e não desliga o que não ligou.
+    /// A instância **não é deste processo**: registrar aqui dentro não funciona porque ela morre com
+    /// o `tia.exe` (o Runtime Manager sobe in-proc, não há serviço). Quem a segura é um processo
+    /// longevo da sessão 1 — o `scripts/sim-host.ps1` (task `TiaSimHost`) ou, à mão, o control panel
+    /// do PLCSIM Advanced. Nada distingue os dois: o host do repo sobe o Runtime Manager sozinho e o
+    /// control panel não precisa estar aberto (medido 2026-08-17, com control panel e manager mortos).
+    /// Este verbo **pega emprestado**: attach, download, passos — e não desliga o que não ligou.
+    ///
+    /// A parede é a **sessão do Windows**, a mesma do attach do Openness: da sessão 0 o manager some
+    /// da API (`SimulationRuntimeManager.Version` volta vazio e `RegisterInstance` dá
+    /// `-1, InvalidErrorCode`) mesmo com ele vivo na sessão 1.
     ///
     /// **O PLCSIM clássico tem que estar fechado.** Ele toma o canal (a API do Advanced devolve
     /// `-48, CommunicationInterfaceNotAvailable`) e o access point `PLCSIM` do S7ONLINE passa a ser
@@ -63,10 +67,13 @@ namespace Tia.Core
         /// <summary>
         /// dry: enumera o que existe (instâncias registradas, interfaces de PC do download, passos do
         /// script) sem baixar nada. --apply: attach + download + passos.
+        /// noDownload: pula o download e roda os passos no programa que já está na instância — é o
+        /// modo de iterar observação (o download mediu ~91% do tempo do verbo: 45-52 s de 49-57 s).
         /// </summary>
         public static object Run(TiaSession session, PlcSoftware plc, string instanceName,
-            string pcInterfaceLike, List<string[]> steps, bool apply)
+            string pcInterfaceLike, List<string[]> steps, bool apply, bool noDownload = false)
         {
+            var swTotal = System.Diagnostics.Stopwatch.StartNew();
             var cpu = DeviceItemOf(session, plc);
             var provider = cpu.GetService<DownloadProvider>();
             if (provider == null)
@@ -87,8 +94,8 @@ namespace Tia.Core
             {
                 // a interface `PLCSIM` só entra na configuração de download com instância ligada
                 plan["availableInterfaces"] = Interfaces(provider);
-                plan["note"] = "dry-run: nothing downloaded. Power on the instance in the S7-PLCSIM Advanced "
-                    + "control panel first (and close the classic PLCSIM), then add --apply.";
+                plan["note"] = "dry-run: nothing downloaded. Power on the instance first "
+                    + "(pwsh scripts/sim-host.ps1 -Start) and close the classic PLCSIM, then add --apply.";
                 return plan;
             }
 
@@ -96,8 +103,8 @@ namespace Tia.Core
             try { instance = SimulationRuntimeManager.CreateInterface(instanceName); }
             catch (Exception ex)
             {
-                plan["error"] = "No powered-on PLCSIM Advanced instance named '" + instanceName + "'. Start one in "
-                    + "the control panel (Siemens.Simatic.PlcSim.Advanced.UserInterface.exe) and close the classic "
+                plan["error"] = "No powered-on PLCSIM Advanced instance named '" + instanceName + "'. Start one with "
+                    + "'pwsh scripts/sim-host.ps1 -Start' (or the PLCSIM Advanced control panel) and close the classic "
                     + "PLCSIM, which takes the same channel. API said: " + (ex.InnerException ?? ex).Message;
                 return plan;
             }
@@ -107,43 +114,54 @@ namespace Tia.Core
                 plan["controller"] = instance.ControllerName;
                 plan["articleNumber"] = instance.ArticleNumber;
 
-                var target = FindTarget(provider, pcInterfaceLike);
-                if (target == null)
+                if (noDownload)
                 {
-                    plan["error"] = "No PC interface matching '" + pcInterfaceLike
-                        + "' in the download configuration, with the instance powered on.";
-                    plan["availableInterfaces"] = Interfaces(provider);
-                    return plan;
+                    // programa já está lá: o caso de iterar observação (escrever, ler, esperar) sem
+                    // pagar o download de novo. Instância vazia aqui aparece como tagCount 0.
+                    plan["downloadSkipped"] = true;
                 }
-                plan["pcInterface"] = target.PcInterface;
-                plan["targetInterface"] = target.Name;
-
-                // projeto online recusa download: "The operation is not permitted in online mode".
-                // Cair offline é a única saída pela API — a alternativa é clicar "Go offline" na GUI.
-                var online = cpu.GetService<OnlineProvider>();
-                if (online != null && online.State != OnlineState.Offline)
+                else
                 {
-                    online.GoOffline();
-                    plan["wentOffline"] = true;
+                    var target = FindTarget(provider, pcInterfaceLike);
+                    if (target == null)
+                    {
+                        plan["error"] = "No PC interface matching '" + pcInterfaceLike
+                            + "' in the download configuration, with the instance powered on.";
+                        plan["availableInterfaces"] = Interfaces(provider);
+                        return plan;
+                    }
+                    plan["pcInterface"] = target.PcInterface;
+                    plan["targetInterface"] = target.Name;
+
+                    // projeto online recusa download: "The operation is not permitted in online mode".
+                    // Cair offline é a única saída pela API — a alternativa é clicar "Go offline" na GUI.
+                    var online = cpu.GetService<OnlineProvider>();
+                    if (online != null && online.State != OnlineState.Offline)
+                    {
+                        online.GoOffline();
+                        plan["wentOffline"] = true;
+                    }
+
+                    plan["stateBeforeDownload"] = WaitReady(instance);
+                    var swDownload = System.Diagnostics.Stopwatch.StartNew();
+                    var result = provider.Download(target.Configuration, Resolve, Resolve,
+                        DownloadOptions.Hardware | DownloadOptions.Software);
+                    plan["download"] = new Dictionary<string, object>
+                    {
+                        { "state", result.State.ToString() },
+                        { "warnings", result.WarningCount },
+                        { "errors", result.ErrorCount },
+                        { "ms", swDownload.ElapsedMilliseconds },
+                        { "messages", result.Messages.Select(m => m.Message).Take(20).ToList() },
+                    };
+
+                    // o download reinicia a CPU virtual: o estado só estabiliza alguns segundos depois, e
+                    // Run/UpdateTagList em cima de instância ainda booting devolve "-52, IsEmpty"
+                    plan["stateAfterDownload"] = WaitReady(instance);
+                    // o download recria a CPU virtual: o handle antigo continua respondendo estado, mas
+                    // pedir RUN nele devolve "-52, IsEmpty". O handle novo é o que enxerga o programa.
+                    instance = SimulationRuntimeManager.CreateInterface(instanceName);
                 }
-
-                plan["stateBeforeDownload"] = WaitReady(instance);
-                var result = provider.Download(target.Configuration, Resolve, Resolve,
-                    DownloadOptions.Hardware | DownloadOptions.Software);
-                plan["download"] = new Dictionary<string, object>
-                {
-                    { "state", result.State.ToString() },
-                    { "warnings", result.WarningCount },
-                    { "errors", result.ErrorCount },
-                    { "messages", result.Messages.Select(m => m.Message).Take(20).ToList() },
-                };
-
-                // o download reinicia a CPU virtual: o estado só estabiliza alguns segundos depois, e
-                // Run/UpdateTagList em cima de instância ainda booting devolve "-52, IsEmpty"
-                plan["stateAfterDownload"] = WaitReady(instance);
-                // o download recria a CPU virtual: o handle antigo continua respondendo estado, mas
-                // pedir RUN nele devolve "-52, IsEmpty". O handle novo é o que enxerga o programa.
-                instance = SimulationRuntimeManager.CreateInterface(instanceName);
                 try { instance.UpdateTagList(); } catch (Exception ex) { plan["tagListError"] = ex.Message; }
                 plan["tagCount"] = instance.TagInfos.Length;
                 // RUN que falha não aborta a rodada: em STOP ainda se lê a imagem de processo, e o
@@ -151,6 +169,7 @@ namespace Tia.Core
                 try { instance.Run(); } catch (Exception ex) { plan["runError"] = ex.Message; }
                 plan["state"] = instance.OperatingState.ToString();
                 plan["results"] = Execute(instance, steps);
+                plan["ms"] = swTotal.ElapsedMilliseconds;
                 return plan;
             }
             catch (Exception ex)

@@ -1,4 +1,4 @@
-# __navi__ · `scripts/` — 19 files → symbols at exact line numbers
+# __navi__ · `scripts/` — 20 files → symbols at exact line numbers
 <!-- navindex · 2026-08-17 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../__navi__.md`](../__navi__.md)
 
@@ -19,7 +19,9 @@
   <sub>L29:Invoke-Batch</sub>
 - **rebuild.ps1** (120 ln)
   <sub>L10:Get-ExeHash64  L18:Test-WhitelistStale</sub>
-- **setup-tasks.ps1** (45 ln)
+- **setup-tasks.ps1** (56 ln)
+- **sim-host.ps1** (99 ln)
+  <sub>L33:Write-Log  L84:host: sem switch nenhum, este processo E o host e so volta no -Stop --</sub>
 - **smokeloop.ps1** (45 ln)
 - **taskrun.ps1** (63 ln)
 - **tia-help.py** (468 ln)

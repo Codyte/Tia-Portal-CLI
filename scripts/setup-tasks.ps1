@@ -38,6 +38,17 @@ $principal = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" 
 $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit (New-TimeSpan -Hours 2) -AllowStartIfOnBatteries
 Register-ScheduledTask -TaskName TiaSmokeRun -Action $action -Principal $principal -Settings $settings -Force
 
+# TiaSimHost: segura a instancia do PLCSIM Advanced viva na sessao 1 (o `tia sim-run` da attach
+# nela). Mesmo principal Interactive, pelo mesmo motivo — da sessao 0 a API do PLCSIM nao enxerga
+# o Runtime Manager. Sem limite de tempo: o host so sai no `sim-host.ps1 -Stop`.
+# powershell.exe (nao pwsh): o assembly do PLCSIM e net48, e o caminho nao tem espaco.
+$sh = Join-Path $PSScriptRoot 'sim-host.ps1'
+Register-ScheduledTask -TaskName TiaSimHost -Force `
+    -Action (New-ScheduledTaskAction -Execute "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" `
+        -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$sh`"") `
+    -Principal $principal `
+    -Settings (New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -AllowStartIfOnBatteries)
+
 schtasks /Query /TN TiaSmokeRun /FO LIST | Out-File (Join-Path $repo 'workspace\tasks-check.txt')
 
 # ja estamos elevados: roda o whitelist agora, senao o proximo tia morre com EngineeringSecurityException

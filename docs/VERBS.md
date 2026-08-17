@@ -106,6 +106,7 @@
 
 ## sim
 - `sim-run [--plc X] [--instance plc_1500_1] [--pc-interface PLCSIM] [--script sim.json] [--no-download] [--apply]  (PLC virtual do S7-PLCSIM Advanced: attach na instância ligada por 'pwsh scripts/sim-host.ps1 -Start' (ou pelo control panel), baixa o programa do projeto por Openness, roda os passos. Exige o PLCSIM CLÁSSICO FECHADO — ele toma o mesmo canal. --no-download pula o download e roda os passos no programa que já está na instância (o download é ~80% do tempo). Passos do script: ["write","tag","valor"], ["read","tag"], ["wait","ms"], ["run"], ["stop"], ["state"], ["tags","filtro"]; tag de DB vai com as aspas do Portal. Dry-run lista as instâncias registradas e as interfaces de PC do download)`
+- `sim-diag [--instance plc_1500_1] [--watch SEG]  (retrato da instância do PLCSIM Advanced: estado, modo, CPU, IP, licença, monitoração de ciclo, tag list. NÃO precisa de TIA Portal aberto nem de projeto — a API do PLCSIM é independente do Openness. --watch SEG assina os eventos e devolve o que MUDOU na janela (LED, estado operacional, falha de rack/estação); LED não tem getter na API, só evento, então sem --watch não há estado de LED)`
 
 ## meta
 - `--version  (versão do CLI + qual instalação do Openness este exe carrega; é a 1ª linha de qualquer bug report)`

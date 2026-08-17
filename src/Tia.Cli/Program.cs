@@ -2,106 +2,106 @@
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L123   class Program
 //   L125   .Main
-//   L355   .ExitCodeFor
-//   L366   .RunLadderDryRun
-//   L376   .RunExplainFile
-//   L384   .RunInterfaceFile
-//   L398   .Run
-//   L505   .ParseScript
-//   L527   .DispatchWithRetry
-//   L541   .IsBusy
-//   L547   .Dispatch
-//   L557   case "save-project"
-//   L560   case "close-project"
-//   L563   case "info"
-//   L566   case "list-devices"
-//   L569   case "list-blocks"
-//   L573   case "list-tags"
-//   L576   case "tree"
-//   L580   case "list-types"
-//   L583   case "find"
-//   L587   case "snapshot"
-//   L590   case "xref"
-//   L593   case "trace"
-//   L596   case "list-hmi"
-//   L599   case "export-hmi-tags"
-//   L603   case "hmi-tree"
-//   L606   case "export-screen"
-//   L610   case "import-screen"
-//   L617   case "delete-screen"
-//   L622   case "list-motion"
-//   L626   case "free-memory"
-//   L632   case "export-block"
-//   L635   case "explain-block"
-//   L640   case "export-tags"
-//   L643   case "list-interface"
-//   L649   case "import-block"
-//   L656   case "import-ladder"
-//   L664   case "import-source"
-//   L669   case "create-folder"
-//   L674   case "delete-folder"
-//   L679   case "delete-block"
-//   L683   case "move-block"
-//   L688   case "delete-type"
-//   L692   case "export-type"
-//   L695   case "import-type"
-//   L699   case "scaffold"
-//   L708   case "clone"
-//   L715   case "add-call"
-//   L722   case "delete-network"
-//   L727   case "set-retain"
-//   L732   case "add-db-member"
-//   L738   case "import-tags"
-//   L745   case "retrieve-library"
-//   L750   case "create-library"
-//   L754   case "list-library"
-//   L757   case "import-master-copy"
-//   L763   case "add-master-copy"
-//   L769   case "create-instance-db"
-//   L774   case "delete-master-copy"
-//   L779   case "add-device"
-//   L784   case "delete-device"
-//   L788   case "add-tag"
-//   L794   case "delete-tag"
-//   L799   case "edit-db-member"
-//   L805   case "delete-db-member"
-//   L810   case "rename-block"
-//   L815   case "set-tag"
-//   L822   case "set-attr"
-//   L828   case "list-attrs"
-//   L832   case "plug-module"
-//   L838   case "list-telegrams"
-//   L841   case "insert-telegram"
-//   L848   case "set-address"
-//   L854   case "set-io-address"
-//   L860   case "list-io-map"
-//   L864   case "set-memory-bytes"
-//   L870   case "connect-subnet"
-//   L875   case "export-cax"
-//   L878   case "import-cax"
-//   L882   case "compile"
-//   L897   case "sim-run"
-//   L906   case "diff-block"
-//   L910   case "audit"
-//   L915   case "doctor"
-//   L923   case "gen-profinet"
-//   L929   case "standardize-tags"
-//   L937   case "gen-fault-ob"
-//   L945   case "replicate-fc"
-//   L956   case "gen-alarm-fc"
-//   L966   case "replicate-instruments"
-//   L979   .OptionValue
-//   L985   .ParseInt
-//   L991   .ParseByte
-//   L998   .OptionValues
-//   L1007  .WriteLock
-//   L1012  .Require
-//   L1044  .Print
-//   L1060  .Sanitize
-//   L1067  .WriteOut
-//   L1086  .CountOf
-//   L1108  .ResolveSiemensAssembly
-//   L1119  .SiemensProbeDirs
+//   L361   .ExitCodeFor
+//   L372   .RunLadderDryRun
+//   L382   .RunExplainFile
+//   L390   .RunInterfaceFile
+//   L404   .Run
+//   L520   .ParseScript
+//   L542   .DispatchWithRetry
+//   L556   .IsBusy
+//   L562   .Dispatch
+//   L572   case "save-project"
+//   L575   case "close-project"
+//   L578   case "info"
+//   L581   case "list-devices"
+//   L584   case "list-blocks"
+//   L588   case "list-tags"
+//   L591   case "tree"
+//   L595   case "list-types"
+//   L598   case "find"
+//   L602   case "snapshot"
+//   L605   case "xref"
+//   L608   case "trace"
+//   L611   case "list-hmi"
+//   L614   case "export-hmi-tags"
+//   L618   case "hmi-tree"
+//   L621   case "export-screen"
+//   L625   case "import-screen"
+//   L632   case "delete-screen"
+//   L637   case "list-motion"
+//   L641   case "free-memory"
+//   L647   case "export-block"
+//   L650   case "explain-block"
+//   L655   case "export-tags"
+//   L658   case "list-interface"
+//   L664   case "import-block"
+//   L671   case "import-ladder"
+//   L679   case "import-source"
+//   L684   case "create-folder"
+//   L689   case "delete-folder"
+//   L694   case "delete-block"
+//   L698   case "move-block"
+//   L703   case "delete-type"
+//   L707   case "export-type"
+//   L710   case "import-type"
+//   L714   case "scaffold"
+//   L723   case "clone"
+//   L730   case "add-call"
+//   L737   case "delete-network"
+//   L742   case "set-retain"
+//   L747   case "add-db-member"
+//   L753   case "import-tags"
+//   L760   case "retrieve-library"
+//   L765   case "create-library"
+//   L769   case "list-library"
+//   L772   case "import-master-copy"
+//   L778   case "add-master-copy"
+//   L784   case "create-instance-db"
+//   L789   case "delete-master-copy"
+//   L794   case "add-device"
+//   L799   case "delete-device"
+//   L803   case "add-tag"
+//   L809   case "delete-tag"
+//   L814   case "edit-db-member"
+//   L820   case "delete-db-member"
+//   L825   case "rename-block"
+//   L830   case "set-tag"
+//   L837   case "set-attr"
+//   L843   case "list-attrs"
+//   L847   case "plug-module"
+//   L853   case "list-telegrams"
+//   L856   case "insert-telegram"
+//   L863   case "set-address"
+//   L869   case "set-io-address"
+//   L875   case "list-io-map"
+//   L879   case "set-memory-bytes"
+//   L885   case "connect-subnet"
+//   L890   case "export-cax"
+//   L893   case "import-cax"
+//   L897   case "compile"
+//   L912   case "sim-run"
+//   L921   case "diff-block"
+//   L925   case "audit"
+//   L930   case "doctor"
+//   L938   case "gen-profinet"
+//   L944   case "standardize-tags"
+//   L952   case "gen-fault-ob"
+//   L960   case "replicate-fc"
+//   L971   case "gen-alarm-fc"
+//   L981   case "replicate-instruments"
+//   L994   .OptionValue
+//   L1000  .ParseInt
+//   L1006  .ParseByte
+//   L1013  .OptionValues
+//   L1022  .WriteLock
+//   L1027  .Require
+//   L1059  .Print
+//   L1075  .Sanitize
+//   L1082  .WriteOut
+//   L1101  .CountOf
+//   L1123  .ResolveSiemensAssembly
+//   L1134  .SiemensProbeDirs
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -300,7 +300,13 @@ namespace Tia.Cli
                         "na instância (o download é ~80% do tempo). Passos do script: " +
                         "[\"write\",\"tag\",\"valor\"], [\"read\",\"tag\"], [\"wait\",\"ms\"], [\"run\"], [\"stop\"], " +
                         "[\"state\"], [\"tags\",\"filtro\"]; tag de DB vai com as aspas do Portal. " +
-                        "Dry-run lista as instâncias registradas e as interfaces de PC do download)" } },
+                        "Dry-run lista as instâncias registradas e as interfaces de PC do download)",
+                        "sim-diag [--instance plc_1500_1] [--watch SEG]  (retrato da instância do PLCSIM " +
+                        "Advanced: estado, modo, CPU, IP, licença, monitoração de ciclo, tag list. NÃO precisa de " +
+                        "TIA Portal aberto nem de projeto — a API do PLCSIM é independente do Openness. " +
+                        "--watch SEG assina os eventos e devolve o que MUDOU na janela (LED, estado operacional, " +
+                        "falha de rack/estação); LED não tem getter na API, só evento, então sem --watch não há " +
+                        "estado de LED)" } },
                     { "meta", new[] { "--version  (versão do CLI + qual instalação do Openness este exe carrega; " +
                         "é a 1ª linha de qualquer bug report)" } },
                     { "notes", "write verbs are dry-run unless --apply; default --out is .\\workspace\\exports; " +
@@ -419,6 +425,15 @@ namespace Tia.Cli
                 Print(Core.Multiuser.ListServerProjects(Require(args, "--server"),
                     int.Parse(OptionValue(args, "--port") ?? "0"),
                     args.Contains("--http"), args.Contains("--keep-connection")));
+                return 0;
+            }
+
+            // PLCSIM tem API própria, independente do Openness: diagnóstico da instância não precisa
+            // de portal nem de projeto aberto — roda antes do attach e economiza os ~7 s dele.
+            if (args[0] == "sim-diag")
+            {
+                Print(Core.Sim.Diag(OptionValue(args, "--instance") ?? "plc_1500_1",
+                    int.Parse(OptionValue(args, "--watch") ?? "0")));
                 return 0;
             }
 

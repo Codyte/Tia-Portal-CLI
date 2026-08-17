@@ -1,25 +1,28 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L65    class Sim
-//   L73    .Run
-//   L188   .RegisteredInstances
-//   L198   .WaitReady
-//   L215   .Execute
-//   L225   case "write"
-//   L229   case "read"
-//   L233   case "wait"
-//   L237   case "run"
-//   L241   case "stop"
-//   L245   case "state"
-//   L248   case "tags"
-//   L276   .Write
-//   L300   .ParseBool
-//   L308   .Plain
-//   L329   class Target
-//   L340   .FindTarget
-//   L352   .Interfaces
-//   L366   .DeviceItemOf
-//   L393   .Resolve
+//   L68    class Sim
+//   L76    .Run
+//   L200   .Diag
+//   L263   .Watch
+//   L308   .Try
+//   L314   .RegisteredInstances
+//   L324   .WaitReady
+//   L341   .Execute
+//   L351   case "write"
+//   L355   case "read"
+//   L359   case "wait"
+//   L363   case "run"
+//   L367   case "stop"
+//   L371   case "state"
+//   L374   case "tags"
+//   L402   .Write
+//   L426   .ParseBool
+//   L434   .Plain
+//   L455   class Target
+//   L466   .FindTarget
+//   L478   .Interfaces
+//   L492   .DeviceItemOf
+//   L519   .Resolve
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -183,6 +186,129 @@ namespace Tia.Core
             }
             // sem finally: a instância é do control panel do usuário, e desligá-la aqui derrubaria a
             // simulação que ele abriu.
+        }
+
+        /// <summary>
+        /// Retrato de diagnóstico da instância do PLCSIM Advanced: estado, modo, CPU, IP, licença,
+        /// monitoração de ciclo e tag list. Não precisa de TIA Portal aberto — a API do PLCSIM é
+        /// independente do Openness, então o verbo roda antes do attach.
+        /// watchSeconds &gt; 0 assina os eventos (LED, mudança de estado, falha de rack/estação) e
+        /// devolve o que ocorreu na janela.
+        /// LED não tem getter na API — só o evento OnLedChanged. Sem watch, não há estado de LED
+        /// para reportar; com watch, sai só o que MUDOU na janela.
+        /// </summary>
+        public static object Diag(string instanceName, int watchSeconds)
+        {
+            var plan = new Dictionary<string, object>
+            {
+                { "instance", instanceName },
+                { "registeredInstances", RegisteredInstances() },
+            };
+
+            IInstance instance;
+            try { instance = SimulationRuntimeManager.CreateInterface(instanceName); }
+            catch (Exception ex)
+            {
+                plan["error"] = "No powered-on PLCSIM Advanced instance named '" + instanceName + "'. Start one with "
+                    + "'pwsh scripts/sim-host.ps1 -Start' (or the PLCSIM Advanced control panel) and close the classic "
+                    + "PLCSIM, which takes the same channel. API said: " + (ex.InnerException ?? ex).Message;
+                return plan;
+            }
+
+            plan["controller"] = instance.ControllerName;
+            plan["shortDesignation"] = Try(() => instance.ControllerShortDesignation);
+            plan["articleNumber"] = instance.ArticleNumber;
+            plan["cpuType"] = Try(() => instance.CPUType.ToString());
+            plan["state"] = instance.OperatingState.ToString();
+            plan["operatingMode"] = Try(() => instance.OperatingMode.ToString());
+            plan["licenseStatus"] = Try(() => instance.LicenseStatus.ToString());
+            plan["ip"] = Try(() => instance.ControllerIP.ToList());
+            plan["systemTime"] = Try(() => instance.SystemTime.ToString("o", CultureInfo.InvariantCulture));
+            plan["storagePath"] = Try(() => instance.StoragePath);
+            plan["cycleTimeMonitoring"] = Try(() =>
+            {
+                ECycleTimeMonitoringMode mode; long ns;
+                instance.GetCycleTimeMonitoringMode(out mode, out ns);
+                return (object)new Dictionary<string, object> { { "mode", mode.ToString() }, { "ns", ns } };
+            });
+            plan["tagList"] = Try(() =>
+            {
+                ETagListDetails details; bool upToDate;
+                instance.GetTagListStatus(out details, out upToDate);
+                return (object)new Dictionary<string, object>
+                {
+                    { "details", details.ToString() },
+                    { "upToDate", upToDate },
+                    { "count", instance.TagInfos.Length },
+                };
+            });
+            plan["ledNote"] = "LED state has no getter in the PLCSIM API — only the OnLedChanged event. "
+                + "Use --watch <s> to capture LED changes in a window.";
+
+            if (watchSeconds > 0)
+            {
+                plan["watch"] = Watch(instance, watchSeconds);
+                // o `state` de cima é do começo da janela: sem este, um retrato tirado durante o boot
+                // volta dizendo "Off" com a lista de eventos mostrando o contrário.
+                plan["stateAfterWatch"] = instance.OperatingState.ToString();
+            }
+            return plan;
+        }
+
+        /// <summary>
+        /// Janela de observação: assina LED, mudança de estado operacional e falha de rack/estação,
+        /// dorme, e devolve os eventos na ordem. Evento é assíncrono — a lista pode voltar vazia, o
+        /// que significa "nada mudou na janela", não "não funciona".
+        /// </summary>
+        private static List<object> Watch(IInstance instance, int seconds)
+        {
+            var events = new List<object>();
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            Func<string, Dictionary<string, object>> row = kind =>
+            {
+                var e = new Dictionary<string, object> { { "event", kind }, { "atMs", clock.ElapsedMilliseconds } };
+                lock (events) events.Add(e);
+                return e;
+            };
+
+            Delegate_II_EREC_DT_ELT_ELM onLed = (s, err, dt, type, mode) =>
+            {
+                var e = row("led"); e["led"] = type.ToString(); e["mode"] = mode.ToString();
+            };
+            Delegate_II_EREC_DT_EOS_EOS onState = (s, err, dt, prev, now) =>
+            {
+                var e = row("operatingState"); e["from"] = prev.ToString(); e["to"] = now.ToString();
+            };
+            Delegate_SREC_ST_UINT32_ERSFET onFault = (s, err, dt, hwid, type) =>
+            {
+                var e = row("rackOrStationFault"); e["hwId"] = hwid; e["type"] = type.ToString();
+            };
+
+            instance.OnLedChanged += onLed;
+            instance.OnOperatingStateChanged += onState;
+            instance.OnRackOrStationFaultEvent += onFault;
+            try
+            {
+                instance.RegisterOnLedChangedEvent();
+                instance.RegisterOnOperatingStateChangedEvent();
+                System.Threading.Thread.Sleep(seconds * 1000);
+            }
+            finally
+            {
+                Try(() => { instance.UnregisterOnLedChangedEvent(); return null; });
+                Try(() => { instance.UnregisterOnOperatingStateChangedEvent(); return null; });
+                instance.OnLedChanged -= onLed;
+                instance.OnOperatingStateChanged -= onState;
+                instance.OnRackOrStationFaultEvent -= onFault;
+            }
+            lock (events) return events.ToList();
+        }
+
+        /// <summary>Campo de diagnóstico que a API recusa não derruba o retrato inteiro.</summary>
+        private static object Try(Func<object> read)
+        {
+            try { return read(); }
+            catch (Exception ex) { return "error: " + (ex.InnerException ?? ex).Message; }
         }
 
         private static List<string> RegisteredInstances()

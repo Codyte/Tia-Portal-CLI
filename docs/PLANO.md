@@ -415,6 +415,35 @@ Checks offline: `Clone.Rewrite` na forma da tela (nome + tag trocados, `@OpenLin
 `export-hmi-tags`. Não bloqueia a etapa 2 — o nome da conexão está no XML que a própria etapa
 vai clonar.
 
+## F12 — `sim-diag` camada 1 ✅ (2026-08-17)
+
+**`sim-diag [--instance plc_1500_1] [--watch SEG]`** — diagnóstico do PLC virtual. Roda **antes do
+attach** (o `case` fica no bloco pré-`Attach()` do `Program.cs`, junto de `open-project`): a API do
+PLCSIM é independente do Openness, então o verbo **não precisa de TIA Portal aberto nem de projeto**
+e não paga os ~7 s do attach. É o único verbo de leitura do repo que roda com o Portal fechado.
+
+Retrato: `state`, `operatingMode`, `cpuType`, `articleNumber`, `licenseStatus`, `ip` (as duas),
+`systemTime`, `storagePath`, `cycleTimeMonitoring` (`mode` + `ns`), `tagList`
+(`details`/`upToDate`/`count`). Campo que a API recusar vira `"error: …"` no seu lugar em vez de
+derrubar o retrato — instância desligada responde quase tudo (medido: só `controller` e
+`shortDesignation` voltam vazios, e `tagList.count` = 0).
+
+**LED não tem getter na API** — só o evento `OnLedChanged`. Por isso `--watch SEG`: assina LED,
+mudança de estado operacional e falha de rack/estação, dorme a janela e devolve o que **mudou**,
+com `atMs` relativo ao início. Sem `--watch` não há estado de LED para reportar, e o `ledNote` do
+JSON diz isso. Lista vazia = nada mudou na janela, não "não funciona".
+
+Provado no `plc_1500_1` com uma janela de 45 s cruzando um `sim-host.ps1 -Start`: **13 eventos**,
+o boot inteiro em ordem — `Off→Booting` (4131 ms), `Booting→Stop`, `Stop→Startup`,
+`Startup→Run` (6527 ms), com os LEDs `Stop On → FlashFast → Off` e `Run FlashFast → On`. Um valor
+de `ELEDType` sai como número (`"10"`): o enum documentado vai até `Busf4`, e o valor cru é melhor
+que engolir o evento. `stateAfterWatch` existe porque o `state` do retrato é lido **antes** da
+janela: sem ele, retrato tirado durante o boot volta dizendo `Off` com a lista mostrando `Run`.
+
+**Camada 2 (ler tag de alarme e cruzar com o texto dos blocos) não foi feita, e por ora não vale**:
+`sim-run --no-download` com passos `read` já lê tag de alarme, e cruzar com bloco é `xref`/
+`explain-block`. Verbo novo só se aparecer o caso de uso que essas duas peças não cobrem.
+
 ## Teste cego ponta a ponta — caderno escrito (2026-08-07)
 
 A prova que a Siemens vai pedir ("um agente consegue mesmo?") virou experimento com régua escrita

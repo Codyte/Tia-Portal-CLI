@@ -355,9 +355,17 @@ modelo de objetos tipado (`HmiScreenBase`), sem export de tela. O projeto real �
 A árvore da IHM **espelha a do PLC** (`3. Partidas/3.1 Preliminar (P-GM-01)`), então o vínculo
 tela↔área já existe no nome.
 
-Aberto: `connections: []` nas 4 IHMs. Tag de IHM precisa de conexão para chegar no PLC — ou elas
-não vivem em `HmiTarget.Connections`, ou conexão integrada mora noutro lugar do modelo. Não
-bloqueia leitura; bloqueia gerar tela nova que leia tag do PLC.
+- `export-hmi-tags --table "Pasta/Tabela"` — SimaticML da tabela de tags da IHM. **É por aqui que
+  se vê o vínculo com o PLC**: dump de atributo não serve, `GetAttributeInfos` numa tag de HMI
+  devolve **só `Name`** (medido 2026-08-17, primeira tentativa descartada). No XML a tag traz
+  `<LinkList>` com `Connection`, `DataType`, `HmiDataType` e `AcquisitionCycle`, além de escala
+  (`ScalingPlc*`/`ScalingHmi*`) e `AddressAccessMode: Symbolic`.
+
+**`connections: []` do `list-hmi` é do modelo, não do projeto** (medido 2026-08-17):
+`HmiTarget.Connections` volta vazio enquanto as tags do mesmo target apontam para
+`HMI_Connection_2` no `LinkList` do export. Quem quer a conexão de verdade lê o
+`export-hmi-tags`. Não bloqueia a etapa 2 — o nome da conexão está no XML que a própria etapa
+vai clonar.
 
 ## Teste cego ponta a ponta — caderno escrito (2026-08-07)
 

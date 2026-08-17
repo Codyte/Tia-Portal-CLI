@@ -1,3 +1,23 @@
+// ====================== BEGIN NAV INDEX ======================
+// NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+//   L45    class Hmi
+//   L48    .Targets
+//   L64    .ExportTagTable
+//   L83    .ResolveTagFolder
+//   L98    .List
+//   L112   .Describe
+//   L153   .Tree
+//   L205   .SplitPath
+//   L215   .Row
+//   L222   roundtrip SimaticML de tela (só clássico)
+//   L225   .ExportScreen
+//   L247   .ImportScreen
+//   L283   .ClassicTarget
+//   L302   .ResolveScreenFolder
+//   L324   .CollectScreens
+//   L333   .CollectTables
+// ======================= END NAV INDEX =======================
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -34,6 +54,45 @@ namespace Tia.Core
                     if (software is Unified.HmiSoftware || software is Classic.HmiTarget)
                         yield return new KeyValuePair<string, object>(device.Name, software);
                 }
+        }
+
+        /// <summary>
+        /// Export SimaticML de uma tabela de tags de HMI. É por aqui que se vê o vínculo com o PLC —
+        /// `GetAttributeInfos` numa tag de HMI devolve só "Name" (medido 2026-08-17), então dump de
+        /// atributo não responde de onde a tag lê. Exige `--table`: são 4354 tags no projeto real.
+        /// </summary>
+        public static object ExportTagTable(TiaSession session, string deviceName, string tablePath,
+            string outDir)
+        {
+            var target = ClassicTarget(session, deviceName);
+            var cut = tablePath.LastIndexOf('/');
+            var tables = ResolveTagFolder(target.Value, cut < 0 ? null : tablePath.Substring(0, cut));
+            var table = tables == null ? null : tables.Find(tablePath.Substring(cut + 1));
+            if (table == null)
+                throw new System.InvalidOperationException("Tag table '" + tablePath + "' not found in '"
+                    + target.Value.Name + "'.");
+            var file = Ops.ExportPath(outDir, tablePath);
+            table.Export(new FileInfo(file), Siemens.Engineering.ExportOptions.WithDefaults);
+            return new Dictionary<string, object>
+            {
+                { "device", target.Key }, { "hmi", target.Value.Name },
+                { "table", tablePath }, { "file", file },
+            };
+        }
+
+        static Classic.Tag.TagTableComposition ResolveTagFolder(Classic.HmiTarget target, string path)
+        {
+            var tables = target.TagFolder.TagTables;
+            var folders = target.TagFolder.Folders;
+            if (string.IsNullOrEmpty(path)) return tables;
+            foreach (var part in path.Trim('/').Split('/'))
+            {
+                var next = folders.Find(part);
+                if (next == null) return null;
+                tables = next.TagTables;
+                folders = next.Folders;
+            }
+            return tables;
         }
 
         public static object List(TiaSession session, string deviceName)

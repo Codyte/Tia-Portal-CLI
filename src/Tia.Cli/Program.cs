@@ -1,105 +1,106 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L121   class Program
-//   L123   .Main
-//   L347   .ExitCodeFor
-//   L358   .RunLadderDryRun
-//   L368   .RunExplainFile
-//   L376   .RunInterfaceFile
-//   L390   .Run
-//   L497   .ParseScript
-//   L519   .DispatchWithRetry
-//   L533   .IsBusy
-//   L539   .Dispatch
-//   L549   case "save-project"
-//   L552   case "close-project"
-//   L555   case "info"
-//   L558   case "list-devices"
-//   L561   case "list-blocks"
-//   L565   case "list-tags"
-//   L568   case "tree"
-//   L572   case "list-types"
-//   L575   case "find"
-//   L579   case "snapshot"
-//   L582   case "xref"
-//   L585   case "trace"
-//   L588   case "list-hmi"
-//   L591   case "hmi-tree"
-//   L594   case "export-screen"
-//   L598   case "import-screen"
-//   L603   case "list-motion"
-//   L607   case "free-memory"
-//   L613   case "export-block"
-//   L616   case "explain-block"
-//   L621   case "export-tags"
-//   L624   case "list-interface"
-//   L630   case "import-block"
-//   L637   case "import-ladder"
-//   L645   case "import-source"
-//   L650   case "create-folder"
-//   L655   case "delete-folder"
-//   L660   case "delete-block"
-//   L664   case "move-block"
-//   L669   case "delete-type"
-//   L673   case "export-type"
-//   L676   case "import-type"
-//   L680   case "scaffold"
-//   L689   case "clone"
-//   L696   case "add-call"
-//   L703   case "delete-network"
-//   L708   case "set-retain"
-//   L713   case "add-db-member"
-//   L719   case "import-tags"
-//   L726   case "retrieve-library"
-//   L731   case "create-library"
-//   L735   case "list-library"
-//   L738   case "import-master-copy"
-//   L744   case "add-master-copy"
-//   L750   case "create-instance-db"
-//   L755   case "delete-master-copy"
-//   L760   case "add-device"
-//   L765   case "delete-device"
-//   L769   case "add-tag"
-//   L775   case "delete-tag"
-//   L780   case "edit-db-member"
-//   L786   case "delete-db-member"
-//   L791   case "rename-block"
-//   L796   case "set-tag"
-//   L803   case "set-attr"
-//   L809   case "list-attrs"
-//   L813   case "plug-module"
-//   L819   case "list-telegrams"
-//   L822   case "insert-telegram"
-//   L829   case "set-address"
-//   L835   case "set-io-address"
-//   L841   case "list-io-map"
-//   L845   case "set-memory-bytes"
-//   L851   case "connect-subnet"
-//   L856   case "export-cax"
-//   L859   case "import-cax"
-//   L863   case "compile"
-//   L878   case "sim-run"
-//   L887   case "diff-block"
-//   L891   case "audit"
-//   L896   case "doctor"
-//   L904   case "gen-profinet"
-//   L910   case "standardize-tags"
-//   L918   case "gen-fault-ob"
-//   L926   case "replicate-fc"
-//   L937   case "gen-alarm-fc"
-//   L947   case "replicate-instruments"
-//   L960   .OptionValue
-//   L966   .ParseInt
-//   L972   .ParseByte
-//   L979   .OptionValues
-//   L988   .WriteLock
-//   L993   .Require
-//   L1025  .Print
-//   L1041  .Sanitize
-//   L1048  .WriteOut
-//   L1067  .CountOf
-//   L1089  .ResolveSiemensAssembly
-//   L1100  .SiemensProbeDirs
+//   L122   class Program
+//   L124   .Main
+//   L350   .ExitCodeFor
+//   L361   .RunLadderDryRun
+//   L371   .RunExplainFile
+//   L379   .RunInterfaceFile
+//   L393   .Run
+//   L500   .ParseScript
+//   L522   .DispatchWithRetry
+//   L536   .IsBusy
+//   L542   .Dispatch
+//   L552   case "save-project"
+//   L555   case "close-project"
+//   L558   case "info"
+//   L561   case "list-devices"
+//   L564   case "list-blocks"
+//   L568   case "list-tags"
+//   L571   case "tree"
+//   L575   case "list-types"
+//   L578   case "find"
+//   L582   case "snapshot"
+//   L585   case "xref"
+//   L588   case "trace"
+//   L591   case "list-hmi"
+//   L594   case "export-hmi-tags"
+//   L598   case "hmi-tree"
+//   L601   case "export-screen"
+//   L605   case "import-screen"
+//   L610   case "list-motion"
+//   L614   case "free-memory"
+//   L620   case "export-block"
+//   L623   case "explain-block"
+//   L628   case "export-tags"
+//   L631   case "list-interface"
+//   L637   case "import-block"
+//   L644   case "import-ladder"
+//   L652   case "import-source"
+//   L657   case "create-folder"
+//   L662   case "delete-folder"
+//   L667   case "delete-block"
+//   L671   case "move-block"
+//   L676   case "delete-type"
+//   L680   case "export-type"
+//   L683   case "import-type"
+//   L687   case "scaffold"
+//   L696   case "clone"
+//   L703   case "add-call"
+//   L710   case "delete-network"
+//   L715   case "set-retain"
+//   L720   case "add-db-member"
+//   L726   case "import-tags"
+//   L733   case "retrieve-library"
+//   L738   case "create-library"
+//   L742   case "list-library"
+//   L745   case "import-master-copy"
+//   L751   case "add-master-copy"
+//   L757   case "create-instance-db"
+//   L762   case "delete-master-copy"
+//   L767   case "add-device"
+//   L772   case "delete-device"
+//   L776   case "add-tag"
+//   L782   case "delete-tag"
+//   L787   case "edit-db-member"
+//   L793   case "delete-db-member"
+//   L798   case "rename-block"
+//   L803   case "set-tag"
+//   L810   case "set-attr"
+//   L816   case "list-attrs"
+//   L820   case "plug-module"
+//   L826   case "list-telegrams"
+//   L829   case "insert-telegram"
+//   L836   case "set-address"
+//   L842   case "set-io-address"
+//   L848   case "list-io-map"
+//   L852   case "set-memory-bytes"
+//   L858   case "connect-subnet"
+//   L863   case "export-cax"
+//   L866   case "import-cax"
+//   L870   case "compile"
+//   L885   case "sim-run"
+//   L894   case "diff-block"
+//   L898   case "audit"
+//   L903   case "doctor"
+//   L911   case "gen-profinet"
+//   L917   case "standardize-tags"
+//   L925   case "gen-fault-ob"
+//   L933   case "replicate-fc"
+//   L944   case "gen-alarm-fc"
+//   L954   case "replicate-instruments"
+//   L967   .OptionValue
+//   L973   .ParseInt
+//   L979   .ParseByte
+//   L986   .OptionValues
+//   L995   .WriteLock
+//   L1000  .Require
+//   L1032  .Print
+//   L1048  .Sanitize
+//   L1055  .WriteOut
+//   L1074  .CountOf
+//   L1096  .ResolveSiemensAssembly
+//   L1107  .SiemensProbeDirs
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -165,6 +166,8 @@ namespace Tia.Cli
                         "xref --name X  (bloco, tag, tabela ou UDT → o que ele usa)",
                         "trace --equipment AG-01  (símbolos do equipamento + quem referencia; ~9s em projeto grande)",
                         "list-hmi [--device X]  (WinCC clássico e Unified: telas + tag tables; `api` diz qual)",
+                        "export-hmi-tags --table \"Pasta/Tabela\" [--device X]  (SimaticML da tabela de tags "
+                            + "da IHM; é onde aparece a conexão e a tag do PLC por trás de cada tag de tela)",
                         "hmi-tree  (outline de todas as IHMs → hmi-navi.md, agrupado por pasta; irmão do `tree`)",
                         "export-screen --screen \"Pasta/Sub/Tela\" [--device X]  (SimaticML da tela; "
                             + "só WinCC clássico — Unified não exporta tela)",
@@ -587,6 +590,10 @@ namespace Tia.Cli
                         break;
                     case "list-hmi":
                         result = Core.Hmi.List(session, OptionValue(args, "--device"));
+                        break;
+                    case "export-hmi-tags":
+                        result = Core.Hmi.ExportTagTable(session, OptionValue(args, "--device"),
+                            Require(args, "--table"), outDir);
                         break;
                     case "hmi-tree":
                         result = Core.Hmi.Tree(session, Path.Combine(outDir, "hmi-navi.md"));

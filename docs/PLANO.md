@@ -382,10 +382,26 @@ import-screen --file X.xml --folder "<pasta da área destino>" \
 ```
 
 `--replace` também reescreve o **nome do arquivo** de saída (comportamento do `RewriteFile`), então
-a cópia reescrita nunca sobrepõe o XML de origem. Dry-run medido no projeto-molde:
-`{screen: "ZZ_TESTE Gradeamento", action: "create", folderAction: "reuse", applied: false}`.
-Check offline em `Clone.Rewrite` prova a forma da tela (nome da tela + nome da tag trocados,
-`@OpenLink` intocado).
+a cópia reescrita nunca sobrepõe o XML de origem.
+
+**Número de tela é único por DEVICE, e a colisão derruba o TIA Portal** (medido 2026-08-17): a tela
+clonada chega com o `<Number>` do molde, o `Import` estoura
+`NonRecoverableException` — *"screen number '11' … is not unique for this device"* — e **o processo
+do Portal morre**; os steps seguintes do batch só viram `EngineeringObjectDisposedException`. Não é
+erro recuperável, é prevenção: em `action: create` o `import-screen` **tira o `<Number>` da tela**
+(`Hmi.StripScreenNumber`, cópia `.renum.xml` ao lado do XML) e o Portal atribui um livre. O dry-run
+declara em **`numberStripped`**. Só o `<Number>` da tela sai — o de objeto de dentro fica.
+Em `override` o XML vai inteiro, que é o que mantém o roundtrip byte-idêntico da etapa 1.
+
+**`delete-screen --screen "Pasta/Sub/Tela" [--apply]`** fecha o par do import: sem ele, tela de
+smoke só saía pela GUI. `Screen.Delete()` existe; `ScreenComposition` não tem `Delete`.
+
+Smoke ponta a ponta no projeto-molde (`run --script`, 23,1 s):
+`import-screen --apply` (`numberStripped: true`, 19,9 s) → `export-screen` da tela nova
+(`<Number>2</Number>` atribuído pelo Portal, 23 referências a `DB GLOBAL_PRELIMINAR` preservadas) →
+`delete-screen --apply` → `export-screen` **falha com `not found`**, que é a prova de que sumiu.
+Checks offline: `Clone.Rewrite` na forma da tela (nome + tag trocados, `@OpenLink` intocado) e
+`Hmi.StripScreenNumber`.
 
 - `export-hmi-tags --table "Pasta/Tabela"` — SimaticML da tabela de tags da IHM. **É por aqui que
   se vê o vínculo com o PLC**: dump de atributo não serve, `GetAttributeInfos` numa tag de HMI

@@ -1,21 +1,24 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L45    class Hmi
-//   L48    .Targets
-//   L64    .ExportTagTable
-//   L83    .ResolveTagFolder
-//   L98    .List
-//   L112   .Describe
-//   L153   .Tree
-//   L205   .SplitPath
-//   L215   .Row
-//   L222   roundtrip SimaticML de tela (só clássico)
-//   L225   .ExportScreen
-//   L247   .ImportScreen
-//   L283   .ClassicTarget
-//   L302   .ResolveScreenFolder
-//   L324   .CollectScreens
-//   L333   .CollectTables
+//   L48    class Hmi
+//   L51    .Targets
+//   L67    .ExportTagTable
+//   L86    .ResolveTagFolder
+//   L101   .List
+//   L115   .Describe
+//   L156   .Tree
+//   L208   .SplitPath
+//   L218   .Row
+//   L225   roundtrip SimaticML de tela (só clássico)
+//   L228   .ExportScreen
+//   L245   .ImportScreen
+//   L291   .StripScreenNumber
+//   L308   .DeleteScreen
+//   L321   .FindScreen
+//   L336   .ClassicTarget
+//   L355   .ResolveScreenFolder
+//   L377   .CollectScreens
+//   L386   .CollectTables
 // ======================= END NAV INDEX =======================
 
 using System.Collections.Generic;
@@ -225,12 +228,7 @@ namespace Tia.Core
         public static object ExportScreen(TiaSession session, string device, string screenPath, string outDir)
         {
             var target = ClassicTarget(session, device);
-            var cut = screenPath.LastIndexOf('/');
-            var screens = ResolveScreenFolder(target.Value, cut < 0 ? null : screenPath.Substring(0, cut), false);
-            var screen = screens == null ? null : screens.Find(screenPath.Substring(cut + 1));
-            if (screen == null)
-                throw new System.InvalidOperationException("Screen '" + screenPath + "' not found in '"
-                    + target.Value.Name + "'.");
+            var screen = FindScreen(target, screenPath);
             var file = Ops.ExportPath(outDir, screenPath);
             screen.Export(new FileInfo(file), Siemens.Engineering.ExportOptions.WithDefaults);
             return new Dictionary<string, object>
@@ -266,14 +264,69 @@ namespace Tia.Core
             };
             if (!string.IsNullOrEmpty(folderPath))
                 result["folderAction"] = screens == null ? "create" : "reuse";
+            // Tela nova com o <Number> do molde colide: número de tela é único por DEVICE, e a
+            // colisão não é erro recuperável — o Import estoura NonRecoverableException e derruba
+            // o Portal inteiro (medido 2026-08-17). Prevenir tirando o número: o Portal atribui.
+            var importFile = full;
+            if ((string)result["action"] == "create")
+            {
+                var stripped = StripScreenNumber(full);
+                result["numberStripped"] = stripped != null;
+                if (stripped != null) { importFile = stripped; result["file"] = stripped; }
+            }
             if (apply)
             {
                 result["languagesActivated"] =
-                    Ops.EnsureCultures(session.Project, Ops.XmlCultures(full), true);
+                    Ops.EnsureCultures(session.Project, Ops.XmlCultures(importFile), true);
                 ResolveScreenFolder(target.Value, folderPath, true)
-                    .Import(new FileInfo(full), Siemens.Engineering.ImportOptions.Override);
+                    .Import(new FileInfo(importFile), Siemens.Engineering.ImportOptions.Override);
             }
             return result;
+        }
+
+        /// <summary>
+        /// Tira o &lt;Number&gt; da tela e grava a cópia ao lado (`.renum.xml`); devolve null se não houver.
+        /// Puro — sem Openness, testável offline.
+        /// </summary>
+        internal static string StripScreenNumber(string file)
+        {
+            var doc = System.Xml.Linq.XDocument.Load(file);
+            var number = doc.Descendants().FirstOrDefault(e => e.Name.LocalName == "Number"
+                && e.Parent != null && e.Parent.Name.LocalName == "AttributeList"
+                && e.Parent.Parent != null && e.Parent.Parent.Name.LocalName.StartsWith("Hmi.Screen.Screen"));
+            if (number == null) return null;
+            number.Remove();
+            var target = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(file)),
+                Path.GetFileNameWithoutExtension(file) + ".renum.xml");
+            doc.Save(target);
+            return target;
+        }
+
+        /// <summary>
+        /// Delete de tela — o par que faltava do `import-screen`: sem ele, tela de smoke só sai pela GUI.
+        /// </summary>
+        public static object DeleteScreen(TiaSession session, string device, string screenPath, bool apply)
+        {
+            var target = ClassicTarget(session, device);
+            var screen = FindScreen(target, screenPath);
+            if (apply) screen.Delete();
+            return new Dictionary<string, object>
+            {
+                { "device", target.Key }, { "hmi", target.Value.Name },
+                { "screen", screenPath }, { "action", "delete" }, { "applied", apply },
+            };
+        }
+
+        /// <summary>Resolve `Pasta/Sub/Tela` na tela; ausente é erro, como no export-block.</summary>
+        static Classic.Screen.Screen FindScreen(KeyValuePair<string, Classic.HmiTarget> target, string screenPath)
+        {
+            var cut = screenPath.LastIndexOf('/');
+            var screens = ResolveScreenFolder(target.Value, cut < 0 ? null : screenPath.Substring(0, cut), false);
+            var screen = screens == null ? null : screens.Find(screenPath.Substring(cut + 1));
+            if (screen == null)
+                throw new System.InvalidOperationException("Screen '" + screenPath + "' not found in '"
+                    + target.Value.Name + "'.");
+            return screen;
         }
 
         /// <summary>

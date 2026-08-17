@@ -110,6 +110,7 @@ namespace Tia.Tests
                 { "DbMember.AddToXml", DbMember_AddToXml },
                 { "Memory.Occupied", Memory_Occupied },
                 { "Clone.Rewrite", Clone_Rewrite },
+                { "Hmi.StripScreenNumber", Hmi_StripScreenNumber },
                 { "Profinet.TagName", Profinet_TagName },
                 { "InstrumentFc.FcName", InstrumentFc_FcName },
                 { "Audit.Naming", Audit_Naming },
@@ -634,6 +635,33 @@ namespace Tia.Tests
                 "tela: tag remapeada por nome, TargetID intocado");
             Check(screen.Descendants().Any(e => (string)e.Attribute("TargetID") == "@OpenLink"),
                 "tela: @OpenLink sobrevive ao --replace");
+        }
+
+        // Número de tela é único por DEVICE, e a colisão no import não é recuperável: derruba o
+        // Portal. Tela nova entra sem número (o Portal atribui); override mantém o XML original.
+        private static void Hmi_StripScreenNumber()
+        {
+            const string ns = "http://www.siemens.com/automation/Openness/SW/Interface/v5";
+            var src = Path.Combine(Path.GetTempPath(), "zz_teste_screen.xml");
+            File.WriteAllText(src, "<Document xmlns='" + ns + "'><Hmi.Screen.Screen ID='0'>" +
+                "<AttributeList><Name>Tela</Name><Number>11</Number></AttributeList>" +
+                "<ObjectList><Hmi.Screen.TextField ID='6'><AttributeList><Number>7</Number>" +
+                "</AttributeList></Hmi.Screen.TextField></ObjectList></Hmi.Screen.Screen></Document>");
+
+            var outFile = Tia.Core.Hmi.StripScreenNumber(src);
+            Check(outFile != null && File.Exists(outFile), "cópia .renum.xml gravada");
+            var doc = XDocument.Load(outFile);
+            var numbers = doc.Descendants().Where(e => e.Name.LocalName == "Number")
+                .Select(e => e.Value).ToList();
+            Check(numbers.SequenceEqual(new[] { "7" }),
+                "só o Number da tela sai; o do objeto de dentro fica (" + string.Join(",", numbers) + ")");
+            Check(XDocument.Load(src).Descendants().Count(e => e.Name.LocalName == "Number") == 2,
+                "XML de origem intacto");
+
+            File.WriteAllText(src, "<Document xmlns='" + ns + "'><Hmi.Screen.Screen ID='0'>" +
+                "<AttributeList><Name>Tela</Name></AttributeList></Hmi.Screen.Screen></Document>");
+            Check(Tia.Core.Hmi.StripScreenNumber(src) == null, "sem <Number>, nada é copiado");
+            File.Delete(src); File.Delete(outFile);
         }
 
         private static void Scaffold_Plan()

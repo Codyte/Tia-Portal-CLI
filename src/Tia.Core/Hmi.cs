@@ -1,24 +1,27 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L48    class Hmi
-//   L51    .Targets
-//   L67    .ExportTagTable
-//   L86    .ResolveTagFolder
-//   L101   .List
-//   L115   .Describe
-//   L156   .Tree
-//   L208   .SplitPath
-//   L218   .Row
-//   L225   roundtrip SimaticML de tela (só clássico)
-//   L228   .ExportScreen
-//   L245   .ImportScreen
-//   L291   .StripScreenNumber
-//   L308   .DeleteScreen
-//   L321   .FindScreen
-//   L336   .ClassicTarget
-//   L355   .ResolveScreenFolder
-//   L377   .CollectScreens
-//   L386   .CollectTables
+//   L51    class Hmi
+//   L54    .Targets
+//   L70    .ExportTagTable
+//   L89    .ResolveTagFolder
+//   L104   .List
+//   L118   .Describe
+//   L159   .Tree
+//   L211   .SplitPath
+//   L221   .Row
+//   L228   roundtrip SimaticML de tela (só clássico)
+//   L231   .ExportScreen
+//   L248   .ImportScreen
+//   L294   .StripScreenNumber
+//   L311   .DeleteScreen
+//   L324   .FindScreen
+//   L340   .ScreenPaths
+//   L348   .TagNames
+//   L355   .CollectTagNames
+//   L365   .ClassicTarget
+//   L384   .ResolveScreenFolder
+//   L406   .CollectScreens
+//   L415   .CollectTables
 // ======================= END NAV INDEX =======================
 
 using System.Collections.Generic;
@@ -333,7 +336,33 @@ namespace Tia.Core
         /// A IHM do verbo de escrita: uma só, e clássica. Unified não tem roundtrip SimaticML de tela
         /// (docs/LIMITES.md), então recusar cedo é melhor que falhar dentro do Import.
         /// </summary>
-        static KeyValuePair<string, Classic.HmiTarget> ClassicTarget(TiaSession session, string device)
+        /// <summary>Todo caminho "Pasta/Sub/Tela" do target, o mesmo que o export/import recebe.</summary>
+        internal static List<string> ScreenPaths(Classic.HmiTarget target)
+        {
+            var into = new List<string>();
+            CollectScreens(target.ScreenFolder.Screens, target.ScreenFolder.Folders, "", into);
+            return into;
+        }
+
+        /// <summary>Nome de toda tag da IHM, de todas as tabelas — o conjunto que o audit-screen cruza.</summary>
+        internal static HashSet<string> TagNames(Classic.HmiTarget target)
+        {
+            var into = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+            CollectTagNames(target.TagFolder.TagTables, target.TagFolder.Folders, into);
+            return into;
+        }
+
+        static void CollectTagNames(Classic.Tag.TagTableComposition tables,
+            Classic.Tag.TagUserFolderComposition folders, HashSet<string> into)
+        {
+            foreach (var table in tables)
+                foreach (var tag in table.Tags)
+                    into.Add(tag.Name);
+            foreach (var folder in folders)
+                CollectTagNames(folder.TagTables, folder.Folders, into);
+        }
+
+        internal static KeyValuePair<string, Classic.HmiTarget> ClassicTarget(TiaSession session, string device)
         {
             var hits = Targets(session)
                 .Where(t => device == null || t.Key.Equals(device, System.StringComparison.OrdinalIgnoreCase))

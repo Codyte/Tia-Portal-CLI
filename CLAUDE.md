@@ -226,6 +226,11 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     **Não há `--align`, e é decisão**: derivar os `--set` comparando coluna contra coluna pede
     parear objeto com objeto, e par errado move o objeto errado. Coluna torta se **regenera** com
     `copy-screen-items --replace`, onde o molde é a coluna boa; `--set` é para a exceção.
+  - **Tag de tela quebrada = `audit-screen`**, que hoje só aparecia no compile do HMI (e o compile não
+    diz qual objeto a usa). Cruza tag do objeto × tags **da IHM**: existe, e tem código de equipamento
+    (é assim que o placeholder `tag1` do editor sai nominalmente). Sem `--screen` varre toda tela do
+    device — um export por tela. Cruzar com a tag **do PLC** sai `skipped`: a tag de HMI clássica só
+    expõe `Name` e o SimaticML da tabela traz só a `Connection` (`docs/LIMITES.md`).
   - **`plug-module --type` aceita o MLFB sem o prefixo `OrderNumber:`** e, quando `canPlug` é
     `false`, devolve **`reason`**. Sem versão, `plugAs` sai com o prefixo e o firmware sondado
     (`OrderNumber:6ES7 131-6BH00-0BA0/V1.0`). Slot é do rack: `--item Rack_0`, posição em **`--pos`**.

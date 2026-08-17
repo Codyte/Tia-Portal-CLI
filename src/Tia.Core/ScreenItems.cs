@@ -1,38 +1,39 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L63    class ScreenItems
-//   L65    class Item
-//   L76    núcleo puro (sem Openness, testável offline)
-//   L79    .Parse
-//   L107   .Groups
-//   L137   .Patch
-//   L165   case "x"
-//   L166   case "y"
-//   L167   case "w"
-//   L168   case "h"
-//   L184   .Remove
-//   L211   .Rename
-//   L249   .RenameFromTag
-//   L298   .Group
-//   L358   .CopyInto
-//   L423   verbos
-//   L426   .List
-//   L454   .Set
-//   L492   .Copy
-//   L517   utilidades
-//   L520   .ScreenElements
-//   L530   .GroupOf
-//   L536   .NameOf
-//   L543   .Inside
-//   L553   .Layers
-//   L561   .LayerIndex
-//   L568   .FolderOf
-//   L575   .Coords
-//   L583   .FirstTag
-//   L591   .Attr
-//   L597   .Num
-//   L604   .SetNum
-//   L611   .ParseId
+//   L64    class ScreenItems
+//   L66    class Item
+//   L77    núcleo puro (sem Openness, testável offline)
+//   L80    .Parse
+//   L108   .Groups
+//   L138   .Patch
+//   L166   case "x"
+//   L167   case "y"
+//   L168   case "w"
+//   L169   case "h"
+//   L185   .Remove
+//   L212   .Rename
+//   L250   .RenameFromTag
+//   L299   .Group
+//   L359   .CopyInto
+//   L424   verbos
+//   L427   .List
+//   L460   .Audit
+//   L514   .Set
+//   L552   .Copy
+//   L577   utilidades
+//   L580   .ScreenElements
+//   L590   .GroupOf
+//   L596   .NameOf
+//   L603   .Inside
+//   L613   .Layers
+//   L621   .LayerIndex
+//   L628   .FolderOf
+//   L635   .Coords
+//   L643   .FirstTag
+//   L651   .Attr
+//   L657   .Num
+//   L664   .SetNum
+//   L671   .ParseId
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -445,6 +446,65 @@ namespace Tia.Core
             };
             if (group) result["equipment"] = Groups(items);
             return result;
+        }
+
+        /// <summary>
+        /// Cruza a tag de cada objeto de tela com as tags da própria IHM. Hoje tag de tela quebrada
+        /// só aparece no compile do HMI, e o compile não diz qual objeto a usa.
+        ///
+        /// **Não cruza com a tag do PLC, e é limite medido, não escolha** (2026-08-17): a tag de HMI
+        /// clássica só expõe `Name` (`GetAttributeInfos`), e o SimaticML da tabela de tags carrega
+        /// apenas o nome da `Connection` — o símbolo do PLC por trás não sai por nenhum dos dois.
+        /// O check correspondente sai `skipped` com esse motivo, no feitio do `audit`.
+        /// </summary>
+        public static object Audit(TiaSession session, string device, string screenPath, int max,
+            string outDir)
+        {
+            var target = Hmi.ClassicTarget(session, device);
+            var hmiTags = Hmi.TagNames(target.Value);
+            var screens = screenPath != null
+                ? new List<string> { screenPath }
+                : Hmi.ScreenPaths(target.Value);
+
+            var missing = new List<string>();
+            var noCode = new List<string>();
+            int items = 0, tagged = 0;
+            foreach (var path in screens)
+            {
+                var export = (Dictionary<string, object>)Hmi.ExportScreen(session, device, path, outDir);
+                var parsed = Parse(XDocument.Load((string)export["file"]));
+                items += parsed.Count;
+                foreach (var it in parsed)
+                {
+                    if (string.IsNullOrEmpty(it.Tag)) continue; // fundo, rótulo e botão de navegação
+                    tagged++;
+                    if (!hmiTags.Contains(it.Tag)) missing.Add(path + " → " + it.Name + " : " + it.Tag);
+                    else if (!EquipRe.IsMatch(it.Tag)) noCode.Add(path + " → " + it.Name + " : " + it.Tag);
+                }
+            }
+
+            var checks = new List<object>
+            {
+                Tia.Core.Audit.Check("tag do objeto existe na IHM", missing, max),
+                // Placeholder do editor (`tag`, `tag1`, `aux`) passa no check de existência: a tag
+                // existe mesmo, é a ligação que ficou pendente. Sem código de equipamento é o sinal.
+                Tia.Core.Audit.Check("tag do objeto tem código de equipamento", noCode, max),
+                Tia.Core.Audit.Skipped("tag da IHM aponta pra tag do PLC",
+                    "a tag de HMI clássica só expõe Name, e o SimaticML da tabela traz só a Connection — "
+                    + "o símbolo do PLC não sai por nenhum dos dois (medido 2026-08-17)"),
+            };
+
+            return new Dictionary<string, object>
+            {
+                { "device", target.Key }, { "hmi", target.Value.Name },
+                { "scanned", new Dictionary<string, object>
+                    {
+                        { "screens", screens.Count }, { "items", items },
+                        { "taggedItems", tagged }, { "hmiTags", hmiTags.Count },
+                    } },
+                { "ok", checks.Cast<Dictionary<string, object>>().All(c => (bool)c["ok"]) },
+                { "checks", checks },
+            };
         }
 
         /// <summary>

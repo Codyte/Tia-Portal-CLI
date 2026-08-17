@@ -327,7 +327,7 @@ namespace Tia.Core
         }
 
         /// <summary>Check que não pôde rodar: ok=true (não reprova o projeto) + o porquê.</summary>
-        private static object Skipped(string name, string why)
+        internal static object Skipped(string name, string why)
         {
             return new Dictionary<string, object>
             {
@@ -414,7 +414,7 @@ namespace Tia.Core
                 .ToList();
         }
 
-        private static object Check(string name, List<string> findings, int max)
+        internal static object Check(string name, List<string> findings, int max)
         {
             var row = new Dictionary<string, object>
             {

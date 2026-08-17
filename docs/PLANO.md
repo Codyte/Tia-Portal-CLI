@@ -516,6 +516,27 @@ e para a exceção `--set` já basta.
 verbo mais esperto, é **juntar tudo num `run --script`** — as 102 edições da tela foram 1 export e 1
 import.
 
+### F13d — `audit-screen` ✅ (2026-08-17)
+
+**`audit-screen [--screen "Pasta/Sub/Tela"] [--device X] [--max N]`** — cruza a tag de cada objeto
+de tela com as tags da própria IHM. Sem `--screen`, varre toda tela do device (um export por tela).
+Saída no feitio do `audit`: `checks` com `ok`/`findings`/`detail` + `scanned` (`screens`, `items`,
+`taggedItems`, `hmiTags`), que é o que distingue check conforme de check cego.
+
+Dois checks e um `skipped`:
+
+- **tag do objeto existe na IHM** — hoje tag de tela quebrada só aparece no compile do HMI, e o
+  compile não diz qual objeto a usa.
+- **tag do objeto tem código de equipamento** — o placeholder do editor (`tag`, `tag1`, `aux`)
+  *existe* como tag, então passa no check anterior; o que denuncia é a ausência de código. Medido na
+  Biofiltro real: 150 objetos, 47 com tag, 0 tag inexistente e os **3 `tag1`** (`I/O field_9/10/12`)
+  nominalmente listados — os mesmos que o `--rename-from-tag` já apontava.
+- **tag da IHM aponta pra tag do PLC** → `skipped`, e é **limite de API, não escolha** (ver
+  `docs/LIMITES.md`): a tag de HMI clássica só expõe `Name`, e o SimaticML da tabela traz do vínculo
+  só o nome da `Connection`. O nome da tag parece o caminho do PLC com `_` no lugar do separador,
+  mas `_` também vive dentro de nome de membro — reverter seria adivinhação, e adivinhar num verbo
+  de auditoria é pior que não checar.
+
 ## F12 — `sim-diag` camada 1 ✅ (2026-08-17)
 
 **`sim-diag [--instance plc_1500_1] [--watch SEG]`** — diagnóstico do PLC virtual. Roda **antes do

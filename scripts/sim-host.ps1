@@ -1,3 +1,9 @@
+# ====================== BEGIN NAV INDEX ======================
+# NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
+#   L41    Write-Log
+#   L94    host: sem switch nenhum, este processo E o host e so volta no -Stop --
+# ======================= END NAV INDEX =======================
+
 # NAV INDEX
 # 1-10    header + params
 # 12-24   -Status  (instancias registradas + log)
@@ -19,6 +25,7 @@ param(
     [switch]$Start,
     [switch]$Stop,
     [switch]$Status,
+    [switch]$Ui,          # abre o control panel da Siemens junto (o usuario quer VER a instancia)
     [string]$Name = 'plc_1500_1',
     [string]$Article = '6ES7 515-2AN03-0AB0'
 )
@@ -28,6 +35,7 @@ $ws   = Join-Path $repo 'workspace'
 New-Item -ItemType Directory -Force $ws | Out-Null
 $log  = Join-Path $ws 'sim-host.log'
 $flag = Join-Path $ws 'sim-host.stop'
+$uiOn = Join-Path $ws 'sim-host.ui'
 $dll  = Join-Path $repo 'lib\Siemens.Simatic.Simulation.Runtime.Api.x64.dll'
 
 function Write-Log($m) { "$(Get-Date -f 'HH:mm:ss') $m" | Add-Content $log }
@@ -66,7 +74,9 @@ if ($Stop) {
 }
 
 if ($Start) {
-    Remove-Item $log, $flag -ErrorAction SilentlyContinue
+    Remove-Item $log, $flag, $uiOn -ErrorAction SilentlyContinue
+    # marcador em vez de argumento: Start-ScheduledTask nao passa parametro pra task
+    if ($Ui) { New-Item -ItemType File -Force $uiOn | Out-Null }
     if ((Get-Process -Id $PID).SessionId -eq 0) {
         Start-ScheduledTask -TaskName TiaSimHost   # registrada pelo setup-tasks.ps1
     } else {
@@ -89,6 +99,13 @@ try {
     $inst = $mgr::RegisterInstance($Article, $Name)
     Write-Log "registered $Name"
     Write-Log "powerOn=$($inst.PowerOn(60000)) state=$($inst.OperatingState)"
+    # o control panel e so uma vista do mesmo Runtime Manager: ele lista a instancia que este host
+    # registrou, e fechar a janela nao desliga nada (quem segura a instancia e este processo).
+    if ($Ui -or (Test-Path $uiOn)) {
+        $cp = "${env:ProgramFiles(x86)}\Siemens\Automation\PLCSIMADV\bin\Siemens.Simatic.PlcSim.Advanced.UserInterface.exe"
+        if (Test-Path $cp) { Start-Process $cp; Write-Log 'control panel aberto' }
+        else { Write-Log "control panel nao encontrado em $cp" }
+    }
     while (-not (Test-Path $flag)) { Start-Sleep -Seconds 2 }
     Write-Log 'stop requested; powering off'
     $inst.PowerOff(30000)

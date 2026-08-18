@@ -23,8 +23,8 @@
   <sub>L31:class Drives  L34:.DriveObjects  L41:.Collect  L61:.Try  L67:.Describe  L115:list-telegrams  L117:.ListTelegrams  L128:insert-telegram  L134:.InsertTelegram  L223:.ParseType</sub>
 - **FaultOb.cs** (360 ln)
   <sub>L40:class FaultObConfig  L43:.GroupPrefix  L45:.Devices  L46:.TemplateOb  L47:.ObNamePrefix  L53:.AlarmDb  L54:.CommentCultures  L62:class FaultOb  L69:class Module  L76:.Generate  L155:.DiscoverTasks  L184:.AllDeviceGroups  L191:.WithSubGroups  L199:.CollectModules  L210:XML generation  L212:.BuildObXml  L242:.RewireNetwork  L279:.AddMasterCommentEntry  L308:.ReassignUids  L328:.ModuleType  L340:.WriteCsv</sub>
-- **Hardware.cs** (820 ln)
-  <sub>L57:class Hardware  L63:.FindDevice  L75:.HasItemNamed  L85:.Interface  L93:add-device  L96:.AddDevice  L121:delete-device  L123:.DeleteDevice  L136:plug-module  L144:.PlugModule  L230:.CollectSlots  L242:.FindItem  L255:.FindItem  L266:set-address  L268:.SetAddress  L297:set-io-address  L305:.SetIoAddress  L365:.CollectAddresses  L371:list-io-map  L381:.ListIoMap  L428:.ListIoMapRows  L440:.CollectMap  L468:.CollectTelegramMap  L495:.Range …</sub>
+- **Hardware.cs** (896 ln)
+  <sub>L59:class Hardware  L65:.FindDevice  L77:.HasItemNamed  L91:.SingleInterface  L113:.CollectInterfaces  L125:.Interface  L133:add-device  L136:.AddDevice  L161:delete-device  L163:.DeleteDevice  L176:plug-module  L184:.PlugModule  L270:.CollectSlots  L288:.FindItem  L307:.CollectMatches  L321:set-address  L323:.SetAddress  L356:set-io-address  L364:.SetIoAddress  L424:.CollectAddresses  L430:list-io-map  L440:.ListIoMap  L492:.ListIoMapRows  L505:.CollectMap …</sub>
 - **Hmi.cs** (476 ln)
   <sub>L53:class Hmi  L56:.Targets  L72:.ExportTagTable  L97:.ImportTagTable  L129:.ResolveTagFolder  L134:.ResolveTagFolder  L154:.List  L168:.Describe  L209:.Tree  L261:.SplitPath  L271:.Row  L278:roundtrip SimaticML de tela (só clássico)  L281:.ExportScreen  L298:.ImportScreen  L344:.StripScreenNumber  L361:.DeleteScreen  L374:.FindScreen  L390:.ScreenPaths  L398:.TagNames  L405:.CollectTagNames  L415:.ClassicTarget  L434:.ResolveScreenFolder  L456:.CollectScreens  L465:.CollectTables</sub>
 - **InstrumentFc.cs** (721 ln)
@@ -41,7 +41,7 @@
   <sub>L27:class Motion  L31:.List  L43:.Collect  L67:.Parameters  L80:.Safe</sub>
 - **Multiuser.cs** (98 ln)
   <sub>L14:class Multiuser  L21:.ListServerProjects  L54:.ResolveServer  L69:.Describe</sub>
-- **Ops.cs** (1337 ln)
+- **Ops.cs** (1356 ln)
   <sub>L95:class Ops  L97:lookup  L99:.FindBlock  L109:.FindGroup  L124:.FindGroupByName  L142:.FindTagGroup  L157:.FindTagGroupByName  L170:.FindBlockIn  L183:.ResolveFolder  L195:.SplitPath  L219:.WalkFolders  L246:.FindTagTable  L259:.ResolveTagFolder  L267:.ResolveTypeFolder  L274:.FindType  L286:structure  L288:.CreateFolder  L320:.CreateFolders  L355:.DeleteFolder  L382:.TypeFolderAction  L403:.CountTypes  L408:.CountBlocks  L413:.CountTables  L422:.CreateInstanceDb …</sub>
 - **Profinet.cs** (166 ln)
   <sub>L12:class ProfinetConfig  L14:.Devices  L15:.StartByte  L16:.TagFolder  L17:.TagTable  L20:class ProfinetMapping  L22:.Hardware  L23:.EquipmentTag  L24:.DeviceNumber  L28:class Profinet  L30:.Generate  L92:.TagName  L97:.FindTable  L103:.ResolveTable  L111:.FindIoDeviceNames  L130:.FindNetworkItem  L143:class BoolAddressAllocator  L148:.BoolAddressAllocator  L153:.Next  L161:.Skip</sub>
@@ -51,8 +51,8 @@
   <sub>L51:class ScaffoldManifest  L54:.Source  L57:.Folders  L60:.TagFolders  L63:.Replace  L70:.Cpu  L72:.Items  L75:class ScaffoldItem  L77:.File  L80:.Folder  L84:class ScaffoldPlanItem  L97:class Scaffold  L100:.Rank  L114:.Plan  L145:.Merge  L155:.Apply  L164:.Run  L238:.CheckFamily  L252:.SameFamily  L259:.AlreadyInAnotherFolder  L267:.DeleteObject  L278:.FolderAction  L301:.ResolveBlockPath  L318:.ResolveTypePath …</sub>
 - **ScreenItems.cs** (677 ln)
   <sub>L64:class ScreenItems  L66:class Item  L77:núcleo puro (sem Openness, testável offline)  L80:.Parse  L108:.Groups  L138:.Patch  L166:case "x"  L167:case "y"  L168:case "w"  L169:case "h"  L185:.Remove  L212:.Rename  L250:.RenameFromTag  L299:.Group  L359:.CopyInto  L424:verbos  L427:.List  L460:.Audit  L514:.Set  L552:.Copy  L577:utilidades  L580:.ScreenElements  L590:.GroupOf  L596:.NameOf …</sub>
-- **Sim.cs** (549 ln)
-  <sub>L68:class Sim  L76:.Run  L220:.Diag  L283:.Watch  L328:.Try  L334:.RegisteredInstances  L344:.WaitReady  L361:.Execute  L371:case "write"  L375:case "read"  L379:case "wait"  L383:case "run"  L387:case "stop"  L391:case "state"  L394:case "tags"  L422:.Write  L446:.ParseBool  L454:.Plain  L475:class Target  L486:.FindTarget  L498:.Interfaces  L512:.DeviceItemOf  L539:.Resolve</sub>
+- **Sim.cs** (601 ln)
+  <sub>L73:class Sim  L81:.Run  L227:.Diag  L290:.Watch  L335:.Try  L341:.RegisteredInstances  L351:.WaitReady  L373:.ValidateSteps  L386:case "write"  L387:case "read"  L388:case "wait"  L389:case "run"  L413:.Execute  L423:case "write"  L427:case "read"  L431:case "wait"  L435:case "run"  L439:case "stop"  L443:case "state"  L446:case "tags"  L474:.Write  L498:.ParseBool  L506:.Plain  L527:class Target …</sub>
 - **Standardize.cs** (654 ln)
   <sub>L59:class StandardizeConfig  L61:.RootFolder  L64:.MemorySets  L72:.SetMapping  L83:.PrefixMappings  L102:.CommentMappings  L167:.AlarmOrder  L173:class PrefixMapping  L175:.Keyword  L176:.Prefix  L179:class TagTemplate  L186:class NaturalStringComparer  L188:.Compare  L215:class AlarmTagComparer  L220:.AlarmTagComparer  L225:.Compare  L233:.Key  L244:class AddressAllocator  L248:.CurrentByte  L249:.CurrentBit  L251:.AddressAllocator  L257:.Next  L283:class MemoryManager  L287:.MemoryManager …</sub>
 - **TiaSession.cs** (231 ln)

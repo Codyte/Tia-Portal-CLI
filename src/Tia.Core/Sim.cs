@@ -1,28 +1,33 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L68    class Sim
-//   L76    .Run
-//   L220   .Diag
-//   L283   .Watch
-//   L328   .Try
-//   L334   .RegisteredInstances
-//   L344   .WaitReady
-//   L361   .Execute
-//   L371   case "write"
-//   L375   case "read"
-//   L379   case "wait"
-//   L383   case "run"
-//   L387   case "stop"
-//   L391   case "state"
-//   L394   case "tags"
-//   L422   .Write
-//   L446   .ParseBool
-//   L454   .Plain
-//   L475   class Target
-//   L486   .FindTarget
-//   L498   .Interfaces
-//   L512   .DeviceItemOf
-//   L539   .Resolve
+//   L73    class Sim
+//   L81    .Run
+//   L227   .Diag
+//   L290   .Watch
+//   L335   .Try
+//   L341   .RegisteredInstances
+//   L351   .WaitReady
+//   L373   .ValidateSteps
+//   L386   case "write"
+//   L387   case "read"
+//   L388   case "wait"
+//   L389   case "run"
+//   L413   .Execute
+//   L423   case "write"
+//   L427   case "read"
+//   L431   case "wait"
+//   L435   case "run"
+//   L439   case "stop"
+//   L443   case "state"
+//   L446   case "tags"
+//   L474   .Write
+//   L498   .ParseBool
+//   L506   .Plain
+//   L527   class Target
+//   L538   .FindTarget
+//   L550   .Interfaces
+//   L564   .DeviceItemOf
+//   L591   .Resolve
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -93,6 +98,8 @@ namespace Tia.Core
             if (provider == null)
                 throw new InvalidOperationException(
                     "PLC '" + plc.Name + "' does not expose a DownloadProvider (device item: " + cpu.Name + ").");
+
+            ValidateSteps(steps);   // API-10: erro de script descoberto antes do download (~91% do verbo)
 
             var plan = new Dictionary<string, object>
             {
@@ -358,6 +365,51 @@ namespace Tia.Core
         /// Passo que falha vira {ok:false,error} e a lista segue — igual ao `run --script`.
         /// Caminho de membro de DB vai com as aspas do Portal: "\"DB GLOBAL\".AREA.EQUIP.CMD_LIGA".
         /// </summary>
+        /// <summary>
+        /// API-10: os passos eram validados um a um durante a execução, depois do download — array
+        /// curto ou operação inexistente só aparecia quando o programa já estava na CPU virtual.
+        /// PLC-08: `wait` ia direto pro Thread.Sleep, então um zero a mais dormia horas.
+        /// </summary>
+        private static void ValidateSteps(List<string[]> steps)
+        {
+            const int MaxWaitMs = 600000;   // 10 min por passo; script que precisa de mais roda em dois
+            int totalWait = 0;
+            for (int i = 0; i < steps.Count; i++)
+            {
+                var step = steps[i];
+                var where = "step " + i + ": ";
+                if (step == null || step.Length == 0)
+                    throw new ArgumentException(where + "empty step. Each step is [\"op\", ...args].");
+                int need;
+                switch (step[0])
+                {
+                    case "write": need = 3; break;
+                    case "read": need = 2; break;
+                    case "wait": need = 2; break;
+                    case "run": case "stop": case "state": case "tags": need = 1; break;
+                    default:
+                        throw new ArgumentException(where + "unknown sim step '" + step[0]
+                            + "'. Valid: write, read, wait, run, stop, state, tags.");
+                }
+                if (step.Length < need)
+                    throw new ArgumentException(where + "'" + step[0] + "' needs " + need
+                        + " entries, got " + step.Length + ".");
+                if (step[0] == "wait")
+                {
+                    int ms;
+                    if (!int.TryParse(step[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out ms) || ms < 0)
+                        throw new ArgumentException(where + "wait '" + step[1] + "' is not a positive integer (ms).");
+                    if (ms > MaxWaitMs)
+                        throw new ArgumentException(where + "wait " + ms + " ms is over the " + MaxWaitMs
+                            + " ms cap for a single step.");
+                    totalWait += ms;
+                }
+            }
+            if (totalWait > MaxWaitMs)
+                throw new ArgumentException("Total wait in the script is " + totalWait + " ms, over the "
+                    + MaxWaitMs + " ms budget.");
+        }
+
         private static List<object> Execute(IInstance instance, List<string[]> steps)
         {
             var rows = new List<object>();

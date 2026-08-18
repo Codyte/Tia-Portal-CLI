@@ -237,8 +237,10 @@ if (-not (Test-TasksCurrent)) {
     Write-Host "registrando tasks TiaWhitelist/TiaSmokeRun/TiaSimHost para $PSScriptRoot — vai pedir UAC uma vez"
     Start-Process pwsh -Verb RunAs -Wait -ArgumentList `
         '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $PSScriptRoot 'setup-tasks.ps1')
-    if (-not (Get-ScheduledTask -TaskName TiaWhitelist -ErrorAction SilentlyContinue)) {
-        Write-Warning "setup-tasks nao registrou TiaWhitelist — ver workspace\setup-log.txt"
+    # INST-07: conferir as tres tasks (acao, ACL e caminho), nao so' a existencia da TiaWhitelist --
+    # setup parcial passava e a linha seguinte anunciava as tres como registradas.
+    if (-not (Test-TasksCurrent)) {
+        Write-Warning "setup-tasks nao deixou as tasks no estado esperado — ver workspace\setup-log.txt"
         exit 1
     }
 }

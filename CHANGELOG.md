@@ -92,6 +92,20 @@ deliberately dropped.
 - **`bytes` in the spill stub is the file's UTF-8 size** (`FileInfo.Length`), not UTF-16 char count;
   the char count is still there as `chars`.
 
+- **`sim-run` validates the whole script before the download.** A short step array or an unknown op
+  only failed while executing, after the ~91% of the verb that is the download; `wait` went straight
+  into `Thread.Sleep`, so an extra zero slept for hours. Steps are now checked for shape, arity and
+  wait budget (10 min per step and per script) up front.
+- **Usage errors that looked like Portal errors now exit 2.** `FormatException` (a bad number in
+  `--retry`/`--max`/`--pos`), `OverflowException` and invalid JSON fell through to the generic 1;
+  `DirectoryNotFoundException` now exits 3 like a missing file.
+- **Generator configs reject unknown properties.** Newtonsoft ignored them by default, so a typo in
+  `TemplateFolder` silently fell back to the wide default — the same damage as an ignored CLI
+  option, through the other door. Keys starting with `_` stay allowed (JSON has no comments).
+- **`init.ps1` takes all Openness DLLs from a single PublicAPI root**, instead of finding each one
+  in the first Portal that has it (which could mix majors in `lib/`), and re-checks all three tasks
+  after the UAC step instead of only `TiaWhitelist`'s existence.
+
 - **Exit code is honest for failures embedded in the result.** Verbs that caught an error into an
   `error` field and returned normally (`sim-run` above all) exited 0, and the batch marked the step
   `ok: true`. A top-level `error` is now exit 1 and counts in the batch's `failed`.

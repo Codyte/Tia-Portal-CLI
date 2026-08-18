@@ -1,44 +1,46 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L57    class Hardware
-//   L63    .FindDevice
-//   L75    .HasItemNamed
-//   L85    .Interface
-//   L93    add-device
-//   L96    .AddDevice
-//   L121   delete-device
-//   L123   .DeleteDevice
-//   L136   plug-module
-//   L144   .PlugModule
-//   L230   .CollectSlots
-//   L242   .FindItem
-//   L255   .FindItem
-//   L266   set-address
-//   L268   .SetAddress
-//   L297   set-io-address
-//   L305   .SetIoAddress
-//   L365   .CollectAddresses
-//   L371   list-io-map
-//   L381   .ListIoMap
-//   L428   .ListIoMapRows
-//   L440   .CollectMap
-//   L468   .CollectTelegramMap
-//   L495   .Range
-//   L501   list-attrs
-//   L508   .ListAttrs
-//   L533   set-attr
-//   L541   .SetAttr
-//   L574   .Coerce
-//   L582   .TryGet
-//   L588   set-memory-bytes
-//   L597   .SetMemoryBytes
-//   L642   .IsMemoryAttribute
-//   L650   .FindMemoryItem
-//   L665   connect-subnet
-//   L671   .ConnectSubnet
-//   L789   CAx (AML)
-//   L791   .CaxExport
-//   L804   .CaxImport
+//   L59    class Hardware
+//   L65    .FindDevice
+//   L77    .HasItemNamed
+//   L91    .SingleInterface
+//   L113   .CollectInterfaces
+//   L125   .Interface
+//   L133   add-device
+//   L136   .AddDevice
+//   L161   delete-device
+//   L163   .DeleteDevice
+//   L176   plug-module
+//   L184   .PlugModule
+//   L270   .CollectSlots
+//   L288   .FindItem
+//   L307   .CollectMatches
+//   L321   set-address
+//   L323   .SetAddress
+//   L356   set-io-address
+//   L364   .SetIoAddress
+//   L424   .CollectAddresses
+//   L430   list-io-map
+//   L440   .ListIoMap
+//   L492   .ListIoMapRows
+//   L505   .CollectMap
+//   L533   .CollectTelegramMap
+//   L571   .Range
+//   L577   list-attrs
+//   L584   .ListAttrs
+//   L609   set-attr
+//   L617   .SetAttr
+//   L650   .Coerce
+//   L658   .TryGet
+//   L664   set-memory-bytes
+//   L673   .SetMemoryBytes
+//   L718   .IsMemoryAttribute
+//   L726   .FindMemoryItem
+//   L741   connect-subnet
+//   L747   .ConnectSubnet
+//   L865   CAx (AML)
+//   L867   .CaxExport
+//   L880   .CaxImport
 // ======================= END NAV INDEX =======================
 
 using System;

@@ -1,115 +1,118 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L131   class Program
-//   L133   .Main
-//   L416   .ExitCodeFor
-//   L427   .RunLadderDryRun
-//   L437   .RunExplainFile
-//   L445   .RunInterfaceFile
-//   L459   .Run
-//   L583   .ParseScript
-//   L605   .DispatchWithRetry
-//   L619   .IsBusy
-//   L625   .Dispatch
-//   L635   case "save-project"
-//   L638   case "close-project"
-//   L641   case "info"
-//   L644   case "list-devices"
-//   L647   case "list-blocks"
-//   L651   case "list-tags"
-//   L654   case "tree"
-//   L658   case "list-types"
-//   L661   case "find"
-//   L665   case "snapshot"
-//   L668   case "xref"
-//   L671   case "trace"
-//   L674   case "list-hmi"
-//   L677   case "export-hmi-tags"
-//   L681   case "import-hmi-tags"
-//   L688   case "hmi-tree"
-//   L691   case "export-screen"
-//   L695   case "import-screen"
-//   L702   case "delete-screen"
-//   L707   case "list-screen-items"
-//   L712   case "audit-screen"
-//   L717   case "set-screen-items"
-//   L725   case "copy-screen-items"
-//   L733   case "list-motion"
-//   L737   case "free-memory"
-//   L743   case "export-block"
-//   L746   case "explain-block"
-//   L751   case "export-tags"
-//   L754   case "list-interface"
-//   L760   case "import-block"
-//   L767   case "import-ladder"
-//   L775   case "import-source"
-//   L780   case "create-folder"
-//   L785   case "delete-folder"
-//   L790   case "delete-block"
-//   L794   case "move-block"
-//   L799   case "delete-type"
-//   L803   case "export-type"
-//   L806   case "import-type"
-//   L810   case "scaffold"
-//   L819   case "clone"
-//   L826   case "add-call"
-//   L833   case "delete-network"
-//   L838   case "set-retain"
-//   L843   case "add-db-member"
-//   L849   case "import-tags"
-//   L856   case "retrieve-library"
-//   L861   case "create-library"
-//   L865   case "list-library"
-//   L868   case "import-master-copy"
-//   L874   case "add-master-copy"
-//   L880   case "create-instance-db"
-//   L885   case "delete-master-copy"
-//   L890   case "add-device"
-//   L895   case "delete-device"
-//   L899   case "add-tag"
-//   L905   case "delete-tag"
-//   L910   case "edit-db-member"
-//   L916   case "delete-db-member"
-//   L921   case "rename-block"
-//   L926   case "set-tag"
-//   L933   case "set-attr"
-//   L939   case "list-attrs"
-//   L943   case "plug-module"
-//   L949   case "list-telegrams"
-//   L952   case "insert-telegram"
-//   L959   case "set-address"
-//   L965   case "set-io-address"
-//   L971   case "list-io-map"
-//   L975   case "set-memory-bytes"
-//   L981   case "connect-subnet"
-//   L986   case "export-cax"
-//   L989   case "import-cax"
-//   L993   case "compile"
-//   L1008  case "sim-run"
-//   L1017  case "diff-block"
-//   L1021  case "audit"
-//   L1026  case "doctor"
-//   L1034  case "gen-profinet"
-//   L1040  case "standardize-tags"
-//   L1048  case "gen-fault-ob"
-//   L1056  case "replicate-fc"
-//   L1067  case "gen-alarm-fc"
-//   L1077  case "replicate-instruments"
-//   L1119  .ValidateOptions
-//   L1149  .HasError
-//   L1156  .OptionValue
-//   L1162  .ParseInt
-//   L1168  .ParseByte
-//   L1175  .OptionValues
-//   L1184  .WriteLock
-//   L1189  .Require
-//   L1221  .Print
-//   L1237  .Sanitize
-//   L1244  .WriteOut
-//   L1263  .CountOf
-//   L1285  .ResolveSiemensAssembly
-//   L1304  .PlcSimProbeDirs
-//   L1318  .SiemensProbeDirs
+//   L134   class Program
+//   L136   .Main
+//   L419   .ExitCodeFor
+//   L433   .RunLadderDryRun
+//   L443   .RunExplainFile
+//   L451   .RunInterfaceFile
+//   L465   .Run
+//   L480   .SingleCall
+//   L496   class Release
+//   L507   .RunExclusive
+//   L631   .ParseScript
+//   L653   .DispatchWithRetry
+//   L667   .IsBusy
+//   L673   .Dispatch
+//   L683   case "save-project"
+//   L686   case "close-project"
+//   L689   case "info"
+//   L692   case "list-devices"
+//   L695   case "list-blocks"
+//   L699   case "list-tags"
+//   L702   case "tree"
+//   L706   case "list-types"
+//   L709   case "find"
+//   L713   case "snapshot"
+//   L716   case "xref"
+//   L719   case "trace"
+//   L722   case "list-hmi"
+//   L725   case "export-hmi-tags"
+//   L729   case "import-hmi-tags"
+//   L736   case "hmi-tree"
+//   L739   case "export-screen"
+//   L743   case "import-screen"
+//   L750   case "delete-screen"
+//   L755   case "list-screen-items"
+//   L760   case "audit-screen"
+//   L765   case "set-screen-items"
+//   L773   case "copy-screen-items"
+//   L781   case "list-motion"
+//   L785   case "free-memory"
+//   L791   case "export-block"
+//   L794   case "explain-block"
+//   L799   case "export-tags"
+//   L802   case "list-interface"
+//   L808   case "import-block"
+//   L815   case "import-ladder"
+//   L823   case "import-source"
+//   L828   case "create-folder"
+//   L833   case "delete-folder"
+//   L838   case "delete-block"
+//   L842   case "move-block"
+//   L847   case "delete-type"
+//   L851   case "export-type"
+//   L854   case "import-type"
+//   L858   case "scaffold"
+//   L867   case "clone"
+//   L874   case "add-call"
+//   L881   case "delete-network"
+//   L886   case "set-retain"
+//   L891   case "add-db-member"
+//   L897   case "import-tags"
+//   L904   case "retrieve-library"
+//   L909   case "create-library"
+//   L913   case "list-library"
+//   L916   case "import-master-copy"
+//   L922   case "add-master-copy"
+//   L928   case "create-instance-db"
+//   L933   case "delete-master-copy"
+//   L938   case "add-device"
+//   L943   case "delete-device"
+//   L947   case "add-tag"
+//   L953   case "delete-tag"
+//   L958   case "edit-db-member"
+//   L964   case "delete-db-member"
+//   L969   case "rename-block"
+//   L974   case "set-tag"
+//   L981   case "set-attr"
+//   L987   case "list-attrs"
+//   L991   case "plug-module"
+//   L997   case "list-telegrams"
+//   L1000  case "insert-telegram"
+//   L1007  case "set-address"
+//   L1013  case "set-io-address"
+//   L1019  case "list-io-map"
+//   L1023  case "set-memory-bytes"
+//   L1029  case "connect-subnet"
+//   L1034  case "export-cax"
+//   L1037  case "import-cax"
+//   L1041  case "compile"
+//   L1056  case "sim-run"
+//   L1065  case "diff-block"
+//   L1069  case "audit"
+//   L1074  case "doctor"
+//   L1082  case "gen-profinet"
+//   L1087  case "standardize-tags"
+//   L1095  case "gen-fault-ob"
+//   L1103  case "replicate-fc"
+//   L1113  case "gen-alarm-fc"
+//   L1123  case "replicate-instruments"
+//   L1164  .ValidateOptions
+//   L1194  .HasError
+//   L1201  .OptionValue
+//   L1207  .ParseInt
+//   L1213  .ParseByte
+//   L1220  .OptionValues
+//   L1229  .WriteLock
+//   L1234  .Require
+//   L1266  .Print
+//   L1282  .Sanitize
+//   L1289  .WriteOut
+//   L1311  .CountOf
+//   L1333  .ResolveSiemensAssembly
+//   L1352  .PlcSimProbeDirs
+//   L1366  .SiemensProbeDirs
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -416,8 +419,11 @@ namespace Tia.Cli
         private static int ExitCodeFor(Exception ex)
         {
             if (ex is ArgumentException) return 2;
+            // API-06/08: número mal formado, JSON inválido e opção fora de faixa são erro de USO —
+            // caíam no 1 genérico, indistinguíveis de falha do Portal
+            if (ex is FormatException || ex is OverflowException || ex is JsonException) return 2;
             if (ex.Message.Contains("Siemens.Engineering")) return 4; // DLL missing = TIA env, not user file
-            if (ex is FileNotFoundException) return 3;
+            if (ex is FileNotFoundException || ex is DirectoryNotFoundException) return 3;
             var t = ex.GetType().FullName;
             if (t != null && t.StartsWith("Siemens.Engineering")) return 4;
             return 1;
@@ -1071,18 +1077,17 @@ namespace Tia.Cli
                         if (docConfig != null && docVerb == null)
                             throw new ArgumentException("doctor --config requires --verb (configs are per-verb).");
                         result = Core.Doctor.Run(session, session.GetPlc(plcName), docVerb, docConfig,
-                            (path, type) => JsonConvert.DeserializeObject(File.ReadAllText(path), type));
+                            (path, type) => ConfigJson.Read(path, type));
                         break;
                     case "gen-profinet":
-                        var config = JsonConvert.DeserializeObject<Core.ProfinetConfig>(
-                            File.ReadAllText(Require(args, "--config")));
+                        var config = ConfigJson.Read<Core.ProfinetConfig>(Require(args, "--config"));
                         using (WriteLock(session, apply, verb))
                             result = Core.Profinet.Generate(session, session.GetPlc(plcName), config, apply);
                         break;
                     case "standardize-tags":
                         var stdPath = OptionValue(args, "--config");
                         var stdConfig = stdPath != null
-                            ? JsonConvert.DeserializeObject<Core.StandardizeConfig>(File.ReadAllText(stdPath))
+                            ? ConfigJson.Read<Core.StandardizeConfig>(stdPath)
                             : new Core.StandardizeConfig();
                         using (WriteLock(session, apply, verb))
                             result = Core.Standardize.Run(session.GetPlc(plcName), stdConfig, apply);
@@ -1090,14 +1095,13 @@ namespace Tia.Cli
                     case "gen-fault-ob":
                         var fobPath = OptionValue(args, "--config");
                         var fobConfig = fobPath != null
-                            ? JsonConvert.DeserializeObject<Core.FaultObConfig>(File.ReadAllText(fobPath))
+                            ? ConfigJson.Read<Core.FaultObConfig>(fobPath)
                             : new Core.FaultObConfig();
                         using (WriteLock(session, apply, verb))
                             result = Core.FaultOb.Generate(session, session.GetPlc(plcName), fobConfig, outDir, apply);
                         break;
                     case "replicate-fc":
-                        var repConfig = JsonConvert.DeserializeObject<Core.ReplicateFcConfig>(
-                            File.ReadAllText(Require(args, "--config")));
+                        var repConfig = ConfigJson.Read<Core.ReplicateFcConfig>(Require(args, "--config"));
                         // molde de outra área + escopo: é o que dispensa derivar o acionamento-semente
                         // no braço quando a área nova não tem irmã populada (FP-06, §7)
                         repConfig.TemplateFolder = OptionValue(args, "--template") ?? repConfig.TemplateFolder;
@@ -1109,7 +1113,7 @@ namespace Tia.Cli
                     case "gen-alarm-fc":
                         var almPath = OptionValue(args, "--config");
                         var almConfig = almPath != null
-                            ? JsonConvert.DeserializeObject<Core.AlarmFcConfig>(File.ReadAllText(almPath))
+                            ? ConfigJson.Read<Core.AlarmFcConfig>(almPath)
                             : new Core.AlarmFcConfig();
                         // escopo: sem --area, gerar 1 área regenerava as 19 existentes (FP-06, T6)
                         almConfig.IncludeFolders.AddRange(OptionValues(args, "--area"));
@@ -1117,8 +1121,7 @@ namespace Tia.Cli
                             result = Core.AlarmFc.Generate(session, session.GetPlc(plcName), almConfig, outDir, apply);
                         break;
                     case "replicate-instruments":
-                        var insConfig = JsonConvert.DeserializeObject<Core.InstrumentFcConfig>(
-                            File.ReadAllText(Require(args, "--config")));
+                        var insConfig = ConfigJson.Read<Core.InstrumentFcConfig>(Require(args, "--config"));
                         using (WriteLock(session, apply, verb))
                             result = Core.InstrumentFc.Run(session, session.GetPlc(plcName), insConfig, outDir, apply);
                         break;

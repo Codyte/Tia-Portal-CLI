@@ -1,6 +1,8 @@
-# __navi__ · `src/Tia.Cli/` — 1 files → code symbols / text NAV ranges
+# __navi__ · `src/Tia.Cli/` — 2 files → code symbols / text NAV ranges
 <!-- navindex · 2026-08-18 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../../__navi__.md`](../../__navi__.md)
 
-- **Program.cs** (1334 ln)
-  <sub>L131:class Program  L133:.Main  L416:.ExitCodeFor  L427:.RunLadderDryRun  L437:.RunExplainFile  L445:.RunInterfaceFile  L459:.Run  L583:.ParseScript  L605:.DispatchWithRetry  L619:.IsBusy  L625:.Dispatch  L635:case "save-project"  L638:case "close-project"  L641:case "info"  L644:case "list-devices"  L647:case "list-blocks"  L651:case "list-tags"  L654:case "tree"  L658:case "list-types"  L661:case "find"  L665:case "snapshot"  L668:case "xref"  L671:case "trace"  L674:case "list-hmi" …</sub>
+- **ConfigJson.cs** (48 ln)
+  <sub>L18:class ConfigJson  L38:.Read  L43:.Read</sub>
+- **Program.cs** (1382 ln)
+  <sub>L134:class Program  L136:.Main  L419:.ExitCodeFor  L433:.RunLadderDryRun  L443:.RunExplainFile  L451:.RunInterfaceFile  L465:.Run  L480:.SingleCall  L496:class Release  L507:.RunExclusive  L631:.ParseScript  L653:.DispatchWithRetry  L667:.IsBusy  L673:.Dispatch  L683:case "save-project"  L686:case "close-project"  L689:case "info"  L692:case "list-devices"  L695:case "list-blocks"  L699:case "list-tags"  L702:case "tree"  L706:case "list-types"  L709:case "find"  L713:case "snapshot" …</sub>

@@ -42,35 +42,35 @@
 //   L629   .FolderAction
 //   L635   .ImportBlock
 //   L667   .MoveBlock
-//   L731   .ImportTagTable
-//   L759   .AddTag
-//   L795   .DeleteTag
-//   L818   .SetTag
-//   L861   .Rename
-//   L887   .ImportType
-//   L911   .ImportSource
-//   L982   .Generated
-//   L988   .SourceDeclNames
-//   L1004  .RequireUtf8Bom
-//   L1017  .RequireFile
-//   L1025  .XmlRootType
-//   L1035  .RequireRootType
-//   L1044  .XmlCultures
-//   L1059  .ProjectOf
-//   L1069  .EnsureCultures
-//   L1091  .XmlObjectName
-//   L1100  diff
-//   L1103  .DiffBlock
-//   L1121  .BlocksIdentical
-//   L1163  import com prova
-//   L1173  .ImportAndProve
-//   L1225  .LogFallback
-//   L1238  .Prove
-//   L1246  .FirstError
-//   L1258  compile
-//   L1261  .Compile
-//   L1303  .FlattenErrors
-//   L1326  .MessageTree
+//   L750   .ImportTagTable
+//   L778   .AddTag
+//   L814   .DeleteTag
+//   L837   .SetTag
+//   L880   .Rename
+//   L906   .ImportType
+//   L930   .ImportSource
+//   L1001  .Generated
+//   L1007  .SourceDeclNames
+//   L1023  .RequireUtf8Bom
+//   L1036  .RequireFile
+//   L1044  .XmlRootType
+//   L1054  .RequireRootType
+//   L1063  .XmlCultures
+//   L1078  .ProjectOf
+//   L1088  .EnsureCultures
+//   L1110  .XmlObjectName
+//   L1119  diff
+//   L1122  .DiffBlock
+//   L1140  .BlocksIdentical
+//   L1182  import com prova
+//   L1192  .ImportAndProve
+//   L1244  .LogFallback
+//   L1257  .Prove
+//   L1265  .FirstError
+//   L1277  compile
+//   L1280  .Compile
+//   L1322  .FlattenErrors
+//   L1345  .MessageTree
 // ======================= END NAV INDEX =======================
 
 using System;

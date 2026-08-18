@@ -1,26 +1,27 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L26    PLANO — TIA Portal Openness API (V19+) -->
-<!--   L31    Objetivo -->
-<!--   L37    Decisões travadas (mudar só com motivo forte) -->
-<!--   L51    Delimitações — o que a API NÃO é -->
-<!--   L58    Arquitetura -->
-<!--   L81    Fases -->
-<!--   L103   Verificação (cada fase) -->
-<!--   L111   Economia de tokens (regras da sessão) -->
-<!--   L123   Skills em uso (nada novo pra instalar) -->
-<!--   L134   Ambiente (descoberto na F1) -->
-<!--   L162   Backlog v2 (cobertura Openness — priorizado) -->
-<!--   L265   Projeto de referência (2026-07-27) -->
-<!--   L271   Fronteira da engine — F7 itens 3-5 decididos (2026-08-07) -->
-<!--   L298   D8 fechada — sem superfície online, e não é adiamento (2026-08-07) -->
-<!--   L317   Pendências / decisões futuras -->
-<!--   L358   F11 — IHM (em andamento, 2026-08-17) -->
-<!--   L443   F13 — objetos de dentro da tela ✅ (2026-08-17) -->
-<!--   L594   F14 — área nova ponta a ponta ✅ (2026-08-18) -->
-<!--   L643   F12 — `sim-diag` camada 1 ✅ (2026-08-17) -->
-<!--   L672   Teste cego ponta a ponta — caderno escrito (2026-08-07) -->
-<!--   L941   Histórico fechado -->
+<!--   L27    PLANO — TIA Portal Openness API (V19+) -->
+<!--   L32    Objetivo -->
+<!--   L38    Decisões travadas (mudar só com motivo forte) -->
+<!--   L52    Delimitações — o que a API NÃO é -->
+<!--   L59    Arquitetura -->
+<!--   L82    Fases -->
+<!--   L104   Verificação (cada fase) -->
+<!--   L112   Economia de tokens (regras da sessão) -->
+<!--   L124   Skills em uso (nada novo pra instalar) -->
+<!--   L135   Ambiente (descoberto na F1) -->
+<!--   L163   Backlog v2 (cobertura Openness — priorizado) -->
+<!--   L266   Projeto de referência (2026-07-27) -->
+<!--   L272   Fronteira da engine — F7 itens 3-5 decididos (2026-08-07) -->
+<!--   L299   D8 fechada — sem superfície online, e não é adiamento (2026-08-07) -->
+<!--   L318   Pendências / decisões futuras -->
+<!--   L359   F11 — IHM (em andamento, 2026-08-17) -->
+<!--   L444   F13 — objetos de dentro da tela ✅ (2026-08-17) -->
+<!--   L595   F14 — área nova ponta a ponta ✅ (2026-08-18) -->
+<!--   L644   F12 — `sim-diag` camada 1 ✅ (2026-08-17) -->
+<!--   L673   Teste cego ponta a ponta — caderno escrito (2026-08-07) -->
+<!--   L942   Histórico fechado -->
+<!--   L955   F15 — auditoria externa: P0 fechados ✅ (2026-08-18) -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # PLANO — TIA Portal Openness API (V19+)
@@ -951,3 +952,31 @@ pergunta for "como chegamos nisso". Seções lá:
 - Migração do repo para skill (2026-08-06)
 - F6 — Endurecer os scripts PS (✅ executada 2026-07-27)
 
+## F15 — auditoria externa: P0 fechados ✅ (2026-08-18)
+
+Auditoria de 170 achados feita por outra IA (`docs/AUDITORIA-COMPLETA-2026-08-18.md`), conferida
+achado a achado no código. Os "Confirmado" que foram testados batem; a leitura foi estática (a
+máquina da auditoria não tinha `lib/`, então nada de C# compilou lá) e a régua é de produto público
+com equipe, não de ferramenta interna — daí metade dos P1/P2 ser checklist genérico de OSS maduro.
+
+**Fechado neste commit** (os 9 de melhor custo/benefício): SAFE-04 (opção desconhecida = exit 2
+antes do attach, com o teste offline `Cli.KnownOptions` cobrando a lista), API-01/02/03 (`error` de
+topo = exit 1, e step de batch com erro embutido conta em `failed`), SAFE-03 (`--timeout` recusado
+com `--apply`), SAFE-01 (`sim-run` só baixa em access point PLCSIM; `--allow-physical` é o opt-in),
+INST-09 (DLL do PLCSIM fora do `bin/`, resolvida em runtime — com `Private=true` o `pack.ps1`
+abortava e a release não saía), SAFE-11 (`audit` com `complete`/`skippedChecks`), SAFE-02/DOC-02
+(SECURITY.md descrevendo as três fronteiras reais), INST-01/TEST-13 (V21 como única versão
+suportada; o build referencia as assemblies split, que V19/V20 não têm), INST-02/INST-10 (gate de
+Portal só V19+, `pack` falhando em árvore suja).
+
+**Segunda leva, quando doer**: SAFE-07 (mutex no próprio `tia.exe` — hoje a D9 só é garantida na
+rota da task, dois terminais na sessão 1 passam), SAFE-08 (`move-block` reimportar o XML se o
+import falhar), SAFE-12/13/14 (ambiguidade de item de hardware e erro de telegrama engolido),
+API-05 (`bytes` conta chars UTF-16 — renomear o campo).
+
+**Não fazer**: registry declarativo de comandos, envelope JSON versionado, split
+`Tia.Domain`/`Tia.Openness`, migração para xUnit, cobertura, analyzers, SBOM/assinatura/build
+reproduzível, redaction/TTL de telemetria, matriz de locale, separação "core × profile ETE", MCP.
+Agenda de produto com equipe e usuários externos; aqui compra risco de regressão sem comprar nada.
+DOC-16 (navindex sem C#) morreu sozinho: o gerador já indexa `.cs` e, desde 2026-08-18, também os
+títulos de Markdown.

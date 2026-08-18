@@ -127,6 +127,19 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     não tem irmã com blocos. O `--template` tem que conter a palavra-chave de `EquipmentTypes`
     (senão falha em vez de replicar com o molde errado); nome ambíguo falha listando os candidatos.
     Os dois valem no config (`TemplateFolder`/`TargetFolder`).
+  - **Área nova tem 5 pré-requisitos, e só o 5º se diagnostica sozinho** (medido ponta a ponta
+    2026-08-18, F14 do PLANO): (1) pasta do equipamento com `(ID)` no nome; (2) **membro UDT no DB
+    global** — sem ele o `replicate-fc` pula o alvo com `Target 'X' has no global-DB instance.
+    Skipped.`; (3) tags `<ID>*MODO_LOCAL/MODO_REMOTO`, cuja falta é só **aviso depois** de os 6
+    blocos terem sido escritos (daí a 2ª passada); (4) **para área de inversor, o drive SINAMICS no
+    hardware** — a FC replicada usa a constante de HWID e o compile reprova com `Tag
+    "<drive>~PROFINET_interface~Standard_telegram_20" not defined.`; a sequência é `add-device`
+    (mesmo MLFB dos outros) → `insert-telegram --number 20 --change` → `connect-subnet --io-system`,
+    e a constante **só nasce quando o drive vira IO device**; (5) pasta de tags em `2. Alarmes` de
+    mesmo nome-base da de `3. Partidas` + `<AREA>.ALARMES.WORD_ALARMES_1 : Word`. Área sem
+    instrumento é **no-op limpo** no `replicate-instruments` (nem aparece no dry). A tela replica por
+    `import-screen --replace`, mas **as tags da IHM não têm verbo de import** — o `audit-screen`
+    lista uma a uma o que falta.
   - **`gen-alarm-fc --area NOME` (repetível) limita a geração à área.** Sem escopo, criar 1 área
     regenera todas. O OB `CHAMADA_ALARMES` continua saindo com **todas** as FCs sob a pasta-raiz.
     `--area` que não casa falha listando as pastas de `2. Alarmes`.

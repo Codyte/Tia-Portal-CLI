@@ -566,6 +566,55 @@ tag com código de equipamento — são justamente os placeholders. Batizar grup
 seria adivinhação, exatamente o que o `--rename` recusa fazer para objeto sem tag. Grupo se batiza
 depois que as tags forem ligadas; antes disso o verbo não tem de onde tirar o nome.
 
+## F14 — área nova ponta a ponta ✅ (2026-08-18)
+
+Primeira vez que a cadeia inteira de uma área nova rodou numa sessão só, no projeto-molde: área de
+smoke `ZZ_TESTE (ZT-01)`, equipamento `Bomba ZZ Teste (B-99A)`, molde `Bomba Centrífuga 1 (B-04A)`
+da Elevatória de Purga de Lodo (CCM2). Terminou em `compile` 0 erros / 0 avisos e **`audit` 10/10
+verde** com a área dentro (`scanned`: 106 pastas, 530 blocos, 53 blocos de chamada, 208 tabelas), e
+foi apagada em seguida sem deixar resíduo.
+
+**O achado da fase: são cinco pré-requisitos, não três.** Os três do acionamento já estavam
+escritos; os dois de baixo apareceram aqui.
+
+1. Pasta do equipamento com o `(ID)` no nome.
+2. Membro UDT do equipamento no DB global — sem ele o `replicate-fc` pula o alvo com
+   `Target 'X' has no global-DB instance. Skipped.`
+3. Tags `<ID>*MODO_LOCAL` / `MODO_REMOTO` — a falta é aviso **depois** de os 6 blocos já terem sido
+   escritos, e exige 2ª passada.
+4. **Drive SINAMICS no hardware, para área de inversor.** A FC replicada referencia a constante de
+   HWID do drive, e o compile do PLC inteiro reprova com
+   `Tag "INVERSOR_B-99A_CCM2~PROFINET_interface~Standard_telegram_20" not defined.` A constante não
+   nasce com o drive, nem com o telegrama: nasce quando o drive vira IO device do controlador. A
+   sequência que resolveu, 4 verbos: `add-device --mlfb OrderNumber:6SL3244-0BB12-1FA0/4.7.13`
+   (mesmo MLFB dos 42 inversores do projeto) → `insert-telegram --number 20 --change` (o G120 novo
+   nasce com o `MainTelegram #1` e telegrama Main não se apaga) → `connect-subnet --subnet PN/IE_1
+   --io-system "PROFINET IO-System"` → constante criada (`Hw_SubModule`, valor 929). Nome de device
+   com espaço (`INVERSOR_B-99A CCM2`) vira `_` na constante, que é como o nome do molde casa com o
+   texto que o `replicate-fc` escreveu.
+5. **Pasta de tags em `2. Alarmes` de mesmo nome-base da pasta de `3. Partidas`, mais
+   `<AREA>.ALARMES.WORD_ALARMES_1 : Word` no DB global** — pré-requisito do `gen-alarm-fc`, que ao
+   menos **diagnostica sozinho** (o aviso vem com o `add-db-member` pronto para copiar).
+
+**`replicate-instruments` numa área sem instrumento é no-op limpo**: `ZZ_TESTE` não aparece entre as
+8 áreas do dry-run e `warnings` volta vazio. Área sem tag de instrumento na pasta de alarme
+simplesmente não entra na iteração — não há nada a configurar para excluí-la.
+
+**A tela replica, as tags da IHM não.** `import-screen --replace "B-04A=B-99A"` criou a tela da área
+em `2_Telas_Detalhamento/QA-02/99.ZZ_TESTE (ZT-01)` (o `--replace` troca texto no XML, e a tela liga
+tag por nome), mas as 5 tags trocadas não existem na IHM — e é o `audit-screen` que diz quais, uma a
+uma, em vez do compile do HMI. **Falta o verbo `import-hmi-tags`**: a API existe
+(`Siemens.Engineering.Hmi.Tag.TagTableComposition.Import(FileInfo, ImportOptions)`, achada com
+`tia-help.py --sdk "TagTable Import"`), o CLI só tem o `export-hmi-tags`. É o único elo da cadeia de
+área nova que ainda pede GUI.
+
+**Limpeza em um batch de 18 verbos, 17,3 s** (`workspace/zzarea/cleanup.json`): as 2 redes de
+chamada, os 8 blocos, as 4 pastas, as 2 tags de I/O, a tela e o device. O membro do DB global saiu
+à parte (`delete-db-member --db "DB GLOBAL" --name ZZ_TESTE`), porque escrita no DB global é o verbo
+caro. Conferência: `find --pattern "*B-99A*"`, `"*ZZ_TESTE*"` e `"*ZZ*" --kind block` os três com
+`count: 0`, e `compile` de volta a 0 erros. Sobrou só a **pasta de telas vazia** `99.ZZ_TESTE
+(ZT-01)`: não há verbo que apague pasta de tela na IHM (`delete-folder` é do PLC).
+
 ## F12 — `sim-diag` camada 1 ✅ (2026-08-17)
 
 **`sim-diag [--instance plc_1500_1] [--watch SEG]`** — diagnóstico do PLC virtual. Roda **antes do

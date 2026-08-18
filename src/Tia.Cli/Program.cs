@@ -264,7 +264,7 @@ namespace Tia.Cli
                             + "[--item I] [--drive-object D] [--change] [--apply]  "
                             + "(--change troca o telegrama presente: G120 novo já vem com o 1)  "
                             + "(telegrama de drive NÃO é submódulo de catálogo — plug-module não coloca)",
-                        "set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]",
+                        "set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--item X1] [--apply]  (device com mais de uma interface exige --item)",
                         "set-io-address --device X [--item I] [--io Input|Output] [--start N] [--apply]  "
                             + "(endereço inicial do módulo de I/O; não é atributo — set-attr não alcança, "
                             + "e o import-cax ignora. Sem --item: varre o device (sonda). Sem --start: só lista)",
@@ -457,6 +457,48 @@ namespace Tia.Cli
         // Must not be inlined into Main: Siemens types may only be JITted after AssemblyResolve is hooked.
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static int Run(string[] args)
+        {
+            using (var single = SingleCall())
+            {
+                return RunExclusive(args);
+            }
+        }
+
+        /// <summary>
+        /// SAFE-07/D9: o Openness é single-session e duas chamadas simultâneas corrompem a sessão. O
+        /// lock de arquivo do `_common.ps1` só cobre a rota da scheduled task — dois terminais na
+        /// sessão interativa passavam direto. O mutex é por sessão de logon (`Local\`, que é o escopo
+        /// que um usuário sem privilégio consegue criar sempre); a rota da task, que vive noutra
+        /// sessão do Windows, continua serializada pelo lock de arquivo.
+        /// </summary>
+        private static IDisposable SingleCall()
+        {
+            var mutex = new System.Threading.Mutex(false, "tia-cli-single-call");
+            bool held;
+            try { held = mutex.WaitOne(TimeSpan.Zero); }
+            catch (System.Threading.AbandonedMutexException) { held = true; } // dono morreu: o lock é nosso
+            if (!held)
+            {
+                mutex.Dispose();
+                throw new InvalidOperationException("Another tia call is running in this Windows session. "
+                    + "Openness is single-session (D9): run one verb at a time, or batch them with "
+                    + "'tia run --script ops.json'.");
+            }
+            return new Release(mutex);
+        }
+
+        private sealed class Release : IDisposable
+        {
+            private readonly System.Threading.Mutex _mutex;
+            public Release(System.Threading.Mutex mutex) { _mutex = mutex; }
+            public void Dispose()
+            {
+                try { _mutex.ReleaseMutex(); } catch (ApplicationException) { }
+                _mutex.Dispose();
+            }
+        }
+
+        private static int RunExclusive(string[] args)
         {
             // com mais de um portal aberto, escolhe qual (senão o attach falha alto)
             Core.TiaSession.PortalFilter = OptionValue(args, "--portal");
@@ -960,7 +1002,7 @@ namespace Tia.Cli
                         using (WriteLock(session, apply, verb))
                             result = Core.Hardware.SetAddress(session, Require(args, "--device"),
                                 OptionValue(args, "--ip"), OptionValue(args, "--mask"),
-                                OptionValue(args, "--pn-name"), apply);
+                                OptionValue(args, "--pn-name"), apply, OptionValue(args, "--item"));
                         break;
                     case "set-io-address":
                         using (WriteLock(session, apply, verb))
@@ -1251,7 +1293,10 @@ namespace Tia.Cli
             var stub = new Dictionary<string, object>
             {
                 { "file", path },
-                { "bytes", json.Length },
+                // API-05: json.Length é char UTF-16; o arquivo tem os bytes UTF-8 (acento conta 2).
+                // O nome do campo é `bytes`, então quem manda é o arquivo.
+                { "bytes", new FileInfo(path).Length },
+                { "chars", json.Length },
                 { "head", json.Length <= 600 ? json : json.Substring(0, 600) + "\n… (truncado; JSON completo no arquivo)" },
             };
             var count = CountOf(value);

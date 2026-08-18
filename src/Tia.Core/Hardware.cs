@@ -1,4 +1,4 @@
-// ====================== BEGIN NAV INDEX ======================
+﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L57    class Hardware
 //   L63    .FindDevice
@@ -80,6 +80,44 @@ namespace Tia.Core
                 if (HasItemNamed(item.DeviceItems, name)) return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// A interface de rede quando ela é única. Device com duas (CPU X1/X2) falha com os nomes,
+        /// porque escrever IP na interface errada é invisível até a rede não subir.
+        /// </summary>
+        private static KeyValuePair<string, NetworkInterface> SingleInterface(Device device, string itemName)
+        {
+            var found = new List<KeyValuePair<string, NetworkInterface>>();
+            CollectInterfaces(device.DeviceItems, "", found);
+            if (itemName != null)
+            {
+                var picked = found.Where(f => f.Key.Equals(itemName, StringComparison.OrdinalIgnoreCase)
+                    || f.Key.EndsWith("/" + itemName, StringComparison.OrdinalIgnoreCase)).ToList();
+                if (picked.Count == 0)
+                    throw new InvalidOperationException("Device '" + device.Name + "' has no network interface '"
+                        + itemName + "' (has: " + string.Join(", ", found.Select(f => f.Key)) + ").");
+                found = picked;
+            }
+            if (found.Count == 0)
+                throw new InvalidOperationException("Device '" + device.Name + "' has no network interface.");
+            if (found.Count > 1)
+                throw new InvalidOperationException("Device '" + device.Name + "' has " + found.Count
+                    + " network interfaces (" + string.Join(", ", found.Select(f => f.Key))
+                    + "): pass --item with the one you mean.");
+            return found[0];
+        }
+
+        private static void CollectInterfaces(DeviceItemComposition items, string prefix,
+            List<KeyValuePair<string, NetworkInterface>> into)
+        {
+            foreach (DeviceItem item in items)
+            {
+                var path = prefix.Length == 0 ? item.Name : prefix + "/" + item.Name;
+                var itf = item.GetService<NetworkInterface>();
+                if (itf != null && itf.Nodes.Count > 0) into.Add(new KeyValuePair<string, NetworkInterface>(path, itf));
+                CollectInterfaces(item.DeviceItems, path, into);
+            }
         }
 
         private static NetworkInterface Interface(Device device)
@@ -239,42 +277,61 @@ namespace Tia.Core
             }
         }
 
+        /// <summary>
+        /// SAFE-13: nome de item de hardware se repete (Rack_0/PROFINET interface/Port_1 existem em
+        /// vários níveis e devices). Pegar o primeiro da varredura recursiva escrevia no item errado
+        /// em silêncio — aqui nome ambíguo falha listando os caminhos, e o caminho
+        /// "Pai/Filho" (o mesmo que o `plug-module` imprime) desempata.
+        /// </summary>
         private static DeviceItem FindItem(Device device, string name)
         {
-            var item = FindItem(device.DeviceItems, name);
+            var matches = new List<KeyValuePair<string, DeviceItem>>();
+            CollectMatches(device.DeviceItems, name, "", matches);
             // o próprio plug-module lista os slots como "<device>/<item>": aceitar de volta o que
             // ele imprime, senão o caminho copiado da saída dele é recusado
-            if (item == null && name != null && name.StartsWith(device.Name + "/", StringComparison.OrdinalIgnoreCase))
-                item = FindItem(device.DeviceItems, name.Substring(device.Name.Length + 1));
-            if (item == null)
+            if (matches.Count == 0 && name != null && name.StartsWith(device.Name + "/", StringComparison.OrdinalIgnoreCase))
+                CollectMatches(device.DeviceItems, name.Substring(device.Name.Length + 1), "", matches);
+            if (matches.Count == 0)
                 throw new InvalidOperationException("Device item '" + name + "' not found in '"
                     + device.Name + "'. Run tia list-devices.");
-            return item;
+            if (matches.Count > 1)
+                throw new InvalidOperationException("Device item '" + name + "' is ambiguous in '" + device.Name
+                    + "' (" + matches.Count + " matches): " + string.Join(", ", matches.Select(m => m.Key))
+                    + ". Pass the full path (--item \"Pai/Filho\").");
+            return matches[0].Value;
         }
 
-        private static DeviceItem FindItem(DeviceItemComposition items, string name)
+        /// <summary>Todo item cujo nome — ou cujo caminho "Pai/Filho" — casa, com o caminho junto.</summary>
+        private static void CollectMatches(DeviceItemComposition items, string name, string prefix,
+            List<KeyValuePair<string, DeviceItem>> into)
         {
             foreach (DeviceItem item in items)
             {
-                if (item.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) return item;
-                var found = FindItem(item.DeviceItems, name);
-                if (found != null) return found;
+                var path = prefix.Length == 0 ? item.Name : prefix + "/" + item.Name;
+                if (item.Name.Equals(name, StringComparison.OrdinalIgnoreCase)
+                    || path.Equals(name, StringComparison.OrdinalIgnoreCase))
+                    into.Add(new KeyValuePair<string, DeviceItem>(path, item));
+                else
+                    CollectMatches(item.DeviceItems, name, path, into); // match não vira raiz de outro match
             }
-            return null;
         }
 
         // ---------- set-address ----------
 
         public static object SetAddress(TiaSession session, string deviceName, string ip, string mask,
-            string pnName, bool apply)
+            string pnName, bool apply, string itemName = null)
         {
             if (ip == null && mask == null && pnName == null)
                 throw new InvalidOperationException("Nothing to set: pass --ip, --mask and/or --pn-name.");
             var device = FindDevice(session, deviceName);
-            var node = Interface(device).Nodes.First();
+            // SAFE-14: CPU com X1/X2 tem mais de uma interface, e "a primeira" é sorteio. Só segue
+            // quando não há dúvida; com duas, o verbo diz quais são e recusa em vez de adivinhar.
+            var itf = SingleInterface(device, itemName);
+            var node = itf.Value.Nodes.First();
             var result = new Dictionary<string, object>
             {
                 { "device", device.Name },
+                { "interface", itf.Key },
                 { "currentAddress", TryGet(node, "Address") },
                 { "applied", apply },
             };
@@ -384,7 +441,8 @@ namespace Tia.Core
                 ? session.AllDevices()
                 : new List<Device> { FindDevice(session, deviceName) };
 
-            var rows = ListIoMapRows(devices);
+            var scanErrors = new List<object>();
+            var rows = ListIoMapRows(devices, scanErrors);
 
             // StartAddress -1 = endereço existe no modelo mas não está atribuído (interface e portas
             // de um ET200SP sem cartão devolvem 4 desses). Contar não é mentira, mas entram no
@@ -412,12 +470,16 @@ namespace Tia.Core
                 { "addresses", rows.Count },
                 { "unassigned", unassigned },
                 { deviceName == null ? "nextFreeByte" : "nextFreeByteInDevice", nextFree },
-                { "nextFreeByteExact", unassigned == 0 && deviceName == null && io == null },
+                { "nextFreeByteExact", unassigned == 0 && deviceName == null && io == null
+                    && scanErrors.Count == 0 },
+                { "unreadableDrives", scanErrors.Count },
             };
+            if (scanErrors.Count > 0) result["scanErrors"] = scanErrors;
             if (!(bool)result["nextFreeByteExact"])
                 result["nextFreeByteNote"] = "piso, não garantia: "
                     + (deviceName != null ? "filtrado por --device (é o próximo livre DAQUELE device); " : "")
                     + (io != null ? "filtrado por --io; " : "")
+                    + (scanErrors.Count > 0 ? scanErrors.Count + " drives com telegrama ilegível (scanErrors); " : "")
                     + unassigned + " itens sem endereço lido. O Portal recusa endereço ocupado "
                     + "dizendo \"Next free address: N\" — esse N é a autoridade.";
             result["map"] = rows.Cast<object>().ToList();   // por último: a nota tem que sair no head
@@ -425,14 +487,15 @@ namespace Tia.Core
         }
 
         /// <summary>Linhas cruas do mapa (inclusive as de startByte -1), sem filtro nem ordenação.</summary>
-        private static List<Dictionary<string, object>> ListIoMapRows(IEnumerable<Device> devices)
+        private static List<Dictionary<string, object>> ListIoMapRows(IEnumerable<Device> devices,
+            List<object> scanErrors = null)
         {
             var rows = new List<Dictionary<string, object>>();
             foreach (var device in devices)
             {
                 foreach (DeviceItem top in device.DeviceItems)
                     CollectMap(device.Name, top, top.Name, rows);
-                CollectTelegramMap(device, rows);
+                CollectTelegramMap(device, rows, scanErrors);
             }
             return rows;
         }
@@ -465,7 +528,8 @@ namespace Tia.Core
         /// byte já ocupado por telegrama. Drive sem dado de comissionamento pode lançar na leitura;
         /// um drive ilegível não derruba o mapa inteiro.
         /// </summary>
-        private static void CollectTelegramMap(Device device, List<Dictionary<string, object>> into)
+        private static void CollectTelegramMap(Device device, List<Dictionary<string, object>> into,
+            List<object> scanErrors = null)
         {
             foreach (var pair in Drives.DriveObjects(device))
             {
@@ -487,7 +551,17 @@ namespace Tia.Core
                             });
                         }
                 }
-                catch (Exception) { }
+                catch (Exception ex)
+                {
+                    // SAFE-12: drive ilegível não derruba o mapa, mas engolir o erro fazia o mapa
+                    // parecer completo — e é justo o telegrama que o `nextFreeByte` não vê.
+                    if (scanErrors != null)
+                        scanErrors.Add(new Dictionary<string, object>
+                        {
+                            { "device", device.Name }, { "driveObject", pair.Key },
+                            { "error", (ex.InnerException ?? ex).Message },
+                        });
+                }
             }
         }
 

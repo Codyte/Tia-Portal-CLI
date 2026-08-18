@@ -1,4 +1,4 @@
-// ====================== BEGIN NAV INDEX ======================
+﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L95    class Ops
 //   L97    lookup
@@ -715,16 +715,35 @@ namespace Tia.Core
                 }
                 catch (Exception ex)
                 {
-                    failed.Add(new Dictionary<string, object>
+                    // SAFE-08: o delete já aconteceu. Sem devolver o bloco à pasta de origem, um import
+                    // que falha (nome colidindo no destino, pasta recusada) apaga trabalho e deixa só um
+                    // XML em pasta temporária como "backup" que ninguém pediu.
+                    var origin = (string)todo[i]["folder"];
+                    string restoreError = null;
+                    try { ImportBlock(plc, files[i], origin, true); }
+                    catch (Exception restore) { restoreError = restore.Message; }
+                    var entry = new Dictionary<string, object>
                     {
                         { "block", blockName }, { "xml", files[i] }, { "error", ex.Message },
-                    });
+                        { "restoredTo", restoreError == null ? origin : null },
+                    };
+                    if (restoreError != null) entry["restoreError"] = restoreError;
+                    failed.Add(entry);
                 }
             }
             result["moved"] = todo.Count - failed.Count;
             result["failed"] = failed;
             if (failed.Count > 0)
+            {
+                var lost = failed.Cast<Dictionary<string, object>>().Where(f => f["restoredTo"] == null).ToList();
+                // falha parcial é falha: sem isso o verbo voltava normal e o processo saía 0 (API-03)
+                result["error"] = failed.Count + " de " + todo.Count + " blocos não foram movidos"
+                    + (lost.Count > 0
+                        ? "; " + lost.Count + " NÃO voltaram para a pasta de origem — reimportar do XML: "
+                          + string.Join(", ", lost.Select(f => (string)f["xml"]))
+                        : " (os blocos foram devolvidos à pasta de origem)");
                 result["recover"] = "reimportar à mão: tia import-block --file <xml> --folder \"" + target + "\" --apply";
+            }
             return result;
         }
 

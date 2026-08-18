@@ -51,7 +51,8 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
   `set-retain`) continuam **provando** o patch: importam com `Override`, compilam e re-exportam.
   Sem essa prova, duas escritas seguidas no mesmo bloco faziam a segunda ler export defasado e a
   primeira sumia com `ok: true` (FP-03, tropeço 6).
-- Nunca rodar `tia` em paralelo (Openness single-session).
+- Nunca rodar `tia` em paralelo (Openness single-session) — desde 2026-08-18 o próprio `tia.exe`
+  recusa a 2ª chamada simultânea (mutex por sessão de logon), além do lock da rota da task.
 - Nunca commitar `Siemens.Engineering.dll`.
 - Testes só contra projeto TIA de teste, nunca produção.
 

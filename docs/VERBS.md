@@ -1,20 +1,3 @@
-<!-- ====================== BEGIN NAV INDEX ====================== -->
-<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L18    Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao) -->
-<!--   L22    session -->
-<!--   L28    read -->
-<!--   L57    structure -->
-<!--   L67    hardware -->
-<!--   L83    write -->
-<!--   L110   library -->
-<!--   L118   multiuser -->
-<!--   L121   bulk -->
-<!--   L126   batch -->
-<!--   L129   sim -->
-<!--   L133   meta -->
-<!--   L136   notas -->
-<!-- ======================= END NAV INDEX ======================= -->
-
 # Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao)
 
 `tia <verb> [--plc NAME] [--portal PROJETO|PID] [--apply]  (--portal obrigatório se houver mais de um TIA Portal aberto)`
@@ -72,7 +55,7 @@
 - `plug-module --device X [--item I] [--type TID] [--name N] [--pos P] [--apply]  (sem --type: lista slots livres; com --type: canPlug e, com --apply, pluga. Alvo de plug é o rack: --item Rack_0, não o device. MLFB sem versão devolve plugAs com a 1ª versão que o slot aceita)`
 - `list-telegrams --device X  (read-only: drive objects SINAMICS, telegramas de cada um e o endereço de cada telegrama — %IB/%QB, que não aparece em DeviceItem.Addresses)`
 - `insert-telegram --device X --number N [--type Main|Supplementary|Safety|Torque|Edge] [--item I] [--drive-object D] [--change] [--apply]  (--change troca o telegrama presente: G120 novo já vem com o 1)  (telegrama de drive NÃO é submódulo de catálogo — plug-module não coloca)`
-- `set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--apply]`
+- `set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--item X1] [--apply]  (device com mais de uma interface exige --item)`
 - `set-io-address --device X [--item I] [--io Input|Output] [--start N] [--apply]  (endereço inicial do módulo de I/O; não é atributo — set-attr não alcança, e o import-cax ignora. Sem --item: varre o device (sonda). Sem --start: só lista)`
 - `list-io-map [--device X] [--io Input|Output]  (read-only: todo endereço de I/O do projeto — device/item, %IB..%QB e o próximo byte livre por tipo; inclui o telegrama de drive SINAMICS, que não vive em DeviceItem.Addresses e sem isso deixava o nextFreeByte entregar byte já ocupado)`
 - `connect-subnet --device X --subnet S [--io-system IO] [--apply]`

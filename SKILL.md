@@ -127,6 +127,7 @@ responde pergunta em prosa).
   download; `--allow-physical` é o opt-in explícito e existe para access point PLCSIM renomeado —
   nunca para CPU real.
 - **Uma chamada por vez.** Openness é single-session; nada de paralelizar `tia` (nem via agentes).
+  A 2ª chamada simultânea é recusada pelo próprio exe ("Another tia call is running").
 - **Compile entre etapas: os verbos fazem sozinhos desde 2026-08-13.** Todo import deixa o alvo
   inconsistente e o Openness recusa exportar bloco inconsistente. Todo export do CLI passa por
   `Ops.ExportFresh`, que compila **só o bloco** e segue — não é mais preciso `compile --apply` do

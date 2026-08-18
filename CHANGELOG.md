@@ -73,6 +73,25 @@ deliberately dropped.
 
 ### Fixed
 
+- **`move-block` puts the block back when the import fails.** It exports, deletes and imports into
+  the destination; an import that failed (name clash, folder refused) left the block deleted with a
+  temp XML as the only copy. Failures now try the original folder first and report `restoredTo`, and
+  a partial move reports `error` (so exit is 1, not 0).
+- **Ambiguous hardware item names are refused.** `FindItem` returned the first match of a recursive
+  search, so a name that repeats across levels or racks (`Rack_0`, `Port_1`) could be written to on
+  the wrong item. Matches are now collected with their paths and an ambiguous name fails listing
+  them; `--item "Parent/Child"` disambiguates.
+- **`set-address` no longer picks an interface at random.** A device with more than one network
+  interface (CPU X1/X2) now requires `--item`, and the chosen one is reported as `interface`.
+- **`list-io-map` reports drives it could not read.** A telegram read that threw was swallowed, so a
+  map missing exactly the addresses `nextFreeByte` cannot see still looked complete. It now carries
+  `unreadableDrives` / `scanErrors[]` and forces `nextFreeByteExact: false`.
+- **Only one `tia` call at a time, enforced by the exe.** The cross-process lock existed only on the
+  scheduled-task route; two interactive terminals could break D9 (Openness is single-session). A
+  named mutex now fails the second call fast, on both routes.
+- **`bytes` in the spill stub is the file's UTF-8 size** (`FileInfo.Length`), not UTF-16 char count;
+  the char count is still there as `chars`.
+
 - **Exit code is honest for failures embedded in the result.** Verbs that caught an error into an
   `error` field and returned normally (`sim-run` above all) exited 0, and the batch marked the step
   `ok: true`. A top-level `error` is now exit 1 and counts in the batch's `failed`.

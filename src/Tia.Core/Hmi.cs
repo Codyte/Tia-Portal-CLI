@@ -1,27 +1,29 @@
-// ====================== BEGIN NAV INDEX ======================
+﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L51    class Hmi
-//   L54    .Targets
-//   L70    .ExportTagTable
-//   L89    .ResolveTagFolder
-//   L104   .List
-//   L118   .Describe
-//   L159   .Tree
-//   L211   .SplitPath
-//   L221   .Row
-//   L228   roundtrip SimaticML de tela (só clássico)
-//   L231   .ExportScreen
-//   L248   .ImportScreen
-//   L294   .StripScreenNumber
-//   L311   .DeleteScreen
-//   L324   .FindScreen
-//   L340   .ScreenPaths
-//   L348   .TagNames
-//   L355   .CollectTagNames
-//   L365   .ClassicTarget
-//   L384   .ResolveScreenFolder
-//   L406   .CollectScreens
-//   L415   .CollectTables
+//   L53    class Hmi
+//   L56    .Targets
+//   L72    .ExportTagTable
+//   L97    .ImportTagTable
+//   L129   .ResolveTagFolder
+//   L134   .ResolveTagFolder
+//   L154   .List
+//   L168   .Describe
+//   L209   .Tree
+//   L261   .SplitPath
+//   L271   .Row
+//   L278   roundtrip SimaticML de tela (só clássico)
+//   L281   .ExportScreen
+//   L298   .ImportScreen
+//   L344   .StripScreenNumber
+//   L361   .DeleteScreen
+//   L374   .FindScreen
+//   L390   .ScreenPaths
+//   L398   .TagNames
+//   L405   .CollectTagNames
+//   L415   .ClassicTarget
+//   L434   .ResolveScreenFolder
+//   L456   .CollectScreens
+//   L465   .CollectTables
 // ======================= END NAV INDEX =======================
 
 using System.Collections.Generic;
@@ -86,7 +88,51 @@ namespace Tia.Core
             };
         }
 
+        /// <summary>
+        /// Import SimaticML de tabela de tags de HMI — o par do `export-hmi-tags`, e o último elo da
+        /// cadeia de área nova que ainda exigia GUI. Mesmo contrato do `import-tags` do PLC: dry por
+        /// padrão, `--table` é o caminho completo da PASTA a partir da raiz de tags (o nome da tabela
+        /// sai do XML) e o dry-run diz em `folderAction` se vai criar ou reusar.
+        /// </summary>
+        public static object ImportTagTable(TiaSession session, string device, string file,
+            string folderPath, bool apply)
+        {
+            var target = ClassicTarget(session, device);
+            var full = Path.GetFullPath(file);
+            if (!File.Exists(full)) throw new FileNotFoundException("Import file not found: " + full);
+            Ops.RequireRootType(full, "Hmi.Tag.TagTable");
+            var name = Ops.XmlObjectName(full);
+            var tables = ResolveTagFolder(target.Value, folderPath, false);
+            var result = new Dictionary<string, object>
+            {
+                { "file", full },
+                { "device", target.Key },
+                { "hmi", target.Value.Name },
+                { "table", name },
+                { "folder", folderPath ?? "" },
+                { "action", tables != null && name != null && tables.Find(name) != null
+                    ? "override" : "create" },
+                { "applied", apply },
+            };
+            if (!string.IsNullOrEmpty(folderPath))
+                result["folderAction"] = tables == null ? "create" : "reuse";
+            if (apply)
+            {
+                result["languagesActivated"] =
+                    Ops.EnsureCultures(session.Project, Ops.XmlCultures(full), true);
+                ResolveTagFolder(target.Value, folderPath, true)
+                    .Import(new FileInfo(full), Siemens.Engineering.ImportOptions.Override);
+            }
+            return result;
+        }
+
         static Classic.Tag.TagTableComposition ResolveTagFolder(Classic.HmiTarget target, string path)
+        {
+            return ResolveTagFolder(target, path, false);
+        }
+
+        static Classic.Tag.TagTableComposition ResolveTagFolder(Classic.HmiTarget target, string path,
+            bool create)
         {
             var tables = target.TagFolder.TagTables;
             var folders = target.TagFolder.Folders;
@@ -94,7 +140,11 @@ namespace Tia.Core
             foreach (var part in path.Trim('/').Split('/'))
             {
                 var next = folders.Find(part);
-                if (next == null) return null;
+                if (next == null)
+                {
+                    if (!create) return null;
+                    next = folders.Create(part);
+                }
                 tables = next.TagTables;
                 folders = next.Folders;
             }

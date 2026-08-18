@@ -20,6 +20,7 @@
 - `trace --equipment AG-01  (símbolos do equipamento + quem referencia; ~9s em projeto grande)`
 - `list-hmi [--device X]  (WinCC clássico e Unified: telas + tag tables; `api` diz qual)`
 - `export-hmi-tags --table "Pasta/Tabela" [--device X]  (SimaticML da tabela de tags da IHM; é onde aparece a conexão e a tag do PLC por trás de cada tag de tela)`
+- `import-hmi-tags --file F.xml [--device X] [--folder "Pasta/Sub"] [--replace OLD=NEW ...] [--apply]  (par do export-hmi-tags; --folder é caminho completo a partir da raiz de tags e o nome da tabela sai do XML)`
 - `hmi-tree  (outline de todas as IHMs → hmi-navi.md, agrupado por pasta; irmão do `tree`)`
 - `export-screen --screen "Pasta/Sub/Tela" [--device X]  (SimaticML da tela; só WinCC clássico — Unified não exporta tela)`
 - `import-screen --file F.xml [--device X] [--folder "Pasta/Sub"] [--replace OLD=NEW ...] [--apply]  (--folder é caminho completo a partir da raiz de telas, como no import-block; --replace troca texto no XML antes do import — é assim que se replica tela de área, porque a tela liga tag por NOME (TargetID="@OpenLink"), sem ID a remapear)`

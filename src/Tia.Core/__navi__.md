@@ -1,5 +1,5 @@
 # __navi__ · `src/Tia.Core/` — 28 files → symbols at exact line numbers
-<!-- navindex · 2026-08-17 · DO NOT EDIT BY HAND; regen via navindex skill -->
+<!-- navindex · 2026-08-18 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../../__navi__.md`](../../__navi__.md)
 
 - **AlarmFc.cs** (750 ln)
@@ -25,8 +25,8 @@
   <sub>L40:class FaultObConfig  L43:.GroupPrefix  L45:.Devices  L46:.TemplateOb  L47:.ObNamePrefix  L53:.AlarmDb  L54:.CommentCultures  L62:class FaultOb  L69:class Module  L76:.Generate  L155:.DiscoverTasks  L184:.AllDeviceGroups  L191:.WithSubGroups  L199:.CollectModules  L210:XML generation  L212:.BuildObXml  L242:.RewireNetwork  L279:.AddMasterCommentEntry  L308:.ReassignUids  L328:.ModuleType  L340:.WriteCsv</sub>
 - **Hardware.cs** (820 ln)
   <sub>L57:class Hardware  L63:.FindDevice  L75:.HasItemNamed  L85:.Interface  L93:add-device  L96:.AddDevice  L121:delete-device  L123:.DeleteDevice  L136:plug-module  L144:.PlugModule  L230:.CollectSlots  L242:.FindItem  L255:.FindItem  L266:set-address  L268:.SetAddress  L297:set-io-address  L305:.SetIoAddress  L365:.CollectAddresses  L371:list-io-map  L381:.ListIoMap  L428:.ListIoMapRows  L440:.CollectMap  L468:.CollectTelegramMap  L495:.Range …</sub>
-- **Hmi.cs** (423 ln)
-  <sub>L51:class Hmi  L54:.Targets  L70:.ExportTagTable  L89:.ResolveTagFolder  L104:.List  L118:.Describe  L159:.Tree  L211:.SplitPath  L221:.Row  L228:roundtrip SimaticML de tela (só clássico)  L231:.ExportScreen  L248:.ImportScreen  L294:.StripScreenNumber  L311:.DeleteScreen  L324:.FindScreen  L340:.ScreenPaths  L348:.TagNames  L355:.CollectTagNames  L365:.ClassicTarget  L384:.ResolveScreenFolder  L406:.CollectScreens  L415:.CollectTables</sub>
+- **Hmi.cs** (476 ln)
+  <sub>L53:class Hmi  L56:.Targets  L72:.ExportTagTable  L97:.ImportTagTable  L129:.ResolveTagFolder  L134:.ResolveTagFolder  L154:.List  L168:.Describe  L209:.Tree  L261:.SplitPath  L271:.Row  L278:roundtrip SimaticML de tela (só clássico)  L281:.ExportScreen  L298:.ImportScreen  L344:.StripScreenNumber  L361:.DeleteScreen  L374:.FindScreen  L390:.ScreenPaths  L398:.TagNames  L405:.CollectTagNames  L415:.ClassicTarget  L434:.ResolveScreenFolder  L456:.CollectScreens  L465:.CollectTables</sub>
 - **InstrumentFc.cs** (721 ln)
   <sub>L54:class InstrumentFcConfig  L57:.SourceTagsFolder  L59:.TargetBlocksFolder  L60:.GlobalDb  L62:.TargetOb  L69:.FcSuffix  L70:.IgnoreFolders  L72:.TagFilters  L78:.MoldInstrumentId  L80:.NextCommandIds  L93:class InstrumentFc  L103:class Instrument  L116:class AreaTask  L124:.Run  L339:generation  L341:.BuildAreaFcXml  L369:.RewireNetwork  L423:.ImportAreaFc  L463:call OB  L465:.UpdateCallOb  L528:.CallNetworkXml  L559:.EmptyObXml  L589:checks + helpers  L592:.IsTaskComplete …</sub>
 - **Inventory.cs** (576 ln)

@@ -2,28 +2,28 @@
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
 <!--   L29    Auditoria técnica completa e mapa de discussão — tia-cli -->
 <!--   L43    0. Status da resposta (2026-08-18, revisão no repo) -->
-<!--   L80    1. Resumo executivo -->
-<!--   L115   2. Como ler os registros -->
-<!--   L152   3. Escopo e evidência coletada -->
-<!--   L190   4. Pontos fortes confirmados -->
-<!--   L210   5. Guardrails e segurança operacional -->
-<!--   L235   6. Contrato de sucesso, erros e JSON -->
-<!--   L258   7. Instalação, versões e carregamento de assemblies -->
-<!--   L283   8. Release, CI e cadeia de suprimentos -->
-<!--   L302   9. Cobertura de testes e lacunas funcionais -->
-<!--   L324   10. Arquitetura e manutenibilidade -->
-<!--   L343   11. Domínio PLC, Openness, HMI, drives e simulação -->
-<!--   L368   12. Desempenho, escala e contexto de IA -->
-<!--   L383   13. Documentação e experiência do desenvolvedor -->
-<!--   L404   14. Privacidade, segurança de software e aspectos legais -->
-<!--   L420   15. Produto e posicionamento -->
-<!--   L435   16. Perguntas abertas para discutir com outra IA -->
-<!--   L464   17. Plano de ação proposto -->
-<!--   L515   18. Backlog priorizado consolidado -->
-<!--   L558   19. Validação executada nesta auditoria -->
-<!--   L575   20. Estado local observado -->
-<!--   L585   21. Definição sugerida de “pronto para uso confiável” -->
-<!--   L601   22. Conclusão -->
+<!--   L82    1. Resumo executivo -->
+<!--   L117   2. Como ler os registros -->
+<!--   L154   3. Escopo e evidência coletada -->
+<!--   L192   4. Pontos fortes confirmados -->
+<!--   L212   5. Guardrails e segurança operacional -->
+<!--   L237   6. Contrato de sucesso, erros e JSON -->
+<!--   L260   7. Instalação, versões e carregamento de assemblies -->
+<!--   L285   8. Release, CI e cadeia de suprimentos -->
+<!--   L304   9. Cobertura de testes e lacunas funcionais -->
+<!--   L326   10. Arquitetura e manutenibilidade -->
+<!--   L345   11. Domínio PLC, Openness, HMI, drives e simulação -->
+<!--   L370   12. Desempenho, escala e contexto de IA -->
+<!--   L385   13. Documentação e experiência do desenvolvedor -->
+<!--   L406   14. Privacidade, segurança de software e aspectos legais -->
+<!--   L422   15. Produto e posicionamento -->
+<!--   L437   16. Perguntas abertas para discutir com outra IA -->
+<!--   L466   17. Plano de ação proposto -->
+<!--   L517   18. Backlog priorizado consolidado -->
+<!--   L560   19. Validação executada nesta auditoria -->
+<!--   L577   20. Estado local observado -->
+<!--   L587   21. Definição sugerida de “pronto para uso confiável” -->
+<!--   L603   22. Conclusão -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Auditoria técnica completa e mapa de discussão — tia-cli
@@ -51,7 +51,7 @@ parte dos P1/P2 ser checklist genérico de OSS maduro.
 `SAFE-13`, `SAFE-14`, `API-01`, `API-02`, `API-03` (parcial: erro de topo vira exit ≠ 0; não há
 envelope comum), `API-05`, `API-06`, `API-08` (nos códigos de saída; sem helpers de faixa),
 `API-09`, `API-10`, `PLC-08`, `INST-01`, `INST-02`, `INST-03`, `INST-05`, `INST-07`, `INST-09`,
-`INST-10`, `DOC-02`, `DOC-03`, `TEST-13`.
+`INST-10`, `SAFE-15`, `SAFE-16`, `SAFE-17`, `PLC-03`, `DOC-02`, `DOC-03`, `TEST-13`.
 
 **Obsoleto** — `DOC-01` (índice raiz regenerado no commit `56c34c6`) e `DOC-16` (o `navindex.py`
 instalado já indexa `.cs` e, desde 2026-08-18, títulos de Markdown).
@@ -65,6 +65,9 @@ instalado já indexa `.cs` e, desde 2026-08-18, títulos de Markdown).
 - `INST-08`: build a partir do fonte continua exigindo o PLCSIM Advanced instalado (o `Sim.cs`
   compila contra a API dele). Tornar opcional pede referência condicional + `#if`; a release, que é
   o caso de quem só usa, não precisa mais dele.
+- `PLC-06`: `sim-run` agora recusa instância vazia (0 tags) com `--no-download` e devolve
+  `programCheck` (nome do controller × PLC do projeto). Fingerprint de versão do programa não existe:
+  a API do PLCSIM não expõe assinatura, e gravar uma no programa mudaria o projeto do usuário.
 
 **Não fazer** — registry declarativo de comandos, envelope JSON versionado com SemVer, split
 `Tia.Domain`/`Tia.Openness`/`Tia.Cli`, migração para xUnit, cobertura, analyzers, SBOM, assinatura,
@@ -73,9 +76,8 @@ build reproduzível, pin de action por SHA, redaction/TTL de telemetria, matriz 
 `CI-06..14`, `SAFE-18`, `SAFE-20`, `TEST-09/10`, `PROD-07/08`. São a agenda de um produto com equipe
 e usuários externos; aqui compram risco de regressão sem comprar nada.
 
-**Segunda leva, quando doer** — `CI-01`/`CI-02` (extrair lógica pura para compilar no CI),
-`SAFE-09` (backup/rollback comum aos `--force`), `SAFE-15..17`, `PLC-03`/`PLC-06` (preflight do
-PLCSIM clássico e fingerprint do programa para o `--no-download`).
+**Segunda leva, quando doer** — `CI-01`/`CI-02` (extrair lógica pura para compilar no CI) e
+`SAFE-09` (backup/rollback comum aos `--force`).
 
 ## 1. Resumo executivo
 

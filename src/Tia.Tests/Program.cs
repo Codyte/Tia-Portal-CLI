@@ -1,46 +1,48 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L71    class Program
-//   L75    .Check
-//   L82    .RepoRoot
-//   L91    .Fixture
-//   L93    .OutDir
-//   L100   .Main
-//   L145   .AlarmFc_BuildFcXml
-//   L173   .AlarmFc_BuildCallObXml
-//   L195   .FaultOb_BuildObXml
-//   L221   .InstrumentFc_BuildAreaFcXml
-//   L258   .LadConverter_Convert
-//   L281   .BlockExplain_Explain
-//   L305   .Ops_RequireRootType
-//   L327   .TempXml
-//   L335   class Folder
-//   L347   .Ops_WalkFolders
-//   L388   .Ops_SplitPath
-//   L405   .Inventory_FolderMatches
-//   L427   .Ops_RequireUtf8Bom
-//   L454   .InstrumentFc_FcName
-//   L465   .Profinet_TagName
-//   L475   .Audit_Naming
-//   L492   .DbMember_AddToXml
-//   L569   .Memory_Occupied
-//   L587   .Clone_Rewrite
-//   L648   .Hmi_StripScreenNumber
-//   L676   .ScreenItems_Core
-//   L786   .Scaffold_Plan
-//   L832   list-interface / add-call / delete-network / set-retain
-//   L835   .Fc
-//   L854   .BlockInterface_FromXml
-//   L870   .BlockEdit_InsertCallInXml
-//   L1013  .BlockEdit_StripTypePrefix
-//   L1025  .BlockEdit_RemoveNetworkFromXml
-//   L1037  .BlockEdit_SetRetainInXml
-//   L1047  .Clone_InstancesInXml
-//   L1059  .Audit_DriveShape
-//   L1072  .Audit_LawChecks
-//   L1101  .Ops_Squash
-//   L1117  .Cli_KnownOptions
-//   L1142  .Throws
+//   L73    class Program
+//   L77    .Check
+//   L84    .RepoRoot
+//   L93    .Fixture
+//   L95    .OutDir
+//   L102   .Main
+//   L149   .AlarmFc_BuildFcXml
+//   L177   .AlarmFc_BuildCallObXml
+//   L199   .FaultOb_BuildObXml
+//   L225   .InstrumentFc_BuildAreaFcXml
+//   L262   .LadConverter_Convert
+//   L285   .BlockExplain_Explain
+//   L309   .Ops_RequireRootType
+//   L331   .TempXml
+//   L339   class Folder
+//   L351   .Ops_WalkFolders
+//   L392   .Ops_SplitPath
+//   L409   .Inventory_FolderMatches
+//   L431   .Ops_RequireUtf8Bom
+//   L458   .InstrumentFc_FcName
+//   L469   .Profinet_TagName
+//   L479   .Audit_Naming
+//   L496   .DbMember_AddToXml
+//   L573   .Memory_Occupied
+//   L591   .Clone_Rewrite
+//   L652   .Hmi_StripScreenNumber
+//   L680   .ScreenItems_Core
+//   L790   .Scaffold_Plan
+//   L836   list-interface / add-call / delete-network / set-retain
+//   L839   .Fc
+//   L858   .BlockInterface_FromXml
+//   L874   .BlockEdit_InsertCallInXml
+//   L1017  .BlockEdit_StripTypePrefix
+//   L1029  .BlockEdit_RemoveNetworkFromXml
+//   L1041  .BlockEdit_SetRetainInXml
+//   L1051  .Clone_InstancesInXml
+//   L1063  .Audit_DriveShape
+//   L1076  .Audit_LawChecks
+//   L1105  .Ops_Squash
+//   L1119  .Hardware_MemoryAttrs
+//   L1131  .Sim_DownloadState
+//   L1147  .Cli_KnownOptions
+//   L1172  .Throws
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX
@@ -131,6 +133,8 @@ namespace Tia.Tests
                 { "Ops.Squash", Ops_Squash },
                 { "ScreenItems.Core", ScreenItems_Core },
                 { "Cli.KnownOptions", Cli_KnownOptions },
+                { "Hardware.MemoryAttrs", Hardware_MemoryAttrs },
+                { "Sim.DownloadState", Sim_DownloadState },
             };
             foreach (var t in tests)
             {
@@ -1107,6 +1111,32 @@ namespace Tia.Tests
             Check(Ops.Squash("FB FALHA") != Ops.Squash("FB FALHAS"), "nome diferente continua diferente");
         }
 
+
+        /// <summary>
+        /// SAFE-16: `set-memory-bytes` casa atributo por substring; o bool que ele liga tem que ser
+        /// o de Enable, senão um atributo novo de nome parecido (outra versão do Portal) vira true.
+        /// </summary>
+        private static void Hardware_MemoryAttrs()
+        {
+            Check(Tia.Core.Hardware.IsMemoryAttribute("ClockMemoryByte"), "atributo de clock reconhecido");
+            Check(Tia.Core.Hardware.IsMemoryAttribute("SystemMemoryByte"), "atributo de system reconhecido");
+            Check(!Tia.Core.Hardware.IsMemoryAttribute("Comment"), "atributo alheio fora");
+            Check(Tia.Core.Hardware.IsEnableAttribute("EnableSystemMemoryByte"), "Enable* liga");
+            Check(Tia.Core.Hardware.IsEnableAttribute("ClockMemoryByteEnabled"), "*Enabled liga");
+            Check(!Tia.Core.Hardware.IsEnableAttribute("SystemMemoryByteReadOnly"),
+                "bool de nome parecido sem Enable NAO liga (era o que virava true no escuro)");
+        }
+
+        /// <summary>PLC-03: a mensagem de instância vazia cita o estado do download que "deu certo".</summary>
+        private static void Sim_DownloadState()
+        {
+            var plan = new Dictionary<string, object>();
+            Check(Tia.Core.Sim.DownloadState(plan) == "no download", "sem download: dito, nao inventado");
+            plan["download"] = new Dictionary<string, object> { { "state", "Success" }, { "errors", 0 } };
+            Check(Tia.Core.Sim.DownloadState(plan) == "Success", "estado do download extraido do plano");
+            plan["download"] = new Dictionary<string, object> { { "errors", 0 } };
+            Check(Tia.Core.Sim.DownloadState(plan) == "unknown", "download sem state nao estoura");
+        }
 
         /// <summary>
         /// SAFE-04: o guard de opção desconhecida só protege se a lista `KnownOptions` do dispatcher

@@ -3,10 +3,10 @@
 <!--   L12    TIA Portal Openness API — instruções do repo -->
 <!--   L26    Regras duras -->
 <!--   L59    Build / run (a partir da F1) -->
-<!--   L279   Antes de escrever programa de PLC: `--study` -->
-<!--   L301   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
-<!--   L333   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
-<!--   L381   Economia de tokens -->
+<!--   L283   Antes de escrever programa de PLC: `--study` -->
+<!--   L305   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
+<!--   L337   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
+<!--   L385   Economia de tokens -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # TIA Portal Openness API — instruções do repo
@@ -232,6 +232,10 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     CommunicationInterfaceNotAvailable`) e sequestra o access point `PLCSIM` do S7ONLINE, onde o
     download sai `Success` com a instância Advanced vazia. Fechado o clássico, é esse mesmo access
     point que serve o Advanced: daí o default `--pc-interface PLCSIM`.
+    **Instância com 0 tags = erro, não sucesso**: com download, é o clássico sequestrando o access
+    point (o Portal diz `Success` e o programa foi para outro canal); com `--no-download`, é
+    programa que nunca chegou lá. O verbo também devolve `programCheck` (nome do controller × PLC
+    do projeto) — prova origem, não versão: assinatura de programa a API do PLCSIM não expõe.
     **O download é ~91% do verbo** (45-52 s de 49-57 s medidos): iterar observação no mesmo programa
     vai com **`--no-download`**, que pula direto pros passos. `download.ms` e `ms` saem no JSON.
     **O host desfaz só o que fez**: instância que já existia é reusada (`-5, AlreadyExists` vira

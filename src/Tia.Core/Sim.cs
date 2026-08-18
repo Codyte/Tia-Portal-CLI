@@ -1,33 +1,34 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L73    class Sim
-//   L81    .Run
-//   L227   .Diag
-//   L290   .Watch
-//   L335   .Try
-//   L341   .RegisteredInstances
-//   L351   .WaitReady
-//   L373   .ValidateSteps
-//   L386   case "write"
-//   L387   case "read"
-//   L388   case "wait"
-//   L389   case "run"
-//   L413   .Execute
-//   L423   case "write"
-//   L427   case "read"
-//   L431   case "wait"
-//   L435   case "run"
-//   L439   case "stop"
-//   L443   case "state"
-//   L446   case "tags"
-//   L474   .Write
-//   L498   .ParseBool
-//   L506   .Plain
-//   L527   class Target
-//   L538   .FindTarget
-//   L550   .Interfaces
-//   L564   .DeviceItemOf
-//   L591   .Resolve
+//   L74    class Sim
+//   L82    .Run
+//   L252   .Diag
+//   L315   .Watch
+//   L360   .Try
+//   L366   .RegisteredInstances
+//   L376   .WaitReady
+//   L398   .ValidateSteps
+//   L411   case "write"
+//   L412   case "read"
+//   L413   case "wait"
+//   L414   case "run"
+//   L438   .Execute
+//   L448   case "write"
+//   L452   case "read"
+//   L456   case "wait"
+//   L460   case "run"
+//   L464   case "stop"
+//   L468   case "state"
+//   L471   case "tags"
+//   L499   .Write
+//   L523   .ParseBool
+//   L531   .Plain
+//   L552   class Target
+//   L560   .DownloadState
+//   L573   .FindTarget
+//   L585   .Interfaces
+//   L599   .DeviceItemOf
+//   L626   .Resolve
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -194,6 +195,30 @@ namespace Tia.Core
                 }
                 try { instance.UpdateTagList(); } catch (Exception ex) { plan["tagListError"] = ex.Message; }
                 plan["tagCount"] = instance.TagInfos.Length;
+                // PLC-03/PLC-06: instância sem tag nenhuma é instância vazia. Com download, é o
+                // falso positivo do clássico sequestrando o access point (o Portal diz Success e o
+                // programa foi para outro canal); com --no-download, é programa que nunca chegou lá.
+                // Rodar os steps em cima disso lê zero e "passa" — daí virar erro, não nota.
+                if (instance.TagInfos.Length == 0)
+                {
+                    plan["error"] = noDownload
+                        ? "PLCSIM instance '" + instanceName + "' has no program loaded (0 tags). "
+                          + "Re-run without --no-download."
+                        : "Download reported " + DownloadState(plan) + " but the PLCSIM instance has 0 tags — "
+                          + "the program went somewhere else. The classic PLCSIM hijacks the same S7ONLINE "
+                          + "access point: close it and re-run.";
+                    return plan;
+                }
+                // PLC-06: o programa na instância pode ser de outro PLC. O nome não prova versão,
+                // mas mismatch é sinal barato e verdadeiro. Não bloqueia: a API não expõe assinatura
+                // do programa (ver docs/LIMITES.md), e o nome pode chegar normalizado pelo download.
+                plan["programCheck"] = new Dictionary<string, object>
+                {
+                    { "controller", instance.ControllerName },
+                    { "expectedPlc", plc.Name },
+                    { "match", string.Equals(instance.ControllerName, plc.Name, StringComparison.OrdinalIgnoreCase) },
+                    { "note", "nome do controller, não assinatura do programa: prova origem, não versão" },
+                };
                 // RUN que falha não aborta a rodada: em STOP ainda se lê a imagem de processo, e o
                 // erro do RUN é dado de diagnóstico, não motivo para jogar fora os passos
                 try { instance.Run(); } catch (Exception ex) { plan["runError"] = ex.Message; }
@@ -529,6 +554,16 @@ namespace Tia.Core
             public string PcInterface;
             public string Name;
             public IConfiguration Configuration;
+        }
+
+        /// <summary>Estado do download já gravado no plano ("Success"), para citar na mensagem.</summary>
+        internal static string DownloadState(Dictionary<string, object> plan)
+        {
+            object d;
+            if (!plan.TryGetValue("download", out d)) return "no download";
+            var map = d as Dictionary<string, object>;
+            object state;
+            return map != null && map.TryGetValue("state", out state) ? Convert.ToString(state) : "unknown";
         }
 
         /// <summary>

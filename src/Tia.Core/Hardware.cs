@@ -1,46 +1,48 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L59    class Hardware
-//   L65    .FindDevice
-//   L77    .HasItemNamed
-//   L91    .SingleInterface
-//   L113   .CollectInterfaces
-//   L125   .Interface
-//   L133   add-device
-//   L136   .AddDevice
-//   L161   delete-device
-//   L163   .DeleteDevice
-//   L176   plug-module
-//   L184   .PlugModule
-//   L270   .CollectSlots
-//   L288   .FindItem
-//   L307   .CollectMatches
-//   L321   set-address
-//   L323   .SetAddress
-//   L356   set-io-address
-//   L364   .SetIoAddress
-//   L424   .CollectAddresses
-//   L430   list-io-map
-//   L440   .ListIoMap
-//   L492   .ListIoMapRows
-//   L505   .CollectMap
-//   L533   .CollectTelegramMap
-//   L571   .Range
-//   L577   list-attrs
-//   L584   .ListAttrs
-//   L609   set-attr
-//   L617   .SetAttr
-//   L650   .Coerce
-//   L658   .TryGet
-//   L664   set-memory-bytes
-//   L673   .SetMemoryBytes
-//   L718   .IsMemoryAttribute
-//   L726   .FindMemoryItem
-//   L741   connect-subnet
-//   L747   .ConnectSubnet
-//   L865   CAx (AML)
-//   L867   .CaxExport
-//   L880   .CaxImport
+//   L61    class Hardware
+//   L67    .FindDevice
+//   L79    .HasItemNamed
+//   L93    .SingleInterface
+//   L115   .CollectInterfaces
+//   L127   .Interface
+//   L135   add-device
+//   L138   .AddDevice
+//   L163   delete-device
+//   L165   .DeleteDevice
+//   L178   plug-module
+//   L186   .PlugModule
+//   L272   .CollectSlots
+//   L290   .FindItem
+//   L309   .CollectMatches
+//   L323   set-address
+//   L325   .SetAddress
+//   L358   set-io-address
+//   L366   .SetIoAddress
+//   L426   .CollectAddresses
+//   L432   list-io-map
+//   L442   .ListIoMap
+//   L494   .ListIoMapRows
+//   L507   .CollectMap
+//   L535   .CollectTelegramMap
+//   L573   .Range
+//   L579   list-attrs
+//   L586   .ListAttrs
+//   L614   set-attr
+//   L622   .SetAttr
+//   L665   .Coerce
+//   L679   .TryGet
+//   L685   .TryGet
+//   L692   set-memory-bytes
+//   L701   .SetMemoryBytes
+//   L761   .IsEnableAttribute
+//   L766   .IsMemoryAttribute
+//   L774   .FindMemoryItem
+//   L789   connect-subnet
+//   L795   .ConnectSubnet
+//   L913   CAx (AML)
+//   L915   .CaxExport
+//   L928   .CaxImport
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -590,11 +592,14 @@ namespace Tia.Core
             foreach (var info in target.GetAttributeInfos())
             {
                 if (like != null && info.Name.IndexOf(like, StringComparison.OrdinalIgnoreCase) < 0) continue;
-                var value = TryGet(target, info.Name);
+                string readError;
+                var value = TryGet(target, info.Name, out readError);
                 attrs.Add(new Dictionary<string, object>
                 {
                     { "attribute", info.Name },
                     { "value", value == null ? null : value.ToString() },
+                    // SAFE-15: valor nulo de verdade e atributo ilegível saíam iguais na sonda.
+                    { "readError", readError },
                 });
             }
             return new Dictionary<string, object>
@@ -630,7 +635,14 @@ namespace Tia.Core
             if ((info.AccessMode & EngineeringAttributeAccessMode.Write) == 0)
                 throw new InvalidOperationException("Attribute '" + attribute + "' is read-only ("
                     + info.AccessMode + ") in '" + (itemName ?? device.Name) + "'.");
-            var current = TryGet(target, attribute);
+            string readError;
+            var current = TryGet(target, attribute, out readError);
+            // SAFE-15: sem o valor atual não há tipo a provar, e o `Coerce` assumia string — o dry
+            // prometia "action: set" e só o --apply descobria que o Portal esperava outro tipo.
+            if (readError != null)
+                throw new InvalidOperationException("Attribute '" + attribute + "' is unreadable ("
+                    + readError + ") in '" + (itemName ?? device.Name)
+                    + "'. Without the current value the target type cannot be proven — refusing to set.");
             object parsed = Coerce(value, current);
             var result = new Dictionary<string, object>
             {
@@ -640,6 +652,9 @@ namespace Tia.Core
                 { "from", current == null ? null : current.ToString() },
                 { "to", parsed == null ? null : parsed.ToString() },
                 { "action", Equals(parsed, current) ? "none (already set)" : "set" },
+                // SAFE-15: valor atual nulo não prova tipo — o Coerce manda string e o Portal pode
+                // recusar no apply. Declarado em vez de silencioso.
+                { "typeProvenFrom", current == null ? null : current.GetType().Name },
                 { "applied", apply },
             };
             if (apply && !Equals(parsed, current)) target.SetAttribute(attribute, parsed);
@@ -655,10 +670,23 @@ namespace Tia.Core
             return Convert.ChangeType(value, type);
         }
 
+        /// <summary>
+        /// Valor do atributo, ou null. `readError` separa "o valor é nulo" de "não consegui ler" —
+        /// sem essa distinção o `Coerce` assumia string e o dry-run prometia escrita impossível
+        /// (SAFE-15).
+        /// </summary>
+        /// <summary>Quem só quer o valor (leitura de relatório, não decisão de escrita).</summary>
         private static object TryGet(IEngineeringObject obj, string attribute)
         {
+            string ignored;
+            return TryGet(obj, attribute, out ignored);
+        }
+
+        private static object TryGet(IEngineeringObject obj, string attribute, out string readError)
+        {
+            readError = null;
             try { return obj.GetAttribute(attribute); }
-            catch { return null; }
+            catch (Exception ex) { readError = (ex.InnerException ?? ex).Message; return null; }
         }
 
         // ---------- set-memory-bytes ----------
@@ -681,6 +709,7 @@ namespace Tia.Core
 
             var found = new List<object>();
             var changed = new List<object>();
+            var skipped = new List<object>();
             foreach (var info in cpu.GetAttributeInfos())
             {
                 var attr = info.Name;
@@ -689,7 +718,19 @@ namespace Tia.Core
                 found.Add(new Dictionary<string, object> { { "attribute", attr }, { "current", current } });
 
                 object target = null;
-                if (current is bool) target = true;                                   // Enable*/`*Enabled`
+                if (current is bool)
+                {
+                    // SAFE-16: o casamento é por substring, então um bool novo de nome parecido
+                    // (outra versão do Portal) entrava aqui e virava true. Só liga o que se chama
+                    // Enable*/*Enabled — o resto sai declarado em `skipped`, não escrito.
+                    if (!IsEnableAttribute(attr))
+                    {
+                        skipped.Add(new Dictionary<string, object> { { "attribute", attr },
+                            { "current", current }, { "reason", "bool sem Enable no nome" } });
+                        continue;
+                    }
+                    target = true;
+                }
                 else if (attr.IndexOf("Clock", StringComparison.OrdinalIgnoreCase) >= 0)
                     target = clockByte;
                 else target = systemByte;
@@ -711,11 +752,18 @@ namespace Tia.Core
                 { "clockByte", clockByte },
                 { "attributes", found },
                 { "changes", changed },
+                { "skipped", skipped },
                 { "applied", apply },
             };
         }
 
-        private static bool IsMemoryAttribute(string name)
+        /// <summary>O bool que liga o byte: `EnableSystemMemoryByte`, `ClockMemoryByteEnabled`.</summary>
+        internal static bool IsEnableAttribute(string name)
+        {
+            return name.IndexOf("Enable", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        internal static bool IsMemoryAttribute(string name)
         {
             return (name.IndexOf("MemoryByte", StringComparison.OrdinalIgnoreCase) >= 0)
                 || (name.IndexOf("ClockMemory", StringComparison.OrdinalIgnoreCase) >= 0)

@@ -969,10 +969,17 @@ abortava e a release não saía), SAFE-11 (`audit` com `complete`/`skippedChecks
 suportada; o build referencia as assemblies split, que V19/V20 não têm), INST-02/INST-10 (gate de
 Portal só V19+, `pack` falhando em árvore suja).
 
-**Segunda leva, quando doer**: SAFE-07 (mutex no próprio `tia.exe` — hoje a D9 só é garantida na
-rota da task, dois terminais na sessão 1 passam), SAFE-08 (`move-block` reimportar o XML se o
-import falhar), SAFE-12/13/14 (ambiguidade de item de hardware e erro de telegrama engolido),
-API-05 (`bytes` conta chars UTF-16 — renomear o campo).
+**Quarta leva (2026-08-18, mesma sessão)**: SAFE-15 (`TryGet` separa `readError` de valor nulo —
+`set-attr` recusa atributo ilegível em vez de assumir string, e `list-attrs` mostra o erro de
+leitura), SAFE-16 (`set-memory-bytes` só liga bool de nome `Enable*`/`*Enabled`; bool de nome
+parecido sai em `skipped` com motivo), SAFE-17 (`--keep-connection` exige `--apply`, porque grava
+conexão na config do Portal; `--http` devolve `warning` de transporte sem TLS), PLC-03/PLC-06
+(`sim-run` recusa instância com 0 tags — é o falso positivo do PLCSIM clássico sequestrando o
+access point, e com `--no-download` é programa que nunca chegou lá — e devolve `programCheck` com
+controller × PLC esperado). Testes offline novos: `Hardware.MemoryAttrs`, `Sim.DownloadState`.
+
+**Sobrou da segunda leva**: CI-01/CI-02 (extrair lógica pura para compilar no CI) e SAFE-09
+(backup/rollback comum aos `--force`) — os dois mexem em fronteira de projeto, não em guard.
 
 **Não fazer**: registry declarativo de comandos, envelope JSON versionado, split
 `Tia.Domain`/`Tia.Openness`, migração para xUnit, cobertura, analyzers, SBOM/assinatura/build

@@ -18,8 +18,15 @@ namespace Tia.Core
         /// Reusa a conexão já configurada no Portal quando existe; se precisar criar uma,
         /// remove no fim (a menos que --keep-connection), pra não sujar a config da máquina.
         /// </summary>
-        public static object ListServerProjects(string host, int port, bool http, bool keepConnection)
+        public static object ListServerProjects(string host, int port, bool http, bool keepConnection,
+            bool apply)
         {
+            // SAFE-17: `--keep-connection` deixa a conexão gravada na config do Portal — efeito que
+            // sobrevive à chamada, logo escrita, logo `--apply` explícito como todo verbo de escrita.
+            if (keepConnection && !apply)
+                throw new InvalidOperationException(
+                    "--keep-connection persists a server connection in the Portal configuration. "
+                    + "That is a write: re-run with --apply.");
             var proc = TiaPortal.GetProcesses().FirstOrDefault();
             if (proc == null)
                 throw new InvalidOperationException(
@@ -35,7 +42,7 @@ namespace Tia.Core
                     foreach (var info in server.GetServerProjects())
                         projects.Add(Describe(server, info));
 
-                    return new Dictionary<string, object>
+                    var result = new Dictionary<string, object>
                     {
                         { "server", server.ServerName },
                         { "host", server.Host },
@@ -43,6 +50,11 @@ namespace Tia.Core
                         { "connection", created ? (keepConnection ? "created-kept" : "created-temporary") : "existing" },
                         { "projects", projects },
                     };
+                    // SAFE-17: HTTP manda credencial de servidor em claro na rede. É opt-in, mas
+                    // silencioso não dá pra auditar depois.
+                    if (http)
+                        result["warning"] = "--http: connection without TLS; server credentials travel in clear text.";
+                    return result;
                 }
                 finally
                 {

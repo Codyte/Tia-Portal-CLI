@@ -1121,10 +1121,15 @@ namespace Tia.Tests
             Check(Tia.Core.Hardware.IsMemoryAttribute("ClockMemoryByte"), "atributo de clock reconhecido");
             Check(Tia.Core.Hardware.IsMemoryAttribute("SystemMemoryByte"), "atributo de system reconhecido");
             Check(!Tia.Core.Hardware.IsMemoryAttribute("Comment"), "atributo alheio fora");
+            // nomes medidos no projeto-molde em V21: o bool e' `ClockMemoryByte` puro e o endereco
+            // vem em `ClockMemoryByteAddress` — heuristica de "Enable" sozinha pulava os certos
+            Check(Tia.Core.Hardware.IsEnableAttribute("ClockMemoryByte"), "bool de clock do V21 liga");
+            Check(Tia.Core.Hardware.IsEnableAttribute("SystemMemoryByte"), "bool de system do V21 liga");
             Check(Tia.Core.Hardware.IsEnableAttribute("EnableSystemMemoryByte"), "Enable* liga");
-            Check(Tia.Core.Hardware.IsEnableAttribute("ClockMemoryByteEnabled"), "*Enabled liga");
             Check(!Tia.Core.Hardware.IsEnableAttribute("SystemMemoryByteReadOnly"),
-                "bool de nome parecido sem Enable NAO liga (era o que virava true no escuro)");
+                "bool de nome parecido fora da lista NAO liga (era o que virava true no escuro)");
+            Check(!Tia.Core.Hardware.IsEnableAttribute("ClockMemoryByteAddress"),
+                "campo de endereco nao e' o bool de ligar");
         }
 
         /// <summary>PLC-03: a mensagem de instância vazia cita o estado do download que "deu certo".</summary>

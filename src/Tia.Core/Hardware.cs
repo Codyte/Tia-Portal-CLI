@@ -757,10 +757,17 @@ namespace Tia.Core
             };
         }
 
-        /// <summary>O bool que liga o byte: `EnableSystemMemoryByte`, `ClockMemoryByteEnabled`.</summary>
+        /// <summary>
+        /// O bool que liga o byte. Em V21 medido no projeto-molde os nomes são exatamente
+        /// `ClockMemoryByte` e `SystemMemoryByte` (o endereço vem em `*Address`) — sem "Enable"
+        /// nenhum. A cláusula `Enable` fica para versão que use `EnableSystemMemoryByte` e afins.
+        /// Bool fora dessa lista não é ligado no escuro (SAFE-16): sai em `skipped` com motivo.
+        /// </summary>
         internal static bool IsEnableAttribute(string name)
         {
-            return name.IndexOf("Enable", StringComparison.OrdinalIgnoreCase) >= 0;
+            return name.Equals("ClockMemoryByte", StringComparison.OrdinalIgnoreCase)
+                || name.Equals("SystemMemoryByte", StringComparison.OrdinalIgnoreCase)
+                || name.IndexOf("Enable", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         internal static bool IsMemoryAttribute(string name)

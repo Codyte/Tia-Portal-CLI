@@ -1004,6 +1004,8 @@ projeto real, não só em teste offline:
 | Guard do `sim-run` (SAFE-01) | `--pc-interface "PN/IE"` → recusado antes do attach, exit 2 |
 | Validação de steps (API-10) | `wait 999999999` e op `frobnicate` → recusados antes do download, exit 2 |
 | Mutex do exe (SAFE-07) | 6/6 pares de chamadas simultâneas com a segunda recusada |
+| Conexão multiuser (SAFE-17) | `list-server-projects --keep-connection` sem `--apply` → recusado antes do attach, exit 1 |
+| `set-memory-bytes` (SAFE-16) | dry no molde: `skipped: []`, `changes: []` (os dois bytes já ligados). O dry **corrigiu o guard**: em V21 os bools são `ClockMemoryByte`/`SystemMemoryByte`, sem "Enable" no nome — a heurística inicial pulava justamente os certos |
 
 O que **não** foi exercido contra o Portal: o rollback do `move-block` (só dispara em import que
 falha sob `--apply` — provocar isso pede um erro forçado no projeto) e o `scanErrors` do

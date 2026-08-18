@@ -2,11 +2,11 @@
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
 <!--   L12    TIA Portal Openness API — instruções do repo -->
 <!--   L26    Regras duras -->
-<!--   L58    Build / run (a partir da F1) -->
-<!--   L278   Antes de escrever programa de PLC: `--study` -->
-<!--   L300   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
-<!--   L332   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
-<!--   L380   Economia de tokens -->
+<!--   L59    Build / run (a partir da F1) -->
+<!--   L279   Antes de escrever programa de PLC: `--study` -->
+<!--   L301   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
+<!--   L333   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
+<!--   L381   Economia de tokens -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # TIA Portal Openness API — instruções do repo

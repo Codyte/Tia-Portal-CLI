@@ -8,7 +8,7 @@
 - **clone-hw.ps1** (28 ln)
 - **compose-db.ps1** (44 ln)
 - **gen-verbs.ps1** (49 ln)
-- **init.ps1** (274 ln)
+- **init.ps1** (276 ln)
   <sub>L52:Get-ExeHash  L57:Test-Whitelisted  L69:Resolve-RealPath  L91:Test-SkillInstalled  L97:Test-TasksCurrent  L126:Show</sub>
 - **install-lib.ps1** (205 ln)
   <sub>L53:Get-Target  L69:Add-Package  L79:Get-Existing</sub>

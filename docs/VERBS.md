@@ -1,3 +1,20 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L18    Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao) -->
+<!--   L22    session -->
+<!--   L28    read -->
+<!--   L57    structure -->
+<!--   L67    hardware -->
+<!--   L83    write -->
+<!--   L110   library -->
+<!--   L118   multiuser -->
+<!--   L121   bulk -->
+<!--   L126   batch -->
+<!--   L129   sim -->
+<!--   L133   meta -->
+<!--   L136   notas -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao)
 
 `tia <verb> [--plc NAME] [--portal PROJETO|PID] [--apply]  (--portal obrigatório se houver mais de um TIA Portal aberto)`

@@ -18,8 +18,8 @@ description: >-
 <!--   L79    3. Chamar -->
 <!--   L91    4. Antes de escrever código: estude -->
 <!--   L118   5. Invariantes (ignorar custa sessão) -->
-<!--   L172   6. Orçamento de contexto (o CLI devolve volume que estoura sessão) -->
-<!--   L182   7. Referência (ler no repo, não deduzir) -->
+<!--   L173   6. Orçamento de contexto (o CLI devolve volume que estoura sessão) -->
+<!--   L183   7. Referência (ler no repo, não deduzir) -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # tia — CLI do TIA Portal Openness

@@ -2,7 +2,7 @@
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
 <!--   L8     Changelog -->
 <!--   L15    [Unreleased] -->
-<!--   L155   [1.0.0] — 2026-08-11 -->
+<!--   L188   [1.0.0] — 2026-08-11 -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Changelog

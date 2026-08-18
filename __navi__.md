@@ -1,13 +1,13 @@
-# __navi__ · repo tree — 105 files in 10 folders
+# __navi__ · repo tree — 106 files in 10 folders
 <!-- navindex · 2026-08-18 · DO NOT EDIT BY HAND; regen via navindex skill -->
 
 Universal index: every folder below -> filenames; Markdown adds only its in-file NAV range. A `→ __navi__.md` marker means that folder has a detailed code map — open `<that path>/__navi__.md` for exact symbol lines.
 
 ## `./` (7 files) → __navi__.md
-CHANGELOG.md(215; NAV L1-L6)  CLAUDE.md(384; NAV L1-L10)  CONTRIBUTING.md(61)  LICENSE(21)  README.md(294)  SECURITY.md(60)  SKILL.md(195; NAV L13-L23)
+CHANGELOG.md(248; NAV L1-L6)  CLAUDE.md(385; NAV L1-L10)  CONTRIBUTING.md(61)  LICENSE(21)  README.md(294)  SECURITY.md(60)  SKILL.md(196; NAV L13-L23)
 
 ## `docs/` (11 files) → __navi__.md
-AUDITORIA-COMPLETA-2026-08-18.md(581; NAV L1-L26)  BENCHMARKS.md(125; NAV L1-L9)  BOAS-PRATICAS.md(183; NAV L1-L7)  DIARIO.md(832; NAV L1-L11)  GUIA-SIEMENS.md(81; NAV L1-L8)  LIMITES.md(79; NAV L1-L9)  PADRAO.md(213; NAV L1-L11)  PLANO.md(953; NAV L1-L24)  VERBS.md(138; NAV L1-L16)  projeto-real-fase-A.md(85; NAV L1-L8)  study-map.json(316)
+AUDITORIA-COMPLETA-2026-08-18.md(619; NAV L1-L27)  BENCHMARKS.md(125; NAV L1-L9)  BOAS-PRATICAS.md(183; NAV L1-L7)  DIARIO.md(832; NAV L1-L11)  GUIA-SIEMENS.md(81; NAV L1-L8)  LIMITES.md(79; NAV L1-L9)  PADRAO.md(213; NAV L1-L11)  PLANO.md(1009; NAV L1-L25)  VERBS.md(138; NAV L1-L16)  projeto-real-fase-A.md(85; NAV L1-L8)  study-map.json(316)
 
 ## `docs/examples/` (9 files)
 batch.json(6)  gen-all.json(8)  install-full.json(11)  profinet.json(10)  replicate-fc-soprador.json(9)  replicate-fc.json(8)  replicate-instruments.json(9)  replicate-soprador-run.json(8)  sim-smoke.json(10)
@@ -22,13 +22,13 @@ README.md(150)  export-all.json(68)  generic.json(558)  library.json(561)  packa
 README.md(51)  bake.json(13)  core.json(11)
 
 ## `scripts/` (20 files) → __navi__.md
-_common.ps1(121)  bake-lib.ps1(96)  clone-hw.ps1(28)  compose-db.ps1(44)  gen-verbs.ps1(49)  init.ps1(274)  install-lib.ps1(205)  new-plc.ps1(42)  pack.ps1(91)  prep-project.ps1(18)  raio-x.ps1(68)  rebuild.ps1(145)  setup-tasks.ps1(83)  sim-host.ps1(140)  smokeloop.ps1(52)  taskrun.ps1(67)  tia-help.py(475)  tia.ps1(8)  use-project.ps1(27)  whitelist.ps1(33)
+_common.ps1(121)  bake-lib.ps1(96)  clone-hw.ps1(28)  compose-db.ps1(44)  gen-verbs.ps1(49)  init.ps1(276)  install-lib.ps1(205)  new-plc.ps1(42)  pack.ps1(91)  prep-project.ps1(18)  raio-x.ps1(68)  rebuild.ps1(145)  setup-tasks.ps1(83)  sim-host.ps1(140)  smokeloop.ps1(52)  taskrun.ps1(67)  tia-help.py(475)  tia.ps1(8)  use-project.ps1(27)  whitelist.ps1(33)
 
-## `src/Tia.Cli/` (1 files) → __navi__.md
-Program.cs(1334)
+## `src/Tia.Cli/` (2 files) → __navi__.md
+ConfigJson.cs(48)  Program.cs(1382)
 
 ## `src/Tia.Core/` (28 files) → __navi__.md
-AlarmFc.cs(750)  AssemblyInfo.cs(3)  Audit.cs(456)  BlockEdit.cs(517)  BlockExplain.cs(381)  BlockInterface.cs(140)  Clone.cs(233)  DbMember.cs(389)  Doctor.cs(183)  Drives.cs(234)  FaultOb.cs(360)  Hardware.cs(820)  Hmi.cs(476)  InstrumentFc.cs(721)  Inventory.cs(576)  LadConverter.cs(530)  Library.cs(372)  Memory.cs(113)  Motion.cs(86)  Multiuser.cs(98)  Ops.cs(1337)  Profinet.cs(166)  Replicate.cs(585)  Scaffold.cs(350)  ScreenItems.cs(677)  Sim.cs(549)  Standardize.cs(654)  TiaSession.cs(231)
+AlarmFc.cs(750)  AssemblyInfo.cs(3)  Audit.cs(456)  BlockEdit.cs(517)  BlockExplain.cs(381)  BlockInterface.cs(140)  Clone.cs(233)  DbMember.cs(389)  Doctor.cs(183)  Drives.cs(234)  FaultOb.cs(360)  Hardware.cs(896)  Hmi.cs(476)  InstrumentFc.cs(721)  Inventory.cs(576)  LadConverter.cs(530)  Library.cs(372)  Memory.cs(113)  Motion.cs(86)  Multiuser.cs(98)  Ops.cs(1356)  Profinet.cs(166)  Replicate.cs(585)  Scaffold.cs(350)  ScreenItems.cs(677)  Sim.cs(601)  Standardize.cs(654)  TiaSession.cs(231)
 
 ## `src/Tia.Tests/` (1 files) → __navi__.md
 Program.cs(1147)

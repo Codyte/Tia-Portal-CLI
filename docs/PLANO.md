@@ -980,3 +980,30 @@ reproduzível, redaction/TTL de telemetria, matriz de locale, separação "core 
 Agenda de produto com equipe e usuários externos; aqui compra risco de regressão sem comprar nada.
 DOC-16 (navindex sem C#) morreu sozinho: o gerador já indexa `.cs` e, desde 2026-08-18, também os
 títulos de Markdown.
+
+**Provado vivo no projeto-molde (2026-08-18, V21, projeto aberto)** — cada guard exercido contra o
+projeto real, não só em teste offline:
+
+| O que | Prova |
+|---|---|
+| Opção desconhecida (SAFE-04) | `gen-alarm-fc --ara AREA --apply` → `Unknown option '--ara'. Did you mean --area?`, exit 2, sem attach |
+| `--timeout` + `--apply` (SAFE-03) | recusado antes de qualquer chamada, exit 2 |
+| Exit code do batch (API-02) | 3 steps, 1 falho → `failed: 1` e **exit 1** |
+| Config estrita (API-09) | chave `IncludeFoldres` → `Could not find member`, exit 2; `_comment` continua aceito |
+| `audit` tri-state (SAFE-11) | `ok: true`, `complete: true`, `skippedChecks: []`, scanned 106/530/53/208 |
+| `list-io-map` (SAFE-12) | `unreadableDrives: 0`, `nextFreeByteExact: false` por 135 `unassigned` |
+| Item ambíguo (SAFE-13) | `--item Port_1` na estação da CPU → recusado listando `CPU1.0 CCO/PROFINET interface_1/Port_1` e `…interface_2/Port_1` |
+| Interface ambígua (SAFE-14) | `set-address --device IHM_1.1` → recusado (PROFINET + MPI/DP); com `--item "IHM_1.1.MPI/DP_CP_1"` passa e devolve `interface` |
+| Guard do `sim-run` (SAFE-01) | `--pc-interface "PN/IE"` → recusado antes do attach, exit 2 |
+| Validação de steps (API-10) | `wait 999999999` e op `frobnicate` → recusados antes do download, exit 2 |
+| Mutex do exe (SAFE-07) | 6/6 pares de chamadas simultâneas com a segunda recusada |
+
+O que **não** foi exercido contra o Portal: o rollback do `move-block` (só dispara em import que
+falha sob `--apply` — provocar isso pede um erro forçado no projeto) e o `scanErrors` do
+`list-io-map` (nenhum drive ilegível neste projeto). O dry-run do `move-block` continua igual.
+
+Tropeço da rodada: o primeiro `open-project` morreu em `EngineeringSecurityException` +
+`The operation has timed out` depois de 600 s, com o Portal em CPU 0 % — era o diálogo modal de
+autorização esperando clique, porque o hash do `tia.exe` mudou nos rebuilds do dia. Sintoma de
+diagnóstico: task `TiaSmokeRun` em `Running` **e** processo do Portal sem consumir CPU.
+

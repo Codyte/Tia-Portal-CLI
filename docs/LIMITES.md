@@ -1,3 +1,13 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L11    LIMITES — o que Openness e PLCSIM não fazem, e qual é a saída -->
+<!--   L28    Online e runtime -->
+<!--   L38    Simulação -->
+<!--   L48    Objetos do projeto -->
+<!--   L60    HMI -->
+<!--   L75    Como acrescentar aqui -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # LIMITES — o que Openness e PLCSIM não fazem, e qual é a saída
 
 Este arquivo existe para o agente **orientar em vez de sondar**. Cada limite abaixo custou tempo de

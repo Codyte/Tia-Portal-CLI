@@ -1,3 +1,28 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L26    PLANO — TIA Portal Openness API (V19+) -->
+<!--   L31    Objetivo -->
+<!--   L37    Decisões travadas (mudar só com motivo forte) -->
+<!--   L51    Delimitações — o que a API NÃO é -->
+<!--   L58    Arquitetura -->
+<!--   L81    Fases -->
+<!--   L103   Verificação (cada fase) -->
+<!--   L111   Economia de tokens (regras da sessão) -->
+<!--   L123   Skills em uso (nada novo pra instalar) -->
+<!--   L134   Ambiente (descoberto na F1) -->
+<!--   L162   Backlog v2 (cobertura Openness — priorizado) -->
+<!--   L265   Projeto de referência (2026-07-27) -->
+<!--   L271   Fronteira da engine — F7 itens 3-5 decididos (2026-08-07) -->
+<!--   L298   D8 fechada — sem superfície online, e não é adiamento (2026-08-07) -->
+<!--   L317   Pendências / decisões futuras -->
+<!--   L358   F11 — IHM (em andamento, 2026-08-17) -->
+<!--   L443   F13 — objetos de dentro da tela ✅ (2026-08-17) -->
+<!--   L594   F14 — área nova ponta a ponta ✅ (2026-08-18) -->
+<!--   L643   F12 — `sim-diag` camada 1 ✅ (2026-08-17) -->
+<!--   L672   Teste cego ponta a ponta — caderno escrito (2026-08-07) -->
+<!--   L941   Histórico fechado -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # PLANO — TIA Portal Openness API (V19+)
 
 > Fonte de verdade do projeto. Toda sessão começa lendo este arquivo + `__navi__.md`.

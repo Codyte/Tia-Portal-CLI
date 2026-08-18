@@ -1,3 +1,20 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L18    Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao) -->
+<!--   L22    session -->
+<!--   L28    read -->
+<!--   L57    structure -->
+<!--   L67    hardware -->
+<!--   L83    write -->
+<!--   L110   library -->
+<!--   L118   multiuser -->
+<!--   L121   bulk -->
+<!--   L126   batch -->
+<!--   L129   sim -->
+<!--   L133   meta -->
+<!--   L136   notas -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao)
 
 `tia <verb> [--plc NAME] [--portal PROJETO|PID] [--apply]  (--portal obrigatório se houver mais de um TIA Portal aberto)`
@@ -110,7 +127,7 @@
 - `run --script ops.json [--summary]  (JSON array de arg-arrays, uma sessão só; step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou. --summary = só {steps,failed,ms,slowest[3],errors[]}, sem o resultado de cada step. Todo step traz `ms`, e o batch traz o total — é a medida de onde foi o tempo. --plc/--out-file do processo NÃO descem pros steps: cada step carrega os seus. Exige projeto JÁ aberto: o attach é 1x, antes do 1º step, então open-project/create-project (e list-server-projects, que roda sem projeto) não podem ser step — chamar antes, sozinhos)`
 
 ## sim
-- `sim-run [--plc X] [--instance plc_1500_1] [--pc-interface PLCSIM] [--script sim.json] [--no-download] [--apply]  (PLC virtual do S7-PLCSIM Advanced: attach na instância ligada por 'pwsh scripts/sim-host.ps1 -Start' (ou pelo control panel), baixa o programa do projeto por Openness, roda os passos. Exige o PLCSIM CLÁSSICO FECHADO — ele toma o mesmo canal. --no-download pula o download e roda os passos no programa que já está na instância (o download é ~80% do tempo). Passos do script: ["write","tag","valor"], ["read","tag"], ["wait","ms"], ["run"], ["stop"], ["state"], ["tags","filtro"]; tag de DB vai com as aspas do Portal. Dry-run lista as instâncias registradas e as interfaces de PC do download)`
+- `sim-run [--plc X] [--instance plc_1500_1] [--pc-interface PLCSIM] [--script sim.json] [--no-download] [--apply]  (PLC virtual do S7-PLCSIM Advanced: attach na instância ligada por 'pwsh scripts/sim-host.ps1 -Start' (ou pelo control panel), baixa o programa do projeto por Openness, roda os passos. Exige o PLCSIM CLÁSSICO FECHADO — ele toma o mesmo canal. So baixa em access point PLCSIM: nome fora disso e recusado antes do download (--allow-physical libera; nunca ha download em CPU real). --no-download pula o download e roda os passos no programa que já está na instância (o download é ~80% do tempo). Passos do script: ["write","tag","valor"], ["read","tag"], ["wait","ms"], ["run"], ["stop"], ["state"], ["tags","filtro"]; tag de DB vai com as aspas do Portal. Dry-run lista as instâncias registradas e as interfaces de PC do download)`
 - `sim-diag [--instance plc_1500_1] [--watch SEG]  (retrato da instância do PLCSIM Advanced: estado, modo, CPU, IP, licença, monitoração de ciclo, tag list. NÃO precisa de TIA Portal aberto nem de projeto — a API do PLCSIM é independente do Openness. --watch SEG assina os eventos e devolve o que MUDOU na janela (LED, estado operacional, falha de rack/estação); LED não tem getter na API, só evento, então sem --watch não há estado de LED)`
 
 ## meta

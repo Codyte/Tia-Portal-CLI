@@ -1,3 +1,17 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L15    Automação do Filtro Prensa FP-01 — Sala de Desidratação -->
+<!--   L26    1. Descrição do processo -->
+<!--   L37    2. Equipamentos -->
+<!--   L51    3. Hardware de controle -->
+<!--   L60    4. Lista de I/O -->
+<!--   L107   5. Modos de operação -->
+<!--   L119   6. Sequência automática -->
+<!--   L139   7. Intertravamentos -->
+<!--   L152   8. Alarmes -->
+<!--   L172   9. Entregável -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Automação do Filtro Prensa FP-01 — Sala de Desidratação
 
 **Cliente:** ETE Rio Claro (fictícia) · **Obra:** reforma da sala de desidratação de lodo

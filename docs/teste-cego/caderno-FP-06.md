@@ -1,3 +1,15 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L13    Adendo de projeto — Elevatória Final de Efluente Tratado, `EFE-01` -->
+<!--   L25    1. Por que o adendo -->
+<!--   L42    2. Equipamento novo -->
+<!--   L61    3. I/O -->
+<!--   L76    4. Como a área tem que funcionar -->
+<!--   L101   5. Alarmes da área -->
+<!--   L110   6. Padronização pedida pelo cliente -->
+<!--   L125   7. Entrega -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Adendo de projeto — Elevatória Final de Efluente Tratado, `EFE-01`
 
 **Cliente:** SAAE Vila Nova (fictícia) · **Obra:** EEB-02, adendo à revisão 3

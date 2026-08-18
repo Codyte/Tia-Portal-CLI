@@ -1,3 +1,14 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L12    Teste cego FP-03 — agitador `AG-05` do tanque de equalização -->
+<!--   L30    1. O que foi entregue -->
+<!--   L75    2. Como cada item do caderno foi atendido -->
+<!--   L90    3. Premissas (o caderno não dizia, e a decisão foi minha) -->
+<!--   L113   4. O check que reprova, e por quê -->
+<!--   L121   5. O que a CLI atrapalhou (resultado do teste) -->
+<!--   L199   6. Fila de correção que este teste sugere -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Teste cego FP-03 — agitador `AG-05` do tanque de equalização
 
 Execução do caderno [`caderno-FP-03.md`](caderno-FP-03.md) sem consultar as sessões anteriores

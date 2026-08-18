@@ -1,3 +1,13 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L11    Resultado do teste cego FP-02 — 2026-08-10 -->
+<!--   L24    Entregue -->
+<!--   L38    Verbos exercitados -->
+<!--   L50    Defeitos desta sessão -->
+<!--   L130   O que a rodada ensinou sobre os geradores -->
+<!--   L138   Aberto -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Resultado do teste cego FP-02 — 2026-08-10
 
 Entrega do item 11 do [`caderno-FP-02.md`](caderno-FP-02.md): elevatória de esgoto bruto +

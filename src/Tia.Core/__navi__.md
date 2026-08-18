@@ -1,12 +1,12 @@
-# __navi__ · `src/Tia.Core/` — 28 files → symbols at exact line numbers
+# __navi__ · `src/Tia.Core/` — 28 files → code symbols / text NAV ranges
 <!-- navindex · 2026-08-18 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../../__navi__.md`](../../__navi__.md)
 
 - **AlarmFc.cs** (750 ln)
   <sub>L59:class AlarmFcConfig  L61:.TargetRootFolder  L62:.TemplateFc  L63:.TemplateFolder  L64:.ObTemplate  L65:.GlobalDb  L66:.AlarmTagsFolder  L67:.StartTagsFolder  L68:.MasterFb  L69:.CallObName  L70:.CallObNumber  L71:.IgnoreFolders  L78:.IncludeFolders  L80:.Structs  L91:class AlarmFc  L101:class TagRef  L107:.Generate  L340:FC XML  L342:.BuildFcXml  L379:.RewireWordNetwork  L488:call OB  L490:.BuildCallObXml  L540:global DB comments  L542:.WriteDbComments …</sub>
 - **AssemblyInfo.cs** (3 ln)
-- **Audit.cs** (449 ln)
-  <sub>L49:class Audit  L75:.HasInverter  L82:.MissingCore  L90:.TagOf  L97:.CarriesTag  L104:.NormalizeArea  L120:.IsCallBlock  L130:.IsLooseScalar  L141:.RootMembers  L152:.Run  L250:.NonGraphicCalls  L270:.MisplacedCalls  L296:.DbGlobalCheck  L316:.FindGlobalDb  L330:.Skipped  L339:.CountTypes  L344:.CollectLanguages  L357:.LayerLeaks  L383:.IsLibrary  L390:.AreaConflicts  L417:.Check  L433:.CollectBlocks  L441:.CollectTables</sub>
+- **Audit.cs** (456 ln)
+  <sub>L49:class Audit  L75:.HasInverter  L82:.MissingCore  L90:.TagOf  L97:.CarriesTag  L104:.NormalizeArea  L120:.IsCallBlock  L130:.IsLooseScalar  L141:.RootMembers  L152:.Run  L257:.NonGraphicCalls  L277:.MisplacedCalls  L303:.DbGlobalCheck  L323:.FindGlobalDb  L337:.Skipped  L346:.CountTypes  L351:.CollectLanguages  L364:.LayerLeaks  L390:.IsLibrary  L397:.AreaConflicts  L424:.Check  L440:.CollectBlocks  L448:.CollectTables</sub>
 - **BlockEdit.cs** (517 ln)
   <sub>L60:class BlockEdit  L78:delete-network  L84:.DeleteNetwork  L100:add-call  L113:.AddCall  L198:set-retain  L206:.SetRetain  L228:coreografia  L234:.Patch  L261:núcleo puro (sem Openness: testável offline)  L263:class CallSpec  L276:.StripTypePrefix  L281:.CountNetworks  L287:.RemoveNetworkFromXml  L307:.InsertCallInXml  L392:.SetRetainInXml  L400:.RetainOf  L406:.FindMember  L424:helpers de FlgNet  L426:.ParseParams  L439:.Access  L469:.Wire  L478:.Text  L493:.NextId …</sub>
 - **BlockExplain.cs** (381 ln)
@@ -38,7 +38,7 @@
 - **Memory.cs** (113 ln)
   <sub>L20:class Memory  L22:.FreeM  L47:.Occupied  L64:.Width  L85:.Gaps  L104:.CollectTags</sub>
 - **Motion.cs** (86 ln)
-  <sub>L18:class Motion  L22:.List  L34:.Collect  L58:.Parameters  L71:.Safe</sub>
+  <sub>L27:class Motion  L31:.List  L43:.Collect  L67:.Parameters  L80:.Safe</sub>
 - **Multiuser.cs** (98 ln)
   <sub>L14:class Multiuser  L21:.ListServerProjects  L54:.ResolveServer  L69:.Describe</sub>
 - **Ops.cs** (1337 ln)
@@ -51,10 +51,9 @@
   <sub>L51:class ScaffoldManifest  L54:.Source  L57:.Folders  L60:.TagFolders  L63:.Replace  L70:.Cpu  L72:.Items  L75:class ScaffoldItem  L77:.File  L80:.Folder  L84:class ScaffoldPlanItem  L97:class Scaffold  L100:.Rank  L114:.Plan  L145:.Merge  L155:.Apply  L164:.Run  L238:.CheckFamily  L252:.SameFamily  L259:.AlreadyInAnotherFolder  L267:.DeleteObject  L278:.FolderAction  L301:.ResolveBlockPath  L318:.ResolveTypePath …</sub>
 - **ScreenItems.cs** (677 ln)
   <sub>L64:class ScreenItems  L66:class Item  L77:núcleo puro (sem Openness, testável offline)  L80:.Parse  L108:.Groups  L138:.Patch  L166:case "x"  L167:case "y"  L168:case "w"  L169:case "h"  L185:.Remove  L212:.Rename  L250:.RenameFromTag  L299:.Group  L359:.CopyInto  L424:verbos  L427:.List  L460:.Audit  L514:.Set  L552:.Copy  L577:utilidades  L580:.ScreenElements  L590:.GroupOf  L596:.NameOf …</sub>
-- **Sim.cs** (529 ln)
-  <sub>L68:class Sim  L76:.Run  L200:.Diag  L263:.Watch  L308:.Try  L314:.RegisteredInstances  L324:.WaitReady  L341:.Execute  L351:case "write"  L355:case "read"  L359:case "wait"  L363:case "run"  L367:case "stop"  L371:case "state"  L374:case "tags"  L402:.Write  L426:.ParseBool  L434:.Plain  L455:class Target  L466:.FindTarget  L478:.Interfaces  L492:.DeviceItemOf  L519:.Resolve</sub>
+- **Sim.cs** (549 ln)
+  <sub>L68:class Sim  L76:.Run  L220:.Diag  L283:.Watch  L328:.Try  L334:.RegisteredInstances  L344:.WaitReady  L361:.Execute  L371:case "write"  L375:case "read"  L379:case "wait"  L383:case "run"  L387:case "stop"  L391:case "state"  L394:case "tags"  L422:.Write  L446:.ParseBool  L454:.Plain  L475:class Target  L486:.FindTarget  L498:.Interfaces  L512:.DeviceItemOf  L539:.Resolve</sub>
 - **Standardize.cs** (654 ln)
   <sub>L59:class StandardizeConfig  L61:.RootFolder  L64:.MemorySets  L72:.SetMapping  L83:.PrefixMappings  L102:.CommentMappings  L167:.AlarmOrder  L173:class PrefixMapping  L175:.Keyword  L176:.Prefix  L179:class TagTemplate  L186:class NaturalStringComparer  L188:.Compare  L215:class AlarmTagComparer  L220:.AlarmTagComparer  L225:.Compare  L233:.Key  L244:class AddressAllocator  L248:.CurrentByte  L249:.CurrentBit  L251:.AddressAllocator  L257:.Next  L283:class MemoryManager  L287:.MemoryManager …</sub>
 - **TiaSession.cs** (231 ln)
   <sub>L12:class TiaSession  L14:.Portal  L15:.Project  L17:.TiaSession  L24:.PortalFilter  L30:.PickProcess  L61:.Describe  L67:.Attach  L82:lifecycle (open/save/close)  L89:.OpenProject  L119:.CreateProject  L145:.LocalProject  L154:.Save  L161:.CloseProject  L171:.AllDevices  L180:.CollectDevices  L188:.ExclusiveAccess  L194:.Plcs  L206:.GetPlc  L226:.Dispose</sub>
-

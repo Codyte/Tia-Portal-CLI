@@ -13,7 +13,7 @@ who prefer a terminal over ClickOps.*
 [![ci](https://github.com/Codyte/Tia-Portal-CLI/actions/workflows/ci.yml/badge.svg)](https://github.com/Codyte/Tia-Portal-CLI/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![.NET Framework 4.8](https://img.shields.io/badge/.NET-Framework%204.8-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
-[![TIA Portal V19+](https://img.shields.io/badge/TIA%20Portal-V19%20%7C%20V20%20%7C%20V21-009999)](https://www.siemens.com/tia-portal)
+[![TIA Portal V21](https://img.shields.io/badge/TIA%20Portal-V21-009999)](https://www.siemens.com/tia-portal)
 [![Platform](https://img.shields.io/badge/platform-Windows%20x64-0078D6?logo=windows)](#requirements)
 [![Dry--run first](https://img.shields.io/badge/writes-dry--run%20by%20default-orange)](#design-contract)
 
@@ -208,10 +208,16 @@ checks and lib/ copy).
 <details>
 <summary><b>Requirements</b></summary>
 
-- Windows, TIA Portal with Openness installed. **Developed and exercised against V21 only.** The
-  API surface used is present since V19 and `init.ps1` discovers V19/V20/V21 installs, but neither
-  has been run end-to-end — treat V19/V20 as unverified, not as a promise. One verb is known to
-  need newer: `set-tag --rename` requires Openness V20+.
+- Windows, **TIA Portal V21** with Openness installed. V21 is the only supported version: the
+  build references the split assemblies (`Siemens.Engineering.Base/Step7/WinCCUnified`) that V21
+  introduced, so it does not even compile against the monolithic `Siemens.Engineering.dll` that
+  V19/V20 ship. The runtime resolver still probes V20/V19 install paths, but that is a leftover,
+  not a supported path — building for an older major needs conditional references and has never
+  been done. `set-tag --rename` additionally requires Openness V20+.
+- **To build from source**, S7-PLCSIM Advanced must be installed as well: `Sim.cs` compiles against
+  its API. Running a release zip does **not** need it — the DLL is never distributed, and the exe
+  resolves it from `Common Files\Siemens\PLCSIMADV\API` when a `sim-*` verb is called. Without
+  PLCSIM installed, only those verbs fail.
 - .NET Framework 4.8 (ships with Windows) to run. The .NET SDK 8 is needed **only to build from
   source** — the release zip carries a compiled `tia.exe`. Target is `net48` x64.
 - `Siemens.Engineering.dll` is **not** in this repo (Siemens license). At build time a local

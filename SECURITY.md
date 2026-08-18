@@ -2,17 +2,32 @@
 
 ## Scope
 
-`tia-cli` drives an engineering tool, not a plant. It is **offline by design**: it never goes
-online, never downloads to a PLC, and never performs a Multiuser check-in. The worst thing it can
-do is modify a TIA Portal project file on the machine that runs it.
+`tia-cli` drives an engineering tool, not a plant. The worst thing it can do by design is modify a
+TIA Portal project file on the machine that runs it. Three boundaries define the scope, and they
+are not the same boundary:
 
-What still matters here, and what a report should be about:
+- **Physical CPU: never.** No verb downloads to, goes online against, or writes to real hardware.
+- **Virtual CPU (S7-PLCSIM Advanced): yes, under `--apply`.** `sim-run` downloads the project
+  program to a powered-on PLCSIM Advanced instance and runs it. It refuses any PC interface whose
+  name is not a PLCSIM access point (`--allow-physical` is the explicit, documented opt-in for a
+  renamed PLCSIM access point — it is not a way to reach a physical CPU, and a path that makes it
+  one is a finding). To make the download possible, `sim-run` calls `GoOffline()` when the project
+  is online.
+- **Network: local and opt-in only.** `list-server-projects` connects to a TIA Project Server the
+  operator names (read-only inventory; `--http` drops TLS and exists for legacy servers only), and
+  `scripts/tia-help.py` talks to the TIA Portal Help Viewer on localhost. Nothing else leaves the
+  machine, and no project content is ever sent anywhere.
+
+What matters here, and what a report should be about:
 
 - A **write verb mutating a project without `--apply`** — the dry-run contract is the main safety
-  property of this tool.
+  property of this tool. Known exceptions, by design: `open-project`, `create-project`,
+  `save-project` and `close-project` are lifecycle verbs whose whole purpose is the effect, and
+  they act without `--apply`.
 - Anything that could **exfiltrate project content** (equipment names, tags, DB structure, IP
-  addresses) off the machine. This CLI makes no network calls; a change that introduces one is a
-  finding.
+  addresses) off the machine. Beyond the three network paths listed above, a change that adds one
+  is a finding.
+- Anything that lets `sim-run` reach **hardware that is not a PLCSIM Advanced instance**.
 - **Openness whitelist or scheduled-task handling** that could let another process run arbitrary
   code as the whitelisted `tia.exe`, or elevate through the `TiaWhitelist` / `TiaSmokeRun` tasks.
   Known boundary, so you can judge a finding against it: `TiaSmokeRun` and `TiaSimHost` run with

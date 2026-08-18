@@ -1,3 +1,16 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L14    Resultado — teste cego FP-06 (Elevatória Final, 5 bombas em inversor) -->
+<!--   L21    1. O que foi entregue -->
+<!--   L34    2. Portões -->
+<!--   L46    3. Armadilhas da seção 6 (B1–B4) -->
+<!--   L61    4. Inspeção -->
+<!--   L102   5. Tropeços medidos da ferramenta -->
+<!--   L116   6. Fila que sai desta rodada -->
+<!--   L133   6.1 Fila fechada (2026-08-13, mesma data) -->
+<!--   L152   7. Leitura da rodada -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Resultado — teste cego FP-06 (Elevatória Final, 5 bombas em inversor)
 
 Rodada de 2026-08-13, 13:30 → 14:19 (**49 min de relógio**), projeto

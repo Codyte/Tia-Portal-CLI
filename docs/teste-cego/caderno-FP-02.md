@@ -1,3 +1,19 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L17    Automação da Elevatória de Esgoto Bruto e do Tratamento Preliminar — EEB-02 -->
+<!--   L28    1. Descrição do processo -->
+<!--   L46    2. Equipamentos -->
+<!--   L68    3. Hardware de controle -->
+<!--   L84    4. Lista de I/O -->
+<!--   L159   5. Modos de operação -->
+<!--   L171   6. Operação da Área 1 — Elevatória -->
+<!--   L192   7. Operação da Área 2 — Preliminar -->
+<!--   L203   8. Diagnóstico de periferia -->
+<!--   L210   9. Intertravamentos -->
+<!--   L228   10. Alarmes -->
+<!--   L265   11. Entregável -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Automação da Elevatória de Esgoto Bruto e do Tratamento Preliminar — EEB-02
 
 **Cliente:** SAAE Vila Nova (fictícia) · **Obra:** ampliação da elevatória final e do preliminar

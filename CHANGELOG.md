@@ -1,3 +1,10 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L8     Changelog -->
+<!--   L15    [Unreleased] -->
+<!--   L155   [1.0.0] — 2026-08-11 -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Changelog
 
 All notable changes to this project are documented here.
@@ -30,6 +37,22 @@ deliberately dropped.
 
 ### Security
 
+- **`sim-run` refuses any PC interface that is not a PLCSIM access point.** `--pc-interface` matched
+  by substring and `FindTarget` took the first target under it, so a physical PN/IE interface was
+  reachable — against the "never download to real hardware" decision. The name is now checked before
+  the download *and* on the resolved target; `--allow-physical` is the explicit opt-in for a renamed
+  PLCSIM access point.
+- **Unknown options are rejected (exit 2) before the attach.** The parser read the options it knew
+  and ignored the rest, so `gen-alarm-fc --ara AREA --apply` silently lost its scope and regenerated
+  every area. Known options live in `Program.KnownOptions`, and the offline test `Cli.KnownOptions`
+  fails when a source literal is missing from it.
+- **`--timeout` is refused together with `--apply`.** A timed-out write is abandoned mid-call, with
+  no cancellation and no rollback, leaving the project in an unknown state.
+- **`SECURITY.md` now describes what the tool actually does.** It still claimed the CLI never goes
+  online, never downloads and makes no network calls, while `sim-run` (download + `GoOffline`),
+  Project Server and the local Help Viewer exist. The scope is now three explicit boundaries:
+  physical CPU never, virtual PLC under `--apply`, network local/opt-in only.
+
 - **The `TiaWhitelist` task no longer executes a script the user can rewrite.** It runs with the
   user's *elevated* token (`S4U` + `RunLevel Highest`) and is startable without a UAC prompt — by
   design, so a rebuild does not need a click. Its action pointed at `scripts/whitelist.ps1` inside
@@ -49,6 +72,22 @@ deliberately dropped.
   did.
 
 ### Fixed
+
+- **Exit code is honest for failures embedded in the result.** Verbs that caught an error into an
+  `error` field and returned normally (`sim-run` above all) exited 0, and the batch marked the step
+  `ok: true`. A top-level `error` is now exit 1 and counts in the batch's `failed`.
+- **The PLCSIM Advanced DLL no longer lands in `bin/`.** It was `Private=true`, so every build
+  copied it next to the exe and `pack.ps1` aborted on "Siemens.* in the package" — the next release
+  would either ship a Siemens DLL or not build. It is now resolved at runtime from
+  `Common Files\Siemens\PLCSIMADV\API` (or `TIA_PLCSIM_DIR`), like the Openness assemblies.
+- **`audit` says when a check could not run.** A skipped check still reports `ok: true` (it does not
+  fail the project), but the result now carries `complete` and `skippedChecks[]`, so `ok: true` with
+  `complete: false` reads as unproven instead of conformant.
+- **`init.ps1` no longer accepts V17/V18 as the TIA Portal gate.** Only V19+ counts; older installs
+  are listed separately as unsupported.
+- **`pack.ps1` fails on a dirty working tree** instead of warning. The zip copies the files on disk
+  under the names Git tracks, so a dirty tree published uncommitted changes stamped with a commit
+  that does not contain them.
 
 - **`Invoke-Tia` serialises with an atomic lock** instead of a `$task.State -eq 'Running'` test.
   The test was TOCTOU: two callers could both pass it, both write the fixed-name `cmd.json`, and

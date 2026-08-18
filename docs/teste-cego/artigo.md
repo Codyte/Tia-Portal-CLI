@@ -1,3 +1,16 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L14    Um agente escreveu um programa de PLC ponta a ponta — e o que interessa são os tropeços -->
+<!--   L22    O problema com a demo -->
+<!--   L33    A régua -->
+<!--   L68    As três rodadas -->
+<!--   L94    Os tropeços que viraram verbo -->
+<!--   L131   O padrão que as três rodadas desenharam -->
+<!--   L149   O que virou código -->
+<!--   L170   O que ainda não está provado -->
+<!--   L184   Reproduzir -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Um agente escreveu um programa de PLC ponta a ponta — e o que interessa são os tropeços
 
 Três rodadas de teste cego contra o TIA Portal: um caderno de obra entra, um projeto que compila

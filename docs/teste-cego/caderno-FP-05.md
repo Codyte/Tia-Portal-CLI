@@ -1,3 +1,15 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L13    Adendo de projeto — Recirculação de Lodo, Área 4 `Recirculação` -->
+<!--   L25    1. Por que o adendo -->
+<!--   L41    2. Equipamento novo -->
+<!--   L55    3. I/O -->
+<!--   L70    4. Como a área tem que funcionar -->
+<!--   L89    5. Alarmes da área -->
+<!--   L94    6. Padronização pedida pelo cliente -->
+<!--   L108   7. Entrega -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Adendo de projeto — Recirculação de Lodo, Área 4 `Recirculação`
 
 **Cliente:** SAAE Vila Nova (fictícia) · **Obra:** EEB-02, adendo à revisão 2

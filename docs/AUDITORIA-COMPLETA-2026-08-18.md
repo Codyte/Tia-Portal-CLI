@@ -1,3 +1,30 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L28    Auditoria técnica completa e mapa de discussão — tia-cli -->
+<!--   L42    1. Resumo executivo -->
+<!--   L77    2. Como ler os registros -->
+<!--   L114   3. Escopo e evidência coletada -->
+<!--   L152   4. Pontos fortes confirmados -->
+<!--   L172   5. Guardrails e segurança operacional -->
+<!--   L197   6. Contrato de sucesso, erros e JSON -->
+<!--   L220   7. Instalação, versões e carregamento de assemblies -->
+<!--   L245   8. Release, CI e cadeia de suprimentos -->
+<!--   L264   9. Cobertura de testes e lacunas funcionais -->
+<!--   L286   10. Arquitetura e manutenibilidade -->
+<!--   L305   11. Domínio PLC, Openness, HMI, drives e simulação -->
+<!--   L330   12. Desempenho, escala e contexto de IA -->
+<!--   L345   13. Documentação e experiência do desenvolvedor -->
+<!--   L366   14. Privacidade, segurança de software e aspectos legais -->
+<!--   L382   15. Produto e posicionamento -->
+<!--   L397   16. Perguntas abertas para discutir com outra IA -->
+<!--   L426   17. Plano de ação proposto -->
+<!--   L477   18. Backlog priorizado consolidado -->
+<!--   L520   19. Validação executada nesta auditoria -->
+<!--   L537   20. Estado local observado -->
+<!--   L547   21. Definição sugerida de “pronto para uso confiável” -->
+<!--   L563   22. Conclusão -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Auditoria técnica completa e mapa de discussão — tia-cli
 
 Data da auditoria: **2026-08-18**

@@ -1,3 +1,12 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L10    Banho de projeto real — Fase A/B (2026-07-18) -->
+<!--   L21    Achados (viram backlog) -->
+<!--   L51    Smokes v2 read-only (contra o projeto real, 2026-07-18) -->
+<!--   L61    Smokes v2 com mutação (no SmokeTest_01, 2026-07-18) -->
+<!--   L76    Status dry-runs -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Banho de projeto real — Fase A/B (2026-07-18)
 
 Projeto: `PROJETO-ASBUILT_V21` (cópia offline em `proj/`). PLC `CPU CCO`, 21 devices,

@@ -35,11 +35,12 @@
       <Private>false</Private>
     </Reference>
     <!-- S7-PLCSIM Advanced: PLC virtual. Não é do Openness (vem em Common Files\Siemens\PLCSIMADV\API),
-         então o resolver de runtime do Program.cs, que só procura Siemens.Engineering.*, não a acha —
-         esta copia junto do exe (Private=true). init.ps1 põe a DLL em lib/. -->
+         e o resolver de runtime do Program.cs a procura lá (PlcSimProbeDirs). Private=false por licença:
+         com Private=true a DLL ia pro bin e o pack abortava em "Siemens.* no pacote" (INST-09).
+         init.ps1 põe a DLL em lib/ só para o build referenciá-la. -->
     <Reference Include="Siemens.Simatic.Simulation.Runtime.Api.x64">
       <HintPath>..\..\lib\Siemens.Simatic.Simulation.Runtime.Api.x64.dll</HintPath>
-      <Private>true</Private>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
 

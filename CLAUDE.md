@@ -1,3 +1,14 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L12    TIA Portal Openness API — instruções do repo -->
+<!--   L26    Regras duras -->
+<!--   L58    Build / run (a partir da F1) -->
+<!--   L278   Antes de escrever programa de PLC: `--study` -->
+<!--   L300   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
+<!--   L332   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
+<!--   L380   Economia de tokens -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # TIA Portal Openness API — instruções do repo
 
 **Toda sessão: ler `docs/PLANO.md` (decisões + fase atual) e `__navi__.md` antes de qualquer coisa.**
@@ -21,6 +32,15 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
   SCL dentro de FB). Compilar não é o aceite — o aceite é `audit` + R1–R9.
 - `Scripts_Siemens/FINAIS/` = referência read-only. `Scripts_Siemens/OLD/` = não tocar.
 - Verbos de escrita: dry-run por padrão, `--apply` explícito.
+- **Opção desconhecida = exit 2 antes do attach (2026-08-18).** `--ara` por `--area` junto de
+  `--apply` rodava o gerador no projeto todo, porque o parser lê a opção que conhece e ignora o
+  resto. A lista fica em `Program.KnownOptions`; **opção nova exige entrada lá**, senão o teste
+  offline `Cli.KnownOptions` reprova (ele grepa os literais `"--x"` dos fontes).
+- **Erro no resultado agora é exit ≠ 0 (2026-08-18).** Verbo que embute a falha num campo `error` e
+  volta normal saía 0 e o batch marcava `ok: true` — falso sucesso. `error` de topo = exit 1, e o
+  step do batch conta como falha. Campo `error` de item, dentro de lista, continua parcial.
+- **`--timeout` é recusado com `--apply`.** O timeout abandona a chamada no meio (sem cancelamento
+  nem rollback): em leitura custa o resultado, em escrita deixa o projeto em estado desconhecido.
 - **Compile entre etapas: o CLI faz sozinho (2026-08-13).** Todo import deixa o alvo inconsistente e
   o Openness recusa exportar bloco inconsistente. Os **16 exports do repo** passam por
   `Ops.ExportFresh`, que compila **só o alvo** e segue — `clone`, `diff-block`, `explain-block`,
@@ -98,7 +118,9 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     `conflictsWith`, ou `free (pelo mapa)`). É conferência de leitura: `free` não é garantia, é
     ausência de conflito no que o mapa enxerga.
   - **`audit` são 10 checks** e o R2 **exporta a DB global** para `--out` (só o export mostra o
-    datatype dos membros) — não é 100% read-only. Check que não pode rodar devolve `skipped` com o
+    datatype dos membros) — não é 100% read-only. **`complete: false` + `skippedChecks[]`** dizem
+    que algum check não pôde rodar: `ok: true` com `complete: false` é conformidade **não provada**,
+    não projeto aprovado. Check que não pode rodar devolve `skipped` com o
     motivo e **não reprova**. `--db "DB GLOBAL"` nomeia a DB quando a heurística não acha.
     **`scanned`** (`folders`, `blocks`, `callBlocks`, `tagTables`) diz o tamanho da população — é
     como se distingue check conforme de check cego. No projeto-molde real: 96 / 475 / 46 / 195,

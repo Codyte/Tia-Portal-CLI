@@ -1,3 +1,16 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L14    Adendo de projeto — Aeração do Tanque Biológico, Área 3 `Sopradores/Aeração` -->
+<!--   L26    1. Por que o adendo -->
+<!--   L41    2. Equipamento novo -->
+<!--   L56    3. I/O -->
+<!--   L74    4. Operação -->
+<!--   L100   5. Proteções e alarmes -->
+<!--   L122   6. Registros exigidos -->
+<!--   L130   7. Aceite -->
+<!--   L143   Contexto de execução (não faz parte do caderno do cliente) -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Adendo de projeto — Aeração do Tanque Biológico, Área 3 `Sopradores/Aeração`
 
 **Cliente:** SAAE Vila Nova (fictícia) · **Obra:** EEB-02, adendo à revisão 1

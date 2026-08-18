@@ -1,3 +1,11 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L9     Boas práticas de construção de programa -->
+<!--   L18    1. Achados -->
+<!--   L128   2. Lei de construção -->
+<!--   L144   3. O que hoje impede cumprir (fila de correção) -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Boas práticas de construção de programa
 
 Auditoria do projeto `FP01` (rodada de 2026-08-07) contra o projeto-molde de

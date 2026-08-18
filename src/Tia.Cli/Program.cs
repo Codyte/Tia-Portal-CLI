@@ -1,112 +1,115 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L128   class Program
-//   L130   .Main
-//   L401   .ExitCodeFor
-//   L412   .RunLadderDryRun
-//   L422   .RunExplainFile
-//   L430   .RunInterfaceFile
-//   L444   .Run
-//   L560   .ParseScript
-//   L582   .DispatchWithRetry
-//   L596   .IsBusy
-//   L602   .Dispatch
-//   L612   case "save-project"
-//   L615   case "close-project"
-//   L618   case "info"
-//   L621   case "list-devices"
-//   L624   case "list-blocks"
-//   L628   case "list-tags"
-//   L631   case "tree"
-//   L635   case "list-types"
-//   L638   case "find"
-//   L642   case "snapshot"
-//   L645   case "xref"
-//   L648   case "trace"
-//   L651   case "list-hmi"
-//   L654   case "export-hmi-tags"
-//   L658   case "import-hmi-tags"
-//   L665   case "hmi-tree"
-//   L668   case "export-screen"
-//   L672   case "import-screen"
-//   L679   case "delete-screen"
-//   L684   case "list-screen-items"
-//   L689   case "audit-screen"
-//   L694   case "set-screen-items"
-//   L702   case "copy-screen-items"
-//   L710   case "list-motion"
-//   L714   case "free-memory"
-//   L720   case "export-block"
-//   L723   case "explain-block"
-//   L728   case "export-tags"
-//   L731   case "list-interface"
-//   L737   case "import-block"
-//   L744   case "import-ladder"
-//   L752   case "import-source"
-//   L757   case "create-folder"
-//   L762   case "delete-folder"
-//   L767   case "delete-block"
-//   L771   case "move-block"
-//   L776   case "delete-type"
-//   L780   case "export-type"
-//   L783   case "import-type"
-//   L787   case "scaffold"
-//   L796   case "clone"
-//   L803   case "add-call"
-//   L810   case "delete-network"
-//   L815   case "set-retain"
-//   L820   case "add-db-member"
-//   L826   case "import-tags"
-//   L833   case "retrieve-library"
-//   L838   case "create-library"
-//   L842   case "list-library"
-//   L845   case "import-master-copy"
-//   L851   case "add-master-copy"
-//   L857   case "create-instance-db"
-//   L862   case "delete-master-copy"
-//   L867   case "add-device"
-//   L872   case "delete-device"
-//   L876   case "add-tag"
-//   L882   case "delete-tag"
-//   L887   case "edit-db-member"
-//   L893   case "delete-db-member"
-//   L898   case "rename-block"
-//   L903   case "set-tag"
-//   L910   case "set-attr"
-//   L916   case "list-attrs"
-//   L920   case "plug-module"
-//   L926   case "list-telegrams"
-//   L929   case "insert-telegram"
-//   L936   case "set-address"
-//   L942   case "set-io-address"
-//   L948   case "list-io-map"
-//   L952   case "set-memory-bytes"
-//   L958   case "connect-subnet"
-//   L963   case "export-cax"
-//   L966   case "import-cax"
-//   L970   case "compile"
-//   L985   case "sim-run"
-//   L994   case "diff-block"
-//   L998   case "audit"
-//   L1003  case "doctor"
-//   L1011  case "gen-profinet"
-//   L1017  case "standardize-tags"
-//   L1025  case "gen-fault-ob"
-//   L1033  case "replicate-fc"
-//   L1044  case "gen-alarm-fc"
-//   L1054  case "replicate-instruments"
-//   L1067  .OptionValue
-//   L1073  .ParseInt
-//   L1079  .ParseByte
-//   L1086  .OptionValues
-//   L1095  .WriteLock
-//   L1100  .Require
-//   L1132  .Print
-//   L1148  .Sanitize
-//   L1155  .WriteOut
-//   L1174  .CountOf
-//   L1196  .ResolveSiemensAssembly
-//   L1207  .SiemensProbeDirs
+//   L131   class Program
+//   L133   .Main
+//   L416   .ExitCodeFor
+//   L427   .RunLadderDryRun
+//   L437   .RunExplainFile
+//   L445   .RunInterfaceFile
+//   L459   .Run
+//   L583   .ParseScript
+//   L605   .DispatchWithRetry
+//   L619   .IsBusy
+//   L625   .Dispatch
+//   L635   case "save-project"
+//   L638   case "close-project"
+//   L641   case "info"
+//   L644   case "list-devices"
+//   L647   case "list-blocks"
+//   L651   case "list-tags"
+//   L654   case "tree"
+//   L658   case "list-types"
+//   L661   case "find"
+//   L665   case "snapshot"
+//   L668   case "xref"
+//   L671   case "trace"
+//   L674   case "list-hmi"
+//   L677   case "export-hmi-tags"
+//   L681   case "import-hmi-tags"
+//   L688   case "hmi-tree"
+//   L691   case "export-screen"
+//   L695   case "import-screen"
+//   L702   case "delete-screen"
+//   L707   case "list-screen-items"
+//   L712   case "audit-screen"
+//   L717   case "set-screen-items"
+//   L725   case "copy-screen-items"
+//   L733   case "list-motion"
+//   L737   case "free-memory"
+//   L743   case "export-block"
+//   L746   case "explain-block"
+//   L751   case "export-tags"
+//   L754   case "list-interface"
+//   L760   case "import-block"
+//   L767   case "import-ladder"
+//   L775   case "import-source"
+//   L780   case "create-folder"
+//   L785   case "delete-folder"
+//   L790   case "delete-block"
+//   L794   case "move-block"
+//   L799   case "delete-type"
+//   L803   case "export-type"
+//   L806   case "import-type"
+//   L810   case "scaffold"
+//   L819   case "clone"
+//   L826   case "add-call"
+//   L833   case "delete-network"
+//   L838   case "set-retain"
+//   L843   case "add-db-member"
+//   L849   case "import-tags"
+//   L856   case "retrieve-library"
+//   L861   case "create-library"
+//   L865   case "list-library"
+//   L868   case "import-master-copy"
+//   L874   case "add-master-copy"
+//   L880   case "create-instance-db"
+//   L885   case "delete-master-copy"
+//   L890   case "add-device"
+//   L895   case "delete-device"
+//   L899   case "add-tag"
+//   L905   case "delete-tag"
+//   L910   case "edit-db-member"
+//   L916   case "delete-db-member"
+//   L921   case "rename-block"
+//   L926   case "set-tag"
+//   L933   case "set-attr"
+//   L939   case "list-attrs"
+//   L943   case "plug-module"
+//   L949   case "list-telegrams"
+//   L952   case "insert-telegram"
+//   L959   case "set-address"
+//   L965   case "set-io-address"
+//   L971   case "list-io-map"
+//   L975   case "set-memory-bytes"
+//   L981   case "connect-subnet"
+//   L986   case "export-cax"
+//   L989   case "import-cax"
+//   L993   case "compile"
+//   L1008  case "sim-run"
+//   L1017  case "diff-block"
+//   L1021  case "audit"
+//   L1026  case "doctor"
+//   L1034  case "gen-profinet"
+//   L1040  case "standardize-tags"
+//   L1048  case "gen-fault-ob"
+//   L1056  case "replicate-fc"
+//   L1067  case "gen-alarm-fc"
+//   L1077  case "replicate-instruments"
+//   L1119  .ValidateOptions
+//   L1149  .HasError
+//   L1156  .OptionValue
+//   L1162  .ParseInt
+//   L1168  .ParseByte
+//   L1175  .OptionValues
+//   L1184  .WriteLock
+//   L1189  .Require
+//   L1221  .Print
+//   L1237  .Sanitize
+//   L1244  .WriteOut
+//   L1263  .CountOf
+//   L1285  .ResolveSiemensAssembly
+//   L1304  .PlcSimProbeDirs
+//   L1318  .SiemensProbeDirs
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -131,6 +134,12 @@ namespace Tia.Cli
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             AppDomain.CurrentDomain.AssemblyResolve += ResolveSiemensAssembly;
+            try { ValidateOptions(args); }
+            catch (ArgumentException ex)
+            {
+                Print(new Dictionary<string, object> { { "error", ex.Message }, { "exitCode", 2 } });
+                return 2;
+            }
             _outFile = OptionValue(args, "--out-file"); // antes do --help: vale pra toda saída, inclusive ele
             _full = Array.IndexOf(args, "--full") >= 0;
             _verb = args.Length > 0 && !args[0].StartsWith("--") ? args[0] : "out";
@@ -336,7 +345,7 @@ namespace Tia.Cli
                         "[--script sim.json] [--no-download] [--apply]  (PLC virtual do S7-PLCSIM Advanced: attach " +
                         "na instância ligada por 'pwsh scripts/sim-host.ps1 -Start' (ou pelo control panel), baixa " +
                         "o programa do projeto por Openness, roda os passos. Exige o PLCSIM CLÁSSICO FECHADO — ele " +
-                        "toma o mesmo canal. --no-download pula o download e roda os passos no programa que já está " +
+                        "toma o mesmo canal. So baixa em access point PLCSIM: nome fora disso e recusado antes do download " + "(--allow-physical libera; nunca ha download em CPU real). --no-download pula o download e roda os passos no programa que já está " +
                         "na instância (o download é ~80% do tempo). Passos do script: " +
                         "[\"write\",\"tag\",\"valor\"], [\"read\",\"tag\"], [\"wait\",\"ms\"], [\"run\"], [\"stop\"], " +
                         "[\"state\"], [\"tags\",\"filtro\"]; tag de DB vai com as aspas do Portal. " +
@@ -370,6 +379,12 @@ namespace Tia.Cli
 
                 var timeout = OptionValue(args, "--timeout");
                 if (timeout == null) return Run(args);
+                // SAFE-03: o timeout abandona a chamada no meio (Task.Run + exit), sem cancelamento
+                // nem rollback. Em leitura isso só custa o resultado; em escrita deixa o projeto em
+                // estado desconhecido — import pela metade, bloco inconsistente.
+                if (args.Contains("--apply"))
+                    throw new ArgumentException("--timeout is not allowed with --apply: a timed-out write is "
+                        + "abandoned mid-call, with no cancellation or rollback. Run the write without --timeout.");
                 var task = System.Threading.Tasks.Task.Run(() => Run(args));
                 if (!task.Wait(TimeSpan.FromSeconds(int.Parse(timeout))))
                 {
@@ -449,32 +464,36 @@ namespace Tia.Cli
             // run before Attach: may start the portal themselves
             if (args[0] == "open-project")
             {
-                Print(Core.TiaSession.OpenProject(Require(args, "--file"), !args.Contains("--no-ui")));
-                return 0;
+                var opened = Core.TiaSession.OpenProject(Require(args, "--file"), !args.Contains("--no-ui"));
+                Print(opened);
+                return HasError(opened) ? 1 : 0;
             }
             if (args[0] == "create-project")
             {
-                Print(Core.TiaSession.CreateProject(Require(args, "--dir"), Require(args, "--name"),
-                    !args.Contains("--no-ui")));
-                return 0;
+                var created = Core.TiaSession.CreateProject(Require(args, "--dir"), Require(args, "--name"),
+                    !args.Contains("--no-ui"));
+                Print(created);
+                return HasError(created) ? 1 : 0;
             }
 
             // read-only no servidor: precisa de portal aberto, mas NÃO de projeto aberto
             if (args[0] == "list-server-projects")
             {
-                Print(Core.Multiuser.ListServerProjects(Require(args, "--server"),
+                var servers = Core.Multiuser.ListServerProjects(Require(args, "--server"),
                     int.Parse(OptionValue(args, "--port") ?? "0"),
-                    args.Contains("--http"), args.Contains("--keep-connection")));
-                return 0;
+                    args.Contains("--http"), args.Contains("--keep-connection"));
+                Print(servers);
+                return HasError(servers) ? 1 : 0;
             }
 
             // PLCSIM tem API própria, independente do Openness: diagnóstico da instância não precisa
             // de portal nem de projeto aberto — roda antes do attach e economiza os ~7 s dele.
             if (args[0] == "sim-diag")
             {
-                Print(Core.Sim.Diag(OptionValue(args, "--instance") ?? "plc_1500_1",
-                    int.Parse(OptionValue(args, "--watch") ?? "0")));
-                return 0;
+                var diag = Core.Sim.Diag(OptionValue(args, "--instance") ?? "plc_1500_1",
+                    int.Parse(OptionValue(args, "--watch") ?? "0"));
+                Print(diag);
+                return HasError(diag) ? 1 : 0;
             }
 
             // script malformado = erro de uso: falha antes do attach (não custa os ~7s nem exige portal)
@@ -503,7 +522,10 @@ namespace Tia.Cli
                             // e o resultado no batch fica sendo o stub (o do processo vale só p/ o batch todo)
                             var stepOut = OptionValue(step, "--out-file");
                             entry["result"] = stepOut == null ? value : WriteOut(value, stepOut);
-                            entry["ok"] = true;
+                            // erro embutido no resultado (o verbo voltou normal) também é falha do step:
+                            // sem isso o batch marcava ok:true e o exit ficava 0 — API-01/02/03
+                            entry["ok"] = !HasError(value);
+                            if (HasError(value)) { entry["error"] = ((IDictionary<string, object>)value)["error"]; failed++; }
                         }
                         catch (Exception ex)
                         {
@@ -547,8 +569,9 @@ namespace Tia.Cli
                               { "ms", batchClock.ElapsedMilliseconds }, { "results", results } });
                     return failed > 0 ? 1 : 0;
                 }
-                Print(DispatchWithRetry(session, args, args));
-                return 0;
+                var result = DispatchWithRetry(session, args, args);
+                Print(result);
+                return HasError(result) ? 1 : 0;
             }
         }
 
@@ -989,7 +1012,7 @@ namespace Tia.Cli
                             OptionValue(args, "--script") == null
                                 ? new List<string[]>()
                                 : ParseScript(OptionValue(args, "--script"), false),
-                            apply, args.Contains("--no-download"));
+                            apply, args.Contains("--no-download"), args.Contains("--allow-physical"));
                         break;
                     case "diff-block":
                         result = Core.Ops.DiffBlock(session.GetPlc(plcName),
@@ -1062,6 +1085,72 @@ namespace Tia.Cli
                 }
                 return result;
             }
+        }
+
+        /// <summary>
+        /// Toda opção que algum verbo lê. Fonte da verdade do SAFE-04: opção fora desta lista é typo,
+        /// e typo de escopo (`--ara` por `--area`) junto de `--apply` roda o gerador no projeto todo.
+        /// O teste `unknown-option-guard` compara esta lista com os literais `--x` dos fontes: opção
+        /// nova sem entrada aqui reprova offline, antes de chegar num projeto.
+        /// </summary>
+        private static readonly HashSet<string> KnownOptions = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "--address", "--after", "--allow-physical", "--apply", "--area", "--at", "--block", "--bytes",
+            "--change", "--clock", "--comment", "--config", "--count", "--db", "--device", "--dir",
+            "--drive-object", "--equipment", "--errors", "--fb", "--file", "--folder", "--force", "--from",
+            "--from-screen", "--full", "--group", "--help", "--http", "--index", "--inst", "--instance",
+            "--io", "--io-system", "--ip", "--item", "--keep-connection", "--kind", "--lib-folder", "--like",
+            "--manifest", "--mask", "--max", "--member", "--mlfb", "--name", "--no-download", "--no-ui",
+            "--number", "--of", "--off", "--out", "--out-file", "--param", "--params", "--path", "--pattern",
+            "--pc-interface", "--plc", "--pn-name", "--port", "--portal", "--pos", "--region", "--remove",
+            "--rename", "--rename-from-tag", "--replace", "--retry", "--save", "--screen", "--script",
+            "--server", "--set", "--start", "--station", "--subnet", "--summary", "--system", "--table",
+            "--tags", "--target-folder", "--template", "--timeout", "--title", "--to", "--type", "--types",
+            "--upgrade", "--value", "--verb", "--version", "--watch", "--with-instances",
+            "-h", "-v",
+        };
+
+        /// <summary>
+        /// SAFE-04: o parser lê a opção que conhece e ignora o resto, então `--ara X --apply` perdia o
+        /// escopo em silêncio. Aqui um token `--x` fora de <see cref="KnownOptions"/> é erro de uso
+        /// (exit 2) antes do attach — não custa portal nem toca no projeto. Valor de opção nunca é
+        /// examinado: só o token seguinte a um `--conhecido` é pulado.
+        /// </summary>
+        private static void ValidateOptions(string[] args)
+        {
+            for (int i = 0; i < args.Length; i++)
+            {
+                var token = args[i];
+                if (!token.StartsWith("-") || token == "-") continue;
+                if (!KnownOptions.Contains(token))
+                {
+                    // sugestão por prefixo: `--ara` → `--area`, `--aply` → `--apply`. Busca por
+                    // substring devolvia `--param` para `--ara`, que não ajuda ninguém.
+                    var stem = token.TrimStart('-');
+                    var near = KnownOptions
+                        .Where(k => stem.Length >= 2 && k.TrimStart('-').StartsWith(stem.Substring(0, 2),
+                            StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(k => Math.Abs(k.Length - token.Length)).Take(3).ToList();
+                    throw new ArgumentException("Unknown option '" + token + "'."
+                        + (near.Count > 0 ? " Did you mean " + string.Join(", ", near) + "?" : "")
+                        + " Run tia --help.");
+                }
+                // pula o valor da opção, que não é validado — mas só quando ele não parece outra
+                // opção: senão `--apply --ara X` engoliria justo o typo que este guard existe p/ pegar
+                if (i + 1 < args.Length && !args[i + 1].StartsWith("--")) i++;
+            }
+        }
+
+        /// <summary>
+        /// API-01/02/03: verbo que embute a falha num campo `error` do resultado e volta normalmente
+        /// fazia o processo sair 0 e o batch marcar o step `ok:true` — falso sucesso. Erro de topo
+        /// vira exit 1; campos `error` de item (dentro de listas) continuam sendo diagnóstico parcial.
+        /// </summary>
+        private static bool HasError(object result)
+        {
+            var dict = result as IDictionary<string, object>;
+            object error;
+            return dict != null && dict.TryGetValue("error", out error) && error != null;
         }
 
         private static string OptionValue(string[] args, string name)
@@ -1195,12 +1284,34 @@ namespace Tia.Cli
         /// </summary>
         private static Assembly ResolveSiemensAssembly(object sender, ResolveEventArgs e)
         {
-            if (!e.Name.StartsWith("Siemens.Engineering", StringComparison.OrdinalIgnoreCase))
-                return null;
+            var name = new AssemblyName(e.Name).Name;
+            var dirs = name.StartsWith("Siemens.Engineering", StringComparison.OrdinalIgnoreCase) ? SiemensProbeDirs()
+                : name.StartsWith("Siemens.Simatic.Simulation.Runtime", StringComparison.OrdinalIgnoreCase) ? PlcSimProbeDirs()
+                : null;
+            if (dirs == null) return null;
 
-            var dllName = new AssemblyName(e.Name).Name + ".dll";
-            var found = SiemensProbeDirs().Select(d => Path.Combine(d, dllName)).FirstOrDefault(File.Exists);
+            var dllName = name + ".dll";
+            var found = dirs.Select(d => Path.Combine(d, dllName)).FirstOrDefault(File.Exists);
             return found != null ? Assembly.LoadFrom(found) : null;
+        }
+
+        /// <summary>
+        /// A API do S7-PLCSIM Advanced não vem com o Openness: mora em Common Files (x86), numa pasta
+        /// por versão. Ela é resolvida em runtime como as do Openness (a DLL não é copiada pro lado do
+        /// exe nem distribuída — a release proíbe qualquer `Siemens.*` no zip, INST-09). Sem PLCSIM
+        /// instalado, só os verbos `sim-*` falham, e com mensagem de assembly ausente.
+        /// </summary>
+        private static List<string> PlcSimProbeDirs()
+        {
+            var dirs = new List<string> { AppDomain.CurrentDomain.BaseDirectory };
+            var env = Environment.GetEnvironmentVariable("TIA_PLCSIM_DIR");
+            if (!string.IsNullOrEmpty(env)) dirs.Insert(0, env);
+            dirs.Add(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "lib"));
+            var api = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                "Common Files", "Siemens", "PLCSIMADV", "API");
+            if (Directory.Exists(api))
+                dirs.AddRange(Directory.GetDirectories(api).OrderByDescending(d => d));
+            return dirs;
         }
 
         /// <summary>Onde o exe procura as assemblies do Openness, na ordem. Usado pelo resolver e por --version.</summary>

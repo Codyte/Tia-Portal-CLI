@@ -1,45 +1,46 @@
-// ====================== BEGIN NAV INDEX ======================
+﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L70    class Program
-//   L74    .Check
-//   L81    .RepoRoot
-//   L90    .Fixture
-//   L92    .OutDir
-//   L99    .Main
-//   L143   .AlarmFc_BuildFcXml
-//   L171   .AlarmFc_BuildCallObXml
-//   L193   .FaultOb_BuildObXml
-//   L219   .InstrumentFc_BuildAreaFcXml
-//   L256   .LadConverter_Convert
-//   L279   .BlockExplain_Explain
-//   L303   .Ops_RequireRootType
-//   L325   .TempXml
-//   L333   class Folder
-//   L345   .Ops_WalkFolders
-//   L386   .Ops_SplitPath
-//   L403   .Inventory_FolderMatches
-//   L425   .Ops_RequireUtf8Bom
-//   L452   .InstrumentFc_FcName
-//   L463   .Profinet_TagName
-//   L473   .Audit_Naming
-//   L490   .DbMember_AddToXml
-//   L567   .Memory_Occupied
-//   L585   .Clone_Rewrite
-//   L646   .Hmi_StripScreenNumber
-//   L674   .ScreenItems_Core
-//   L740   .Scaffold_Plan
-//   L786   list-interface / add-call / delete-network / set-retain
-//   L789   .Fc
-//   L808   .BlockInterface_FromXml
-//   L824   .BlockEdit_InsertCallInXml
-//   L967   .BlockEdit_StripTypePrefix
-//   L979   .BlockEdit_RemoveNetworkFromXml
-//   L991   .BlockEdit_SetRetainInXml
-//   L1001  .Clone_InstancesInXml
-//   L1013  .Audit_DriveShape
-//   L1026  .Audit_LawChecks
-//   L1055  .Ops_Squash
-//   L1064  .Throws
+//   L71    class Program
+//   L75    .Check
+//   L82    .RepoRoot
+//   L91    .Fixture
+//   L93    .OutDir
+//   L100   .Main
+//   L145   .AlarmFc_BuildFcXml
+//   L173   .AlarmFc_BuildCallObXml
+//   L195   .FaultOb_BuildObXml
+//   L221   .InstrumentFc_BuildAreaFcXml
+//   L258   .LadConverter_Convert
+//   L281   .BlockExplain_Explain
+//   L305   .Ops_RequireRootType
+//   L327   .TempXml
+//   L335   class Folder
+//   L347   .Ops_WalkFolders
+//   L388   .Ops_SplitPath
+//   L405   .Inventory_FolderMatches
+//   L427   .Ops_RequireUtf8Bom
+//   L454   .InstrumentFc_FcName
+//   L465   .Profinet_TagName
+//   L475   .Audit_Naming
+//   L492   .DbMember_AddToXml
+//   L569   .Memory_Occupied
+//   L587   .Clone_Rewrite
+//   L648   .Hmi_StripScreenNumber
+//   L676   .ScreenItems_Core
+//   L786   .Scaffold_Plan
+//   L832   list-interface / add-call / delete-network / set-retain
+//   L835   .Fc
+//   L854   .BlockInterface_FromXml
+//   L870   .BlockEdit_InsertCallInXml
+//   L1013  .BlockEdit_StripTypePrefix
+//   L1025  .BlockEdit_RemoveNetworkFromXml
+//   L1037  .BlockEdit_SetRetainInXml
+//   L1047  .Clone_InstancesInXml
+//   L1059  .Audit_DriveShape
+//   L1072  .Audit_LawChecks
+//   L1101  .Ops_Squash
+//   L1117  .Cli_KnownOptions
+//   L1142  .Throws
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX
@@ -129,6 +130,7 @@ namespace Tia.Tests
                 { "Audit.LawChecks", Audit_LawChecks },
                 { "Ops.Squash", Ops_Squash },
                 { "ScreenItems.Core", ScreenItems_Core },
+                { "Cli.KnownOptions", Cli_KnownOptions },
             };
             foreach (var t in tests)
             {
@@ -1103,6 +1105,38 @@ namespace Tia.Tests
             Check(Ops.Squash("FB LIMITES_OPERACAO_SENSOR") == Ops.Squash("FB LIMITES OPERACAO SENSOR"),
                 "underscore vale espaço");
             Check(Ops.Squash("FB FALHA") != Ops.Squash("FB FALHAS"), "nome diferente continua diferente");
+        }
+
+
+        /// <summary>
+        /// SAFE-04: o guard de opção desconhecida só protege se a lista `KnownOptions` do dispatcher
+        /// acompanhar os verbos. Este teste lê os fontes e prova que todo literal `"--x"` que o código
+        /// procura está declarado lá — opção nova sem entrada reprova aqui, offline, antes de um
+        /// `--apply` com escopo perdido por typo.
+        /// </summary>
+        private static void Cli_KnownOptions()
+        {
+            var cli = Path.Combine(RepoRoot(), "src", "Tia.Cli", "Program.cs");
+            var source = File.ReadAllText(cli);
+            var declared = new HashSet<string>(StringComparer.Ordinal);
+            int start = source.IndexOf("KnownOptions = new HashSet<string>", StringComparison.Ordinal);
+            Check(start >= 0, "bloco KnownOptions encontrado em Program.cs");
+            int open = source.IndexOf('{', start), close = source.IndexOf("};", open);
+            foreach (Match m in Regex.Matches(source.Substring(open, close - open), "\"(--?[a-zA-Z][a-zA-Z0-9-]*)\""))
+                declared.Add(m.Groups[1].Value);
+            Check(declared.Count > 50, "lista declarada tem " + declared.Count + " opções");
+
+            var used = new HashSet<string>(StringComparer.Ordinal);
+            var files = new List<string> { cli };
+            files.AddRange(Directory.GetFiles(Path.Combine(RepoRoot(), "src", "Tia.Core"), "*.cs"));
+            foreach (var f in files)
+                foreach (Match m in Regex.Matches(File.ReadAllText(f), "\"(--[a-zA-Z][a-zA-Z0-9-]*)\""))
+                    used.Add(m.Groups[1].Value);
+
+            var missing = used.Where(o => !declared.Contains(o)).OrderBy(o => o).ToList();
+            Check(missing.Count == 0, missing.Count == 0
+                ? "toda opção lida pelo código está em KnownOptions"
+                : "opção fora de KnownOptions (o guard a rejeitaria como typo): " + string.Join(", ", missing));
         }
 
         private static bool Throws(Action a)

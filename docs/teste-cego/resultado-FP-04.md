@@ -1,3 +1,14 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L12    Resultado FP-04 — aeração `Sopradores/Aeração`, dois sopradores com inversor -->
+<!--   L25    1. O que entrou no projeto -->
+<!--   L75    2. Veredito do item 7 do caderno -->
+<!--   L105   3. Tropeços da ferramenta — defeito nosso -->
+<!--   L249   4. Tropeços do caderno — esperado, obra real também não diz -->
+<!--   L280   5. Vazamento da regra cega, registrado -->
+<!--   L296   6. Fila que sai desta rodada -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Resultado FP-04 — aeração `Sopradores/Aeração`, dois sopradores com inversor
 
 Rodada cega de 2026-08-11 sobre [`caderno-FP-04.md`](caderno-FP-04.md), projeto `LIB_TESTE`,

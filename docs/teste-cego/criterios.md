@@ -1,3 +1,12 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L10    Critérios de aprovação — teste cego FP-01 -->
+<!--   L16    Portões objetivos (passa/não passa) -->
+<!--   L28    Inspeção (julgamento do observador, registrado por escrito) -->
+<!--   L45    Condução -->
+<!--   L54    O que se registra (é este o produto do teste) -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Critérios de aprovação — teste cego FP-01
 
 Escritos **antes** da rodada, em 2026-08-07. Não editar depois que a sessão cega começar; se um

@@ -1,3 +1,16 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L14    Adendo de projeto — Agitador do Tanque de Equalização `AG-05` -->
+<!--   L25    1. Por que o adendo -->
+<!--   L35    2. Equipamento novo -->
+<!--   L44    3. I/O -->
+<!--   L57    4. Operação -->
+<!--   L69    5. Proteções e alarmes -->
+<!--   L82    6. Registros exigidos -->
+<!--   L87    7. Aceite -->
+<!--   L98    Contexto de execução (não faz parte do caderno do cliente) -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Adendo de projeto — Agitador do Tanque de Equalização `AG-05`
 
 **Cliente:** SAAE Vila Nova (fictícia) · **Obra:** EEB-02, adendo à revisão 0

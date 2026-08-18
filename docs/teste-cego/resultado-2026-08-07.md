@@ -1,3 +1,14 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L12    Resultado do teste cego FP-01 — 2026-08-07 -->
+<!--   L23    Entregue -->
+<!--   L75    Portões -->
+<!--   L84    Tropeços (o produto do teste) -->
+<!--   L177   Cliques no GUI -->
+<!--   L184   O que mudou na CLI por causa desta rodada -->
+<!--   L191   Pendências -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Resultado do teste cego FP-01 — 2026-08-07
 
 Entrega do item 9 do [`caderno-FP-01.md`](caderno-FP-01.md): projeto TIA novo, hardware do item 3

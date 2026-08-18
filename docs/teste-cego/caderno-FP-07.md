@@ -1,3 +1,16 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L14    Adendo de projeto — Adensador de Lodo por Gravidade, `ADG-01` -->
+<!--   L26    1. Por que o adendo -->
+<!--   L42    2. Equipamento novo -->
+<!--   L58    3. I/O — endereços fixos do diagrama elétrico -->
+<!--   L86    4. Como a área tem que funcionar -->
+<!--   L109   5. Alarmes da área -->
+<!--   L118   6. Diagnóstico de hardware — requisito novo desta revisão -->
+<!--   L130   7. Padronização pedida pelo cliente -->
+<!--   L143   8. Entrega, em duas etapas -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Adendo de projeto — Adensador de Lodo por Gravidade, `ADG-01`
 
 **Cliente:** SAAE Vila Nova (fictícia) · **Obra:** EEB-02, adendo à revisão 4

@@ -1,3 +1,13 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L11    Measured behaviour -->
+<!--   L21    Time to answer, per verb -->
+<!--   L36    One attach instead of five -->
+<!--   L51    Output volume — the constraint nobody expects -->
+<!--   L66    What is not measured here -->
+<!--   L81    A real cycle, captured -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Measured behaviour
 
 Numbers taken from real runs, not estimates. Everything here is reproducible with the commands

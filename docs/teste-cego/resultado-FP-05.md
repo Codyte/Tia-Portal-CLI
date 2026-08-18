@@ -1,3 +1,14 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L12    Resultado FP-05 — recirculação de lodo, duas bombas em partida direta + válvula modulante -->
+<!--   L35    1. O que entrou no projeto -->
+<!--   L98    2. As quatro exigências da seção 6 do caderno -->
+<!--   L114   3. Tropeços medidos -->
+<!--   L195   4. O que não foi entregue como o molde manda -->
+<!--   L213   5. Portões de [`criterios-FP-05.md`](criterios-FP-05.md) -->
+<!--   L245   6. Fila que sai desta rodada -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Resultado FP-05 — recirculação de lodo, duas bombas em partida direta + válvula modulante
 
 Rodada cega de 2026-08-12 sobre [`caderno-FP-05.md`](caderno-FP-05.md), executada **no projeto-molde

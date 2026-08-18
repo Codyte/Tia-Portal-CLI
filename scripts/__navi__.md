@@ -1,19 +1,19 @@
-# __navi__ · `scripts/` — 20 files → symbols at exact line numbers
+# __navi__ · `scripts/` — 20 files → code symbols / text NAV ranges
 <!-- navindex · 2026-08-18 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../__navi__.md`](../__navi__.md)
 
-- **_common.ps1** (117 ln)
+- **_common.ps1** (121 ln)
   <sub>L19:Resolve-LibFile  L30:ConvertTo-CmdLine  L44:Invoke-Tia</sub>
 - **bake-lib.ps1** (96 ln)
 - **clone-hw.ps1** (28 ln)
 - **compose-db.ps1** (44 ln)
 - **gen-verbs.ps1** (49 ln)
-- **init.ps1** (269 ln)
-  <sub>L47:Get-ExeHash  L52:Test-Whitelisted  L64:Resolve-RealPath  L86:Test-SkillInstalled  L92:Test-TasksCurrent  L121:Show</sub>
+- **init.ps1** (274 ln)
+  <sub>L52:Get-ExeHash  L57:Test-Whitelisted  L69:Resolve-RealPath  L91:Test-SkillInstalled  L97:Test-TasksCurrent  L126:Show</sub>
 - **install-lib.ps1** (205 ln)
   <sub>L53:Get-Target  L69:Add-Package  L79:Get-Existing</sub>
 - **new-plc.ps1** (42 ln)
-- **pack.ps1** (88 ln)
+- **pack.ps1** (91 ln)
 - **prep-project.ps1** (18 ln)
 - **raio-x.ps1** (68 ln)
   <sub>L29:Invoke-Batch</sub>
@@ -29,4 +29,3 @@
 - **tia.ps1** (8 ln)
 - **use-project.ps1** (27 ln)
 - **whitelist.ps1** (33 ln)
-

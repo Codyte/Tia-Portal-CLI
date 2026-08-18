@@ -1,4 +1,4 @@
-# ====================== BEGIN NAV INDEX ======================
+﻿# ====================== BEGIN NAV INDEX ======================
 # NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 #   L48    Get-ExeHash
 #   L53    Test-Whitelisted
@@ -42,8 +42,12 @@ $libDir = Join-Path $repo 'lib'
 $dllNames = @('Siemens.Engineering.Base.dll', 'Siemens.Engineering.Step7.dll', 'Siemens.Engineering.WinCCUnified.dll',
               'Siemens.Engineering.WinCC.dll', 'Siemens.Engineering.Startdrive.dll')
 $programFiles = [Environment]::GetFolderPath('ProgramFiles')
-$portalDirs = Get-ChildItem (Join-Path $programFiles 'Siemens\Automation') -Directory -Filter 'Portal V*' -ErrorAction SilentlyContinue |
+# INST-02: so' V19+ conta como gate. V17/V18 instalados passavam como "TIA Portal ok" e o build
+# quebrava depois, na copia das DLLs (o layout PublicAPI/Vxx/net48 e' de V19+).
+$allPortalDirs = Get-ChildItem (Join-Path $programFiles 'Siemens\Automation') -Directory -Filter 'Portal V*' -ErrorAction SilentlyContinue |
     Sort-Object Name -Descending
+$portalDirs = @($allPortalDirs | Where-Object { [int](($_.Name -replace '[^0-9]', '')) -ge 19 })
+$unsupportedPortals = @($allPortalDirs | Where-Object { [int](($_.Name -replace '[^0-9]', '')) -lt 19 })
 
 function Get-ExeHash($path) {
     if (-not (Test-Path $path)) { return $null }
@@ -132,7 +136,8 @@ if ($Check) {
         Show 'lib/*.dll (build-time)' (-not ($dllNames | Where-Object { -not (Test-Path (Join-Path $libDir $_)) })) `
             'rodar init.ps1 sem -Check (copia da instalacao local)'
     }
-    Show "TIA Portal instalado ($($portalDirs.Name -join ', '))" ([bool]$portalDirs) 'TIA Portal V19+ com Openness'
+    Show "TIA Portal V19+ instalado ($(if ($portalDirs) { $portalDirs.Name -join ', ' } else { 'nenhum' })$(if ($unsupportedPortals) { " | fora de suporte: $($unsupportedPortals.Name -join ', ')" }))" `
+        ([bool]$portalDirs) 'TIA Portal V19+ com Openness'
     Show "tia.exe$(if (Test-Path $exe) { ' (' + (Get-Item $exe).LastWriteTime.ToString('yyyy-MM-dd HH:mm') + ')' })" `
         (Test-Path $exe) 'pwsh scripts/rebuild.ps1'
     Show 'whitelist do registro bate com o hash atual' (Test-Whitelisted) `

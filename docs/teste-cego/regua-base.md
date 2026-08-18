@@ -1,3 +1,13 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L11    Régua-base do teste cego — parte fixa, igual em toda rodada -->
+<!--   L24    Condução (invariante) -->
+<!--   L43    Portões que valem em toda rodada -->
+<!--   L55    Métricas fixas (é isto que torna a série comparável) -->
+<!--   L71    O que o anexo da rodada traz -->
+<!--   L83    O que se registra no resultado -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Régua-base do teste cego — parte fixa, igual em toda rodada
 
 Escrita em 2026-08-13, depois da revisão da série FP-01→FP-06. Existe porque a régua vinha sendo

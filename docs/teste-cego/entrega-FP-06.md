@@ -1,3 +1,14 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L12    Entrega — Elevatória Final de Efluente Tratado (`EFE-01`) -->
+<!--   L18    1. Hardware -->
+<!--   L29    2. Programa -->
+<!--   L60    3. O que foi entregue diferente do pedido, e por quê -->
+<!--   L95    4. O que foi acrescentado ao pedido -->
+<!--   L104   5. O que não foi entregue -->
+<!--   L117   6. Estado final -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Entrega — Elevatória Final de Efluente Tratado (`EFE-01`)
 
 Adendo EEB-02 rev. 0 executado no projeto do CLP existente (`CPU1.0 CCO`, projeto

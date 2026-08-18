@@ -1,3 +1,15 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L13    DIÁRIO — sagas fechadas do TIA Portal Openness CLI -->
+<!--   L19    Índice -->
+<!--   L49    Otimização de tokens do CLI — ✅ 2026-07-28 -->
+<!--   L70    Biblioteca de blocos ("arsenal") — ✅ ciclo fechado 2026-08-07 (`library/`) -->
+<!--   L540   Bugs abertos (smoke 2026-07-27) -->
+<!--   L549   Clonar acionamento — fluxo real validado (2026-07-27, AsBuilt) -->
+<!--   L662   Migração do repo para skill (2026-08-06) -->
+<!--   L714   F6 — Endurecer os scripts PS (✅ executada 2026-07-27) -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # DIÁRIO — sagas fechadas do TIA Portal Openness CLI
 
 Histórico datado extraído de [`PLANO.md`](PLANO.md) em 2026-08-10. Nada foi resumido nem

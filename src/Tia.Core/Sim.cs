@@ -1,28 +1,28 @@
-// ====================== BEGIN NAV INDEX ======================
+﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L68    class Sim
 //   L76    .Run
-//   L200   .Diag
-//   L263   .Watch
-//   L308   .Try
-//   L314   .RegisteredInstances
-//   L324   .WaitReady
-//   L341   .Execute
-//   L351   case "write"
-//   L355   case "read"
-//   L359   case "wait"
-//   L363   case "run"
-//   L367   case "stop"
-//   L371   case "state"
-//   L374   case "tags"
-//   L402   .Write
-//   L426   .ParseBool
-//   L434   .Plain
-//   L455   class Target
-//   L466   .FindTarget
-//   L478   .Interfaces
-//   L492   .DeviceItemOf
-//   L519   .Resolve
+//   L220   .Diag
+//   L283   .Watch
+//   L328   .Try
+//   L334   .RegisteredInstances
+//   L344   .WaitReady
+//   L361   .Execute
+//   L371   case "write"
+//   L375   case "read"
+//   L379   case "wait"
+//   L383   case "run"
+//   L387   case "stop"
+//   L391   case "state"
+//   L394   case "tags"
+//   L422   .Write
+//   L446   .ParseBool
+//   L454   .Plain
+//   L475   class Target
+//   L486   .FindTarget
+//   L498   .Interfaces
+//   L512   .DeviceItemOf
+//   L539   .Resolve
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -74,8 +74,19 @@ namespace Tia.Core
         /// modo de iterar observação (o download mediu ~91% do tempo do verbo: 45-52 s de 49-57 s).
         /// </summary>
         public static object Run(TiaSession session, PlcSoftware plc, string instanceName,
-            string pcInterfaceLike, List<string[]> steps, bool apply, bool noDownload = false)
+            string pcInterfaceLike, List<string[]> steps, bool apply, bool noDownload = false,
+            bool allowPhysical = false)
         {
+            // SAFE-01/D8: fail-closed. `--pc-interface` casa por substring e FindTarget pega o primeiro
+            // alvo sob ela — apontar para uma interface PN/IE física baixaria o programa numa CPU real.
+            // O access point do Advanced é o `PLCSIM` do S7ONLINE; qualquer outro nome exige o opt-in
+            // explícito, que existe só para laboratório com access point renomeado.
+            if (!allowPhysical && pcInterfaceLike != null
+                && pcInterfaceLike.IndexOf("PLCSIM", StringComparison.OrdinalIgnoreCase) < 0)
+                throw new ArgumentException("--pc-interface '" + pcInterfaceLike + "' is not a PLCSIM access "
+                    + "point: sim-run only downloads to the S7-PLCSIM Advanced virtual PLC, never to a "
+                    + "physical CPU. Use --pc-interface PLCSIM (the default), or --allow-physical if this "
+                    + "access point really is a renamed PLCSIM one.");
             var swTotal = System.Diagnostics.Stopwatch.StartNew();
             var cpu = DeviceItemOf(session, plc);
             var provider = cpu.GetService<DownloadProvider>();
@@ -135,6 +146,15 @@ namespace Tia.Core
                     }
                     plan["pcInterface"] = target.PcInterface;
                     plan["targetInterface"] = target.Name;
+                    // 2ª trava: o nome pedido é substring, então `--pc-interface PLCSIM` ainda podia
+                    // casar uma interface cujo nome só contém isso. Confere o nome efetivo do alvo.
+                    if (!allowPhysical && target.PcInterface.IndexOf("PLCSIM", StringComparison.OrdinalIgnoreCase) < 0)
+                    {
+                        plan["error"] = "Refusing to download: PC interface '" + target.PcInterface
+                            + "' is not a PLCSIM access point (sim-run never downloads to a physical CPU).";
+                        plan["availableInterfaces"] = Interfaces(provider);
+                        return plan;
+                    }
 
                     // projeto online recusa download: "The operation is not permitted in online mode".
                     // Cair offline é a única saída pela API — a alternativa é clicar "Go offline" na GUI.

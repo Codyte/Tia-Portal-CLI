@@ -1,3 +1,16 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L14    Critérios de aprovação — teste cego FP-07 (anexo da rodada) -->
+<!--   L26    Por que esta rodada existe: é rodada de dívida -->
+<!--   L45    Portões objetivos (passa/não passa) -->
+<!--   L57    Inspeção (não reprova sozinha, mas é metade do resultado) -->
+<!--   L73    As duas fotos do `audit` (é o achado que esta rodada persegue) -->
+<!--   L91    Armadilhas da seção 7 (as três são para recusar, com registro) -->
+<!--   L102   Condução desta rodada -->
+<!--   L110   Conferência do caderno contra o projeto (2026-08-13, antes da rodada) -->
+<!--   L134   O que se registra (além de `M1`–`M6`) -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Critérios de aprovação — teste cego FP-07 (anexo da rodada)
 
 Escritos **antes** da rodada, em 2026-08-13. Não editar depois que a execução começar; critério mal

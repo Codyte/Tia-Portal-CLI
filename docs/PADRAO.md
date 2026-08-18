@@ -1,3 +1,15 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L13    Padrão de projeto (referência: `Software de ETE Modelo_Inicial_V21`) -->
+<!--   L23    Lei de nomenclatura -->
+<!--   L39    Program blocks -->
+<!--   L76    PLC tags -->
+<!--   L93    Endereço de alarme de módulo -->
+<!--   L106   `tia audit` — projeto × lei de nomenclatura -->
+<!--   L117   `tia scaffold` — projeto novo recebe o padrão -->
+<!--   L167   Estado da CLI contra este projeto -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Padrão de projeto (referência: `Software de ETE Modelo_Inicial_V21`)
 
 Projeto-molde da casa, importado em `proj/` em 2026-07-27 (zap `..._LS_1_20260727_1715.zap19`,

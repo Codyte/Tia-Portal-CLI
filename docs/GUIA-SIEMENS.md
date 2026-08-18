@@ -1,3 +1,12 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L10    O que a própria Siemens manda fazer -->
+<!--   L26    Documentos-lei -->
+<!--   L33    Bibliotecas oficiais (código pronto, testado, gratuito) -->
+<!--   L52    Onde o guia oficial e o padrão da casa divergem -->
+<!--   L66    Como o agente usa isto -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # O que a própria Siemens manda fazer
 
 Este repo carrega **dois** conjuntos de regras, e é preciso saber qual é qual antes de discutir

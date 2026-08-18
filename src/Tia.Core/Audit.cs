@@ -1,4 +1,4 @@
-// ====================== BEGIN NAV INDEX ======================
+﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L49    class Audit
 //   L75    .HasInverter
@@ -10,19 +10,19 @@
 //   L130   .IsLooseScalar
 //   L141   .RootMembers
 //   L152   .Run
-//   L250   .NonGraphicCalls
-//   L270   .MisplacedCalls
-//   L296   .DbGlobalCheck
-//   L316   .FindGlobalDb
-//   L330   .Skipped
-//   L339   .CountTypes
-//   L344   .CollectLanguages
-//   L357   .LayerLeaks
-//   L383   .IsLibrary
-//   L390   .AreaConflicts
-//   L417   .Check
-//   L433   .CollectBlocks
-//   L441   .CollectTables
+//   L257   .NonGraphicCalls
+//   L277   .MisplacedCalls
+//   L303   .DbGlobalCheck
+//   L323   .FindGlobalDb
+//   L337   .Skipped
+//   L346   .CountTypes
+//   L351   .CollectLanguages
+//   L364   .LayerLeaks
+//   L390   .IsLibrary
+//   L397   .AreaConflicts
+//   L424   .Check
+//   L440   .CollectBlocks
+//   L448   .CollectTables
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -237,6 +237,13 @@ namespace Tia.Core
                 { "udts", udts },
                 { "scanned", scanned },
                 { "ok", checks.Cast<Dictionary<string, object>>().All(c => (bool)c["ok"]) },
+                // SAFE-11: check que não pôde rodar continua ok:true (não reprova o projeto), mas
+                // `ok:true` sozinho passava a impressão de conformidade provada. `complete:false` +
+                // a lista do que pulou é a diferença entre check conforme e check cego.
+                { "complete", checks.Cast<Dictionary<string, object>>().All(c => !c.ContainsKey("skipped")) },
+                { "skippedChecks", checks.Cast<Dictionary<string, object>>()
+                    .Where(c => c.ContainsKey("skipped"))
+                    .Select(c => (string)c["check"]).ToList() },
                 { "checks", checks },
             };
         }

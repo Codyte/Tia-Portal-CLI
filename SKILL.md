@@ -10,6 +10,18 @@ description: >-
   custam uma sessão inteira.
 ---
 
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L25    tia — CLI do TIA Portal Openness -->
+<!--   L27    1. Achar o CLI -->
+<!--   L45    2. Instalar numa máquina nova -->
+<!--   L79    3. Chamar -->
+<!--   L91    4. Antes de escrever código: estude -->
+<!--   L118   5. Invariantes (ignorar custa sessão) -->
+<!--   L172   6. Orçamento de contexto (o CLI devolve volume que estoura sessão) -->
+<!--   L182   7. Referência (ler no repo, não deduzir) -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # tia — CLI do TIA Portal Openness
 
 ## 1. Achar o CLI
@@ -106,6 +118,14 @@ responde pergunta em prosa).
 ## 5. Invariantes (ignorar custa sessão)
 
 - **Verbo de escrita é dry por padrão.** `--apply` explícito. Nunca contra projeto de produção.
+- **Opção que o CLI não conhece falha (exit 2) antes do attach.** Typo de escopo (`--ara` por
+  `--area`) com `--apply` rodava o gerador no projeto inteiro. Verbo novo com opção nova pede
+  entrada em `Program.KnownOptions` — o teste offline `Cli.KnownOptions` cobra.
+- **Exit code é honesto: resultado com `error` de topo sai 1**, e o step do batch com erro embutido
+  conta em `failed`. `--timeout` com `--apply` é recusado (timeout abandona escrita no meio).
+- **`sim-run` só baixa em access point PLCSIM.** Interface com outro nome é recusada antes do
+  download; `--allow-physical` é o opt-in explícito e existe para access point PLCSIM renomeado —
+  nunca para CPU real.
 - **Uma chamada por vez.** Openness é single-session; nada de paralelizar `tia` (nem via agentes).
 - **Compile entre etapas: os verbos fazem sozinhos desde 2026-08-13.** Todo import deixa o alvo
   inconsistente e o Openness recusa exportar bloco inconsistente. Todo export do CLI passa por

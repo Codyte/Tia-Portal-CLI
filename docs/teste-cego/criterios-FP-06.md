@@ -1,3 +1,13 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L11    Critérios de aprovação — teste cego FP-06 -->
+<!--   L18    O que esta rodada testa, que as anteriores não testaram -->
+<!--   L44    Armadilhas plantadas na seção 6 do caderno -->
+<!--   L66    Portões objetivos (passa/não passa) -->
+<!--   L78    Inspeção (julgamento, registrado por escrito) -->
+<!--   L97    Condução -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Critérios de aprovação — teste cego FP-06
 
 Escritos **antes** da rodada, em 2026-08-13. Não editar depois que a execução começar; critério mal

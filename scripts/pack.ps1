@@ -1,4 +1,4 @@
-# Macro "pack": monta o zip de release a partir do build local.
+﻿# Macro "pack": monta o zip de release a partir do build local.
 #
 # Por que nao roda no CI: o build referencia as DLLs do Openness (lib/), que sao licenciadas e nao
 # podem ser distribuidas -- so existem numa maquina com TIA Portal instalado. O zip, esse, NAO
@@ -37,8 +37,11 @@ if ($stamped -like '*+*' -and ($stamped -split '\+')[1] -ne $head) {
     throw "tia.exe carimbou o commit $((($stamped -split '\+')[1]).Substring(0,7)) mas o HEAD e $($head.Substring(0,7)) -- " +
           "commitar primeiro e rodar sem -SkipBuild"
 }
+# INST-10: o zip copia os arquivos do working tree pelos NOMES que o git rastreia, entao arvore suja
+# publicava mudanca nao commitada com o carimbo de um commit que nao a contem. Fail em vez de aviso.
 if ((git -C $repo status --porcelain)) {
-    Write-Warning "working tree suja -- o zip sai de arquivos rastreados, entao mudanca nao commitada NAO entra"
+    throw "working tree suja -- commitar (ou stashar) antes de empacotar: o zip sai dos arquivos do disco, " +
+          "mas carimba o commit $($head.Substring(0,7))"
 }
 
 $dist = Join-Path $repo 'workspace\dist'

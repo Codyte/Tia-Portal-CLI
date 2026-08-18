@@ -48,7 +48,9 @@ Invoke-Batch $steps 'banho'
 # ponytail: xref de TODOS os OBs (projetos reais têm poucos); filtro se doer
 $obs = @((Get-Content (Join-Path $out 'obs.json') -Raw | ConvertFrom-Json).blocks)
 $files = @{}
-$steps = foreach ($i in 0..($obs.Count - 1)) {
+# projeto sem OB nenhum: 0..($obs.Count - 1) vira 0..-1 = @(0,-1) em PowerShell, e o batch saia
+# com dois steps `xref --name $null`. Range so' quando ha' populacao.
+$steps = foreach ($i in 0..([Math]::Max($obs.Count - 1, 0)) | Where-Object { $obs.Count -gt 0 }) {
     $f = Join-Path $out ("xref-{0:d3}.json" -f $i)
     $files[$obs[$i].name] = $f
     , (@('xref', '--name', $obs[$i].name, '--out-file', $f) + $plcArgs)

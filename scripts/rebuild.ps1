@@ -83,6 +83,27 @@ if (-not $SkipTests -and -not $WhitelistOnly) {
     }
     Write-Host '  ok  init.Resolve-RealPath (sem link: identidade; caminhos distintos seguem distintos)'
 
+    # Citacao dos dois runners do taskio (taskrun/smokeloop). Argumento com espaco vira 1 so'
+    # ("MOTOR_AREA_01 (MOTOR_01)"), aspas escapam, e barra final SO' dobra dentro de aspas — fora
+    # delas a barra e' literal pro CommandLineToArgvW e dobrar corromperia o caminho.
+    . (Join-Path $PSScriptRoot '_common.ps1')
+    $qCases = @(
+        @{ i = @('doctor');                o = 'doctor' }
+        @{ i = @('--name', 'MOTOR (01)');  o = '--name "MOTOR (01)"' }
+        @{ i = @('--out', 'C:\dir\');     o = '--out C:\dir\' }
+        @{ i = @('--out', 'C:\d ir\');    o = '--out "C:\d ir\\"' }
+        @{ i = @('--x', 'a"b');            o = '--x "a\"b"' }
+        @{ i = @('');                      o = '""' }
+    )
+    foreach ($c in $qCases) {
+        $got = ConvertTo-CmdLine $c.i
+        if ($got -ne $c.o) {
+            Write-Host "FAIL ConvertTo-CmdLine [$($c.i -join '|')] -> [$got], esperado [$($c.o)]" -ForegroundColor Red
+            exit 1
+        }
+    }
+    Write-Host '  ok  taskio.ConvertTo-CmdLine (espaco, aspa, barra final; citacao CommandLineToArgvW)'
+
     # roteamento do --study: chave com acento nunca casa (o mapa e comparado dobrado) e palavra
     # curta ("ob") nao pode casar dentro de outra ("robotico"). Offline, nao precisa do Portal.
     $py = Get-Command python -ErrorAction SilentlyContinue
@@ -101,13 +122,17 @@ if (-not $SkipTests -and -not $WhitelistOnly) {
 if (-not $WhitelistOnly) { & (Join-Path $PSScriptRoot 'gen-verbs.ps1') }
 
 if (Test-WhitelistStale) {
-    # Task TiaWhitelist roda como SYSTEM/Highest: sem UAC, disparavel por qualquer sessao.
+    # Task TiaWhitelist roda com o token ELEVADO DO USUARIO (S4U + RunLevel Highest), nao como
+    # SYSTEM: sem UAC, disparavel de qualquer sessao. Por isso a acao dela aponta pra copia
+    # protegida em %ProgramData%\tia-cli, e nao pro whitelist.ps1 do repo (ver setup-tasks.ps1).
     if (Get-ScheduledTask -TaskName TiaWhitelist -ErrorAction SilentlyContinue) {
         Start-ScheduledTask -TaskName TiaWhitelist
         $limit = (Get-Date).AddSeconds(30)
         while ((Test-WhitelistStale) -and (Get-Date) -lt $limit) { Start-Sleep -Milliseconds 500 }
     } else {
-        Start-Process pwsh -Verb RunAs -Wait -ArgumentList '-NoProfile','-File',(Join-Path $repo 'scripts\whitelist.ps1')
+        # sem a task: eleva na hora (UAC visivel). Aqui o script do repo e' o certo — quem
+        # aprova o prompt e' o usuario, entao nao ha' execucao elevada implicita a proteger.
+        Start-Process pwsh -Verb RunAs -Wait -ArgumentList '-NoProfile','-File',(Join-Path $repo 'scripts\whitelist.ps1'),'-Repo',$repo
     }
     if (Test-WhitelistStale) {
         Write-Host 'ATENCAO: whitelist AINDA stale — Openness vai recusar tia.exe' -ForegroundColor Red

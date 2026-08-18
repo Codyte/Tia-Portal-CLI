@@ -41,7 +41,8 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
 - **Máquina nova: `pwsh scripts/init.ps1`** = gates (grupo `Siemens TIA Openness`, .NET SDK,
   `lib/*.dll` copiadas da instalação local do Portal) + tasks (1 UAC) + rebuild + shim `tia` no
   PATH/`TIA_CLI_HOME`. Idempotente — re-rodar depois de `git pull`. **`-Check`** = relatório
-  read-only dos 9 pontos (exit 1 se faltar algo).
+  read-only dos **8 gates** (exit 1 se faltar um) + o estado vivo, que não é gate e não muda o
+  exit — inclusive "repo em `~/.claude/skills/tia`", que o CLI não precisa e só a skill usa.
   **O repo é a skill**: `SKILL.md` na raiz, e o checkout tem que ficar em `~/.claude/skills/tia`
   (submódulo de `Codyte/skills`) — nada é copiado. Um checkout só: a whitelist do Openness é
   gravada por caminho do exe, e a task `TiaSmokeRun` guarda o caminho absoluto do `taskrun.ps1`
@@ -342,8 +343,17 @@ timeout, então o que chega ao agente é sempre o erro. **Rodar o mesmo verbo de
 relatar falha** — a permissão já foi dada. Só insistir num diagnóstico se a 2ª tentativa repetir.
 
 Whitelist stale = `EngineeringSecurityException`. Refazer com
-`Start-ScheduledTask -TaskName TiaWhitelist` (SYSTEM, sem UAC); `rebuild.ps1` já compara contra
-o hash gravado no registro e falha alto se continuar divergente.
+`Start-ScheduledTask -TaskName TiaWhitelist` — **token elevado do usuário** (S4U + `RunLevel
+Highest`), não SYSTEM, e sem UAC; `rebuild.ps1` já compara contra o hash gravado no registro e
+falha alto se continuar divergente.
+**Por isso a task executa uma cópia do `whitelist.ps1` em `%ProgramData%\tia-cli`, não o script
+do repo**: a ACL da task protege a *ação*, não o *arquivo* que a ação roda, e o repo vive no perfil
+do usuário (gravável sem admin) — apontar pra lá daria execução elevada sem UAC a qualquer processo
+rodando como o usuário. `setup-tasks.ps1` faz a cópia com dono e escrita só de
+Administradores/SYSTEM — dono reescreve a
+própria DACL, então deixar o usuário como dono devolveria a escrita que a ACL tirou — e passa o
+repo em `-Repo`; `init.ps1 -Check` reprova se a cópia divergir do original (git pull) ou o
+`-Repo` apontar pra outro checkout.
 
 ## Economia de tokens
 

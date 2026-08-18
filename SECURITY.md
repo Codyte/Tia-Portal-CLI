@@ -15,6 +15,12 @@ What still matters here, and what a report should be about:
   finding.
 - **Openness whitelist or scheduled-task handling** that could let another process run arbitrary
   code as the whitelisted `tia.exe`, or elevate through the `TiaWhitelist` / `TiaSmokeRun` tasks.
+  Known boundary, so you can judge a finding against it: `TiaSmokeRun` and `TiaSimHost` run with
+  the user's **limited** token — they cross Windows sessions, never a privilege level.
+  `TiaWhitelist` runs with the user's **elevated** token and starts without a UAC prompt, so the
+  script it executes is a copy under `%ProgramData%\tia-cli` writable only by
+  Administrators/SYSTEM; the repo copy is never the task's target. A path that lets a non-admin
+  process change what that task runs is a finding.
 - Command injection through verb arguments into the PowerShell macros.
 
 ## Not in scope

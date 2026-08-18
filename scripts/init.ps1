@@ -1,10 +1,11 @@
 # ====================== BEGIN NAV INDEX ======================
 # NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-#   L40    Get-ExeHash
-#   L45    Test-Whitelisted
-#   L57    Test-SkillInstalled
-#   L63    Test-TasksCurrent
-#   L77    Show
+#   L48    Get-ExeHash
+#   L53    Test-Whitelisted
+#   L65    Resolve-RealPath
+#   L87    Test-SkillInstalled
+#   L93    Test-TasksCurrent
+#   L122   Show
 # ======================= END NAV INDEX =======================
 
 # NAV INDEX
@@ -93,14 +94,24 @@ function Test-TasksCurrent {
     # A task grava o caminho absoluto do taskrun.ps1. Mover o repo mata a rota da sessao 0
     # ("No running TIA Portal instance found") ate re-registrar — sintoma identico ao de portal fechado.
     $here = Resolve-RealPath $PSScriptRoot
-    foreach ($n in 'TiaWhitelist', 'TiaSmokeRun', 'TiaSimHost') {
+    foreach ($n in 'TiaSmokeRun', 'TiaSimHost') {
         $t = Get-ScheduledTask -TaskName $n -ErrorAction SilentlyContinue
         if (-not $t) { return $false }
         # a task guarda o caminho como foi registrado; comparar depois de resolver os dois lados
         $arg = ([regex]::Match($t.Actions.Arguments, '"([^"]+\\scripts)\\[^"\\]+\.ps1"')).Groups[1].Value
         if (-not $arg -or (Resolve-RealPath $arg) -ine $here) { return $false }
     }
-    return $true
+    # TiaWhitelist e' o caso separado: roda elevada sem UAC, entao a acao aponta pra COPIA em
+    # %ProgramData%\tia-cli (ACL de admin), nao pro script do repo — que o usuario poderia
+    # reescrever para ganhar execucao elevada de graca. Aqui conferem-se as duas metades: a task
+    # recebe ESTE repo em -Repo, e a copia nao ficou pra tras de um git pull que mudou o original.
+    $t = Get-ScheduledTask -TaskName TiaWhitelist -ErrorAction SilentlyContinue
+    if (-not $t) { return $false }
+    $repoArg = ([regex]::Match($t.Actions.Arguments, '-Repo\s+"([^"]+)"')).Groups[1].Value
+    if (-not $repoArg -or (Resolve-RealPath $repoArg) -ine (Resolve-RealPath $repo)) { return $false }
+    $copy = Join-Path $env:ProgramData 'tia-cli\whitelist.ps1'
+    if (-not (Test-Path $copy)) { return $false }
+    (Get-FileHash $copy).Hash -eq (Get-FileHash (Join-Path $PSScriptRoot 'whitelist.ps1')).Hash
 }
 
 if ($DotSourceOnly) { return }

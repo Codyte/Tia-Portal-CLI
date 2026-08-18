@@ -38,24 +38,24 @@ Uso:
 #   L85    _params
 #   L90    topic
 #   L117   index
-#   L140   índice do SDK (IntelliSense XML das assemblies Openness) ----------
-#   L149   _sdk_dirs
-#   L160   sdk_index
-#   L189   sdk_search
-#   L199   SERVICE
-#   L202   ensure
-#   L226   _listening
-#   L239   search
-#   L250   busca no corpo, sob demanda ----------
-#   L258   _cache_path
-#   L262   body
-#   L274   deep
-#   L310   study: o que ler antes de escrever código ----------
-#   L315   _repo_root
-#   L319   _fold
-#   L326   study
-#   L383   selftest
-#   L409   main
+#   L141   índice do SDK (IntelliSense XML das assemblies Openness) ----------
+#   L150   _sdk_dirs
+#   L161   sdk_index
+#   L191   sdk_search
+#   L201   SERVICE
+#   L204   ensure
+#   L228   _listening
+#   L241   search
+#   L252   busca no corpo, sob demanda ----------
+#   L260   _cache_path
+#   L264   body
+#   L276   deep
+#   L313   study: o que ler antes de escrever código ----------
+#   L318   _repo_root
+#   L322   _fold
+#   L329   study
+#   L386   selftest
+#   L412   main
 # ======================= END NAV INDEX =======================
 
 import argparse
@@ -119,6 +119,7 @@ def index(base, name, out):
     TOC inteiro (~350 MB no fio) reduzido a "ItemId|Título" por linha (~alguns MB).
     Streaming + regex por chunk: o JSON nunca cabe na memória de uma vez.
     """
+    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
     seen, total = set(), 0
     pattern = re.compile(r'"((?:[A-Za-z0-9]+enUS|[A-Za-z0-9]+US)/\d+/\d+\.htm)\|([^"]{1,200})"')
     tail = ""
@@ -164,6 +165,7 @@ def sdk_index(out):
     dirs = _sdk_dirs()
     if not dirs:
         raise SystemExit("nenhum PublicAPI\\V*\\*.xml encontrado — TIA Portal com Openness instalado?")
+    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
     seen, files = set(), 0
     with open(out, "w", encoding="utf-8") as fh:
         for d in dirs:
@@ -191,8 +193,8 @@ def sdk_search(out, term, limit):
     if not os.path.exists(out) or os.path.getsize(out) == 0:
         sdk_index(out)
     words = [re.compile(re.escape(w), re.I) for w in term.split()]
-    hits = [l.rstrip("\n") for l in open(out, encoding="utf-8")
-            if all(w.search(l) for w in words)]
+    with open(out, encoding="utf-8") as fh:
+        hits = [l.rstrip('\\n') for l in fh if all(w.search(l) for w in words)]
     return hits[:limit], len(hits)
 
 
@@ -242,8 +244,8 @@ def search(base, name, out, term, limit):
     # no texto do tópico (ex.: "DisableENO") dá 0 hits; achar o tópico plausível e ler com --topic.
     ensure(base, name, out)
     words = [re.compile(re.escape(w), re.I) for w in term.split()]
-    hits = [l.rstrip("\n") for l in open(out, encoding="utf-8")
-            if all(w.search(l) for w in words)]
+    with open(out, encoding="utf-8") as fh:
+        hits = [l.rstrip('\\n') for l in fh if all(w.search(l) for w in words)]
     return hits[:limit], len(hits)
 
 
@@ -283,10 +285,11 @@ def deep(base, name, out, term, limit, scan, cache_dir):
     parts = [p for w in words for p in re.split(r"[_\W]+|(?<=[a-z])(?=[A-Z])", w) if len(p) > 2]
     cand = [re.compile(re.escape(p), re.I) for p in parts] or res
     ranked = []
-    for line in open(out, encoding="utf-8"):
-        score = sum(1 for r in cand if r.search(line))
-        if score:
-            ranked.append((score, line.rstrip("\n")))
+    with open(out, encoding="utf-8") as fh:
+        for line in fh:
+            score = sum(1 for r in cand if r.search(line))
+            if score:
+                ranked.append((score, line.rstrip('\\n')))
     ranked.sort(key=lambda t: -t[0])
     hits, read = [], 0
     for _, line in ranked[:scan]:
@@ -415,15 +418,19 @@ def main():
     p.add_argument("--limit", type=int, default=15, help="hits do --search (default 15)")
     p.add_argument("--index", action="store_true", help="(re)gera o índice pesquisável")
     p.add_argument("--ensure", action="store_true", help="preflight: serviço no ar + índice")
-    p.add_argument("--out", default=os.path.join("workspace", "help-index.txt"))
+    # Ancorado no REPO, nao no cwd: o SKILL.md manda chamar este script por caminho absoluto de
+    # qualquer diretorio, e com default relativo cada cwd novo virava um workspace/ proprio — ou
+    # seja, reindexar os ~350 MB do TOC e os 5,8 MB do SDK a cada lugar de onde se chamasse.
+    ws = os.path.join(_repo_root(), "workspace")
+    p.add_argument("--out", default=os.path.join(ws, "help-index.txt"))
     p.add_argument("--sdk", help="busca no IntelliSense XML das assemblies Openness "
                                  "(assinatura + summary, casa no corpo; local, sem serviço)")
     p.add_argument("--sdk-index", action="store_true", help="(re)gera o índice do SDK")
-    p.add_argument("--sdk-out", default=os.path.join("workspace", "sdk-index.txt"))
+    p.add_argument("--sdk-out", default=os.path.join(ws, "sdk-index.txt"))
     p.add_argument("--deep", help="busca no CORPO dos tópicos mais plausíveis (custa download na "
                                   "1ª vez, cache depois) — é o que responde pergunta em prosa")
     p.add_argument("--scan", type=int, default=40, help="tópicos que o --deep abre (default 40)")
-    p.add_argument("--cache", default=os.path.join("workspace", "help-cache"))
+    p.add_argument("--cache", default=os.path.join(ws, "help-cache"))
     p.add_argument("--study", help="o que ler antes de escrever código sobre um tema: tópicos do F1, "
                                    "API do Openness, biblioteca oficial, restrição de hardware, "
                                    "regra da casa e o verbo seguinte")

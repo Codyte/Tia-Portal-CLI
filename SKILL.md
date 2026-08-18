@@ -56,8 +56,9 @@ mata a rota da sessão 0 até rodar `init.ps1` de novo (ele detecta e re-registr
 pwsh "$env:TIA_CLI_HOME\scripts\init.ps1" -Check
 ```
 
-Sai a lista dos 9 pontos (grupo, dotnet, Portal, `lib/`, `tia.exe`, whitelist, tasks, PATH,
-lugar do checkout) + o estado vivo (sessão do shell, Portal rodando, `.al21` presente). Exit 1 se faltar algo.
+Sai a lista dos **8 gates** (grupo, dotnet, Portal, `lib/`, `tia.exe`, whitelist, tasks, PATH) +
+o estado vivo (lugar do checkout, sessão do shell, Portal rodando, `.al21` presente). Exit 1 se
+faltar **gate** — o estado vivo é informativo e não muda o exit.
 
 O que **não** vem no clone (gitignored, cada máquina repõe o seu): `lib/*.dll` (licença Siemens,
 o `init` copia da instalação local), `library/blocks/` e `src/Tia.Lib/*.al21` (payload de projeto

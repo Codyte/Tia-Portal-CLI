@@ -113,7 +113,7 @@ $devices = @($want | ForEach-Object { if ($meta.ContainsKey($_)) { $meta[$_].dev
 # Device já presente não é recriado (nem com -Update: apagar hardware derruba a rede; -Update existe
 # pra corrigir bloco da library). O par connect-subnet vai mesmo assim — o drive pode existir ligado
 # em OUTRO controlador, e a constante de telegrama é por controlador. connect-subnet é idempotente.
-$haveDev = if ($devices) { @((Invoke-Tia list-devices @portalArgs | ConvertFrom-Json).device) } else { @() }
+$haveDev = if ($devices) { @((Invoke-Tia list-devices --full @portalArgs | ConvertFrom-Json).device) } else { @() }
 
 Write-Host "$(if ($Update) { 'atualizar' } else { 'instalar' }) em ${Plc}: $($todo -join ', ')"
 if ($Update) { Write-Host 'MODO UPDATE: o que já existe é apagado e recriado (chamador de bloco apagado fica inconsistente — reimportar depois)' }

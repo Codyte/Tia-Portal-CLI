@@ -1,7 +1,7 @@
 # ====================== BEGIN NAV INDEX ======================
 # NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 #   L41    Write-Log
-#   L98    host: sem switch nenhum, este processo E o host e so volta no -Stop --
+#   L104   host: sem switch nenhum, este processo E o host e so volta no -Stop --
 # ======================= END NAV INDEX =======================
 
 # NAV INDEX
@@ -84,8 +84,14 @@ if ($Start) {
     if ((Get-Process -Id $PID).SessionId -eq 0) {
         Start-ScheduledTask -TaskName TiaSimHost   # registrada pelo setup-tasks.ps1
     } else {
-        Start-Process powershell -WindowStyle Hidden `
-            -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $PSCommandPath, '-Name', $Name
+        # -Article junto: sem ele, host iniciado com CPU diferente do default caia no 6ES7 515
+        # em silencio. Pela rota da sessao 0 (task) nao ha' como passar parametro — la' valem os
+        # defaults, e por isso -Ui vai por arquivo-marcador em vez de argumento.
+        # ArgumentList em STRING, nao array: com array o Start-Process junta por espaco sem citar
+        # nada e o MLFB ('6ES7 515-2AN03-0AB0') chegaria repartido em dois argumentos.
+        Start-Process powershell -WindowStyle Hidden -ArgumentList (
+            '-NoProfile -ExecutionPolicy Bypass -File "{0}" -Name "{1}" -Article "{2}"' -f `
+                $PSCommandPath, $Name, $Article)
     }
     for ($i = 0; $i -lt 20; $i++) {
         Start-Sleep -Seconds 2

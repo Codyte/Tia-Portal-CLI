@@ -28,6 +28,55 @@ deliberately dropped.
 - **`audit --db "DB GLOBAL"`** — names the global DB for the R2 check when the heuristic (a
   `GlobalDB` with "global" in its name) does not find it.
 
+### Security
+
+- **The `TiaWhitelist` task no longer executes a script the user can rewrite.** It runs with the
+  user's *elevated* token (`S4U` + `RunLevel Highest`) and is startable without a UAC prompt — by
+  design, so a rebuild does not need a click. Its action pointed at `scripts/whitelist.ps1` inside
+  the checkout, which lives in the user's profile and is writable without admin: the task ACL
+  protects the *action*, not the *file the action runs*, so any process running as the user could
+  rewrite that script, start the task and get elevated execution for free. `setup-tasks.ps1` now
+  copies the script to `%ProgramData%\tia-cli` with inheritance broken, **ownership set to
+  Administrators** (an object's owner can always rewrite its own DACL, so leaving the user as
+  owner would hand back the write the ACL just removed) and write limited to
+  Administrators/SYSTEM, then registers the task against the copy, passing the checkout in
+  `-Repo`.
+  `init.ps1 -Check` fails the task gate when the copy drifts from the original (a `git pull` that
+  changed `whitelist.ps1`) or `-Repo` names a different checkout.
+- **`smokeloop.ps1` quoted arguments naively** (`'"' + $_ + '"'`), so a verb argument containing a
+  quote or ending in a backslash split the command line. Both taskio runners now share
+  `ConvertTo-CmdLine` (`_common.ps1`), which follows `CommandLineToArgvW` as `taskrun.ps1` already
+  did.
+
+### Fixed
+
+- **`Invoke-Tia` serialises with an atomic lock** instead of a `$task.State -eq 'Running'` test.
+  The test was TOCTOU: two callers could both pass it, both write the fixed-name `cmd.json`, and
+  the second — whose task start the scheduler drops (`IgnoreNew`) — only found out at the 600 s
+  timeout. `busy.lock` is created with `CreateNew` (fails atomically if present); an orphan lock is
+  collected by mtime with the task stopped as a second witness. A timeout deliberately keeps the
+  lock: the verb may still be running inside the task, and releasing it would let the next call
+  land on a live Openness session (D9).
+- **`taskrun.ps1` reads `cmd.json` inside the `try`.** A missing or corrupt `cmd.json` threw before
+  the `try`, so `exit-<id>.txt` was never written and the client only learned at the timeout —
+  exactly the failure the `catch` exists to prevent.
+- **`smokeloop.ps1` no longer uses `-Wait`.** `Start-Process -Wait` waits for the process *and its
+  descendants*, and the TIA Portal that `tia.exe` starts is a descendant — measured in
+  `taskrun.ps1`, which switched to `WaitForExit()` for that reason. The two runners now agree.
+- **`tia-help.py` anchors `workspace/` to the repo, not the cwd.** `SKILL.md` tells you to call it
+  by absolute path from anywhere; with cwd-relative defaults every new working directory got its
+  own index — re-streaming the ~350 MB TOC and rebuilding the 5.8 MB SDK index each time.
+- **`install-lib.ps1` passes `--full` to `list-devices`.** Every other `ConvertFrom-Json` consumer
+  already did: without it a large project spills to a file and the pipe parses the stub, so
+  `$haveDev` came back empty and an existing device looked absent.
+- **`raio-x.ps1` on a project with no OBs.** `0..($obs.Count - 1)` is `0..-1` = `@(0, -1)` in
+  PowerShell, which emitted two `xref --name $null` steps.
+- **`sim-host.ps1 -Start` passes `-Article` to the detached host**, quoted — an MLFB has a space in
+  it, and `Start-Process -ArgumentList` with an array quotes nothing. A custom CPU silently fell
+  back to the default `6ES7 515-2AN03-0AB0`.
+- **`whitelist.ps1` reports a missing `tia.exe`** instead of throwing from `Get-Item`, and disposes
+  the SHA256 provider.
+
 ### Changed
 
 - **`create-folder --path` is repeatable** — `--path A/B --path C/D` builds a whole tree on one
@@ -100,7 +149,8 @@ fictional machine spec and has to deliver a compiling PLC program.
 - **`tia tree`** — whole-PLC outline as markdown, 39 KB for 476 blocks, against ~150 KB for the
   equivalent JSON.
 - **`scripts/init.ps1`** — one-shot bootstrap on a new machine (three Openness gates, DLL copy
-  from the local install, build, whitelist, PATH), idempotent, with `-Check` as a read-only report.
+  from the local install, build, whitelist, PATH), idempotent, with `-Check` as a read-only
+  report of the 8 gates plus live state (which is informational and does not change the exit).
 - **Windows session routing** — a shell born in session 0 cannot attach to a Portal in session 1;
   the shim routes through a scheduled task so the caller never sees the difference.
 - Exit codes: `0` ok · `1` error · `2` usage · `3` file · `4` TIA/Openness · `5` timeout.

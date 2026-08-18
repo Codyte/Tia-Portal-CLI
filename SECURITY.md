@@ -11,8 +11,11 @@ are not the same boundary:
   program to a powered-on PLCSIM Advanced instance and runs it. It refuses any PC interface whose
   name is not a PLCSIM access point (`--allow-physical` is the explicit, documented opt-in for a
   renamed PLCSIM access point — it is not a way to reach a physical CPU, and a path that makes it
-  one is a finding). To make the download possible, `sim-run` calls `GoOffline()` when the project
-  is online.
+  one is a finding). A download that reports errors aborts the run — the steps are
+  not executed against a program that did not load. To make the download possible, `sim-run` calls
+  `GoOffline()` when the project is online, but **only when the download target is a PLCSIM access
+  point**: under `--allow-physical` an online project is refused instead, because dropping a
+  connection the tool cannot prove is simulated is not its call to make.
 - **Network: local and opt-in only.** `list-server-projects` connects to a TIA Project Server the
   operator names (read-only inventory; `--http` drops TLS and exists for legacy servers only), and
   `scripts/tia-help.py` talks to the TIA Portal Help Viewer on localhost. Nothing else leaves the
@@ -43,7 +46,10 @@ What matters here, and what a report should be about:
 - The Openness API itself, TIA Portal, or the Windows `Siemens TIA Openness` group model — report
   those to Siemens.
 - The fact that `--apply` can destroy work in a project. That is the documented purpose of the
-  flag; take backups and never point this at production, as the README says.
+  flag; take backups and never point this at production, as the README says. What `--force` deletes
+  is exported to `workspace/recovery/<verb>-<timestamp>/` first (path in `recoveryDir`; a backup
+  that fails aborts the delete, `--no-backup` opts out) — a safety net for a mistake, not a
+  substitute for a project backup, and it does not roll back.
 
 ## Reporting
 

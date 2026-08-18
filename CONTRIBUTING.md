@@ -32,9 +32,12 @@ logon), the .NET SDK, or a TIA Portal V19+ install to source the Openness DLLs f
    rules, planners). It is a plain assert harness with no framework; follow the file.
 3. Exercise the verb against a **test project**, never a production one, and never online.
 4. If you changed the help text, `rebuild.ps1` regenerates `docs/VERBS.md` — commit it.
-5. If you changed C# structure, `python ~/.claude/skills/navindex/scripts/navindex.py src`
+5. **A new option needs an entry in `Program.KnownOptions`.** Unknown options fail with exit 2
+   before the attach, and the offline test `Cli.KnownOptions` greps the sources for `"--x"`
+   literals — a new option without an entry fails the build, not a user's project.
+6. If you changed C# structure, `python ~/.claude/skills/navindex/scripts/navindex.py src`
    regenerates the `src/*/__navi__.md` maps and the in-file NAV INDEX headers — commit them.
-6. Say in the PR **which TIA Portal version you ran against** and what you actually executed. A
+7. Say in the PR **which TIA Portal version you ran against** and what you actually executed. A
    change nobody ran against a Portal cannot be merged, however obviously correct it looks.
 
 ## What will be rejected

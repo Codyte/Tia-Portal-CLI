@@ -992,8 +992,14 @@ estarem resolvidos: TEST-01, TEST-02, PERF-01, PLC-02, SEC-03. Testes offline no
 `Sim.AccessPointGuard`, `Cli.BusyWords`.
 
 **Sobrou**: CI-01/CI-02 (extrair lógica pura para compilar no CI), que exigem o split
-`Tia.Domain`/`Tia.Openness` já recusado. Os ~69 P2/P3 restantes são documentação, medição e suíte
-sistemática — pauta, não pendência de correção.
+`Tia.Domain`/`Tia.Openness` já recusado. Os 85 achados sem veredito individual (de 170) são P2/P3
+de documentação, medição, matriz de compatibilidade e suíte sistemática — pauta, não pendência de
+correção; a lista por ID está na §0 da auditoria. Todos os P0 e os P1 de comportamento fecharam.
+
+**Documentação alinhada na mesma passada**: as 21 perguntas da §16 da auditoria foram respondidas
+uma a uma, as §17/18/21 marcam o que foi feito × recusado, a §20 ganhou o estado desta máquina (é a
+diferença que explica TEST-01), e README/SECURITY/CHANGELOG passaram a descrever `--fail-fast`, o
+backup do `--force` e o `GoOffline()` condicional.
 
 **Não fazer**: registry declarativo de comandos, envelope JSON versionado, split
 `Tia.Domain`/`Tia.Openness`, migração para xUnit, cobertura, analyzers, SBOM/assinatura/build

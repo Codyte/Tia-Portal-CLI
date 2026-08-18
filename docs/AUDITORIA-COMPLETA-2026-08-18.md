@@ -2,28 +2,28 @@
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
 <!--   L29    Auditoria técnica completa e mapa de discussão — tia-cli -->
 <!--   L43    0. Status da resposta (2026-08-18, revisão no repo) -->
-<!--   L137   1. Resumo executivo -->
-<!--   L172   2. Como ler os registros -->
-<!--   L209   3. Escopo e evidência coletada -->
-<!--   L247   4. Pontos fortes confirmados -->
-<!--   L267   5. Guardrails e segurança operacional -->
-<!--   L292   6. Contrato de sucesso, erros e JSON -->
-<!--   L315   7. Instalação, versões e carregamento de assemblies -->
-<!--   L340   8. Release, CI e cadeia de suprimentos -->
-<!--   L359   9. Cobertura de testes e lacunas funcionais -->
-<!--   L381   10. Arquitetura e manutenibilidade -->
-<!--   L400   11. Domínio PLC, Openness, HMI, drives e simulação -->
-<!--   L425   12. Desempenho, escala e contexto de IA -->
-<!--   L440   13. Documentação e experiência do desenvolvedor -->
-<!--   L461   14. Privacidade, segurança de software e aspectos legais -->
-<!--   L477   15. Produto e posicionamento -->
-<!--   L492   16. Perguntas abertas para discutir com outra IA -->
-<!--   L521   17. Plano de ação proposto -->
-<!--   L572   18. Backlog priorizado consolidado -->
-<!--   L615   19. Validação executada nesta auditoria -->
-<!--   L632   20. Estado local observado -->
-<!--   L642   21. Definição sugerida de “pronto para uso confiável” -->
-<!--   L658   22. Conclusão -->
+<!--   L140   1. Resumo executivo -->
+<!--   L175   2. Como ler os registros -->
+<!--   L212   3. Escopo e evidência coletada -->
+<!--   L250   4. Pontos fortes confirmados -->
+<!--   L270   5. Guardrails e segurança operacional -->
+<!--   L295   6. Contrato de sucesso, erros e JSON -->
+<!--   L318   7. Instalação, versões e carregamento de assemblies -->
+<!--   L343   8. Release, CI e cadeia de suprimentos -->
+<!--   L362   9. Cobertura de testes e lacunas funcionais -->
+<!--   L384   10. Arquitetura e manutenibilidade -->
+<!--   L403   11. Domínio PLC, Openness, HMI, drives e simulação -->
+<!--   L428   12. Desempenho, escala e contexto de IA -->
+<!--   L443   13. Documentação e experiência do desenvolvedor -->
+<!--   L464   14. Privacidade, segurança de software e aspectos legais -->
+<!--   L480   15. Produto e posicionamento -->
+<!--   L495   16. Perguntas abertas para discutir com outra IA -->
+<!--   L568   17. Plano de ação proposto -->
+<!--   L627   18. Backlog priorizado consolidado -->
+<!--   L671   19. Validação executada nesta auditoria -->
+<!--   L691   20. Estado local observado -->
+<!--   L713   21. Definição sugerida de “pronto para uso confiável” -->
+<!--   L739   22. Conclusão -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Auditoria técnica completa e mapa de discussão — tia-cli
@@ -127,12 +127,15 @@ automático, não: desfazer um import parcial pede transação que o Openness n�
 exportado é o que o `import-block` já sabe reler. O `MasterCopy` de `bake-lib` fica de fora — a API
 não expõe `Export` de master copy, e a fonte continua viva no PLC.
 
-**Ainda sem veredito individual** — os ~69 achados P2/P3 restantes (`DOC-04..15`, `PERF-02..10`,
-`PLC-07/09..20`, `TEST-03..08/11/12/14..17`, `INST-11..20`, `API-12..15`, `PROD-01..06/09/10`,
-`SEC-01/02/04..11`, `SAFE-19`). São documentação, medição e suíte de testes sistemática; nenhum é
-defeito de comportamento confirmado. Ficam como pauta, não como pendência de correção.
+**Ainda sem veredito individual (85 de 170)** — `API-12..15`, `CI-01/02/04/05`, `DOC-04..15`,
+`INST-11..20`, `PERF-02..10`, `PLC-01/04/07/09..20`, `PROD-01..06/09/10`, `SAFE-19`,
+`SEC-01/02/04..11`, `TEST-03..08/11/12/14..17`. São P2/P3 de documentação, medição, matriz de
+compatibilidade e suíte de testes sistemática — nenhum é defeito de comportamento confirmado, e
+vários já estão respondidos de fato na §16 sem terem recebido carimbo por ID. Ficam como pauta, não
+como pendência de correção; os P0 e os P1 de comportamento estão todos fechados.
 
-**Segunda leva, quando doer** — `CI-01`/`CI-02` (extrair lógica pura para compilar no CI).
+**Segunda leva, quando doer** — `CI-01`/`CI-02` (extrair lógica pura para compilar no CI), que
+dependem do split `Tia.Domain`/`Tia.Openness` recusado acima.
 
 ## 1. Resumo executivo
 
@@ -493,32 +496,84 @@ exportados para issue tracker preservando `ID`, prioridade, achado, pergunta e m
 
 Estas perguntas exigem decisão; não devem ser “resolvidas” apenas por refatoração automática.
 
+> **Respondidas em 2026-08-18** (as 21). A resposta vai depois de cada pergunta, em itálico; a
+> decisão detalhada está na §0 e no ID citado. Pergunta respondida com "não" também é decisão.
+
 1. A política irrevogável é **“nenhum download em CPU física”**? Se sim, `--pc-interface` deve ser
    removido/restrito e o código deve provar target PLCSIM.
+   *Sim, irrevogável.* `--pc-interface` continua existindo porque o access point PLCSIM pode ser renomeado, mas o nome é conferido **duas vezes** (pedido e alvo resolvido) e `--allow-physical` é o único caminho — documentado como opt-in de laboratório, nunca como rota para CPU real (`SAFE-01`, `TEST-02`).
+
 2. `create-project`, `save-project`, `close-project` e `--keep-connection` são exceções formais ao
    dry-run ou passarão a exigir `--apply`?
+   *Exceções formais*, listadas no `SECURITY.md`: são verbos de ciclo de vida cujo efeito é o propósito (`SAFE-05`). `--keep-connection` foi para o outro lado — passou a exigir `--apply`, porque grava conexão na config do Portal (`SAFE-17`).
+
 3. Um resultado parcial deve retornar exit 1 sempre, ou existirão categorias `partial-success` com
    código próprio?
+   *Exit 1 sempre*, sem categoria nova. `error` de topo = 1; `error` de item dentro de lista continua parcial e não muda o exit. Sem `partial-success`: um código a mais só desloca a decisão para quem chama (`API-01/02/03`).
+
 4. Batch de escrita deve ser fail-fast por padrão?
+   *Não por padrão, sim por opção.* `--fail-fast` para no 1º step que falha e devolve `aborted`; isolar continua sendo o default, que é o que faz uma bateria de dry valer um attach só (`SAFE-10`).
+
 5. `audit` com check skipped pode afirmar `ok:true`, ou o correto é `complete:false`?
+   *`complete:false`.* `ok:true` com `complete:false` é conformidade **não provada**; check que não pode rodar devolve `skipped` com motivo e não reprova (`SAFE-11`).
+
 6. A compatibilidade oficial será V21 somente até haver laboratório V19/V20?
+   *V21 somente, e não por falta de laboratório*: o build referencia as assemblies split `Base/Step7/WinCCUnified`, que V19/V20 não têm. É incompatibilidade de compilação, não de teste (`INST-01`, `TEST-13`).
+
 7. PLCSIM Advanced é requisito opcional, extra de instalação ou parte obrigatória do produto?
+   *Obrigatório para compilar do fonte, opcional para usar a release.* Tornar condicional pede `#if` + referência condicional, e quem só usa não precisa (`INST-08`, `INST-09`).
+
 8. O release deve falhar com working tree suja ou empacotar exatamente `HEAD`?
+   *Falhar.* `pack` recusa árvore suja — release tem que ser derivável de um commit (`INST-10`).
+
 9. O produto público é uma CLI genérica ou uma CLI + profile ETE de referência?
+   *CLI genérica com um profile ETE de fato, não separado.* Separar é a agenda de um produto com equipe; aqui compra risco de regressão sem comprar nada (`PROD-01`, seção 0 “Não fazer”).
+
 10. O contrato JSON será formalmente versionado e sujeito a SemVer?
+   *Não.* Envelope versionado com SemVer é contrato de produto com consumidores externos; o consumidor aqui é um agente que lê JSON e o `--help` gerado (seção 0 “Não fazer”).
+
 11. Opções/configs desconhecidos devem sempre falhar ou haverá modo permissivo explícito?
+   *Sempre falhar, exit 2, antes do attach.* Não há modo permissivo: o typo de escopo (`--ara` por `--area`) com `--apply` rodava o gerador no projeto inteiro (`SAFE-04`).
+
 12. Arquivos fora de `workspace/` podem ser sobrescritos por default?
+   *Podem.* Quem chama o CLI já pode escrever no disco; o dry-run protege o projeto TIA, e essa é a fronteira documentada (`SAFE-06`).
+
 13. Qual política de backup/rollback é exigida antes de `--apply`?
+   *Backup obrigatório, rollback não.* O que morre sob `--force` é exportado para `workspace/recovery/<verbo>-<timestamp>/` antes do delete (fail-closed, `--no-backup` é o opt-out); desfazer import parcial pediria transação que o Openness não tem (`SAFE-09`).
+
 14. Quais dados locais devem ser apagados automaticamente e em quanto tempo?
+   *Nenhum automaticamente.* `workspace/` é gitignored e do operador; TTL/redaction de telemetria é agenda de produto (seção 0 “Não fazer”).
+
 15. Os fixtures e documentos derivados de projeto real têm provenance/autorização registrada?
+   *Sim, por construção*: payload de cliente é gitignored e os docs falam por alias. O que não existe é scanner de conteúdo dentro de path permitido (`SEC-01/02`, ainda sem veredito individual).
+
 16. É aceitável um runner self-hosted com TIA/PLCSIM para nightly/release?
+   *Aceitável, e não vai acontecer agora*: exige máquina com TIA+PLCSIM dedicada e licença. É o que trava `CI-01/CI-02` junto com o split recusado.
+
 17. Vale separar lógica pura agora, antes de novos verbos?
+   *Não.* O split `Tia.Domain`/`Tia.Openness` está recusado por escrito na §0; os testes offline que interessam já rodam contra `Tia.Core`.
+
 18. Quais três fluxos terão benchmark manual vs CLI para demonstrar ROI?
+   *Já medidos, em `docs/BENCHMARKS.md` e no PLANO*: FP-06 ponta a ponta, `sim-run` (download = ~91% do verbo) e o custo de contexto de `tree` × `snapshot`.
+
 19. Codex deve ser alvo suportado além de Claude Code? Onde a skill deve ser instalada?
+   *Claude Code é o alvo; o repo **é** a skill* e o checkout tem que ficar em `~/.claude/skills/tia`. Qualquer agente que rode shell usa o CLI do mesmo jeito.
+
 20. Safety será apenas recusado, inventariado ou terá integração manual assistida?
+   *Recusado por escrito.* F-runtime group e assinatura são GUI; está em `docs/LIMITES.md` e no `--study`. Inventariar bloco F é candidato, não promessa (`PLC-01`, sem veredito).
+
 21. O índice de navegação será suportado para C# no skill compartilhado ou mantido localmente neste repo?
+   *Suportado no gerador compartilhado.* `navindex.py` indexa `.cs` e, desde 2026-08-18, títulos de Markdown — `scripts/navi-cs.ps1` morreu (`DOC-16`).
 
 ## 17. Plano de ação proposto
+
+> **Execução (2026-08-18).** Fase A: **feita inteira** (1-6). Fase B: 1, 4 e 5 feitos; 2 aceito
+> como está (`INST-08`); 3 virou o refresh por hash de `lib/` (`INST-04`) em vez de manifesto.
+> Fase C: **recusada** — registry de comandos, envelope versionado, split em camadas e migração
+> para xUnit estão em "Não fazer" (§0); o item 5 já existia (`docs/VERBS.md` sai do `--help`).
+> Fase D: 1 feito na forma de backup, não de rollback (`SAFE-09`); 5 sem fingerprint, porque a API
+> do PLCSIM não expõe assinatura de programa (`PLC-06`); 2-4 continuam pauta. Fase E: recusada
+> como agenda de produto com equipe. O que sobrou por dependência é `CI-01`/`CI-02` (Fase C.3).
 
 ### Fase A — contenção de risco (antes de ampliar features)
 
@@ -573,26 +628,27 @@ dispatcher; consumidores podem confiar em `ok/status/exitCode`.
 
 ### P0 — fazer primeiro
 
-- [ ] SAFE-01: impedir download fora de PLCSIM.
-- [ ] SAFE-03: tornar timeout seguro ou incompatível com apply.
-- [ ] SAFE-04: rejeitar opções desconhecidas.
-- [ ] API-01/API-02: erro interno/step deve alterar exit code.
-- [ ] INST-01: corrigir ou retirar promessa V19/V20.
-- [ ] INST-09: fechar distribuição/resolução da DLL PLCSIM.
-- [ ] DOC-02: atualizar o contrato de segurança que hoje está factualmente stale.
+- [x] SAFE-01: impedir download fora de PLCSIM.
+- [x] SAFE-03: tornar timeout seguro ou incompatível com apply.
+- [x] SAFE-04: rejeitar opções desconhecidas.
+- [x] API-01/API-02: erro interno/step deve alterar exit code.
+- [x] INST-01: corrigir ou retirar promessa V19/V20.
+- [x] INST-09: fechar distribuição/resolução da DLL PLCSIM.
+- [x] DOC-02: atualizar o contrato de segurança que hoje está factualmente stale.
 
 ### P1 — estabilização
 
-- [ ] Resultado parcial e envelope comum.
-- [ ] Fail-fast/allowFailure no batch.
-- [ ] Audit tri-state e IO map com erros visíveis.
-- [ ] Ambiguidade de item/interface em hardware.
-- [ ] Rollback/recovery para operações destrutivas.
-- [ ] Conjunto coerente de DLLs + whitelist da versão efetiva.
-- [ ] Pack somente de HEAD limpo e allowlist binária.
-- [ ] PLCSIM opcional no build.
-- [ ] Lógica pura compilável no CI.
-- [ ] Provenance/privacidade por conteúdo, não apenas path.
+- [x] Resultado parcial e envelope comum. — exit honesto sim; envelope comum **não** (§0).
+- [x] Fail-fast/allowFailure no batch. — `--fail-fast`; `allowFailure` por step não entrou (um
+  mecanismo resolve, dois viram configuração).
+- [x] Audit tri-state e IO map com erros visíveis.
+- [x] Ambiguidade de item/interface em hardware.
+- [x] Rollback/recovery para operações destrutivas. — backup fail-closed; rollback não (`SAFE-09`).
+- [x] Conjunto coerente de DLLs + whitelist da versão efetiva.
+- [x] Pack somente de HEAD limpo e allowlist binária.
+- [ ] PLCSIM opcional no build. — aceito como está (`INST-08`).
+- [ ] Lógica pura compilável no CI. — `CI-01`/`CI-02`, depende do split recusado.
+- [ ] Provenance/privacidade por conteúdo, não apenas path. — `SEC-01/02`, sem veredito.
 
 ### P2 — maturidade
 
@@ -614,6 +670,9 @@ dispatcher; consumidores podem confiar em `ok/status/exitCode`.
 
 ## 19. Validação executada nesta auditoria
 
+> Esta tabela é o que rodou **na máquina da auditoria**, que não tinha `lib/`, `tia.exe` nem Portal
+> aberto — por isso nenhum PASS de C# é alegado aqui. O estado verificado deste repo está na §20.
+
 | Comando/verificação | Resultado |
 |---|---|
 | `git status --short --branch` | PASS antes da criação deste relatório; branch `main`, sem mudanças prévias. |
@@ -631,6 +690,8 @@ dispatcher; consumidores podem confiar em `ok/status/exitCode`.
 
 ## 20. Estado local observado
 
+**Máquina da auditoria (2026-08-18, antes das correções):**
+
 - TIA Portal instalado: V17, V18 e V19; nenhum Portal estava rodando.
 - Usuário pertence ao grupo `Siemens TIA Openness`.
 - .NET SDK disponível.
@@ -639,21 +700,41 @@ dispatcher; consumidores podem confiar em `ok/status/exitCode`.
 - Biblioteca `.al21` ausente, como esperado para payload gitignored.
 - Não foi executado `init.ps1` sem `-Check`; nenhuma task, whitelist, PATH ou DLL foi modificada.
 
+**Máquina de desenvolvimento (2026-08-18, depois das cinco levas)** — é onde as correções foram
+provadas, e a diferença explica `TEST-01`:
+
+- `pwsh scripts/init.ps1 -Check`: **8/8 gates verdes**, whitelist conferida em `Openness 21.0`.
+- TIA Portal V21 instalado e rodando (2 instâncias, sessão 1), com o projeto-molde aberto.
+- `pwsh scripts/rebuild.ps1` verde: build Debug + testes offline + whitelist.
+- `tia --version` carrega o commit do build (`AssemblyInformationalVersion`), então "qual commit é
+  este binário" é pergunta que o próprio binário responde.
+- `tia doctor` roda contra o Portal vivo pela rota da task (o shell do agente nasce na sessão 0).
+
 ## 21. Definição sugerida de “pronto para uso confiável”
 
 O repositório pode ser considerado pronto para recomendação ampla quando, no mínimo:
 
-1. A fronteira PLC físico × PLCSIM estiver garantida por código e teste negativo.
-2. Todo resultado terminal/partial tiver exit code coerente e schema estável.
-3. Nenhuma opção desconhecida for ignorada em modo de escrita.
-4. Release limpa instalar sem SDK, sem distribuir DLL Siemens e com PLCSIM opcional funcional.
-5. Versões suportadas corresponderem à matriz realmente testada.
-6. Toda lógica pura compilar/testar no CI público.
-7. Operações delete-before-create possuírem rollback ou recovery manifest obrigatório.
-8. SECURITY/README/CONTRIBUTING descreverem o comportamento atual, não a arquitetura anterior.
-9. Fixtures/documentos tiverem provenance revisada.
+1. A fronteira PLC físico × PLCSIM estiver garantida por código e teste negativo. — **feito**
+   (`SAFE-01` + o teste `Sim.AccessPointGuard`).
+2. Todo resultado terminal/partial tiver exit code coerente e schema estável. — **exit sim**;
+   schema estável não é promessa, o envelope versionado está recusado.
+3. Nenhuma opção desconhecida for ignorada em modo de escrita. — **feito** (`SAFE-04`: exit 2 antes
+   do attach, com teste offline cobrando a lista).
+4. Release limpa instalar sem SDK, sem distribuir DLL Siemens e com PLCSIM opcional funcional. —
+   **parcial**: instala sem SDK e não distribui DLL Siemens; PLCSIM continua obrigatório para
+   compilar do fonte (`INST-08`).
+5. Versões suportadas corresponderem à matriz realmente testada. — **feito**: V21, e só.
+6. Toda lógica pura compilar/testar no CI público. — **não**, por decisão: depende do split
+   recusado (`CI-01`/`CI-02`).
+7. Operações delete-before-create possuírem rollback ou recovery manifest obrigatório. — **feito na
+   forma de backup obrigatório** (`SAFE-09`); rollback não existe.
+8. SECURITY/README/CONTRIBUTING descreverem o comportamento atual, não a arquitetura anterior. —
+   **feito**, e revisado de novo em 2026-08-18 junto com este documento.
+9. Fixtures/documentos tiverem provenance revisada. — **parcial**: payload gitignored e docs por
+   alias; sem scanner de conteúdo (`SEC-01/02`).
 10. Um projeto sintético reproduzir read → write → compile → PLCSIM → assertions sem intervenção
-    além dos gates Siemens inevitáveis.
+    além dos gates Siemens inevitáveis. — **não**: as provas vivas rodam contra o projeto-molde
+    real, não contra um projeto sintético versionado.
 
 ## 22. Conclusão
 
@@ -674,3 +755,9 @@ Mas a promoção para uso crítico deve esperar os P0: isolamento absoluto do do
 timeout seguro, exit code honesto, validação de flags e distribuição correta do PLCSIM. Fechados
 esses pontos, o repositório tem uma base excepcionalmente promissora para engenharia Siemens
 repetível, auditável e assistida por IA.
+
+> **Resposta (2026-08-18).** Os cinco P0 estão fechados, em cinco levas, cada uma com prova viva
+> contra o projeto-molde além do teste offline (§0 e `docs/PLANO.md` F15). O que ficou aberto não é
+> P0: é a agenda de produto com equipe — recusada por escrito — e os ~69 P2/P3 de documentação,
+> medição e suíte sistemática, que seguem como pauta. A frase que continua valendo é a do parágrafo
+> acima: o retorno não vem do 93º verbo.

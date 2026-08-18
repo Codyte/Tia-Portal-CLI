@@ -124,11 +124,16 @@ Run `tia --help` for the full, always-current list.
 | ⚙️ Generators | `gen-profinet` · `standardize-tags` · `gen-fault-ob` · `replicate-fc` · `gen-alarm-fc` · `replicate-instruments` — plus `doctor`, a read-only preflight that checks every template/folder they need, and `audit`, project × naming law |
 | 📚 Library | `retrieve-library` (`.zal1x` → `.al2x`, how you consume Siemens' own free libraries — LGF, DriveLib — which SIOS ships archived) · `list-library` · `import-master-copy` · `add-master-copy` · `delete-master-copy` — a block library that travels as a single `.al21` and installs into a bare CPU in one command (see [`library/`](library/README.md); manifest is versioned, XML payload is not) |
 | 👥 Multiuser | `list-server-projects` — read-only inventory of a TIA Project Server (locks, local sessions) |
-| 📦 Batch | `run --script ops.json [--summary]` — array of verb calls, one attach for all; a failing step becomes `{ok:false,error}` and the batch keeps going |
+| 📦 Batch | `run --script ops.json [--summary] [--fail-fast]` — array of verb calls, one attach for all; a failing step becomes `{ok:false,error}` and the batch keeps going, or stops at the first failure with `--fail-fast` |
 
 Global options: `--plc NAME` (multi-PLC projects), `--portal PROJECT|PID` (required when more than
 one Portal is open), `--out DIR` (default `workspace\exports`), `--apply`, `--retry N` (busy retry,
 default 3), `--timeout SEC`.
+
+Whatever `--force` deletes is exported to `workspace/recovery/<verb>-<timestamp>/` before the
+delete, and the path comes back in `recoveryDir`. A backup that fails aborts the delete;
+`--no-backup` is the explicit opt-out. There is no automatic rollback — the saved XML is what
+`import-block` reads back.
 
 `--out-file F.json` works on any read verb: the full JSON goes to the file and stdout returns only
 `{file,bytes,count,head}`. That matters more than it sounds — on a real project `find --pattern "*"

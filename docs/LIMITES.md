@@ -2,10 +2,10 @@
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
 <!--   L11    LIMITES — o que Openness e PLCSIM não fazem, e qual é a saída -->
 <!--   L28    Online e runtime -->
-<!--   L38    Simulação -->
-<!--   L48    Objetos do projeto -->
-<!--   L60    HMI -->
-<!--   L75    Como acrescentar aqui -->
+<!--   L41    Simulação -->
+<!--   L51    Objetos do projeto -->
+<!--   L63    HMI -->
+<!--   L78    Como acrescentar aqui -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # LIMITES — o que Openness e PLCSIM não fazem, e qual é a saída
@@ -33,6 +33,9 @@ ausência usada aqui.
 | **Buffer de diagnóstico da CPU.** Não existe. As duas únicas ocorrências de "diagnostic buffer" no SDK são configuração de controle de HMI (`AlarmViewBasicSource.S7Diagnosis`, `HmiSystemDiagnosisControl`), não leitura. | Limite de API | GUI do TIA (Online & Diagnostics); ou, fora do Openness, SZL por S7 comms / servidor OPC UA da CPU. |
 | **Estado operacional (RUN/STOP) e comando de partida/parada.** Zero hits no SDK. | Limite de API | `IInstance.OperatingState` do PLCSIM Advanced — só serve para PLC virtual: `sim-diag` (retrato) e `sim-run` (passos `run`/`stop`/`state`). Em CPU real, é a GUI. |
 | **LEDs, alarmes de rack, eventos de falha.** | Limite de API | Idem: existem no PLCSIM Advanced (`WaitForOnLedChangedEvent`, `AlarmNotification`, `RackOrStationFaultEvent`), não no Openness. `sim-diag --watch SEG` entrega os três — **estado de LED só por evento**, `IInstance` não tem getter de LED (medido 2026-08-17). |
+| **Portal ocupado não tem tipo de exceção nem HResult.** `--sdk "busy"` devolve **0 hits** nas 14 assemblies: não há `EngineeringBusyException`, código ou propriedade de estado. O que chega é a mensagem, e ela vem **localizada** na língua do Portal instalado. | Limite de API | `Ops.IsBusyMessage` casa por radical em 6 línguas (`busy`, `ocupad`, `beschäftigt`, `occup*`, `занят`) e percorre a cadeia de `InnerException`; é o que o `--retry N` usa. Portal numa língua fora da lista = mais um radical lá, não uma sondagem nova. |
+| **Assinatura/fingerprint do programa carregado no PLCSIM.** Não existe getter. | Limite de API | `sim-run` devolve `programCheck` (nome do controller × PLC do projeto) — prova origem, não versão — e recusa instância com 0 tags. Gravar uma assinatura própria mudaria o projeto do usuário. |
+| **Rollback de escrita.** Não há transação: nada de `BeginEdit`/`Rollback` num import parcial. | Limite de API | Backup antes do delete: o que morre sob `--force` vai para `workspace/recovery/<verbo>-<timestamp>/` (`recoveryDir` no JSON, fail-closed, `--no-backup` é o opt-out), e o XML salvo é o que o `import-block` relê. |
 | **`go-online`, `download`, `compare online/offline` como verbos.** A API **tem** (`OnlineProvider.GoOnline`, `DownloadProvider.Download`, `PlcSoftware.CompareTo(ISoftwareCompareTarget)`). | Decisão do repo (D8, 2026-08-07) | Download em PLC de campo é risco operacional que o CLI não carrega: `--apply` protege projeto, não protege processo. O humano faz no TIA, vendo a planta. Sinal para reabrir: PLCSIM/PLC de teste dedicado **e** um caso de uso que não seja download. |
 
 ## Simulação

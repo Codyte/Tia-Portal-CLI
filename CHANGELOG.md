@@ -2,7 +2,7 @@
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
 <!--   L8     Changelog -->
 <!--   L15    [Unreleased] -->
-<!--   L188   [1.0.0] — 2026-08-11 -->
+<!--   L221   [1.0.0] — 2026-08-11 -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Changelog
@@ -37,6 +37,30 @@ deliberately dropped.
 
 ### Security
 
+- **What `--force` deletes is exported first.** `import-master-copy --force`, `scaffold --force`,
+  `replicate-fc` and `standardize-tags` delete before they create; the deleted object (a block, a
+  UDT, a tag table, or a whole package folder) now goes to `workspace/recovery/<verb>-<timestamp>/`
+  before it dies, and the path comes back in `recoveryDir`. Fail-closed: a backup that cannot be
+  written aborts the delete. `--no-backup` is the explicit opt-out. There is no automatic rollback —
+  Openness has no transaction, and the saved XML is what `import-block` reads back.
+- **`sim-run` stops when the download fails.** `DownloadProvider.Download` returns an error count
+  instead of throwing, and the code read it as information: the steps then ran against a program
+  that never loaded and "passed" reading nothing. `ErrorCount > 0` or a non-`Success` state is now
+  a top-level `error` (exit 1), the steps do not run, and the download messages are kept in full
+  instead of the usual first 20.
+- **`sim-run` no longer goes offline on its own against a non-simulated target.** `GoOffline()` is
+  needed for the download, but under `--allow-physical` the online session may be the engineer's
+  connection to a real CPU. It is now called only when the download target is a PLCSIM access
+  point; otherwise the verb stops and asks for the human action.
+- **`run --script --fail-fast`** stops at the first failing step and reports `aborted` with the
+  count left. Isolating steps stays the default — it is what makes a diagnostic battery worth one
+  attach — but in a chain of writes the next step works on top of what the previous one did not do.
+- **The Openness whitelist is checked against the version the loader will use.** `Test-Whitelisted`
+  passed if the hash matched under *any* installed version key, so a stale entry for the effective
+  version read as green (V19 and V21 coexist). It now checks that version, both entries
+  (`Entry`/`EntryLocal`) and the recorded `Path` — the latter resolved through junctions on both
+  sides, or a correct checkout reached through a link would fail. `whitelist.ps1` also stopped
+  writing under Siemens' own `AllowList` key, which is not a version, and removes that bogus entry.
 - **`sim-run` refuses any PC interface that is not a PLCSIM access point.** `--pc-interface` matched
   by substring and `FindTarget` took the first target under it, so a physical PN/IE interface was
   reachable — against the "never download to real hardware" decision. The name is now checked before
@@ -73,6 +97,15 @@ deliberately dropped.
 
 ### Fixed
 
+- **`--retry` recognises a busy Portal in the language it speaks.** Busy was detected by looking
+  for the English word `busy` in the message, so with the Portal in pt-BR or de-DE the retry never
+  fired. There is no exception type or HResult for it (no member matching `busy` exists in the 14
+  Openness assemblies), so the message is still the only signal — now matched by stem in six
+  languages, and through the whole `InnerException` chain.
+- **`lib/*.dll` is refreshed when the installed Openness changes.** The DLLs were copied only when
+  missing, so switching the Portal Update (or going back a major) left the build referencing an API
+  that is not the one the loader loads at runtime — a late failure with no symptom at install time.
+  `init.ps1` now compares hashes with the installation and re-copies what differs.
 - **`move-block` puts the block back when the import fails.** It exports, deletes and imports into
   the destination; an import that failed (name clash, folder refused) left the block deleted with a
   temp XML as the only copy. Failures now try the original folder first and report `restoredTo`, and

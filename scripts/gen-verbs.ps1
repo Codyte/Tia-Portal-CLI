@@ -47,3 +47,8 @@ foreach ($f in @('SKILL.md', 'README.md')) {
         Write-Host "  ${f}: contagem de verbos -> $verbs" -ForegroundColor Yellow
     }
 }
+
+# O arquivo nasce sem o header NAV INDEX que o navindex poe nos .md do repo; sem isto,
+# todo rebuild sujava o git com as 17 linhas do header indo e voltando.
+$navi = Join-Path $HOME '.claude/skills/navindex/scripts/navindex.py'
+if (Test-Path $navi) { & python $navi $out *> $null }

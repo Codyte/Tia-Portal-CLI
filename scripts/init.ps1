@@ -1,11 +1,12 @@
 ﻿# ====================== BEGIN NAV INDEX ======================
 # NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-#   L48    Get-ExeHash
-#   L53    Test-Whitelisted
-#   L65    Resolve-RealPath
-#   L87    Test-SkillInstalled
-#   L93    Test-TasksCurrent
-#   L122   Show
+#   L53    Get-ExeHash
+#   L61    Get-EffectiveOpennessVersion
+#   L66    Test-Whitelisted
+#   L89    Resolve-RealPath
+#   L111   Test-SkillInstalled
+#   L117   Test-TasksCurrent
+#   L146   Show
 # ======================= END NAV INDEX =======================
 
 # NAV INDEX
@@ -54,16 +55,35 @@ function Get-ExeHash($path) {
     [Convert]::ToBase64String([Security.Cryptography.SHA256]::Create().ComputeHash([IO.File]::ReadAllBytes($path)))
 }
 
+# INST-06: a versao que o loader do tia.exe vai carregar. Program.SiemensProbeDirs sonda
+# V21, V20, V19 nessa ordem e para na 1a que tiver as DLLs; $portalDirs ja' vem ordenado igual.
+# A chave do registro e' "<major>.0" ("Portal V21" -> "21.0").
+function Get-EffectiveOpennessVersion {
+    if (-not $portalDirs) { return $null }
+    '{0}.0' -f [int](($portalDirs[0].Name -replace '[^0-9]', ''))
+}
+
 function Test-Whitelisted {
     # Whitelist stale (hash != o do exe atual) = EngineeringSecurityException na 1a chamada.
     $h = Get-ExeHash $exe
     if (-not $h) { return $false }
-    foreach ($ver in Get-ChildItem 'HKLM:\SOFTWARE\Siemens\Automation\Openness' -ErrorAction SilentlyContinue) {
-        $key = Join-Path $ver.PSPath 'Whitelist\tia.exe\Entry'
-        if (-not (Test-Path $key)) { continue }
-        if ((Get-ItemProperty $key).FileHash -eq $h) { return $true }
+    # INST-06: casar em QUALQUER versao instalada dava verde com a whitelist da versao errada —
+    # V19 e V21 coexistem, e o Openness confere a whitelist da versao que o loader carregou.
+    # Path junto do hash: whitelist gravada por outro checkout tem o mesmo hash e o caminho errado.
+    # As duas chaves precisam bater: o Portal compara DateModified como string sem documentar
+    # UTC vs local, e por isso o whitelist.ps1 escreve Entry e EntryLocal.
+    $ver = Get-EffectiveOpennessVersion
+    if (-not $ver) { return $false }
+    foreach ($n in 'Entry', 'EntryLocal') {
+        $key = "HKLM:\SOFTWARE\Siemens\Automation\Openness\$ver\Whitelist\tia.exe\$n"
+        if (-not (Test-Path $key)) { return $false }
+        $e = Get-ItemProperty $key
+        if ($e.FileHash -ne $h) { return $false }
+        # Resolve-RealPath dos dois lados: a whitelist grava o caminho pelo qual o exe foi visto,
+        # e o mesmo checkout tem dois nomes quando ha' junction no meio (~/.claude x ~/.agents).
+        if ($e.Path -and (Resolve-RealPath $e.Path) -ne (Resolve-RealPath $exe)) { return $false }
     }
-    return $false
+    return $true
 }
 
 function Resolve-RealPath([string]$p) {
@@ -140,7 +160,7 @@ if ($Check) {
         ([bool]$portalDirs) 'TIA Portal V19+ com Openness'
     Show "tia.exe$(if (Test-Path $exe) { ' (' + (Get-Item $exe).LastWriteTime.ToString('yyyy-MM-dd HH:mm') + ')' })" `
         (Test-Path $exe) 'pwsh scripts/rebuild.ps1'
-    Show 'whitelist do registro bate com o hash atual' (Test-Whitelisted) `
+    Show "whitelist do registro bate com o hash atual (Openness $(Get-EffectiveOpennessVersion))" (Test-Whitelisted) `
         "$(if (Test-Path $exe) { 'Start-ScheduledTask -TaskName TiaWhitelist' } else { 'sai junto com o build: pwsh scripts/rebuild.ps1' })"
     Show 'tasks TiaWhitelist/TiaSmokeRun/TiaSimHost apontando pra este repo' (Test-TasksCurrent) `
         'rodar init.ps1 sem -Check (1 UAC)'
@@ -197,13 +217,23 @@ New-Item -ItemType Directory -Force -Path $libDir | Out-Null
 $missing = @()
 foreach ($dll in $dllNames) {
     $dest = Join-Path $libDir $dll
-    if (Test-Path $dest) { continue }
     $found = $portalDirs |
         ForEach-Object { Join-Path $_.FullName "PublicAPI\$($_.Name -replace 'Portal ','')\net48\$dll" } |
         Where-Object { Test-Path $_ } |
         Select-Object -First 1
-    if ($found) { Copy-Item $found $dest; Write-Host "lib/: copiado $dll de $found" }
-    else { $missing += $dll }
+    if (-not $found) {
+        # sem fonte instalada: o que ja' esta' em lib/ continua servindo
+        if (-not (Test-Path $dest)) { $missing += $dll }
+        continue
+    }
+    # INST-04: `if (Test-Path $dest) { continue }` nunca reconferia a copia. Trocar o Update do
+    # Portal (ou voltar de major) deixava lib/ com a DLL velha, o build referenciando uma API que
+    # nao e' a que o loader carrega em runtime — falha tardia e invisivel no init.
+    # Hash, nao data: Copy-Item preserva LastWriteTime, entao data igual nao prova conteudo igual.
+    if ((Test-Path $dest) -and (Get-FileHash $dest).Hash -eq (Get-FileHash $found).Hash) { continue }
+    $acao = if (Test-Path $dest) { 'atualizado' } else { 'copiado' }
+    Copy-Item $found $dest -Force
+    Write-Host "lib/: $acao $dll de $found"
 }
 # PLCSIM Advanced nao mora com o Openness: a API fica em Common Files (x86), versionada por pasta.
 # Sem ela o `sim-run` nao compila; com ela, o build copia a DLL pro lado do exe (Private=true no csproj).

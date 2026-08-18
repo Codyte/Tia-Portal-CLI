@@ -41,8 +41,8 @@
   <sub>L27:class Motion  L31:.List  L43:.Collect  L67:.Parameters  L80:.Safe</sub>
 - **Multiuser.cs** (110 ln)
   <sub>L14:class Multiuser  L21:.ListServerProjects  L66:.ResolveServer  L81:.Describe</sub>
-- **Ops.cs** (1413 ln)
-  <sub>L100:class Ops  L102:lookup  L104:.FindBlock  L114:.FindGroup  L129:.FindGroupByName  L147:.FindTagGroup  L162:.FindTagGroupByName  L175:.FindBlockIn  L188:.ResolveFolder  L200:.SplitPath  L224:.WalkFolders  L251:.FindTagTable  L264:.ResolveTagFolder  L272:.ResolveTypeFolder  L279:.FindType  L291:structure  L293:.CreateFolder  L325:.CreateFolders  L360:.DeleteFolder  L387:.TypeFolderAction  L408:.CountTypes  L413:.CountBlocks  L418:.CountTables  L427:.CreateInstanceDb …</sub>
+- **Ops.cs** (1432 ln)
+  <sub>L101:class Ops  L103:lookup  L105:.FindBlock  L115:.FindGroup  L130:.FindGroupByName  L148:.FindTagGroup  L163:.FindTagGroupByName  L176:.FindBlockIn  L189:.ResolveFolder  L201:.SplitPath  L225:.WalkFolders  L252:.FindTagTable  L265:.ResolveTagFolder  L273:.ResolveTypeFolder  L280:.FindType  L292:structure  L294:.CreateFolder  L326:.CreateFolders  L361:.DeleteFolder  L388:.TypeFolderAction  L409:.CountTypes  L414:.CountBlocks  L419:.CountTables  L428:.CreateInstanceDb …</sub>
 - **Profinet.cs** (166 ln)
   <sub>L12:class ProfinetConfig  L14:.Devices  L15:.StartByte  L16:.TagFolder  L17:.TagTable  L20:class ProfinetMapping  L22:.Hardware  L23:.EquipmentTag  L24:.DeviceNumber  L28:class Profinet  L30:.Generate  L92:.TagName  L97:.FindTable  L103:.ResolveTable  L111:.FindIoDeviceNames  L130:.FindNetworkItem  L143:class BoolAddressAllocator  L148:.BoolAddressAllocator  L153:.Next  L161:.Skip</sub>
 - **Replicate.cs** (586 ln)
@@ -51,8 +51,8 @@
   <sub>L51:class ScaffoldManifest  L54:.Source  L57:.Folders  L60:.TagFolders  L63:.Replace  L70:.Cpu  L72:.Items  L75:class ScaffoldItem  L77:.File  L80:.Folder  L84:class ScaffoldPlanItem  L97:class Scaffold  L100:.Rank  L114:.Plan  L145:.Merge  L155:.Apply  L164:.Run  L238:.CheckFamily  L252:.SameFamily  L259:.AlreadyInAnotherFolder  L267:.DeleteObject  L279:.FolderAction  L302:.ResolveBlockPath  L319:.ResolveTypePath …</sub>
 - **ScreenItems.cs** (677 ln)
   <sub>L64:class ScreenItems  L66:class Item  L77:núcleo puro (sem Openness, testável offline)  L80:.Parse  L108:.Groups  L138:.Patch  L166:case "x"  L167:case "y"  L168:case "w"  L169:case "h"  L185:.Remove  L212:.Rename  L250:.RenameFromTag  L299:.Group  L359:.CopyInto  L424:verbos  L427:.List  L460:.Audit  L514:.Set  L552:.Copy  L577:utilidades  L580:.ScreenElements  L590:.GroupOf  L596:.NameOf …</sub>
-- **Sim.cs** (636 ln)
-  <sub>L74:class Sim  L82:.Run  L252:.Diag  L315:.Watch  L360:.Try  L366:.RegisteredInstances  L376:.WaitReady  L398:.ValidateSteps  L411:case "write"  L412:case "read"  L413:case "wait"  L414:case "run"  L438:.Execute  L448:case "write"  L452:case "read"  L456:case "wait"  L460:case "run"  L464:case "stop"  L468:case "state"  L471:case "tags"  L499:.Write  L523:.ParseBool  L531:.Plain  L552:class Target …</sub>
+- **Sim.cs** (675 ln)
+  <sub>L75:class Sim  L83:.Run  L280:.Diag  L343:.Watch  L388:.Try  L394:.RegisteredInstances  L404:.WaitReady  L426:.ValidateSteps  L439:case "write"  L440:case "read"  L441:case "wait"  L442:case "run"  L466:.Execute  L476:case "write"  L480:case "read"  L484:case "wait"  L488:case "run"  L492:case "stop"  L496:case "state"  L499:case "tags"  L527:.Write  L551:.ParseBool  L559:.Plain  L580:class Target …</sub>
 - **Standardize.cs** (655 ln)
   <sub>L59:class StandardizeConfig  L61:.RootFolder  L64:.MemorySets  L72:.SetMapping  L83:.PrefixMappings  L102:.CommentMappings  L167:.AlarmOrder  L173:class PrefixMapping  L175:.Keyword  L176:.Prefix  L179:class TagTemplate  L186:class NaturalStringComparer  L188:.Compare  L215:class AlarmTagComparer  L220:.AlarmTagComparer  L225:.Compare  L233:.Key  L244:class AddressAllocator  L248:.CurrentByte  L249:.CurrentBit  L251:.AddressAllocator  L257:.Next  L283:class MemoryManager  L287:.MemoryManager …</sub>
 - **TiaSession.cs** (231 ln)

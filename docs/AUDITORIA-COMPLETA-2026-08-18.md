@@ -2,28 +2,28 @@
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
 <!--   L29    Auditoria técnica completa e mapa de discussão — tia-cli -->
 <!--   L43    0. Status da resposta (2026-08-18, revisão no repo) -->
-<!--   L90    1. Resumo executivo -->
-<!--   L125   2. Como ler os registros -->
-<!--   L162   3. Escopo e evidência coletada -->
-<!--   L200   4. Pontos fortes confirmados -->
-<!--   L220   5. Guardrails e segurança operacional -->
-<!--   L245   6. Contrato de sucesso, erros e JSON -->
-<!--   L268   7. Instalação, versões e carregamento de assemblies -->
-<!--   L293   8. Release, CI e cadeia de suprimentos -->
-<!--   L312   9. Cobertura de testes e lacunas funcionais -->
-<!--   L334   10. Arquitetura e manutenibilidade -->
-<!--   L353   11. Domínio PLC, Openness, HMI, drives e simulação -->
-<!--   L378   12. Desempenho, escala e contexto de IA -->
-<!--   L393   13. Documentação e experiência do desenvolvedor -->
-<!--   L414   14. Privacidade, segurança de software e aspectos legais -->
-<!--   L430   15. Produto e posicionamento -->
-<!--   L445   16. Perguntas abertas para discutir com outra IA -->
-<!--   L474   17. Plano de ação proposto -->
-<!--   L525   18. Backlog priorizado consolidado -->
-<!--   L568   19. Validação executada nesta auditoria -->
-<!--   L585   20. Estado local observado -->
-<!--   L595   21. Definição sugerida de “pronto para uso confiável” -->
-<!--   L611   22. Conclusão -->
+<!--   L137   1. Resumo executivo -->
+<!--   L172   2. Como ler os registros -->
+<!--   L209   3. Escopo e evidência coletada -->
+<!--   L247   4. Pontos fortes confirmados -->
+<!--   L267   5. Guardrails e segurança operacional -->
+<!--   L292   6. Contrato de sucesso, erros e JSON -->
+<!--   L315   7. Instalação, versões e carregamento de assemblies -->
+<!--   L340   8. Release, CI e cadeia de suprimentos -->
+<!--   L359   9. Cobertura de testes e lacunas funcionais -->
+<!--   L381   10. Arquitetura e manutenibilidade -->
+<!--   L400   11. Domínio PLC, Openness, HMI, drives e simulação -->
+<!--   L425   12. Desempenho, escala e contexto de IA -->
+<!--   L440   13. Documentação e experiência do desenvolvedor -->
+<!--   L461   14. Privacidade, segurança de software e aspectos legais -->
+<!--   L477   15. Produto e posicionamento -->
+<!--   L492   16. Perguntas abertas para discutir com outra IA -->
+<!--   L521   17. Plano de ação proposto -->
+<!--   L572   18. Backlog priorizado consolidado -->
+<!--   L615   19. Validação executada nesta auditoria -->
+<!--   L632   20. Estado local observado -->
+<!--   L642   21. Definição sugerida de “pronto para uso confiável” -->
+<!--   L658   22. Conclusão -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Auditoria técnica completa e mapa de discussão — tia-cli
@@ -52,7 +52,49 @@ parte dos P1/P2 ser checklist genérico de OSS maduro.
 envelope comum), `API-05`, `API-06`, `API-08` (nos códigos de saída; sem helpers de faixa),
 `API-09`, `API-10`, `PLC-08`, `INST-01`, `INST-02`, `INST-03`, `INST-05`, `INST-07`, `INST-09`,
 `INST-10`, `SAFE-09` (backup antes do delete; rollback automático não — ver abaixo), `SAFE-15`,
-`SAFE-16`, `SAFE-17`, `PLC-03`, `DOC-02`, `DOC-03`, `TEST-13`.
+`SAFE-16`, `SAFE-17`, `PLC-03`, `DOC-02`, `DOC-03`, `TEST-13`, e a quinta leva (2026-08-18):
+`API-07`, `API-11`, `SAFE-10`, `PLC-05`, `INST-04`, `INST-06`, `TEST-01`, `TEST-02`, `PERF-01`,
+`PLC-02`, `SEC-03`.
+
+**Quinta leva, achado a achado:**
+
+- `API-11`: `DownloadProvider.Download` devolve contagem em vez de levantar. Agora
+  `ErrorCount > 0` ou `State != Success` viram `error` de topo e o `sim-run` **não roda os passos**
+  — rodá-los contra um programa que não subiu "passava" lendo lixo. Na falha as mensagens saem
+  inteiras (no caminho feliz continuam cortadas em 20).
+- `PLC-05`: o `GoOffline()` automático só acontece quando o alvo do download é access point PLCSIM.
+  Sob `--allow-physical`, projeto online vira erro pedindo a ação humana: derrubar uma conexão que
+  o verbo não consegue provar que é simulada é efeito colateral que ninguém pediu.
+- `SAFE-10`: `run --script --fail-fast` para no 1º step que falha e devolve `aborted` com o que
+  sobrou. Isolar step continua sendo o default — é o que faz o batch valer para bateria de
+  diagnóstico; o opt-in é para corrente de escrita, onde o step seguinte trabalha em cima do que o
+  anterior não fez.
+- `API-07`: não existe exception type nem HResult para "portal ocupado" (`tia-help.py --sdk busy`,
+  0 hits nas 14 assemblies), então a mensagem continua sendo o sinal — mas agora em 6 línguas por
+  radical (`Ops.IsBusyMessage`). Com o Portal em pt-BR o `--retry` era decorativo.
+- `INST-04`: `lib/*.dll` era copiada só quando ausente. Agora o `init.ps1` compara **hash** com a
+  DLL da instalação e re-copia quando divergem — trocar o Update do Portal deixava o build
+  referenciando uma API que não é a que o loader carrega.
+- `INST-06`: `Test-Whitelisted` passava se o hash casasse em **qualquer** versão instalada. Agora
+  confere a versão que o loader vai usar (`Get-EffectiveOpennessVersion`), as duas chaves
+  (`Entry`/`EntryLocal`) e o `Path` gravado — este resolvido por `Resolve-RealPath` dos dois lados,
+  senão junction no caminho reprova o checkout certo. De quebra, o `whitelist.ps1` deixou de
+  escrever dentro da chave `AllowList` da Siemens (que não é versão) e apaga a entrada inválida.
+- `TEST-02`: o guard de interface física existe desde `SAFE-01` (`--allow-physical`); o que faltava
+  era teste. `Sim.IsPlcsimAccessPoint` virou o ponto único dos dois pontos de checagem e tem teste
+  offline (`Sim.AccessPointGuard`), junto de `Cli.BusyWords`.
+- `TEST-01`: o HEAD compila — o `--version` do exe carrega o commit
+  (`AssemblyInformationalVersion`), então "qual commit este binário é" é uma pergunta que o próprio
+  binário responde, e `rebuild.ps1` (build + testes offline + whitelist) fecha verde nesta máquina.
+- `PERF-01`: a unidade já está certa desde `API-05` — o corte é em chars (`json.Length`, UTF-16) e
+  o campo `bytes` do stub vem de `FileInfo.Length`, que são bytes de verdade.
+- `PLC-02`: a inexatidão já é machine-readable (`nextFreeByteExact`, `nextFreeByteNote`,
+  `scanErrors`, `unreadableDrives`) e o `set-io-address` confere o `--start` contra o mapa antes de
+  aplicar. Bloqueio duro não entra: a autoridade é o `Next free address: N` do erro do Portal, e
+  transformar um piso em veto pararia endereçamento legítimo.
+- `SEC-03`: HTTP no Project Server já é opt-in (`--http`; o default monta `Protocol.Https`) e desde
+  `SAFE-17` o resultado carrega o aviso de credencial em claro. Sem ambiente legado conhecido para
+  deprecar de vez.
 
 **Obsoleto** — `DOC-01` (índice raiz regenerado no commit `56c34c6`) e `DOC-16` (o `navindex.py`
 instalado já indexa `.cs` e, desde 2026-08-18, títulos de Markdown).
@@ -84,6 +126,11 @@ a falha do export **impede** o delete — apagar sem rede exige `--no-backup` po
 automático, não: desfazer um import parcial pede transação que o Openness não tem, e o XML
 exportado é o que o `import-block` já sabe reler. O `MasterCopy` de `bake-lib` fica de fora — a API
 não expõe `Export` de master copy, e a fonte continua viva no PLC.
+
+**Ainda sem veredito individual** — os ~69 achados P2/P3 restantes (`DOC-04..15`, `PERF-02..10`,
+`PLC-07/09..20`, `TEST-03..08/11/12/14..17`, `INST-11..20`, `API-12..15`, `PROD-01..06/09/10`,
+`SEC-01/02/04..11`, `SAFE-19`). São documentação, medição e suíte de testes sistemática; nenhum é
+defeito de comportamento confirmado. Ficam como pauta, não como pendência de correção.
 
 **Segunda leva, quando doer** — `CI-01`/`CI-02` (extrair lógica pura para compilar no CI).
 
@@ -230,7 +277,7 @@ exportados para issue tracker preservando `ID`, prioridade, achado, pergunta e m
 | SAFE-07 | **P1 · Confirmado** | O lock cross-process existe apenas na rota de task/sessão 0. Na sessão interativa, `Invoke-Tia` chama o exe diretamente sem lock (`_common.ps1:60-64`). Dois terminais podem violar D9. | O CLI deve garantir D9 sozinho ou a disciplina humana basta? | Mutex nomeado ou lock no próprio `tia.exe`, compartilhado por todas as rotas. Teste com dois processos: o segundo deve falhar rápido e de forma determinística. |
 | SAFE-08 | **P1 · Confirmado** | `move-block` exporta todos, apaga e importa. Falha de import é registrada, mas o bloco original já foi removido (`Ops.cs:667-729`). | O XML exportado é considerado backup suficiente? Quem restaura e para qual pasta? | Implementar rollback para a pasta original ou retornar recovery manifest explícito. Aceite: falha injetada no import deixa o bloco original restaurado. |
 | SAFE-09 | **Fechado (parcial)** | `import-master-copy --force`, `scaffold --force`, replicadores e padronização podem apagar antes de recriar (`Library.cs:162-244`, `Scaffold.cs:190-211`, `Replicate.cs:303-347`, `Standardize.cs:436-490`). | Quais operações aceitam perda parcial? Existe backup do projeto como pré-condição verificável? | Estratégia comum de stage/backup/rollback; gerar recovery bundle antes do delete. Se rollback for impossível, resultado deve ser `partial` e exit não zero. |
-| SAFE-10 | **P1 · Confirmado** | Batch continua após qualquer exceção. Isso é útil para diagnóstico, mas perigoso quando um step aplicado falha e os seguintes dependem dele (`src/Tia.Cli/Program.cs:486-548`). | Default deve continuar ou parar em fluxo de escrita? | Acrescentar `--fail-fast` e `allowFailure` por step; considerar fail-fast como default quando qualquer step contém `--apply`. |
+| SAFE-10 | **Fechado** | Batch continua após qualquer exceção. Isso é útil para diagnóstico, mas perigoso quando um step aplicado falha e os seguintes dependem dele (`src/Tia.Cli/Program.cs:486-548`). | Default deve continuar ou parar em fluxo de escrita? | Acrescentar `--fail-fast` e `allowFailure` por step; considerar fail-fast como default quando qualquer step contém `--apply`. |
 | SAFE-11 | **P1 · Confirmado** | `audit` marca check não executado como `ok:true`; o `ok` global pode ser true com checks críticos pulados (`Audit.cs:233-240`, `329-336`). | Conformidade incompleta é sucesso, desconhecido ou falha? | Resultado tri-state: `pass/fail/skipped`; campos `complete`, `skippedChecks`; `--strict` retorna não zero se qualquer check pular. |
 | SAFE-12 | **P1 · Confirmado** | Falha ao ler telegrama é engolida em `CollectTelegramMap` (`Hardware.cs:468-490`), mas o mapa ainda pode declarar `nextFreeByteExact:true`. | Como distinguir “não há telegrama” de “não consegui ler telegrama”? | Coletar `scanErrors`, incrementar `unreadable`, forçar `nextFreeByteExact:false`. Teste com drive sem commissioning data. |
 | SAFE-13 | **P1 · Confirmado** | `FindItem` retorna o primeiro item por nome em busca recursiva (`Hardware.cs:242-263`). Nomes repetidos são comuns em hardware; escrita pode atingir o item errado. | Todo verbo de escrita deve exigir caminho completo quando houver duplicidade? | Enumerar todos os matches; aceitar nome curto apenas se único. Retornar candidatos e exigir path em caso ambíguo. |
@@ -252,11 +299,11 @@ exportados para issue tracker preservando `ID`, prioridade, achado, pergunta e m
 | API-04 | **P1 · Confirmado** | Há múltiplos dialetos: `apply` versus `applied`, `action`, `status`, `ok`, `error`, `failed`, `warnings`. | O JSON é contrato estável para consumidores ou apenas saída humana estruturada? | Definir schema base versionado: `ok`, `status`, `applied`, `changed`, `warnings`, `errors`, `data`, `meta`. Preservar campos antigos até major version. |
 | API-05 | **P1 · Confirmado** | `WriteOut` chama `json.Length` de `bytes`; isso conta chars UTF-16, não bytes UTF-8 (`src/Tia.Cli/Program.cs:1153-1173`). | Métricas históricas chamam KB de bytes reais ou chars? | Usar `new FileInfo(path).Length`; renomear limite para `chars` ou medir UTF-8. Teste com acentos/emoji. |
 | API-06 | **P1 · Confirmado** | `ExitCodeFor` classifica `ArgumentException`, `FileNotFoundException` e tipos Siemens; `FormatException`, `DirectoryNotFoundException`, JSON inválido e wrappers podem cair em geral 1 (`src/Tia.Cli/Program.cs:400-408`). | Quais erros são uso (2), arquivo (3) ou ambiente TIA (4)? | Tabela central de exceções/códigos + root-cause traversal completo. Testes parametrizados para cada opção numérica e JSON inválido. |
-| API-07 | **P1 · Confirmado** | `--retry` detecta busy apenas procurando a palavra inglesa `busy` na mensagem (`src/Tia.Cli/Program.cs:578-600`). | Mensagem é localizada? Existem exception types/HResults estáveis? | Preferir tipo/código Siemens; fallback multilíngue documentado. Testar Portal ocupado nas versões suportadas. |
+| API-07 | **Fechado** | `--retry` detecta busy apenas procurando a palavra inglesa `busy` na mensagem (`src/Tia.Cli/Program.cs:578-600`). | Mensagem é localizada? Existem exception types/HResults estáveis? | Preferir tipo/código Siemens; fallback multilíngue documentado. Testar Portal ocupado nas versões suportadas. |
 | API-08 | **P1 · Confirmado** | Valores numéricos de `--retry`, `--timeout`, `--max`, portas, posições etc. usam `int.Parse` disperso, sem limites uniformes. | Quais intervalos são seguros? | Helpers `RequireInt/OptionalInt(min,max)`; inválido retorna exit 2 antes do attach. |
 | API-09 | **P1 · Confirmado** | JSON de config é desserializado com default Newtonsoft, que ignora propriedades desconhecidas (`src/Tia.Cli/Program.cs:789`, `1009-1056`). Typos podem ativar defaults silenciosamente. | Compatibilidade forward exige ignorar desconhecidos ou segurança exige falhar? | `MissingMemberHandling.Error` para arquivos de execução; JSON Schema versionado; comando `validate-config`. |
 | API-10 | **P1 · Confirmado** | `sim-run` não valida todos os steps antes de baixar/rodar. Array curto ou operação desconhecida falha durante execução e os demais continuam. | Erros de script devem ser descobertos antes do download? | Pré-validação completa de shape/op/arity/tipo/limites antes de attach/download. |
-| API-11 | **P1 · Inferência forte** | `DownloadProvider.Download` devolve contagem de erros, mas o código não transforma `ErrorCount>0` em falha e continua para tag list/RUN (`Sim.cs:148-174`). | `result.State` pode ser Success com erros? | Abortar steps se state não for sucesso ou errors > 0; preservar mensagens completas em arquivo. |
+| API-11 | **Fechado** | `DownloadProvider.Download` devolve contagem de erros, mas o código não transforma `ErrorCount>0` em falha e continua para tag list/RUN (`Sim.cs:148-174`). | `result.State` pode ser Success com erros? | Abortar steps se state não for sucesso ou errors > 0; preservar mensagens completas em arquivo. |
 | API-12 | **P2 · Confirmado** | `run --summary` perde `type`, detalhes estruturados e usa índice zero-based sem documentar claramente (`src/Tia.Cli/Program.cs:524-547`). | Consumidores esperam step 0 ou 1? | Documentar e incluir `stepIndex` zero-based + `stepNumber` humano; preservar `type/code/details`. |
 | API-13 | **P2 · Confirmado** | Flags globais do processo não descem aos steps do batch; cada step precisa repetir `--plc`, `--out`, possivelmente `--portal` (`VERBS.md:110`). | É intencional por isolamento ou dívida de UX? | Permitir defaults do batch e override por step, mantendo semântica explícita no JSON final. |
 | API-14 | **P2 · Confirmado** | Auto-spill usa caminho fixo `workspace/auto-<verb>.json`; chamadas sucessivas sobrescrevem o resultado anterior (`src/Tia.Cli/Program.cs:1138-1145`). | Histórico é desejado? | Acrescentar operation-id/timestamp ou opção `--latest`; nunca colidir em processos distintos. |
@@ -272,9 +319,9 @@ exportados para issue tracker preservando `ID`, prioridade, achado, pergunta e m
 | INST-01 | **P0 · Confirmado** | `.csproj` referencia `Siemens.Engineering.Base/Step7/WinCCUnified` separadas; `init.ps1:42-43` exige essas DLLs. O loader diz que V19/V20 eram monolíticos (`src/Tia.Cli/Program.cs:1191-1218`). | O projeto realmente pode buildar/rodar com V19/V20? | Escolher: declarar V21+ agora, ou criar builds por major (`v19`, `v20`, `v21`) com referências condicionais/adaptadores. Matriz end-to-end obrigatória antes de recolocar badges. |
 | INST-02 | **P1 · Confirmado** | `init.ps1` considera qualquer `Portal V*` instalado, inclusive V17/V18, como gate válido (`init.ps1:45-46`, `135`). Nesta máquina reportou V17/V18/V19 como “ok”. | Quais versões mínimas são realmente suportadas? | Parse numérico e filtre versões suportadas; mostre unsupported separadamente. |
 | INST-03 | **P1 · Confirmado** | Cada DLL é encontrada separadamente no primeiro Portal que a possuir (`init.ps1:193-201`). É possível misturar versões no mesmo `lib/`. | Mistura de assemblies é suportada pela Siemens? Provavelmente não. | Selecionar uma única raiz de PublicAPI que contenha o conjunto coerente; falhar se incompleto. |
-| INST-04 | **P1 · Confirmado** | DLL existente em `lib/` nunca é atualizada (`init.ps1:194-195`). Upgrade/downgrade do Portal pode deixar referências antigas. | Quando o usuário troca Update/major, como o repo detecta? | Manifest `lib/.source.json` com versão, path e hashes; refresh atômico do conjunto quando divergir. |
+| INST-04 | **Fechado** | DLL existente em `lib/` nunca é atualizada (`init.ps1:194-195`). Upgrade/downgrade do Portal pode deixar referências antigas. | Quando o usuário troca Update/major, como o repo detecta? | Manifest `lib/.source.json` com versão, path e hashes; refresh atômico do conjunto quando divergir. |
 | INST-05 | **P1 · Confirmado** | O resolver busca cada assembly independentemente em env, exe e V21/V20/V19 (`src/Tia.Cli/Program.cs:1200-1219`), podendo misturar roots em runtime. | É aceitável fallback por assembly? | Resolver primeiro uma instalação coerente, fixar root e validar versões fortes de todas as assemblies. |
-| INST-06 | **P1 · Confirmado** | `Test-Whitelisted` passa se o hash casar em qualquer versão instalada, não necessariamente a que o loader usará (`init.ps1:53-62`). | Qual registry hive/version será consultado pelo runtime selecionado? | Vincular `--version`, loader e whitelist à mesma versão; checar todas as entries requeridas ou apenas a efetiva, de modo explícito. |
+| INST-06 | **Fechado** | `Test-Whitelisted` passa se o hash casar em qualquer versão instalada, não necessariamente a que o loader usará (`init.ps1:53-62`). | Qual registry hive/version será consultado pelo runtime selecionado? | Vincular `--version`, loader e whitelist à mesma versão; checar todas as entries requeridas ou apenas a efetiva, de modo explícito. |
 | INST-07 | **P1 · Confirmado** | Após UAC, `init.ps1` verifica apenas se `TiaWhitelist` existe, mas imprime que as três tasks estão registradas (`init.ps1:231-240`). | Setup parcial pode passar? | Reexecutar `Test-TasksCurrent` completo e falhar se qualquer task/ACL/action divergir. |
 | INST-08 | **P1 · Confirmado** | Build por fonte exige `Siemens.Simatic.Simulation.Runtime.Api.x64.dll`; ausência de PLCSIM Advanced entra em `$missing` e aborta init (`init.ps1:203-217`). README não o declara como requisito geral. | Simulação é feature opcional ou requisito de toda a CLI? | Separar `Tia.Sim` opcional/reflection/plugin, ou compilar stub quando PLCSIM não existe. Core PLC deve instalar só com TIA Portal. |
 | INST-09 | **P0 · Confirmado** | A DLL PLCSIM é `Private=true`, mas `pack.ps1` proíbe qualquer `Siemens.*` no zip. Instalação prebuilt pula cópia de lib e o resolver só trata `Siemens.Engineering.*`. Logo `sim-run` da próxima release fica sem DLL ou o pack aborta. | A licença permite copiar a DLL localmente durante init? | Nunca distribuir; no prebuilt, localizar/copy local ou resolver de `Common Files`. Teste de instalação limpa da release com e sem PLCSIM. |
@@ -313,8 +360,8 @@ exportados para issue tracker preservando `ID`, prioridade, achado, pergunta e m
 
 | ID | Pri. / estado | Achado | Pergunta | Ação/teste recomendado |
 |---|---|---|---|---|
-| TEST-01 | **P1 · Confirmado** | O HEAD atual não foi compilado nesta auditoria: faltam DLLs Siemens/PLCSIM. | Existe outro ambiente com `rebuild.ps1` verde neste commit exato? | Registrar log resumido e hash do commit em `docs/verification/` ou release manifest. |
-| TEST-02 | **P1 · Confirmado** | Não há teste do guard de interface física do `sim-run` porque o guard não existe. | — | Mock/fake de `DownloadProvider` + teste vivo que lista PN/IE mas recusa antes do download. |
+| TEST-01 | **Fechado** | O HEAD atual não foi compilado nesta auditoria: faltam DLLs Siemens/PLCSIM. | Existe outro ambiente com `rebuild.ps1` verde neste commit exato? | Registrar log resumido e hash do commit em `docs/verification/` ou release manifest. |
+| TEST-02 | **Fechado** | Não há teste do guard de interface física do `sim-run` porque o guard não existe. | — | Mock/fake de `DownloadProvider` + teste vivo que lista PN/IE mas recusa antes do download. |
 | TEST-03 | **P1 · Confirmado** | Não há testes de exit code para resultados parciais incorporados. | — | Casos para Sim, Standardize, Replicate, FaultOb, move-block e create-folders. |
 | TEST-04 | **P1 · Confirmado** | Não há testes sistemáticos para `--apply` ausente em todos os verbos de escrita. | Algum novo handler pode esquecer o guard? | Teste de contrato enumerando command registry: todo comando classificado write deve provar dry-run sem chamada mutante. |
 | TEST-05 | **P1 · Confirmado** | Lifecycle e persistência Multiuser não participam do contrato dry-run. | — | Testes explícitos da política escolhida, não deixar como exceção implícita. |
@@ -355,10 +402,10 @@ exportados para issue tracker preservando `ID`, prioridade, achado, pergunta e m
 | ID | Pri. / estado | Achado/limite | Pergunta | Próxima ação possível |
 |---|---|---|---|---|
 | PLC-01 | **P1 · Confirmado** | Safety está fora de escopo e não profundamente verificado (`LIMITES.md`). | Deve haver recusa explícita ao detectar blocos/CPU F? | `doctor/audit` com finding “Safety requer GUI/humano”; nunca sugerir automação parcial silenciosa. |
-| PLC-02 | **P1 · Confirmado** | `nextFreeByte` é apenas piso; endereços unassigned e falhas de leitura impedem garantia. | Um agente pode aplicar endereço só com esse valor? | Exigir confirmação do Portal/error probe ou política de faixa reservada; tornar a inexatidão machine-readable e bloqueante opcional. |
+| PLC-02 | **Fechado** | `nextFreeByte` é apenas piso; endereços unassigned e falhas de leitura impedem garantia. | Um agente pode aplicar endereço só com esse valor? | Exigir confirmação do Portal/error probe ou política de faixa reservada; tornar a inexatidão machine-readable e bloqueante opcional. |
 | PLC-03 | **P1 · Confirmado** | Download PLCSIM pode dar falso positivo quando o clássico sequestra o access point. Hoje isso é pré-requisito documental. | Dá para detectar processo/serviço do clássico antes do download? | Preflight automático e verificação pós-download por tag/program signature; falhar se instância continuar vazia. |
 | PLC-04 | **P1 · Confirmado** | `Resolve(DownloadConfiguration)` escolhe enum por nome e ignora configuração sem propriedade/enum compatível (`Sim.cs:519-526`). | Uma pergunta Siemens desconhecida pode ficar com default perigoso ou abrir diálogo? | Logar cada configuração e seleção; fail-closed se tipo/seleção não estiver allowlisted para PLCSIM. |
-| PLC-05 | **P1 · Confirmado** | `sim-run` chama `GoOffline()` automaticamente se o projeto estiver online (`Sim.cs:139-146`). | Isso pode desconectar uma sessão que o engenheiro usa contra CPU real? | Bloquear se online target não for comprovadamente simulação; pedir ação humana ou flag específica com contexto. |
+| PLC-05 | **Fechado** | `sim-run` chama `GoOffline()` automaticamente se o projeto estiver online (`Sim.cs:139-146`). | Isso pode desconectar uma sessão que o engenheiro usa contra CPU real? | Bloquear se online target não for comprovadamente simulação; pedir ação humana ou flag específica com contexto. |
 | PLC-06 | **P1 · Confirmado** | `sim-run --no-download` pode operar sobre programa antigo/instância vazia; só reporta tagCount. | Como provar que o programa corresponde ao projeto atual? | Gravar assinatura/version tag no programa ou comparar fingerprint antes dos steps; `--no-download` exige match. |
 | PLC-07 | **P2 · Confirmado** | PLCSIM steps suportam números e Bool para escrita, mas não strings/time/date/arrays/UDTs. | Quais tipos são prioritários nos testes reais? | Capability list e erros antecipados; ampliar apenas com casos concretos. |
 | PLC-08 | **P2 · Confirmado** | `wait` aceita inteiro direto em `Thread.Sleep`; não há limite total por script. | Agente pode pedir espera de horas por engano? | Limites e orçamento total, `--max-wait`, validação prévia. |
@@ -379,7 +426,7 @@ exportados para issue tracker preservando `ID`, prioridade, achado, pergunta e m
 
 | ID | Pri. / estado | Achado | Pergunta | Otimização/aceite |
 |---|---|---|---|---|
-| PERF-01 | **P1 · Confirmado** | O limite é em chars, mas documentação/stub fala bytes; vide API-05. | — | Corrigir unidade antes de comparar benchmarks. |
+| PERF-01 | **Fechado** | O limite é em chars, mas documentação/stub fala bytes; vide API-05. | — | Corrigir unidade antes de comparar benchmarks. |
 | PERF-02 | **P2 · Confirmado** | Auto-spill reduz stdout, mas o objeto completo ainda é materializado e serializado em memória. | Projetos maiores que 476 blocos podem estourar memória/tempo? | Streaming para inventários grandes ou paginação/cursor; medir pico de memória. |
 | PERF-03 | **P2 · Confirmado** | `find --kind tag` e snapshot produzem centenas de KB; auto-spill ajuda, mas consumers podem pedir `--full` sem perceber. | — | Warning/meta com estimativa antes do dump; filtros/paginação. |
 | PERF-04 | **P2 · Confirmado** | Attach custa ~2–3 s; docs antigas ainda citam ~7 s em alguns pontos. | Qual hardware/projeto é baseline oficial? | Atualizar números com data/ambiente e evitar valores duplicados em várias fontes. |
@@ -417,7 +464,7 @@ exportados para issue tracker preservando `ID`, prioridade, achado, pergunta e m
 |---|---|---|---|---|
 | SEC-01 | **P1 · Confirmado** | CI impede diretórios/extensões conhecidos, mas não conteúdo sensível fora deles. | — | Scanner de conteúdo + revisão humana + provenance. |
 | SEC-02 | **P1 · Confirmado** | Release inclui todos os docs/library rastreados; um dado sensível em arquivo permitido vai para o zip. | — | Manifesto allowlist de release separado do conjunto total rastreado. |
-| SEC-03 | **P1 · Confirmado** | Project Server pode usar HTTP (`Multiuser.cs:64-65`). | Existe ambiente legado que exige HTTP? | Deprecar; exigir flag de risco explícita e nunca default. |
+| SEC-03 | **Fechado** | Project Server pode usar HTTP (`Multiuser.cs:64-65`). | Existe ambiente legado que exige HTTP? | Deprecar; exigir flag de risco explícita e nunca default. |
 | SEC-04 | **P2 · Confirmado** | Help Viewer usa TLS local com `verify=False`. É justificável por cert self-signed, mas o threat model não registra. | Um processo local malicioso pode ocupar a porta e servir conteúdo falso para a IA? | Validar processo/serviço proprietário da porta, restringir localhost e registrar risco; nunca aceitar host remoto com verify false. |
 | SEC-05 | **P2 · Confirmado** | Scheduled task interativa lê `cmd.json` de workspace gravável pelo usuário. Isso não eleva privilégio, mas qualquer processo do mesmo usuário pode dirigir o exe whitelisted. | Esse é o boundary aceito? | Documentar ACL/boundary; opcional nonce/ACL mais restrita se houver múltiplos processos não confiáveis no mesmo usuário. |
 | SEC-06 | **P2 · Confirmado** | Task elevada de whitelist pode whitelistar qualquer binário substituído no path canônico pelo próprio usuário. Não é elevação OS, mas amplia acesso Openness daquele usuário. | Grupo Openness já concede essa confiança? | Documentar modelo; verificar assinatura/hash esperado do build antes de executar task quando possível. |

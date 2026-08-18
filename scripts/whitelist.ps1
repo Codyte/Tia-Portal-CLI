@@ -1,6 +1,6 @@
 # NAV INDEX
 # 1-14   header / params
-# 15-32  whitelist registry entry (HKLM Openness <ver>) for tia.exe — run elevated/SYSTEM
+# 15-40  whitelist registry entry (HKLM Openness <ver>) for tia.exe — run elevated/SYSTEM
 # Re-run after every rebuild (FileHash changes). Invoked via scheduled task "TiaWhitelist".
 #
 # -Repo: este script roda a partir de uma COPIA protegida em %ProgramData%\tia-cli (a task
@@ -19,8 +19,15 @@ finally { $sha.Dispose() }
 $dates = @{ "Entry" = $f.LastWriteTimeUtc.ToString("yyyy'/'MM'/'dd HH:mm:ss.fff")
             "EntryLocal" = $f.LastWriteTime.ToString("yyyy'/'MM'/'dd HH:mm:ss.fff") }
 
-foreach ($root in @("HKLM:\SOFTWARE\Siemens\Automation\Openness")) {
-    foreach ($ver in Get-ChildItem $root -ErrorAction SilentlyContinue) {
+# INST-06: sob Openness moram as versoes ("21.0") e a chave "AllowList" da propria Siemens.
+# Escrever Whitelist\tia.exe dentro de AllowList criava entrada que nenhum loader le' — e ela
+# ficava com hash velho, envenenando a checagem de stale do rebuild.ps1. So' chave de versao.
+$root = "HKLM:\SOFTWARE\Siemens\Automation\Openness"
+$junk = Join-Path $root 'AllowList\Whitelist\tia.exe'
+if (Test-Path $junk) { Remove-Item $junk -Recurse -Force; Write-Output "removida entrada invalida: $junk" }
+foreach ($rootKey in @($root)) {
+    foreach ($ver in @(Get-ChildItem $rootKey -ErrorAction SilentlyContinue |
+                       Where-Object { $_.PSChildName -match '^\d+\.\d+$' })) {
         foreach ($name in $dates.Keys) {
             $key = Join-Path $ver.PSPath "Whitelist\tia.exe\$name"
             New-Item -Path $key -Force | Out-Null

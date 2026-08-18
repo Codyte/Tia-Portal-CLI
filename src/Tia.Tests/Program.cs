@@ -1,48 +1,50 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L73    class Program
-//   L77    .Check
-//   L84    .RepoRoot
-//   L93    .Fixture
-//   L95    .OutDir
-//   L102   .Main
-//   L149   .AlarmFc_BuildFcXml
-//   L177   .AlarmFc_BuildCallObXml
-//   L199   .FaultOb_BuildObXml
-//   L225   .InstrumentFc_BuildAreaFcXml
-//   L262   .LadConverter_Convert
-//   L285   .BlockExplain_Explain
-//   L309   .Ops_RequireRootType
-//   L331   .TempXml
-//   L339   class Folder
-//   L351   .Ops_WalkFolders
-//   L392   .Ops_SplitPath
-//   L409   .Inventory_FolderMatches
-//   L431   .Ops_RequireUtf8Bom
-//   L458   .InstrumentFc_FcName
-//   L469   .Profinet_TagName
-//   L479   .Audit_Naming
-//   L496   .DbMember_AddToXml
-//   L573   .Memory_Occupied
-//   L591   .Clone_Rewrite
-//   L652   .Hmi_StripScreenNumber
-//   L680   .ScreenItems_Core
-//   L790   .Scaffold_Plan
-//   L836   list-interface / add-call / delete-network / set-retain
-//   L839   .Fc
-//   L858   .BlockInterface_FromXml
-//   L874   .BlockEdit_InsertCallInXml
-//   L1017  .BlockEdit_StripTypePrefix
-//   L1029  .BlockEdit_RemoveNetworkFromXml
-//   L1041  .BlockEdit_SetRetainInXml
-//   L1051  .Clone_InstancesInXml
-//   L1063  .Audit_DriveShape
-//   L1076  .Audit_LawChecks
-//   L1105  .Ops_Squash
-//   L1119  .Hardware_MemoryAttrs
-//   L1131  .Sim_DownloadState
-//   L1147  .Cli_KnownOptions
-//   L1172  .Throws
+//   L75    class Program
+//   L79    .Check
+//   L86    .RepoRoot
+//   L95    .Fixture
+//   L97    .OutDir
+//   L104   .Main
+//   L153   .AlarmFc_BuildFcXml
+//   L181   .AlarmFc_BuildCallObXml
+//   L203   .FaultOb_BuildObXml
+//   L229   .InstrumentFc_BuildAreaFcXml
+//   L266   .LadConverter_Convert
+//   L289   .BlockExplain_Explain
+//   L313   .Ops_RequireRootType
+//   L335   .TempXml
+//   L343   class Folder
+//   L355   .Ops_WalkFolders
+//   L396   .Ops_SplitPath
+//   L413   .Inventory_FolderMatches
+//   L435   .Ops_RequireUtf8Bom
+//   L462   .InstrumentFc_FcName
+//   L473   .Profinet_TagName
+//   L483   .Audit_Naming
+//   L500   .DbMember_AddToXml
+//   L577   .Memory_Occupied
+//   L595   .Clone_Rewrite
+//   L656   .Hmi_StripScreenNumber
+//   L684   .ScreenItems_Core
+//   L794   .Scaffold_Plan
+//   L840   list-interface / add-call / delete-network / set-retain
+//   L843   .Fc
+//   L862   .BlockInterface_FromXml
+//   L878   .BlockEdit_InsertCallInXml
+//   L1021  .BlockEdit_StripTypePrefix
+//   L1033  .BlockEdit_RemoveNetworkFromXml
+//   L1045  .BlockEdit_SetRetainInXml
+//   L1055  .Clone_InstancesInXml
+//   L1067  .Audit_DriveShape
+//   L1080  .Audit_LawChecks
+//   L1109  .Ops_Squash
+//   L1123  .Hardware_MemoryAttrs
+//   L1140  .Sim_DownloadState
+//   L1155  .Sim_AccessPointGuard
+//   L1169  .Cli_BusyWords
+//   L1185  .Cli_KnownOptions
+//   L1210  .Throws
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX
@@ -135,6 +137,8 @@ namespace Tia.Tests
                 { "Cli.KnownOptions", Cli_KnownOptions },
                 { "Hardware.MemoryAttrs", Hardware_MemoryAttrs },
                 { "Sim.DownloadState", Sim_DownloadState },
+                { "Sim.AccessPointGuard", Sim_AccessPointGuard },
+                { "Cli.BusyWords", Cli_BusyWords },
             };
             foreach (var t in tests)
             {
@@ -1141,6 +1145,35 @@ namespace Tia.Tests
             Check(Tia.Core.Sim.DownloadState(plan) == "Success", "estado do download extraido do plano");
             plan["download"] = new Dictionary<string, object> { { "errors", 0 } };
             Check(Tia.Core.Sim.DownloadState(plan) == "unknown", "download sem state nao estoura");
+        }
+
+        /// <summary>
+        /// TEST-02/SAFE-01: o guard que impede o `sim-run` de baixar numa CPU real é uma comparação
+        /// de nome, e ela vale nos dois pontos — no `--pc-interface` pedido e no nome efetivo do alvo
+        /// escolhido (o pedido casa por substring, então o alvo pode ter outro nome).
+        /// </summary>
+        private static void Sim_AccessPointGuard()
+        {
+            Check(Tia.Core.Sim.IsPlcsimAccessPoint("PLCSIM"), "access point do Advanced");
+            Check(Tia.Core.Sim.IsPlcsimAccessPoint("plcsim"), "caixa nao conta");
+            Check(Tia.Core.Sim.IsPlcsimAccessPoint("PLCSIM Advanced 1"), "renomeado com o radical dentro");
+            Check(!Tia.Core.Sim.IsPlcsimAccessPoint("PN/IE_1"), "interface fisica NAO passa");
+            Check(!Tia.Core.Sim.IsPlcsimAccessPoint("Realtek PCIe GbE Family Controller"), "placa real NAO passa");
+            Check(!Tia.Core.Sim.IsPlcsimAccessPoint(null), "sem nome nao vira sim");
+        }
+
+        /// <summary>
+        /// API-07: o `--retry` só serve se reconhecer "ocupado" na língua do Portal instalado — o
+        /// Openness não expõe exception type nem HResult para busy, então a mensagem é tudo que há.
+        /// </summary>
+        private static void Cli_BusyWords()
+        {
+            Func<string, bool> f = Tia.Core.Ops.IsBusyMessage;
+            Check(f("The TIA Portal is busy"), "ingles");
+            Check(f("O TIA Portal esta ocupado"), "pt-BR (era o que passava batido)");
+            Check(f("Das TIA Portal ist beschäftigt"), "de-DE");
+            Check(!f("Block 'X' not found"), "erro comum NAO vira retry infinito");
+            Check(!f(null), "sem mensagem nao trava o loop");
         }
 
         /// <summary>

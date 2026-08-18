@@ -1,34 +1,35 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L74    class Sim
-//   L82    .Run
-//   L252   .Diag
-//   L315   .Watch
-//   L360   .Try
-//   L366   .RegisteredInstances
-//   L376   .WaitReady
-//   L398   .ValidateSteps
-//   L411   case "write"
-//   L412   case "read"
-//   L413   case "wait"
-//   L414   case "run"
-//   L438   .Execute
-//   L448   case "write"
-//   L452   case "read"
-//   L456   case "wait"
-//   L460   case "run"
-//   L464   case "stop"
-//   L468   case "state"
-//   L471   case "tags"
-//   L499   .Write
-//   L523   .ParseBool
-//   L531   .Plain
-//   L552   class Target
-//   L560   .DownloadState
-//   L573   .FindTarget
-//   L585   .Interfaces
-//   L599   .DeviceItemOf
-//   L626   .Resolve
+//   L75    class Sim
+//   L83    .Run
+//   L280   .Diag
+//   L343   .Watch
+//   L388   .Try
+//   L394   .RegisteredInstances
+//   L404   .WaitReady
+//   L426   .ValidateSteps
+//   L439   case "write"
+//   L440   case "read"
+//   L441   case "wait"
+//   L442   case "run"
+//   L466   .Execute
+//   L476   case "write"
+//   L480   case "read"
+//   L484   case "wait"
+//   L488   case "run"
+//   L492   case "stop"
+//   L496   case "state"
+//   L499   case "tags"
+//   L527   .Write
+//   L551   .ParseBool
+//   L559   .Plain
+//   L580   class Target
+//   L594   .IsPlcsimAccessPoint
+//   L599   .DownloadState
+//   L612   .FindTarget
+//   L624   .Interfaces
+//   L638   .DeviceItemOf
+//   L665   .Resolve
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -87,8 +88,7 @@ namespace Tia.Core
             // alvo sob ela — apontar para uma interface PN/IE física baixaria o programa numa CPU real.
             // O access point do Advanced é o `PLCSIM` do S7ONLINE; qualquer outro nome exige o opt-in
             // explícito, que existe só para laboratório com access point renomeado.
-            if (!allowPhysical && pcInterfaceLike != null
-                && pcInterfaceLike.IndexOf("PLCSIM", StringComparison.OrdinalIgnoreCase) < 0)
+            if (!allowPhysical && pcInterfaceLike != null && !IsPlcsimAccessPoint(pcInterfaceLike))
                 throw new ArgumentException("--pc-interface '" + pcInterfaceLike + "' is not a PLCSIM access "
                     + "point: sim-run only downloads to the S7-PLCSIM Advanced virtual PLC, never to a "
                     + "physical CPU. Use --pc-interface PLCSIM (the default), or --allow-physical if this "
@@ -156,7 +156,7 @@ namespace Tia.Core
                     plan["targetInterface"] = target.Name;
                     // 2ª trava: o nome pedido é substring, então `--pc-interface PLCSIM` ainda podia
                     // casar uma interface cujo nome só contém isso. Confere o nome efetivo do alvo.
-                    if (!allowPhysical && target.PcInterface.IndexOf("PLCSIM", StringComparison.OrdinalIgnoreCase) < 0)
+                    if (!allowPhysical && !IsPlcsimAccessPoint(target.PcInterface))
                     {
                         plan["error"] = "Refusing to download: PC interface '" + target.PcInterface
                             + "' is not a PLCSIM access point (sim-run never downloads to a physical CPU).";
@@ -166,9 +166,21 @@ namespace Tia.Core
 
                     // projeto online recusa download: "The operation is not permitted in online mode".
                     // Cair offline é a única saída pela API — a alternativa é clicar "Go offline" na GUI.
+                    // PLC-05: derrubar a conexão sozinho só é seguro quando o alvo é comprovadamente
+                    // simulação. Sob --allow-physical o online pode ser a sessão que o engenheiro está
+                    // usando contra a CPU real, e desconectar isso é efeito colateral que ninguém pediu:
+                    // aí o verbo para e pede a ação humana em vez de decidir por conta.
                     var online = cpu.GetService<OnlineProvider>();
                     if (online != null && online.State != OnlineState.Offline)
                     {
+                        if (!IsPlcsimAccessPoint(target.PcInterface))
+                        {
+                            plan["error"] = "PLC '" + plc.Name + "' is online through '" + target.PcInterface
+                                + "', which is not a PLCSIM access point. sim-run would have to go offline to "
+                                + "download, and that would drop a connection it cannot prove is simulated. "
+                                + "Go offline in the Portal first, then re-run.";
+                            return plan;
+                        }
                         online.GoOffline();
                         plan["wentOffline"] = true;
                     }
@@ -177,14 +189,30 @@ namespace Tia.Core
                     var swDownload = System.Diagnostics.Stopwatch.StartNew();
                     var result = provider.Download(target.Configuration, Resolve, Resolve,
                         DownloadOptions.Hardware | DownloadOptions.Software);
+                    bool downloadFailed = result.ErrorCount > 0
+                        || result.State != DownloadResultState.Success;
                     plan["download"] = new Dictionary<string, object>
                     {
                         { "state", result.State.ToString() },
                         { "warnings", result.WarningCount },
                         { "errors", result.ErrorCount },
                         { "ms", swDownload.ElapsedMilliseconds },
-                        { "messages", result.Messages.Select(m => m.Message).Take(20).ToList() },
+                        // API-11: no caminho feliz 20 mensagens bastam; na falha, cortar a mensagem é
+                        // cortar justo o diagnóstico de por que falhou.
+                        { "messages", downloadFailed
+                            ? result.Messages.Select(m => m.Message).ToList()
+                            : result.Messages.Select(m => m.Message).Take(20).ToList() },
                     };
+                    // API-11: `Download` devolve contagem de erros em vez de levantar. Seguir para
+                    // tag list/RUN depois disso roda os passos contra um programa que não subiu —
+                    // e "passa" lendo lixo. Erro de topo = exit 1.
+                    if (downloadFailed)
+                    {
+                        plan["error"] = "Download did not succeed (state " + result.State + ", "
+                            + result.ErrorCount + " error(s)): the steps were not run. "
+                            + "See download.messages.";
+                        return plan;
+                    }
 
                     // o download reinicia a CPU virtual: o estado só estabiliza alguns segundos depois, e
                     // Run/UpdateTagList em cima de instância ainda booting devolve "-52, IsEmpty"
@@ -557,6 +585,17 @@ namespace Tia.Core
         }
 
         /// <summary>Estado do download já gravado no plano ("Success"), para citar na mensagem.</summary>
+        /// <summary>
+        /// SAFE-01/D8 + TEST-02: o access point do S7-PLCSIM Advanced é o `PLCSIM` do S7ONLINE. Vale
+        /// para o nome pedido (`--pc-interface`) e para o nome efetivo do alvo escolhido — o pedido
+        /// casa por substring, então os dois precisam da mesma régua. Nome renomeado exige
+        /// `--allow-physical`, que é o opt-in de laboratório.
+        /// </summary>
+        internal static bool IsPlcsimAccessPoint(string name)
+        {
+            return name != null && name.IndexOf("PLCSIM", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
         internal static string DownloadState(Dictionary<string, object> plan)
         {
             object d;

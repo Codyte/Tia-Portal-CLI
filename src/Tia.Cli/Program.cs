@@ -2,117 +2,117 @@
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L134   class Program
 //   L136   .Main
-//   L419   .ExitCodeFor
-//   L433   .RunLadderDryRun
-//   L443   .RunExplainFile
-//   L451   .RunInterfaceFile
-//   L465   .Run
-//   L480   .SingleCall
-//   L496   class Release
-//   L507   .RunExclusive
-//   L632   .ParseScript
-//   L654   .DispatchWithRetry
-//   L668   .IsBusy
-//   L674   .Dispatch
-//   L684   case "save-project"
-//   L687   case "close-project"
-//   L690   case "info"
-//   L693   case "list-devices"
-//   L696   case "list-blocks"
-//   L700   case "list-tags"
-//   L703   case "tree"
-//   L707   case "list-types"
-//   L710   case "find"
-//   L714   case "snapshot"
-//   L717   case "xref"
-//   L720   case "trace"
-//   L723   case "list-hmi"
-//   L726   case "export-hmi-tags"
-//   L730   case "import-hmi-tags"
-//   L737   case "hmi-tree"
-//   L740   case "export-screen"
-//   L744   case "import-screen"
-//   L751   case "delete-screen"
-//   L756   case "list-screen-items"
-//   L761   case "audit-screen"
-//   L766   case "set-screen-items"
-//   L774   case "copy-screen-items"
-//   L782   case "list-motion"
-//   L786   case "free-memory"
-//   L792   case "export-block"
-//   L795   case "explain-block"
-//   L800   case "export-tags"
-//   L803   case "list-interface"
-//   L809   case "import-block"
-//   L816   case "import-ladder"
-//   L824   case "import-source"
-//   L829   case "create-folder"
-//   L834   case "delete-folder"
-//   L839   case "delete-block"
-//   L843   case "move-block"
-//   L848   case "delete-type"
-//   L852   case "export-type"
-//   L855   case "import-type"
-//   L859   case "scaffold"
-//   L868   case "clone"
-//   L875   case "add-call"
-//   L882   case "delete-network"
-//   L887   case "set-retain"
-//   L892   case "add-db-member"
-//   L898   case "import-tags"
-//   L905   case "retrieve-library"
-//   L910   case "create-library"
-//   L914   case "list-library"
-//   L917   case "import-master-copy"
-//   L923   case "add-master-copy"
-//   L929   case "create-instance-db"
-//   L934   case "delete-master-copy"
-//   L939   case "add-device"
-//   L944   case "delete-device"
-//   L948   case "add-tag"
-//   L954   case "delete-tag"
-//   L959   case "edit-db-member"
-//   L965   case "delete-db-member"
-//   L970   case "rename-block"
-//   L975   case "set-tag"
-//   L982   case "set-attr"
-//   L988   case "list-attrs"
-//   L992   case "plug-module"
-//   L998   case "list-telegrams"
-//   L1001  case "insert-telegram"
-//   L1008  case "set-address"
-//   L1014  case "set-io-address"
-//   L1020  case "list-io-map"
-//   L1024  case "set-memory-bytes"
-//   L1030  case "connect-subnet"
-//   L1035  case "export-cax"
-//   L1038  case "import-cax"
-//   L1042  case "compile"
-//   L1057  case "sim-run"
-//   L1066  case "diff-block"
-//   L1070  case "audit"
-//   L1075  case "doctor"
-//   L1083  case "gen-profinet"
-//   L1088  case "standardize-tags"
-//   L1096  case "gen-fault-ob"
-//   L1104  case "replicate-fc"
-//   L1114  case "gen-alarm-fc"
-//   L1124  case "replicate-instruments"
-//   L1165  .ValidateOptions
-//   L1195  .HasError
-//   L1202  .OptionValue
-//   L1208  .ParseInt
-//   L1214  .ParseByte
-//   L1221  .OptionValues
-//   L1230  .WriteLock
-//   L1235  .Require
-//   L1267  .Print
-//   L1283  .Sanitize
-//   L1290  .WriteOut
-//   L1312  .CountOf
-//   L1334  .ResolveSiemensAssembly
-//   L1353  .PlcSimProbeDirs
-//   L1367  .SiemensProbeDirs
+//   L426   .ExitCodeFor
+//   L440   .RunLadderDryRun
+//   L450   .RunExplainFile
+//   L458   .RunInterfaceFile
+//   L472   .Run
+//   L487   .SingleCall
+//   L503   class Release
+//   L514   .RunExclusive
+//   L652   .ParseScript
+//   L674   .DispatchWithRetry
+//   L688   .IsBusy
+//   L695   .Dispatch
+//   L705   case "save-project"
+//   L708   case "close-project"
+//   L711   case "info"
+//   L714   case "list-devices"
+//   L717   case "list-blocks"
+//   L721   case "list-tags"
+//   L724   case "tree"
+//   L728   case "list-types"
+//   L731   case "find"
+//   L735   case "snapshot"
+//   L738   case "xref"
+//   L741   case "trace"
+//   L744   case "list-hmi"
+//   L747   case "export-hmi-tags"
+//   L751   case "import-hmi-tags"
+//   L758   case "hmi-tree"
+//   L761   case "export-screen"
+//   L765   case "import-screen"
+//   L772   case "delete-screen"
+//   L777   case "list-screen-items"
+//   L782   case "audit-screen"
+//   L787   case "set-screen-items"
+//   L795   case "copy-screen-items"
+//   L803   case "list-motion"
+//   L807   case "free-memory"
+//   L813   case "export-block"
+//   L816   case "explain-block"
+//   L821   case "export-tags"
+//   L824   case "list-interface"
+//   L830   case "import-block"
+//   L837   case "import-ladder"
+//   L845   case "import-source"
+//   L850   case "create-folder"
+//   L855   case "delete-folder"
+//   L860   case "delete-block"
+//   L864   case "move-block"
+//   L869   case "delete-type"
+//   L873   case "export-type"
+//   L876   case "import-type"
+//   L880   case "scaffold"
+//   L889   case "clone"
+//   L896   case "add-call"
+//   L903   case "delete-network"
+//   L908   case "set-retain"
+//   L913   case "add-db-member"
+//   L919   case "import-tags"
+//   L926   case "retrieve-library"
+//   L931   case "create-library"
+//   L935   case "list-library"
+//   L938   case "import-master-copy"
+//   L944   case "add-master-copy"
+//   L950   case "create-instance-db"
+//   L955   case "delete-master-copy"
+//   L960   case "add-device"
+//   L965   case "delete-device"
+//   L969   case "add-tag"
+//   L975   case "delete-tag"
+//   L980   case "edit-db-member"
+//   L986   case "delete-db-member"
+//   L991   case "rename-block"
+//   L996   case "set-tag"
+//   L1003  case "set-attr"
+//   L1009  case "list-attrs"
+//   L1013  case "plug-module"
+//   L1019  case "list-telegrams"
+//   L1022  case "insert-telegram"
+//   L1029  case "set-address"
+//   L1035  case "set-io-address"
+//   L1041  case "list-io-map"
+//   L1045  case "set-memory-bytes"
+//   L1051  case "connect-subnet"
+//   L1056  case "export-cax"
+//   L1059  case "import-cax"
+//   L1063  case "compile"
+//   L1078  case "sim-run"
+//   L1087  case "diff-block"
+//   L1091  case "audit"
+//   L1096  case "doctor"
+//   L1104  case "gen-profinet"
+//   L1109  case "standardize-tags"
+//   L1117  case "gen-fault-ob"
+//   L1125  case "replicate-fc"
+//   L1135  case "gen-alarm-fc"
+//   L1145  case "replicate-instruments"
+//   L1187  .ValidateOptions
+//   L1217  .HasError
+//   L1224  .OptionValue
+//   L1230  .ParseInt
+//   L1236  .ParseByte
+//   L1243  .OptionValues
+//   L1252  .WriteLock
+//   L1257  .Require
+//   L1289  .Print
+//   L1309  .Sanitize
+//   L1316  .WriteOut
+//   L1338  .CountOf
+//   L1360  .ResolveSiemensAssembly
+//   L1379  .PlcSimProbeDirs
+//   L1393  .SiemensProbeDirs
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -340,8 +340,10 @@ namespace Tia.Cli
                         "→ saída na casa das centenas de KB (snapshot = 251 KB, find de tag = 821 KB num projeto " +
                         "real). SEMPRE com --out-file, depois grep no arquivo. Não é leitura de orientação: " +
                         "pra isso é `tree`" } },
-                    { "batch", new[] { "run --script ops.json [--summary]  (JSON array de arg-arrays, uma sessão só; " +
+                    { "batch", new[] { "run --script ops.json [--summary] [--fail-fast]  (JSON array de arg-arrays, uma sessão só; " +
                         "step que falha vira {ok:false,error} e o batch segue; exit 1 se algum falhou. " +
+                        "--fail-fast para no 1º step que falha (numa corrente de escrita o step seguinte " +
+                        "trabalha em cima do que o anterior não fez); o que sobrou sai em `aborted`. " +
                         "--summary = só {steps,failed,ms,slowest[3],errors[]}, sem o resultado de cada step. " +
                         "Todo step traz `ms`, e o batch traz o total — é a medida de onde foi o tempo. " +
                         "--plc/--out-file do processo NÃO descem pros steps: cada step carrega os seus. " +
@@ -561,6 +563,7 @@ namespace Tia.Cli
                     var steps = batch;
                     var results = new List<object>();
                     int failed = 0;
+                    bool failFast = args.Contains("--fail-fast");
                     // Relógio por step: sem ele, medir uma rodada exige Measure-Command por fora e o
                     // número não sobrevive no resultado. Com ele, o batch diz sozinho onde foi o tempo
                     // (na FP-06, 20 dos 49 min foram compile e isso só se soube pelo relógio de parede).
@@ -593,6 +596,16 @@ namespace Tia.Cli
                         }
                         entry["ms"] = stepClock.ElapsedMilliseconds;
                         results.Add(entry);
+                        // SAFE-10: isolar step é o que faz o batch valer para bateria de diagnóstico,
+                        // mas numa corrente de escrita o step seguinte trabalha em cima do que o
+                        // anterior deveria ter feito — e o batch "termina" propagando o estrago.
+                        // Isolar continua sendo o default (o dry de 98 steps quer todos os erros de
+                        // uma vez); --fail-fast é o opt-in de quem está aplicando.
+                        if (failFast && !(bool)entry["ok"])
+                        {
+                            entry["abortedRest"] = steps.Count - results.Count;
+                            break;
+                        }
                     }
                     batchClock.Stop();
                     // no --summary o tempo de cada step some junto com o resultado; os 3 mais caros
@@ -608,6 +621,7 @@ namespace Tia.Cli
                         {
                             { "steps", results.Count },
                             { "failed", failed },
+                            { "aborted", steps.Count - results.Count },
                             { "ms", batchClock.ElapsedMilliseconds },
                             { "slowest", slowest },
                             { "errors", results.Cast<Dictionary<string, object>>()
@@ -620,6 +634,7 @@ namespace Tia.Cli
                     else
                         Print(new Dictionary<string, object>
                             { { "steps", results.Count }, { "failed", failed },
+                              { "aborted", steps.Count - results.Count },
                               { "ms", batchClock.ElapsedMilliseconds }, { "results", results } });
                     return failed > 0 ? 1 : 0;
                 }
@@ -672,8 +687,9 @@ namespace Tia.Cli
 
         private static bool IsBusy(Exception ex)
         {
-            var inner = ex.InnerException ?? ex;
-            return inner.Message.IndexOf("busy", StringComparison.OrdinalIgnoreCase) >= 0;
+            for (var cur = ex; cur != null; cur = cur.InnerException)
+                if (Core.Ops.IsBusyMessage(cur.Message)) return true;
+            return false;
         }
 
         private static object Dispatch(Core.TiaSession session, string[] args)
@@ -1148,7 +1164,8 @@ namespace Tia.Cli
         {
             "--address", "--after", "--allow-physical", "--apply", "--area", "--at", "--block", "--bytes",
             "--change", "--clock", "--comment", "--config", "--count", "--db", "--device", "--dir",
-            "--drive-object", "--equipment", "--errors", "--fb", "--file", "--folder", "--force", "--from",
+            "--drive-object", "--equipment", "--errors", "--fail-fast", "--fb", "--file", "--folder", "--force",
+            "--from",
             "--from-screen", "--full", "--group", "--help", "--http", "--index", "--inst", "--instance",
             "--io", "--io-system", "--ip", "--item", "--keep-connection", "--kind", "--lib-folder", "--like",
             "--manifest", "--mask", "--max", "--member", "--mlfb", "--name", "--no-backup", "--no-download", "--no-ui",

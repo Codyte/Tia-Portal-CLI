@@ -1,81 +1,82 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L100   class Ops
-//   L102   lookup
-//   L104   .FindBlock
-//   L114   .FindGroup
-//   L129   .FindGroupByName
-//   L147   .FindTagGroup
-//   L162   .FindTagGroupByName
-//   L175   .FindBlockIn
-//   L188   .ResolveFolder
-//   L200   .SplitPath
-//   L224   .WalkFolders
-//   L251   .FindTagTable
-//   L264   .ResolveTagFolder
-//   L272   .ResolveTypeFolder
-//   L279   .FindType
-//   L291   structure
-//   L293   .CreateFolder
-//   L325   .CreateFolders
-//   L360   .DeleteFolder
-//   L387   .TypeFolderAction
-//   L408   .CountTypes
-//   L413   .CountBlocks
-//   L418   .CountTables
-//   L427   .CreateInstanceDb
-//   L464   .FbsLike
-//   L471   .NearestFbs
-//   L480   .AllFbs
-//   L488   .Squash
-//   L497   .DeleteBlock
-//   L512   .DeleteType
-//   L526   export
-//   L528   .ExportBlock
-//   L549   .ExportFresh
-//   L570   .ExportFresh
-//   L590   .IsInconsistentExport
-//   L598   .ExportTagTable
-//   L608   .ExportType
-//   L618   .ExportPath
-//   L627   recovery (SAFE-09)
-//   L636   .RecoveryDir
-//   L644   .Backup
-//   L653   .BackupInto
-//   L672   .BackupGroup
-//   L679   import
-//   L686   .FolderAction
-//   L692   .ImportBlock
-//   L724   .MoveBlock
-//   L807   .ImportTagTable
-//   L835   .AddTag
-//   L871   .DeleteTag
-//   L894   .SetTag
-//   L937   .Rename
-//   L963   .ImportType
-//   L987   .ImportSource
-//   L1058  .Generated
-//   L1064  .SourceDeclNames
-//   L1080  .RequireUtf8Bom
-//   L1093  .RequireFile
-//   L1101  .XmlRootType
-//   L1111  .RequireRootType
-//   L1120  .XmlCultures
-//   L1135  .ProjectOf
-//   L1145  .EnsureCultures
-//   L1167  .XmlObjectName
-//   L1176  diff
-//   L1179  .DiffBlock
-//   L1197  .BlocksIdentical
-//   L1239  import com prova
-//   L1249  .ImportAndProve
-//   L1301  .LogFallback
-//   L1314  .Prove
-//   L1322  .FirstError
-//   L1334  compile
-//   L1337  .Compile
-//   L1379  .FlattenErrors
-//   L1402  .MessageTree
+//   L101   class Ops
+//   L103   lookup
+//   L105   .FindBlock
+//   L115   .FindGroup
+//   L130   .FindGroupByName
+//   L148   .FindTagGroup
+//   L163   .FindTagGroupByName
+//   L176   .FindBlockIn
+//   L189   .ResolveFolder
+//   L201   .SplitPath
+//   L225   .WalkFolders
+//   L252   .FindTagTable
+//   L265   .ResolveTagFolder
+//   L273   .ResolveTypeFolder
+//   L280   .FindType
+//   L292   structure
+//   L294   .CreateFolder
+//   L326   .CreateFolders
+//   L361   .DeleteFolder
+//   L388   .TypeFolderAction
+//   L409   .CountTypes
+//   L414   .CountBlocks
+//   L419   .CountTables
+//   L428   .CreateInstanceDb
+//   L465   .FbsLike
+//   L472   .NearestFbs
+//   L481   .AllFbs
+//   L489   .Squash
+//   L498   .DeleteBlock
+//   L513   .DeleteType
+//   L527   export
+//   L529   .ExportBlock
+//   L550   .ExportFresh
+//   L571   .ExportFresh
+//   L591   .IsInconsistentExport
+//   L599   .ExportTagTable
+//   L609   .ExportType
+//   L619   .ExportPath
+//   L638   .IsBusyMessage
+//   L646   recovery (SAFE-09)
+//   L655   .RecoveryDir
+//   L663   .Backup
+//   L672   .BackupInto
+//   L691   .BackupGroup
+//   L698   import
+//   L705   .FolderAction
+//   L711   .ImportBlock
+//   L743   .MoveBlock
+//   L826   .ImportTagTable
+//   L854   .AddTag
+//   L890   .DeleteTag
+//   L913   .SetTag
+//   L956   .Rename
+//   L982   .ImportType
+//   L1006  .ImportSource
+//   L1077  .Generated
+//   L1083  .SourceDeclNames
+//   L1099  .RequireUtf8Bom
+//   L1112  .RequireFile
+//   L1120  .XmlRootType
+//   L1130  .RequireRootType
+//   L1139  .XmlCultures
+//   L1154  .ProjectOf
+//   L1164  .EnsureCultures
+//   L1186  .XmlObjectName
+//   L1195  diff
+//   L1198  .DiffBlock
+//   L1216  .BlocksIdentical
+//   L1258  import com prova
+//   L1268  .ImportAndProve
+//   L1320  .LogFallback
+//   L1333  .Prove
+//   L1341  .FirstError
+//   L1353  compile
+//   L1356  .Compile
+//   L1398  .FlattenErrors
+//   L1421  .MessageTree
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -622,6 +623,24 @@ namespace Tia.Core
             var path = Path.GetFullPath(Path.Combine(outDir, safe + ".xml"));
             if (File.Exists(path)) File.Delete(path); // Openness refuses to overwrite
             return path;
+        }
+
+        /// <summary>
+        /// API-07: "portal ocupado" não tem exception type nem HResult estável — não há um único
+        /// membro com "busy" nas 14 assemblies do Openness (`tia-help.py --sdk busy`, 0 hits), então
+        /// a mensagem é o único sinal do `--retry`. O que dá pra consertar é ela ser localizada: com
+        /// o Portal em pt-BR ou de-DE, "busy" nunca casava e o retry ficava decorativo. Radical, não
+        /// palavra inteira, para pegar flexão ("ocupado", "ocupada", "beschäftigt").
+        /// </summary>
+        internal static readonly string[] BusyWords =
+            { "busy", "ocupad", "beschäftigt", "beschaeftigt", "occupé", "occupe", "occupato", "занят" };
+
+        public static bool IsBusyMessage(string message)
+        {
+            if (message == null) return false;
+            foreach (var w in BusyWords)
+                if (message.IndexOf(w, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+            return false;
         }
 
         // ---------- recovery (SAFE-09) ----------

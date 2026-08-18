@@ -18,6 +18,7 @@ function Get-ExeHash64 {
 function Test-WhitelistStale {
     $h = Get-ExeHash64
     $reg = @(Get-ChildItem 'HKLM:\SOFTWARE\Siemens\Automation\Openness' -ErrorAction SilentlyContinue |
+        Where-Object { $_.PSChildName -match '^\d+\.\d+$' } |   # INST-06: "AllowList" nao e' versao
         ForEach-Object { $v = $_.PSPath
             foreach ($n in 'Entry', 'EntryLocal') {
                 (Get-ItemProperty (Join-Path $v "Whitelist\tia.exe\$n") -Name FileHash -ErrorAction SilentlyContinue).FileHash

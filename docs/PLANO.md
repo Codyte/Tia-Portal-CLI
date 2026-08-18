@@ -978,8 +978,22 @@ conexão na config do Portal; `--http` devolve `warning` de transporte sem TLS),
 access point, e com `--no-download` é programa que nunca chegou lá — e devolve `programCheck` com
 controller × PLC esperado). Testes offline novos: `Hardware.MemoryAttrs`, `Sim.DownloadState`.
 
-**Sobrou da segunda leva**: CI-01/CI-02 (extrair lógica pura para compilar no CI) e SAFE-09
-(backup/rollback comum aos `--force`) — os dois mexem em fronteira de projeto, não em guard.
+**Quinta leva (2026-08-18)**: SAFE-09 (`Ops.Backup` exporta para
+`workspace/recovery/<verbo>-<timestamp>/` o que morre sob `--force`, nos 7 sítios de delete;
+fail-closed, `recoveryDir` no JSON, `--no-backup` é o opt-out), API-11 (download com `errors > 0`
+ou `state != Success` não segue para os passos), PLC-05 (`GoOffline()` automático só com alvo
+PLCSIM; sob `--allow-physical`, projeto online é erro pedindo ação humana), SAFE-10
+(`run --script --fail-fast` + `aborted`), API-07 (`Ops.IsBusyMessage` reconhece "ocupado" em 6
+línguas — não há exception type nem HResult para busy no Openness), INST-04 (`lib/*.dll`
+re-copiada quando o hash diverge da instalação), INST-06 (whitelist conferida na versão que o
+loader usa, nas duas chaves e no `Path`, com `Resolve-RealPath` dos dois lados; `whitelist.ps1`
+parou de escrever dentro da chave `AllowList`, que não é versão). Registrados sem código por já
+estarem resolvidos: TEST-01, TEST-02, PERF-01, PLC-02, SEC-03. Testes offline novos:
+`Sim.AccessPointGuard`, `Cli.BusyWords`.
+
+**Sobrou**: CI-01/CI-02 (extrair lógica pura para compilar no CI), que exigem o split
+`Tia.Domain`/`Tia.Openness` já recusado. Os ~69 P2/P3 restantes são documentação, medição e suíte
+sistemática — pauta, não pendência de correção.
 
 **Não fazer**: registry declarativo de comandos, envelope JSON versionado, split
 `Tia.Domain`/`Tia.Openness`, migração para xUnit, cobertura, analyzers, SBOM/assinatura/build

@@ -2,11 +2,11 @@
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
 <!--   L12    TIA Portal Openness API — instruções do repo -->
 <!--   L26    Regras duras -->
-<!--   L64    Build / run (a partir da F1) -->
-<!--   L288   Antes de escrever programa de PLC: `--study` -->
-<!--   L310   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
-<!--   L342   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
-<!--   L390   Economia de tokens -->
+<!--   L72    Build / run (a partir da F1) -->
+<!--   L296   Antes de escrever programa de PLC: `--study` -->
+<!--   L318   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
+<!--   L350   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
+<!--   L398   Economia de tokens -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # TIA Portal Openness API — instruções do repo
@@ -30,6 +30,14 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
   como agregado de UDTs, ≤8 parâmetros escalares por FB, nome auto-descritivo sem prefixo de tipo,
   bloco nasce na pasta certa, numeração de pasta é a do molde, chamada em LAD e lógica pesada em
   SCL dentro de FB). Compilar não é o aceite — o aceite é `audit` + R1–R9.
+- **`run --script --fail-fast` para no 1º step que falha (2026-08-18)**, e o que sobrou sai em
+  `aborted`. Isolar step continua sendo o default (bateria de diagnóstico quer todos os erros de
+  uma vez); numa corrente de escrita, o step seguinte trabalha em cima do que o anterior não fez.
+- **`sim-run` não segue com download que falhou (2026-08-18).** `Download` devolve contagem em vez
+  de levantar: `errors > 0` ou `state != Success` agora viram `error` de topo e os passos **não**
+  rodam (rodavam contra programa que não subiu e "passavam" lendo lixo). Na falha as mensagens do
+  download saem inteiras. E o `GoOffline()` automático só acontece com alvo PLCSIM — sob
+  `--allow-physical`, projeto online vira erro pedindo que o humano desconecte.
 - **`--force` exporta antes de apagar (2026-08-18).** O que morre sob `--force` (master copy,
   pasta = pacote inteiro, blocos do alvo do `replicate-fc`, tags da tabela do `standardize`) vai
   primeiro para `workspace/recovery/<verbo>-<timestamp>/`, e o caminho volta em **`recoveryDir`**.

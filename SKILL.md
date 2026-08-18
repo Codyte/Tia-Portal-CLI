@@ -18,8 +18,8 @@ description: >-
 <!--   L79    3. Chamar -->
 <!--   L91    4. Antes de escrever código: estude -->
 <!--   L118   5. Invariantes (ignorar custa sessão) -->
-<!--   L176   6. Orçamento de contexto (o CLI devolve volume que estoura sessão) -->
-<!--   L186   7. Referência (ler no repo, não deduzir) -->
+<!--   L181   6. Orçamento de contexto (o CLI devolve volume que estoura sessão) -->
+<!--   L191   7. Referência (ler no repo, não deduzir) -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # tia — CLI do TIA Portal Openness
@@ -118,6 +118,11 @@ responde pergunta em prosa).
 ## 5. Invariantes (ignorar custa sessão)
 
 - **Verbo de escrita é dry por padrão.** `--apply` explícito. Nunca contra projeto de produção.
+- **`sim-run` para se o download falhar.** `errors > 0` ou `state != Success` = `error` de topo,
+  passos não rodam. O `GoOffline()` automático só vale para alvo PLCSIM: sob `--allow-physical`,
+  projeto online é erro pedindo ação humana, não desconexão silenciosa.
+- **`run --script --fail-fast`** para no 1º step que falha (`aborted` conta o resto). Sem ele o
+  batch isola os steps e segue — que é o certo para dry, e o errado para corrente de escrita.
 - **`--force` exporta antes de apagar.** Vai para `workspace/recovery/<verbo>-<timestamp>/`, o
   caminho volta em `recoveryDir`, e export que falha **aborta o delete**. `--no-backup` apaga sem
   rede, e tem que ser dito. Não há rollback automático: o XML salvo é o que o `import-block` relê.

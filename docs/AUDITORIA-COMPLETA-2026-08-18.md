@@ -2,28 +2,28 @@
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
 <!--   L29    Auditoria técnica completa e mapa de discussão — tia-cli -->
 <!--   L43    0. Status da resposta (2026-08-18, revisão no repo) -->
-<!--   L82    1. Resumo executivo -->
-<!--   L117   2. Como ler os registros -->
-<!--   L154   3. Escopo e evidência coletada -->
-<!--   L192   4. Pontos fortes confirmados -->
-<!--   L212   5. Guardrails e segurança operacional -->
-<!--   L237   6. Contrato de sucesso, erros e JSON -->
-<!--   L260   7. Instalação, versões e carregamento de assemblies -->
-<!--   L285   8. Release, CI e cadeia de suprimentos -->
-<!--   L304   9. Cobertura de testes e lacunas funcionais -->
-<!--   L326   10. Arquitetura e manutenibilidade -->
-<!--   L345   11. Domínio PLC, Openness, HMI, drives e simulação -->
-<!--   L370   12. Desempenho, escala e contexto de IA -->
-<!--   L385   13. Documentação e experiência do desenvolvedor -->
-<!--   L406   14. Privacidade, segurança de software e aspectos legais -->
-<!--   L422   15. Produto e posicionamento -->
-<!--   L437   16. Perguntas abertas para discutir com outra IA -->
-<!--   L466   17. Plano de ação proposto -->
-<!--   L517   18. Backlog priorizado consolidado -->
-<!--   L560   19. Validação executada nesta auditoria -->
-<!--   L577   20. Estado local observado -->
-<!--   L587   21. Definição sugerida de “pronto para uso confiável” -->
-<!--   L603   22. Conclusão -->
+<!--   L90    1. Resumo executivo -->
+<!--   L125   2. Como ler os registros -->
+<!--   L162   3. Escopo e evidência coletada -->
+<!--   L200   4. Pontos fortes confirmados -->
+<!--   L220   5. Guardrails e segurança operacional -->
+<!--   L245   6. Contrato de sucesso, erros e JSON -->
+<!--   L268   7. Instalação, versões e carregamento de assemblies -->
+<!--   L293   8. Release, CI e cadeia de suprimentos -->
+<!--   L312   9. Cobertura de testes e lacunas funcionais -->
+<!--   L334   10. Arquitetura e manutenibilidade -->
+<!--   L353   11. Domínio PLC, Openness, HMI, drives e simulação -->
+<!--   L378   12. Desempenho, escala e contexto de IA -->
+<!--   L393   13. Documentação e experiência do desenvolvedor -->
+<!--   L414   14. Privacidade, segurança de software e aspectos legais -->
+<!--   L430   15. Produto e posicionamento -->
+<!--   L445   16. Perguntas abertas para discutir com outra IA -->
+<!--   L474   17. Plano de ação proposto -->
+<!--   L525   18. Backlog priorizado consolidado -->
+<!--   L568   19. Validação executada nesta auditoria -->
+<!--   L585   20. Estado local observado -->
+<!--   L595   21. Definição sugerida de “pronto para uso confiável” -->
+<!--   L611   22. Conclusão -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Auditoria técnica completa e mapa de discussão — tia-cli
@@ -51,7 +51,8 @@ parte dos P1/P2 ser checklist genérico de OSS maduro.
 `SAFE-13`, `SAFE-14`, `API-01`, `API-02`, `API-03` (parcial: erro de topo vira exit ≠ 0; não há
 envelope comum), `API-05`, `API-06`, `API-08` (nos códigos de saída; sem helpers de faixa),
 `API-09`, `API-10`, `PLC-08`, `INST-01`, `INST-02`, `INST-03`, `INST-05`, `INST-07`, `INST-09`,
-`INST-10`, `SAFE-15`, `SAFE-16`, `SAFE-17`, `PLC-03`, `DOC-02`, `DOC-03`, `TEST-13`.
+`INST-10`, `SAFE-09` (backup antes do delete; rollback automático não — ver abaixo), `SAFE-15`,
+`SAFE-16`, `SAFE-17`, `PLC-03`, `DOC-02`, `DOC-03`, `TEST-13`.
 
 **Obsoleto** — `DOC-01` (índice raiz regenerado no commit `56c34c6`) e `DOC-16` (o `navindex.py`
 instalado já indexa `.cs` e, desde 2026-08-18, títulos de Markdown).
@@ -76,8 +77,15 @@ build reproduzível, pin de action por SHA, redaction/TTL de telemetria, matriz 
 `CI-06..14`, `SAFE-18`, `SAFE-20`, `TEST-09/10`, `PROD-07/08`. São a agenda de um produto com equipe
 e usuários externos; aqui compram risco de regressão sem comprar nada.
 
-**Segunda leva, quando doer** — `CI-01`/`CI-02` (extrair lógica pura para compilar no CI) e
-`SAFE-09` (backup/rollback comum aos `--force`).
+`SAFE-09` fechou pela metade cara: tudo que morre sob `--force` é exportado antes para
+`workspace/recovery/<verbo>-<timestamp>/` (`Ops.Backup`, chamado nos 7 sítios de delete de
+`Library.cs`, `Scaffold.cs`, `Replicate.cs` e `Standardize.cs`), o caminho volta em `recoveryDir` e
+a falha do export **impede** o delete — apagar sem rede exige `--no-backup` por escrito. Rollback
+automático, não: desfazer um import parcial pede transação que o Openness não tem, e o XML
+exportado é o que o `import-block` já sabe reler. O `MasterCopy` de `bake-lib` fica de fora — a API
+não expõe `Export` de master copy, e a fonte continua viva no PLC.
+
+**Segunda leva, quando doer** — `CI-01`/`CI-02` (extrair lógica pura para compilar no CI).
 
 ## 1. Resumo executivo
 
@@ -221,7 +229,7 @@ exportados para issue tracker preservando `ID`, prioridade, achado, pergunta e m
 | SAFE-06 | **P1 · Confirmado** | `--out-file` e vários exports sobrescrevem arquivos arbitrários sem `--apply`; `WriteOut` chama `File.WriteAllText` em qualquer caminho (`src/Tia.Cli/Program.cs:1157-1161`). Dry-run protege o projeto TIA, não o filesystem. | Um agente deve poder sobrescrever fora de `workspace/` sem confirmação? | Default `--no-clobber`; exigir `--force-file` para sobrescrever ou caminho fora de workspace. Documentar claramente a fronteira. |
 | SAFE-07 | **P1 · Confirmado** | O lock cross-process existe apenas na rota de task/sessão 0. Na sessão interativa, `Invoke-Tia` chama o exe diretamente sem lock (`_common.ps1:60-64`). Dois terminais podem violar D9. | O CLI deve garantir D9 sozinho ou a disciplina humana basta? | Mutex nomeado ou lock no próprio `tia.exe`, compartilhado por todas as rotas. Teste com dois processos: o segundo deve falhar rápido e de forma determinística. |
 | SAFE-08 | **P1 · Confirmado** | `move-block` exporta todos, apaga e importa. Falha de import é registrada, mas o bloco original já foi removido (`Ops.cs:667-729`). | O XML exportado é considerado backup suficiente? Quem restaura e para qual pasta? | Implementar rollback para a pasta original ou retornar recovery manifest explícito. Aceite: falha injetada no import deixa o bloco original restaurado. |
-| SAFE-09 | **P1 · Confirmado** | `import-master-copy --force`, `scaffold --force`, replicadores e padronização podem apagar antes de recriar (`Library.cs:162-244`, `Scaffold.cs:190-211`, `Replicate.cs:303-347`, `Standardize.cs:436-490`). | Quais operações aceitam perda parcial? Existe backup do projeto como pré-condição verificável? | Estratégia comum de stage/backup/rollback; gerar recovery bundle antes do delete. Se rollback for impossível, resultado deve ser `partial` e exit não zero. |
+| SAFE-09 | **Fechado (parcial)** | `import-master-copy --force`, `scaffold --force`, replicadores e padronização podem apagar antes de recriar (`Library.cs:162-244`, `Scaffold.cs:190-211`, `Replicate.cs:303-347`, `Standardize.cs:436-490`). | Quais operações aceitam perda parcial? Existe backup do projeto como pré-condição verificável? | Estratégia comum de stage/backup/rollback; gerar recovery bundle antes do delete. Se rollback for impossível, resultado deve ser `partial` e exit não zero. |
 | SAFE-10 | **P1 · Confirmado** | Batch continua após qualquer exceção. Isso é útil para diagnóstico, mas perigoso quando um step aplicado falha e os seguintes dependem dele (`src/Tia.Cli/Program.cs:486-548`). | Default deve continuar ou parar em fluxo de escrita? | Acrescentar `--fail-fast` e `allowFailure` por step; considerar fail-fast como default quando qualquer step contém `--apply`. |
 | SAFE-11 | **P1 · Confirmado** | `audit` marca check não executado como `ok:true`; o `ok` global pode ser true com checks críticos pulados (`Audit.cs:233-240`, `329-336`). | Conformidade incompleta é sucesso, desconhecido ou falha? | Resultado tri-state: `pass/fail/skipped`; campos `complete`, `skippedChecks`; `--strict` retorna não zero se qualquer check pular. |
 | SAFE-12 | **P1 · Confirmado** | Falha ao ler telegrama é engolida em `CollectTelegramMap` (`Hardware.cs:468-490`), mas o mapa ainda pode declarar `nextFreeByteExact:true`. | Como distinguir “não há telegrama” de “não consegui ler telegrama”? | Coletar `scanErrors`, incrementar `unreadable`, forçar `nextFreeByteExact:false`. Teste com drive sem commissioning data. |

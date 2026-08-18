@@ -134,5 +134,5 @@
 - `--version  (versão do CLI + qual instalação do Openness este exe carrega; é a 1ª linha de qualquer bug report)`
 
 ## notas
-write verbs are dry-run unless --apply; default --out is .\workspace\exports; saída acima de 60k chars (TIA_MAX_STDOUT) derrama SOZINHA em workspace/auto-<verbo>.json e o stdout recebe o stub {file,bytes,count,head,autoSpill} — --full desliga e dumpa tudo no stdout (use em script que faz ConvertFrom-Json); --out-file F.json (qualquer verbo: JSON completo no arquivo escolhido, stdout só o stub); --retry N (busy, default 3) --timeout SEC; exit: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA, 5 timeout
+write verbs are dry-run unless --apply; default --out is .\workspace\exports; saída acima de 60k chars (TIA_MAX_STDOUT) derrama SOZINHA em workspace/auto-<verbo>.json e o stdout recebe o stub {file,bytes,count,head,autoSpill} — --full desliga e dumpa tudo no stdout (use em script que faz ConvertFrom-Json); --out-file F.json (qualquer verbo: JSON completo no arquivo escolhido, stdout só o stub); o que --force apaga é exportado antes para workspace/recovery/<verbo>-<timestamp>/ (caminho no campo recoveryDir; --no-backup apaga sem rede); --retry N (busy, default 3) --timeout SEC; exit: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA, 5 timeout
 

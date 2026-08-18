@@ -1,76 +1,81 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L95    class Ops
-//   L97    lookup
-//   L99    .FindBlock
-//   L109   .FindGroup
-//   L124   .FindGroupByName
-//   L142   .FindTagGroup
-//   L157   .FindTagGroupByName
-//   L170   .FindBlockIn
-//   L183   .ResolveFolder
-//   L195   .SplitPath
-//   L219   .WalkFolders
-//   L246   .FindTagTable
-//   L259   .ResolveTagFolder
-//   L267   .ResolveTypeFolder
-//   L274   .FindType
-//   L286   structure
-//   L288   .CreateFolder
-//   L320   .CreateFolders
-//   L355   .DeleteFolder
-//   L382   .TypeFolderAction
-//   L403   .CountTypes
-//   L408   .CountBlocks
-//   L413   .CountTables
-//   L422   .CreateInstanceDb
-//   L459   .FbsLike
-//   L466   .NearestFbs
-//   L475   .AllFbs
-//   L483   .Squash
-//   L492   .DeleteBlock
-//   L507   .DeleteType
-//   L521   export
-//   L523   .ExportBlock
-//   L544   .ExportFresh
-//   L565   .ExportFresh
-//   L585   .IsInconsistentExport
-//   L593   .ExportTagTable
-//   L603   .ExportType
-//   L613   .ExportPath
-//   L622   import
-//   L629   .FolderAction
-//   L635   .ImportBlock
-//   L667   .MoveBlock
-//   L750   .ImportTagTable
-//   L778   .AddTag
-//   L814   .DeleteTag
-//   L837   .SetTag
-//   L880   .Rename
-//   L906   .ImportType
-//   L930   .ImportSource
-//   L1001  .Generated
-//   L1007  .SourceDeclNames
-//   L1023  .RequireUtf8Bom
-//   L1036  .RequireFile
-//   L1044  .XmlRootType
-//   L1054  .RequireRootType
-//   L1063  .XmlCultures
-//   L1078  .ProjectOf
-//   L1088  .EnsureCultures
-//   L1110  .XmlObjectName
-//   L1119  diff
-//   L1122  .DiffBlock
-//   L1140  .BlocksIdentical
-//   L1182  import com prova
-//   L1192  .ImportAndProve
-//   L1244  .LogFallback
-//   L1257  .Prove
-//   L1265  .FirstError
-//   L1277  compile
-//   L1280  .Compile
-//   L1322  .FlattenErrors
-//   L1345  .MessageTree
+//   L100   class Ops
+//   L102   lookup
+//   L104   .FindBlock
+//   L114   .FindGroup
+//   L129   .FindGroupByName
+//   L147   .FindTagGroup
+//   L162   .FindTagGroupByName
+//   L175   .FindBlockIn
+//   L188   .ResolveFolder
+//   L200   .SplitPath
+//   L224   .WalkFolders
+//   L251   .FindTagTable
+//   L264   .ResolveTagFolder
+//   L272   .ResolveTypeFolder
+//   L279   .FindType
+//   L291   structure
+//   L293   .CreateFolder
+//   L325   .CreateFolders
+//   L360   .DeleteFolder
+//   L387   .TypeFolderAction
+//   L408   .CountTypes
+//   L413   .CountBlocks
+//   L418   .CountTables
+//   L427   .CreateInstanceDb
+//   L464   .FbsLike
+//   L471   .NearestFbs
+//   L480   .AllFbs
+//   L488   .Squash
+//   L497   .DeleteBlock
+//   L512   .DeleteType
+//   L526   export
+//   L528   .ExportBlock
+//   L549   .ExportFresh
+//   L570   .ExportFresh
+//   L590   .IsInconsistentExport
+//   L598   .ExportTagTable
+//   L608   .ExportType
+//   L618   .ExportPath
+//   L627   recovery (SAFE-09)
+//   L636   .RecoveryDir
+//   L644   .Backup
+//   L653   .BackupInto
+//   L672   .BackupGroup
+//   L679   import
+//   L686   .FolderAction
+//   L692   .ImportBlock
+//   L724   .MoveBlock
+//   L807   .ImportTagTable
+//   L835   .AddTag
+//   L871   .DeleteTag
+//   L894   .SetTag
+//   L937   .Rename
+//   L963   .ImportType
+//   L987   .ImportSource
+//   L1058  .Generated
+//   L1064  .SourceDeclNames
+//   L1080  .RequireUtf8Bom
+//   L1093  .RequireFile
+//   L1101  .XmlRootType
+//   L1111  .RequireRootType
+//   L1120  .XmlCultures
+//   L1135  .ProjectOf
+//   L1145  .EnsureCultures
+//   L1167  .XmlObjectName
+//   L1176  diff
+//   L1179  .DiffBlock
+//   L1197  .BlocksIdentical
+//   L1239  import com prova
+//   L1249  .ImportAndProve
+//   L1301  .LogFallback
+//   L1314  .Prove
+//   L1322  .FirstError
+//   L1334  compile
+//   L1337  .Compile
+//   L1379  .FlattenErrors
+//   L1402  .MessageTree
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -617,6 +622,58 @@ namespace Tia.Core
             var path = Path.GetFullPath(Path.Combine(outDir, safe + ".xml"));
             if (File.Exists(path)) File.Delete(path); // Openness refuses to overwrite
             return path;
+        }
+
+        // ---------- recovery (SAFE-09) ----------
+
+        /// <summary>`--no-backup`: apagar sob `--force` sem rede. Opt-out explícito, default é backup.</summary>
+        public static bool NoBackup;
+
+        /// <summary>Verbo em curso, só para batizar a pasta de recuperação.</summary>
+        public static string Verb = "delete";
+
+        /// <summary>Pasta criada nesta chamada, ou null se nada foi apagado. Sai no JSON.</summary>
+        public static string RecoveryDir { get; private set; }
+
+        /// <summary>
+        /// SAFE-09: exporta para `workspace/recovery/&lt;verbo&gt;-&lt;timestamp&gt;/` o que vai ser
+        /// apagado por `--force`. **Fail-closed**: se o export falha, a exceção sobe e o delete não
+        /// acontece — apagar sem rede exige `--no-backup` dito por escrito. A pasta só nasce quando
+        /// há algo a salvar, então chamada sem delete não suja o workspace.
+        /// </summary>
+        public static void Backup(IEngineeringObject obj)
+        {
+            if (NoBackup || obj == null) return;
+            if (RecoveryDir == null)
+                RecoveryDir = Path.GetFullPath(Path.Combine("workspace", "recovery",
+                    Verb + "-" + DateTime.Now.ToString("yyyyMMdd-HHmmss")));
+            BackupInto(RecoveryDir, obj);
+        }
+
+        private static void BackupInto(string dir, IEngineeringObject obj)
+        {
+            var block = obj as PlcBlock;
+            if (block != null) { ExportFresh(block, ExportPath(dir, block.Name), ExportOptions.WithDefaults); return; }
+            var type = obj as PlcType;
+            if (type != null) { ExportFresh(type, ExportPath(dir, type.Name), ExportOptions.WithDefaults); return; }
+            var table = obj as PlcTagTable;
+            if (table != null)
+            {
+                table.Export(new FileInfo(ExportPath(dir, table.Name)), ExportOptions.WithDefaults);
+                return;
+            }
+            var group = obj as PlcBlockGroup;
+            if (group != null) { BackupGroup(dir, group); return; }
+            throw new InvalidOperationException("Backup não sabe exportar " + obj.GetType().Name
+                + " — apagar assim mesmo exige --no-backup.");
+        }
+
+        /// <summary>Pasta = pacote inteiro (o `--force` do import-master-copy apaga a árvore toda).</summary>
+        private static void BackupGroup(string dir, PlcBlockGroup group)
+        {
+            var sub = Path.Combine(dir, string.Join("_", group.Name.Split(Path.GetInvalidFileNameChars())));
+            foreach (var b in group.Blocks) ExportFresh(b, ExportPath(sub, b.Name), ExportOptions.WithDefaults);
+            foreach (var g in group.Groups) BackupGroup(sub, g);
         }
 
         // ---------- import ----------

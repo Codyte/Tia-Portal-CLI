@@ -21,10 +21,10 @@
 //   L252   .SameFamily
 //   L259   .AlreadyInAnotherFolder
 //   L267   .DeleteObject
-//   L278   .FolderAction
-//   L301   .ResolveBlockPath
-//   L318   .ResolveTypePath
-//   L334   .ResolveTagPath
+//   L279   .FolderAction
+//   L302   .ResolveBlockPath
+//   L319   .ResolveTypePath
+//   L335   .ResolveTagPath
 // ======================= END NAV INDEX =======================
 
 // NAV INDEX
@@ -266,6 +266,7 @@ namespace Tia.Core
 
         private static void DeleteObject(IEngineeringObject obj)
         {
+            Ops.Backup(obj);   // SAFE-09: fail-closed, o delete não acontece se o export falhar
             var block = obj as PlcBlock;
             if (block != null) { block.Delete(); return; }
             var type = obj as PlcType;

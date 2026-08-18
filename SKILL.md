@@ -18,8 +18,8 @@ description: >-
 <!--   L79    3. Chamar -->
 <!--   L91    4. Antes de escrever código: estude -->
 <!--   L118   5. Invariantes (ignorar custa sessão) -->
-<!--   L173   6. Orçamento de contexto (o CLI devolve volume que estoura sessão) -->
-<!--   L183   7. Referência (ler no repo, não deduzir) -->
+<!--   L176   6. Orçamento de contexto (o CLI devolve volume que estoura sessão) -->
+<!--   L186   7. Referência (ler no repo, não deduzir) -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # tia — CLI do TIA Portal Openness
@@ -118,6 +118,9 @@ responde pergunta em prosa).
 ## 5. Invariantes (ignorar custa sessão)
 
 - **Verbo de escrita é dry por padrão.** `--apply` explícito. Nunca contra projeto de produção.
+- **`--force` exporta antes de apagar.** Vai para `workspace/recovery/<verbo>-<timestamp>/`, o
+  caminho volta em `recoveryDir`, e export que falha **aborta o delete**. `--no-backup` apaga sem
+  rede, e tem que ser dito. Não há rollback automático: o XML salvo é o que o `import-block` relê.
 - **Opção que o CLI não conhece falha (exit 2) antes do attach.** Typo de escopo (`--ara` por
   `--area`) com `--apply` rodava o gerador no projeto inteiro. Verbo novo com opção nova pede
   entrada em `Program.KnownOptions` — o teste offline `Cli.KnownOptions` cobra.

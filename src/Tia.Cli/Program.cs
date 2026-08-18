@@ -146,6 +146,9 @@ namespace Tia.Cli
             _outFile = OptionValue(args, "--out-file"); // antes do --help: vale pra toda saída, inclusive ele
             _full = Array.IndexOf(args, "--full") >= 0;
             _verb = args.Length > 0 && !args[0].StartsWith("--") ? args[0] : "out";
+            // SAFE-09: o que `--force` apaga vai antes para workspace/recovery/<verbo>-<timestamp>/
+            Core.Ops.Verb = _verb;
+            Core.Ops.NoBackup = Array.IndexOf(args, "--no-backup") >= 0;
             if (args.Length > 0 && (args[0] == "--version" || args[0] == "-v" || args[0] == "version"))
             {
                 // Primeira linha de qualquer bug report: versão + qual Openness este exe vai carregar.
@@ -366,6 +369,8 @@ namespace Tia.Cli
                         "o stdout recebe o stub {file,bytes,count,head,autoSpill} — --full desliga e dumpa tudo no " +
                         "stdout (use em script que faz ConvertFrom-Json); " +
                         "--out-file F.json (qualquer verbo: JSON completo no arquivo escolhido, stdout só o stub); " +
+                        "o que --force apaga é exportado antes para workspace/recovery/<verbo>-<timestamp>/ " +
+                        "(caminho no campo recoveryDir; --no-backup apaga sem rede); " +
                         "--retry N (busy, default 3) --timeout SEC; exit: 0 ok, 1 geral, 2 uso, 3 arquivo, 4 TIA, 5 timeout" },
                 });
                 return args.Length == 0 ? 1 : 0;
@@ -1146,7 +1151,7 @@ namespace Tia.Cli
             "--drive-object", "--equipment", "--errors", "--fb", "--file", "--folder", "--force", "--from",
             "--from-screen", "--full", "--group", "--help", "--http", "--index", "--inst", "--instance",
             "--io", "--io-system", "--ip", "--item", "--keep-connection", "--kind", "--lib-folder", "--like",
-            "--manifest", "--mask", "--max", "--member", "--mlfb", "--name", "--no-download", "--no-ui",
+            "--manifest", "--mask", "--max", "--member", "--mlfb", "--name", "--no-backup", "--no-download", "--no-ui",
             "--number", "--of", "--off", "--out", "--out-file", "--param", "--params", "--path", "--pattern",
             "--pc-interface", "--plc", "--pn-name", "--port", "--portal", "--pos", "--region", "--remove",
             "--rename", "--rename-from-tag", "--replace", "--retry", "--save", "--screen", "--script",
@@ -1266,6 +1271,10 @@ namespace Tia.Cli
 
         private static void Print(object value)
         {
+            // SAFE-09: um lugar só — quem apagou não precisa carregar o caminho até o resultado
+            var dict = value as IDictionary<string, object>;
+            if (dict != null && Core.Ops.RecoveryDir != null && !dict.ContainsKey("recoveryDir"))
+                dict["recoveryDir"] = Core.Ops.RecoveryDir;
             if (_outFile != null)
             {
                 Console.WriteLine(JsonConvert.SerializeObject(WriteOut(value, _outFile), Formatting.Indented));

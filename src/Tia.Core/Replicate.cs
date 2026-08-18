@@ -15,19 +15,19 @@
 //   L281   .FindFolderByName
 //   L294   .FoldersOfType
 //   L303   .ReplicateInto
-//   L351   .RewireXml
-//   L446   .FindPathInDbXml
-//   L480   naming
-//   L482   .ExtractId
-//   L488   .InstanceDbNames
-//   L493   .ProposedBlockName
-//   L506   .MainBlockName
-//   L513   .FolderBaseName
-//   L521   .static
-//   L539   lookups
-//   L541   .DescendantGroups
-//   L555   .FindDataBlock
-//   L568   .FindTag
+//   L352   .RewireXml
+//   L447   .FindPathInDbXml
+//   L481   naming
+//   L483   .ExtractId
+//   L489   .InstanceDbNames
+//   L494   .ProposedBlockName
+//   L507   .MainBlockName
+//   L514   .FolderBaseName
+//   L522   .static
+//   L540   lookups
+//   L542   .DescendantGroups
+//   L556   .FindDataBlock
+//   L569   .FindTag
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -322,6 +322,7 @@ namespace Tia.Core
                 finally { if (File.Exists(tmp)) File.Delete(tmp); }
             }
 
+            Ops.Backup(target);   // SAFE-09: os blocos do alvo morrem inteiros aqui
             foreach (var old in target.Blocks.ToList()) old.Delete();
 
             foreach (var template in templateXmls)

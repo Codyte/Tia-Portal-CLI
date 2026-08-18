@@ -29,18 +29,18 @@
 //   L319   .Run
 //   L384   .GenerateFromTemplate
 //   L434   .AuditTable
-//   L511   .AddReserves
-//   L528   .CreateTag
-//   L543   .TableAction
-//   L548   .TemplatesOf
-//   L558   .FindBestTemplate
-//   L583   .CollectTables
-//   L592   .StandardizeName
-//   L619   .IsIdentifierPattern
-//   L624   .GenerateComment
-//   L632   .IdentifySet
-//   L640   .GetSubtype
-//   L648   .ExtractId
+//   L512   .AddReserves
+//   L529   .CreateTag
+//   L544   .TableAction
+//   L549   .TemplatesOf
+//   L559   .FindBestTemplate
+//   L584   .CollectTables
+//   L593   .StandardizeName
+//   L620   .IsIdentifierPattern
+//   L625   .GenerateComment
+//   L633   .IdentifySet
+//   L641   .GetSubtype
+//   L649   .ExtractId
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -475,6 +475,7 @@ namespace Tia.Core
                 var tags = new List<object>();
                 if (apply)
                 {
+                    Ops.Backup(table);   // SAFE-09: a tabela inteira é regravada abaixo
                     foreach (var old in table.Tags.ToList()) old.Delete();
                 }
                 var allocator = new AddressAllocator(startByte);

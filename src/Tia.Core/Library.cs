@@ -200,7 +200,7 @@ namespace Tia.Core
                     deleteExisting = () =>
                     {
                         var old = Ops.FindType(plc.TypeGroup, copyName);
-                        if (old != null) old.Delete();
+                        if (old != null) { Ops.Backup(old); old.Delete(); }
                     };
                 }
                 else if (isTable)
@@ -209,7 +209,7 @@ namespace Tia.Core
                     deleteExisting = () =>
                     {
                         var old = Ops.FindTagTable(plc.TagTableGroup, copyName);
-                        if (old != null) old.Delete();
+                        if (old != null) { Ops.Backup(old); old.Delete(); }
                     };
                 }
                 else if (isFolder)
@@ -218,7 +218,7 @@ namespace Tia.Core
                     deleteExisting = () =>
                     {
                         var old = group.Groups.Find(copyName);
-                        if (old != null) old.Delete();
+                        if (old != null) { Ops.Backup(old); old.Delete(); }
                     };
                 }
                 else
@@ -227,7 +227,7 @@ namespace Tia.Core
                     deleteExisting = () =>
                     {
                         var old = Ops.FindBlock(plc, copyName);
-                        if (old != null) old.Delete();
+                        if (old != null) { Ops.Backup(old); old.Delete(); }
                     };
                 }
                 result["action"] = "created";

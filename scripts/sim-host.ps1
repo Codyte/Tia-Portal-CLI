@@ -1,4 +1,4 @@
-# ====================== BEGIN NAV INDEX ======================
+﻿# ====================== BEGIN NAV INDEX ======================
 # NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 #   L41    Write-Log
 #   L104   host: sem switch nenhum, este processo E o host e so volta no -Stop --
@@ -40,6 +40,18 @@ $dll  = Join-Path $repo 'lib\Siemens.Simatic.Simulation.Runtime.Api.x64.dll'
 
 function Write-Log($m) { "$(Get-Date -f 'HH:mm:ss') $m" | Add-Content $log }
 
+# Host vivo = ultima linha nao-terminal E o processo do "pid=" ainda existe. So a linha do log
+# fazia -Start virar no-op ("host ja rodando") depois de reboot/logoff, com zero instancias
+# registradas — e o sim-run seguinte falhava com "-4, DoesNotExist". Log sem pid= (formato
+# antigo) cai no criterio velho.
+function Test-HostAlive {
+    $lines = @(Get-Content $log -ErrorAction SilentlyContinue)
+    if (-not $lines -or $lines[-1] -match 'done|ERRO') { return $false }
+    $m = [regex]::Match(($lines -join "`n"), 'pid=(\d+)')
+    if (-not $m.Success) { return $true }
+    return [bool](Get-Process -Id ([int]$m.Groups[1].Value) -ErrorAction SilentlyContinue)
+}
+
 if ($Status) {
     # a lista vem vazia quando este shell esta na sessao 0, mesmo com a instancia ligada
     try {
@@ -62,7 +74,7 @@ if ($Status) {
 
 if ($Stop) {
     $last = Get-Content $log -Tail 1 -ErrorAction SilentlyContinue
-    if (-not $last -or $last -match 'done|ERRO') { "host nao esta rodando ($last)"; return }
+    if (-not (Test-HostAlive)) { "host nao esta rodando ($last)"; return }
     New-Item -ItemType File -Force $flag | Out-Null
     # o host acorda a cada 2 s; 20 s cobre PowerOff(30s) comecando
     for ($i = 0; $i -lt 10; $i++) {
@@ -77,7 +89,7 @@ if ($Start) {
     # host ja de pe: -Start de novo so criaria um 2o processo dormindo (a task tem
     # MultipleInstancesPolicy IgnoreNew, a rota da sessao 1 nao tem). No-op e o certo.
     $last = Get-Content $log -Tail 1 -ErrorAction SilentlyContinue
-    if ($last -and $last -notmatch 'done|ERRO') { "host ja rodando ($last)"; return }
+    if (Test-HostAlive) { "host ja rodando ($last)"; return }
     Remove-Item $log, $flag, $uiOn -ErrorAction SilentlyContinue
     # marcador em vez de argumento: Start-ScheduledTask nao passa parametro pra task
     if ($Ui) { New-Item -ItemType File -Force $uiOn | Out-Null }

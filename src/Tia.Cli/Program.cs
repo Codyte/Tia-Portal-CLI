@@ -1,121 +1,121 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L137   class Program
-//   L142   .Main
-//   L440   .ExitCodeFor
-//   L454   .RunLadderDryRun
-//   L464   .RunExplainFile
-//   L472   .RunInterfaceFile
-//   L486   .Run
-//   L501   .SingleCall
-//   L517   class Release
-//   L528   .RunExclusive
-//   L671   .ParseScript
-//   L693   .DispatchWithRetry
-//   L707   .IsBusy
-//   L714   .Dispatch
-//   L724   case "save-project"
-//   L727   case "close-project"
-//   L730   case "info"
-//   L733   case "list-devices"
-//   L736   case "list-blocks"
-//   L740   case "list-tags"
-//   L743   case "tree"
-//   L747   case "list-types"
-//   L750   case "find"
-//   L754   case "snapshot"
-//   L757   case "xref"
-//   L760   case "trace"
-//   L763   case "list-hmi"
-//   L766   case "export-hmi-tags"
-//   L770   case "import-hmi-tags"
-//   L777   case "hmi-tree"
-//   L780   case "export-screen"
-//   L784   case "import-screen"
-//   L791   case "delete-screen"
-//   L796   case "list-screen-items"
-//   L801   case "audit-screen"
-//   L806   case "set-screen-items"
-//   L814   case "copy-screen-items"
-//   L822   case "list-motion"
-//   L826   case "free-memory"
-//   L832   case "export-block"
-//   L835   case "explain-block"
-//   L840   case "export-tags"
-//   L843   case "list-interface"
-//   L849   case "import-block"
-//   L856   case "import-ladder"
-//   L864   case "import-source"
-//   L869   case "create-folder"
-//   L874   case "delete-folder"
-//   L879   case "delete-block"
-//   L883   case "move-block"
-//   L888   case "delete-type"
-//   L892   case "export-type"
-//   L895   case "import-type"
-//   L899   case "scaffold"
-//   L908   case "clone"
-//   L915   case "add-call"
-//   L920   case "delete-network"
-//   L925   case "set-retain"
-//   L930   case "add-db-member"
-//   L935   case "import-tags"
-//   L942   case "retrieve-library"
-//   L947   case "create-library"
-//   L951   case "list-library"
-//   L954   case "import-master-copy"
-//   L960   case "add-master-copy"
-//   L966   case "create-instance-db"
-//   L971   case "delete-master-copy"
-//   L976   case "add-device"
-//   L981   case "delete-device"
-//   L985   case "add-tag"
-//   L991   case "delete-tag"
-//   L996   case "edit-db-member"
-//   L1002  case "delete-db-member"
-//   L1007  case "rename-block"
-//   L1012  case "set-tag"
-//   L1019  case "set-attr"
-//   L1025  case "list-attrs"
-//   L1029  case "plug-module"
-//   L1035  case "list-telegrams"
-//   L1038  case "insert-telegram"
-//   L1045  case "set-address"
-//   L1051  case "set-io-address"
-//   L1057  case "list-io-map"
-//   L1061  case "set-memory-bytes"
-//   L1067  case "connect-subnet"
-//   L1072  case "export-cax"
-//   L1075  case "import-cax"
-//   L1079  case "compile"
-//   L1094  case "sim-run"
-//   L1103  case "diff-block"
-//   L1107  case "audit"
-//   L1112  case "doctor"
-//   L1120  case "gen-profinet"
-//   L1125  case "standardize-tags"
-//   L1133  case "gen-fault-ob"
-//   L1141  case "replicate-fc"
-//   L1151  case "gen-alarm-fc"
-//   L1161  case "replicate-instruments"
-//   L1203  .ValidateOptions
-//   L1233  .HasError
-//   L1240  .OptionValue
-//   L1246  .ParseInt
-//   L1252  .ParseByte
-//   L1259  .OptionValues
-//   L1268  .WriteLock
-//   L1273  .Require
-//   L1280  .RequireValues
-//   L1293  .ParseMembers
-//   L1317  .ParseCalls
-//   L1374  .Print
-//   L1394  .Sanitize
-//   L1401  .WriteOut
-//   L1423  .CountOf
-//   L1445  .ResolveSiemensAssembly
-//   L1464  .PlcSimProbeDirs
-//   L1478  .SiemensProbeDirs
+//   L145   .Main
+//   L443   .ExitCodeFor
+//   L457   .RunLadderDryRun
+//   L467   .RunExplainFile
+//   L475   .RunInterfaceFile
+//   L489   .Run
+//   L504   .SingleCall
+//   L520   class Release
+//   L531   .RunExclusive
+//   L684   .ParseScript
+//   L706   .DispatchWithRetry
+//   L720   .IsBusy
+//   L727   .Dispatch
+//   L737   case "save-project"
+//   L740   case "close-project"
+//   L743   case "info"
+//   L746   case "list-devices"
+//   L749   case "list-blocks"
+//   L753   case "list-tags"
+//   L756   case "tree"
+//   L760   case "list-types"
+//   L763   case "find"
+//   L767   case "snapshot"
+//   L770   case "xref"
+//   L773   case "trace"
+//   L776   case "list-hmi"
+//   L779   case "export-hmi-tags"
+//   L783   case "import-hmi-tags"
+//   L790   case "hmi-tree"
+//   L793   case "export-screen"
+//   L797   case "import-screen"
+//   L804   case "delete-screen"
+//   L809   case "list-screen-items"
+//   L814   case "audit-screen"
+//   L819   case "set-screen-items"
+//   L827   case "copy-screen-items"
+//   L835   case "list-motion"
+//   L839   case "free-memory"
+//   L845   case "export-block"
+//   L848   case "explain-block"
+//   L853   case "export-tags"
+//   L856   case "list-interface"
+//   L862   case "import-block"
+//   L869   case "import-ladder"
+//   L877   case "import-source"
+//   L882   case "create-folder"
+//   L887   case "delete-folder"
+//   L892   case "delete-block"
+//   L896   case "move-block"
+//   L901   case "delete-type"
+//   L905   case "export-type"
+//   L908   case "import-type"
+//   L912   case "scaffold"
+//   L921   case "clone"
+//   L928   case "add-call"
+//   L933   case "delete-network"
+//   L938   case "set-retain"
+//   L943   case "add-db-member"
+//   L948   case "import-tags"
+//   L955   case "retrieve-library"
+//   L960   case "create-library"
+//   L964   case "list-library"
+//   L967   case "import-master-copy"
+//   L973   case "add-master-copy"
+//   L979   case "create-instance-db"
+//   L984   case "delete-master-copy"
+//   L989   case "add-device"
+//   L994   case "delete-device"
+//   L998   case "add-tag"
+//   L1004  case "delete-tag"
+//   L1009  case "edit-db-member"
+//   L1015  case "delete-db-member"
+//   L1020  case "rename-block"
+//   L1025  case "set-tag"
+//   L1032  case "set-attr"
+//   L1038  case "list-attrs"
+//   L1042  case "plug-module"
+//   L1048  case "list-telegrams"
+//   L1051  case "insert-telegram"
+//   L1058  case "set-address"
+//   L1064  case "set-io-address"
+//   L1070  case "list-io-map"
+//   L1074  case "set-memory-bytes"
+//   L1080  case "connect-subnet"
+//   L1085  case "export-cax"
+//   L1088  case "import-cax"
+//   L1092  case "compile"
+//   L1107  case "sim-run"
+//   L1116  case "diff-block"
+//   L1120  case "audit"
+//   L1125  case "doctor"
+//   L1133  case "gen-profinet"
+//   L1138  case "standardize-tags"
+//   L1146  case "gen-fault-ob"
+//   L1154  case "replicate-fc"
+//   L1164  case "gen-alarm-fc"
+//   L1174  case "replicate-instruments"
+//   L1216  .ValidateOptions
+//   L1246  .HasError
+//   L1253  .OptionValue
+//   L1259  .ParseInt
+//   L1265  .ParseByte
+//   L1272  .OptionValues
+//   L1281  .WriteLock
+//   L1286  .Require
+//   L1293  .RequireValues
+//   L1306  .ParseMembers
+//   L1330  .ParseCalls
+//   L1387  .Print
+//   L1407  .Sanitize
+//   L1414  .WriteOut
+//   L1436  .CountOf
+//   L1458  .ResolveSiemensAssembly
+//   L1477  .PlcSimProbeDirs
+//   L1491  .SiemensProbeDirs
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -138,6 +138,9 @@ namespace Tia.Cli
     {
         /// <summary>Relógio do processo — vira o `ms` de todo verbo que devolve dicionário.</summary>
         private static readonly System.Diagnostics.Stopwatch _clock = System.Diagnostics.Stopwatch.StartNew();
+
+        /// <summary>Quanto do `ms` foi só o attach (é onde o diálogo modal pendura). -1 = não houve.</summary>
+        private static long _attachMs = -1;
 
         private static int Main(string[] args)
         {
@@ -569,8 +572,13 @@ namespace Tia.Cli
             // script malformado = erro de uso: falha antes do attach (não custa os ~7s nem exige portal)
             var batch = args[0] == "run" ? ParseScript(Require(args, "--script")) : null;
 
+            var attachClock = System.Diagnostics.Stopwatch.StartNew();
             using (var session = Core.TiaSession.Attach())
             {
+                // O diálogo modal de autorização do Openness pendura DENTRO do Attach, então ele
+                // conta no `ms` do processo e uma medição feita com o modal na tela mede o clique,
+                // não a API. `attachMs` separa os dois: `ms - attachMs` é o verbo de verdade.
+                _attachMs = attachClock.ElapsedMilliseconds;
                 // batch: list of verbs in one attach — [["list-blocks"],["compile","--apply"]]
                 if (args[0] == "run")
                 {
@@ -636,7 +644,7 @@ namespace Tia.Cli
                             { "steps", results.Count },
                             { "failed", failed },
                             { "aborted", steps.Count - results.Count },
-                            { "ms", batchClock.ElapsedMilliseconds },
+                            { "ms", batchClock.ElapsedMilliseconds }, { "attachMs", _attachMs },
                             { "slowest", slowest },
                             { "errors", results.Cast<Dictionary<string, object>>()
                                 .Select((e, i) => new { e, i })
@@ -649,7 +657,8 @@ namespace Tia.Cli
                         Print(new Dictionary<string, object>
                             { { "steps", results.Count }, { "failed", failed },
                               { "aborted", steps.Count - results.Count },
-                              { "ms", batchClock.ElapsedMilliseconds }, { "results", results } });
+                              { "ms", batchClock.ElapsedMilliseconds }, { "attachMs", _attachMs },
+                              { "results", results } });
                     return failed > 0 ? 1 : 0;
                 }
                 var result = DispatchWithRetry(session, args, args);
@@ -657,7 +666,11 @@ namespace Tia.Cli
                 // de espera do wrapper, e foi assim que 48 s de add-db-member viraram ">600 s" no
                 // registro — o que demorava era o diálogo modal de autorização (F16).
                 var dict = result as IDictionary<string, object>;
-                if (dict != null && !dict.ContainsKey("ms")) dict["ms"] = _clock.ElapsedMilliseconds;
+                if (dict != null && !dict.ContainsKey("ms"))
+                {
+                    dict["ms"] = _clock.ElapsedMilliseconds;
+                    if (_attachMs >= 0) dict["attachMs"] = _attachMs;
+                }
                 Print(result);
                 return HasError(result) ? 1 : 0;
             }

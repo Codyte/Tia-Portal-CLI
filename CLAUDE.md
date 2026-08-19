@@ -3,10 +3,10 @@
 <!--   L12    TIA Portal Openness API — instruções do repo -->
 <!--   L26    Regras duras -->
 <!--   L72    Build / run (a partir da F1) -->
-<!--   L311   Antes de escrever programa de PLC: `--study` -->
-<!--   L333   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
-<!--   L365   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
-<!--   L413   Economia de tokens -->
+<!--   L314   Antes de escrever programa de PLC: `--study` -->
+<!--   L336   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
+<!--   L368   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
+<!--   L416   Economia de tokens -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # TIA Portal Openness API — instruções do repo
@@ -198,9 +198,12 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     patches = nenhum import** (`changed: false`, 1,3 s em vez de 23 s): a idempotência era funcional,
     agora é real. A prova (compile + re-export) continua inteira, e o erro nomeia qual edição não
     entrou.
-  - **Todo verbo devolve `ms`** (o processo por dentro, attach incluído), não só step de
-    `run --script`. Relógio de parede alto com `ms` baixo = espera do wrapper; ambos altos com
-    `tia info` também lento = diálogo modal de autorização, nunca custo de API.
+  - **Todo verbo devolve `ms` e `attachMs`**, não só step de `run --script`. `ms` é o processo
+    inteiro (o relógio começa antes do attach) e **`attachMs` é a parte que foi só o attach — que é
+    onde o diálogo modal de autorização pendura**. Custo real do verbo = `ms - attachMs`. Medido no
+    1º `info` depois de um `rebuild.ps1` com o Portal aberto: `ms: 46192, attachMs: 45647` (545 ms de
+    verbo, 45,6 s esperando clique); na chamada seguinte, `attachMs: 336`. `attachMs` alto = ambiente
+    (modal ou portal ocupado), nunca API. Relógio de parede alto com `ms` baixo = espera do wrapper.
   - **`connect-subnet` com nome que não existe lista as subnets do projeto** (`existingSubnets`).
   - **Biblioteca da Siemens chega arquivada: `retrieve-library --file X.zal19 [--dir D] [--upgrade]`.**
     O SIOS entrega `.zal1x` e todo o resto do CLI (`list-library`, `import-master-copy`,

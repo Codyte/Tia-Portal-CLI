@@ -1224,3 +1224,21 @@ possível (não feita): gravar o PID do host no log e conferir se o processo viv
 "INVERSOR_B-99A_CCM2~PROFINET_interface~Standard_telegram_20" not defined.` É o resto da área de
 teste `4.2.9 ZZ_TESTE (ZT-01)` da F14, sem o drive SINAMICS no hardware (pré-requisito 4). Não foi
 apagado: decisão do usuário.
+
+**Área de teste da F14 removida (2026-08-19).** Os 2 erros pré-existentes saíram com a área
+`ZZ_TESTE (ZT-01)` inteira, num `run --script --fail-fast` de 7 passos (7,5 min, 94% no
+`delete-db-member` da `DB GLOBAL`): rede 21 do `CHAMADA_ALARMES` (a chamada da FC de alarme),
+pasta de 6 blocos em `4.2.9`, pasta de 2 blocos em `3.1.25`, tabela `BOMBA_ZZ_TESTE_01 (B-99A)`,
+2 tags em `ENTRADAS_DIGITAIS (QA-02)` e o Struct `ZZ_TESTE` da `DB GLOBAL`. Depois:
+`compile --apply` **Success, 0 erros, 0 warnings**, `find "*ZZ_TESTE*"` = 0, projeto salvo.
+
+Dois aprendizados do caminho:
+
+- **`delete-folder` não tem backup** — `Ops.Backup` vive nos verbos com `--force`, e `delete-folder`
+  não tem `--force`. O export à mão dos 8 objetos (`workspace/recovery-f17/`) foi manual. Se um dia
+  incomodar, é o mesmo `Ops.Backup` chamado no `DeleteFolder`.
+- **Bloco inconsistente não se exporta, nem para backup.** `PARTIDA_BOMBA (B-99A)` recusou o export
+  (`Inconsistent blocks and PLC data types (UDT) cannot be exported.`) porque a inconsistência vinha
+  **de fora** (a constante de HWID do drive que nunca entrou), e o `ExportFresh` compila só o bloco.
+  Ou seja: o bloco que mais interessa salvar antes de apagar é justamente o que não sai. Backup de
+  área quebrada é parcial por construção.

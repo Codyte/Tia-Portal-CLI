@@ -190,7 +190,9 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     tamanho do bloco, não do número de edições — 5 membros na `DB GLOBAL` numa chamada custam 23,9 s,
     os mesmos 23,4 s de 1 (medido, `docs/BENCHMARKS.md`). `add-db-member --member "A.B.NOME:Tipo"`
     (repetível, caminho+nome+tipo no mesmo argumento porque listas pareadas por posição desalinham
-    em silêncio; `--name/--path/--type/--like` seguem valendo), `delete-network --index N --index M`
+    em silêncio; `--name/--path/--type/--like` seguem valendo), **`delete-db-member --member
+    "A.B.NOME"`** (repetível, sem tipo; apaga do mais fundo para o mais raso),
+    `delete-network --index N --index M`
     (índices são os do bloco **antes** da chamada; o verbo apaga do maior para o menor) e
     **`add-call --fb A ... --fb B ...`**, onde cada `--inst/--param/--after/--title/--comment`
     pertence ao `--fb` que veio antes dele. Membro repetido na mesma chamada é erro antes do export.
@@ -198,6 +200,15 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     patches = nenhum import** (`changed: false`, 1,3 s em vez de 23 s): a idempotência era funcional,
     agora é real. A prova (compile + re-export) continua inteira, e o erro nomeia qual edição não
     entrou.
+  - **Apagar membro no MEIO de DB `Standard` grande custa minutos, e o preço é por chamada.**
+    `delete-db-member` de um membro no meio da `DB GLOBAL` (5 558 membros, `MemoryLayout: Standard`,
+    862 KB de XML) custou **1 009 968 ms (17 min)** contra 25,6 s para apagar um membro do fim e
+    23,4 s para o `add` no mesmo DB. Não é modal (`attachMs: 324`) nem o compile do PLC inteiro (o
+    ramo caro do `ImportAndProve` não escreveu em `workspace/telemetry.log`): em DB não otimizada
+    todo membro tem offset absoluto, e apagar no meio faz o Portal re-endereçar tudo que vem depois.
+    **O custo é do offset deslocado, não do número de edições** — daí apagar N membros de uma vez,
+    num `--member` repetível, pagar os 17 min uma vez em vez de N. Verbo de escrita em DB grande vai
+    de `run_in_background`.
   - **Todo verbo devolve `ms` e `attachMs`**, não só step de `run --script`. **`ms` é só o
     trabalho** (a mesma conta do `ms` de step, que nunca incluiu attach) e **`attachMs` é o attach,
     que é onde o diálogo modal de autorização pendura**. Total = `ms + attachMs`; somar é trivial,

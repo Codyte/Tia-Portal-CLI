@@ -326,8 +326,12 @@ namespace Tia.Cli
                             + "argumento porque duas listas pareadas por posição desalinham em silêncio)",
                         "edit-db-member --db X --name M [--path A.B] [--type T] [--rename NEW] [--out DIR] [--apply]  "
                             + "(rename não corrige quem referencia o membro)",
-                        "delete-db-member --db X --name M [--path A.B] [--out DIR] [--apply]  "
-                            + "(não corrige quem referencia o membro)",
+                        "delete-db-member --db X --member \"A.B.NOME\" [--member ...] "
+                            + "| --name M [--path A.B] [--out DIR] [--apply]  "
+                            + "(--member é repetível, sem tipo: N membros num export/compile/import só. "
+                            + "Apagar no MEIO de DB Standard grande é caro — o Portal recalcula o offset de "
+                            + "tudo que vem depois; apagar de uma vez paga esse preço uma vez. "
+                            + "Não corrige quem referencia o membro)",
                         "compile [--block X | --folder A/B] [--errors] [--apply]  (--errors = lista plana {where,message,count} em vez da árvore)",
                         "diff-block --file F.xml [--name X]  (read-only, normalized compare)",
                         "doctor [--verb V] [--config F]  (read-only preflight dos verbos geradores)",
@@ -1019,7 +1023,7 @@ namespace Tia.Cli
                     case "delete-db-member":
                         using (WriteLock(session, apply, verb))
                             result = Core.DbMember.Remove(session.GetPlc(plcName), Require(args, "--db"),
-                                OptionValue(args, "--path"), Require(args, "--name"), outDir, apply);
+                                ParseMembers(args, false), outDir, apply);
                         break;
                     case "rename-block":
                         using (WriteLock(session, apply, verb))
@@ -1307,9 +1311,9 @@ namespace Tia.Cli
         /// silencioso de duas listas pareadas por posição (`--name A --type Bool --name B` com um
         /// --type a menos daria a B o tipo de ninguém).
         /// </summary>
-        private static List<Core.DbMember.MemberSpec> ParseMembers(string[] args)
+        private static List<Core.DbMember.MemberSpec> ParseMembers(string[] args, bool needType = true)
         {
-            var specs = OptionValues(args, "--member").Select(Core.DbMember.ParseSpec).ToList();
+            var specs = OptionValues(args, "--member").Select(m => Core.DbMember.ParseSpec(m, needType)).ToList();
             var name = OptionValue(args, "--name");
             if (name != null)
                 specs.Add(new Core.DbMember.MemberSpec
@@ -1320,8 +1324,9 @@ namespace Tia.Cli
                     Like = OptionValue(args, "--like"),
                 });
             if (specs.Count == 0)
-                throw new ArgumentException("Passe --member \"A.B.NOME:Tipo\" (repetível) "
-                    + "ou --name M [--path A.B] --type T.");
+                throw new ArgumentException(needType
+                    ? "Passe --member \"A.B.NOME:Tipo\" (repetível) ou --name M [--path A.B] --type T."
+                    : "Passe --member \"A.B.NOME\" (repetível) ou --name M [--path A.B].");
             return specs;
         }
 

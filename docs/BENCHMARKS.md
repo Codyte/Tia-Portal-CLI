@@ -115,6 +115,23 @@ functional, so the second `--apply` still reimported and recompiled an identical
 The dry-run figures are low because the DB was already compiled; the 9.5 s above includes the
 compile that `ExportFresh` does when the block arrives dirty.
 
+### Where the member sits dominates everything else
+
+| Call, same `DB GLOBAL` (5 558 members, `MemoryLayout: Standard`, 862 KB of XML) | Wall clock |
+|---|---|
+| `add-db-member --apply`, new struct **appended at the end** | 23.4 s |
+| `delete-db-member --apply`, that same struct **at the end** | 25.6 s |
+| `delete-db-member --apply`, a top-level struct **in the middle** (line 5816 of 12554) | **1 009 968 ms (17 min)** |
+
+Not a modal dialog (`attachMs: 324`) and not the expensive `ImportAndProve` branch (no
+`workspace/telemetry.log` was written, so the whole-PLC compile never ran). In a non-optimized DB
+every member carries an absolute offset, so deleting in the middle makes the Portal re-address
+everything below it — nothing referenced the deleted member and it still cost 17 min.
+
+The cost therefore tracks **how many offsets move**, not how many edits are in the call: since
+2026-08-19 `delete-db-member --member` is repeatable, so N deletions pay that price once. Write
+verbs against a big DB belong in `run_in_background`.
+
 ## What is not measured here
 
 **The manual baseline.** The honest comparison — "this took N hours in the GUI" — has to come from

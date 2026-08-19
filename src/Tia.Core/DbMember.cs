@@ -1,25 +1,26 @@
-// ====================== BEGIN NAV INDEX ======================
+﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L41    class DbMember
-//   L51    class MemberSpec
-//   L64    .ParseSpec
-//   L85    .Order
-//   L94    .Add
-//   L124   .Validate
-//   L140   .Row
-//   L158   .Rows
-//   L177   .Change
-//   L223   .Remove
-//   L255   núcleo comum (o envelope mora em Ops.EditBlock)
-//   L258   .MemberOf
-//   L270   .RemoveFromXml
-//   L283   struct Delta
-//   L291   .ChangeInXml
-//   L329   struct Edit
-//   L342   .AddToXml
-//   L381   .ResolveSection
-//   L416   .NameOf
-//   L422   .Datatype
+//   L42    class DbMember
+//   L52    class MemberSpec
+//   L66    .ParseSpec
+//   L92    .RejectDuplicates
+//   L106   .Order
+//   L115   .Add
+//   L140   .Validate
+//   L156   .Row
+//   L174   .Rows
+//   L193   .Change
+//   L243   .Remove
+//   L281   núcleo comum (o envelope mora em Ops.EditBlock)
+//   L284   .MemberOf
+//   L296   .RemoveFromXml
+//   L309   struct Delta
+//   L317   .ChangeInXml
+//   L355   struct Edit
+//   L368   .AddToXml
+//   L407   .ResolveSection
+//   L442   .NameOf
+//   L448   .Datatype
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -60,21 +61,41 @@ namespace Tia.Core
         /// "AREA.ALARMES.ALM_X:Bool" → path AREA.ALARMES, nome ALM_X, tipo Bool. Caminho, nome e
         /// tipo no MESMO argumento porque duas listas pareadas por posição (`--name`/`--type`)
         /// desalinham e dão a um membro o tipo do vizinho, em silêncio.
+        /// No delete o tipo não existe (<paramref name="needType"/> false): "AREA.ALARMES.ALM_X".
         /// </summary>
-        public static MemberSpec ParseSpec(string spec)
+        public static MemberSpec ParseSpec(string spec, bool needType = true)
         {
             var colon = (spec ?? "").LastIndexOf(':');
             if (colon <= 0 || colon == spec.Length - 1)
-                throw new ArgumentException("--member \"" + spec + "\" sem tipo: a forma é "
-                    + "\"A.B.NOME:Tipo\" (o caminho é opcional, o tipo não).");
-            var full = spec.Substring(0, colon).Trim();
+            {
+                if (needType)
+                    throw new ArgumentException("--member \"" + spec + "\" sem tipo: a forma é "
+                        + "\"A.B.NOME:Tipo\" (o caminho é opcional, o tipo não).");
+                colon = -1;
+            }
+            var full = (colon < 0 ? (spec ?? "") : spec.Substring(0, colon)).Trim();
+            if (full.Length == 0)
+                throw new ArgumentException("--member vazio: a forma é \"A.B.NOME\".");
             var dot = full.LastIndexOf('.');
             return new MemberSpec
             {
                 Path = dot < 0 ? null : full.Substring(0, dot),
                 Name = dot < 0 ? full : full.Substring(dot + 1),
-                Type = spec.Substring(colon + 1).Trim(),
+                Type = colon < 0 ? null : spec.Substring(colon + 1).Trim(),
             };
+        }
+
+        /// <summary>
+        /// Membro repetido na mesma chamada é erro antes do export — deixar o segundo passar calado
+        /// é o silêncio que a F16 recusou. Vale para add e delete.
+        /// </summary>
+        private static void RejectDuplicates(IList<MemberSpec> members)
+        {
+            var dup = members.GroupBy(m => (m.Path ?? "") + "." + m.Name, StringComparer.OrdinalIgnoreCase)
+                .FirstOrDefault(g => g.Count() > 1);
+            if (dup != null)
+                throw new ArgumentException("Membro repetido na mesma chamada: '" + dup.Key.TrimStart('.')
+                    + "'. Um membro por edição.");
         }
 
         /// <summary>
@@ -97,12 +118,7 @@ namespace Tia.Core
             if (members == null || members.Count == 0)
                 throw new ArgumentException("--name is required.");
             foreach (var m in members) Validate(m);
-            // --member repetido: deixar o segundo passar calado é o silêncio que a F16 quis evitar
-            var dup = members.GroupBy(m => (m.Path ?? "") + "." + m.Name, StringComparer.OrdinalIgnoreCase)
-                .FirstOrDefault(g => g.Count() > 1);
-            if (dup != null)
-                throw new ArgumentException("Membro repetido na mesma chamada: '" + dup.Key.TrimStart('.')
-                    + "'. Um membro por edição.");
+            RejectDuplicates(members);
 
             var db = ReplicateFc.FindDataBlock(plc.BlockGroup, dbName);
             if (db == null)
@@ -216,38 +232,48 @@ namespace Tia.Core
         }
 
         /// <summary>
-        /// delete-db-member: tira um membro do DB. Mesma coreografia do Add/Change.
-        /// Idempotente: membro ausente é no-op. Como no rename, o código que referencia o membro
-        /// NÃO é corrigido — fica inconsistente até alguém mexer (`xref --name DB` mostra quem).
+        /// delete-db-member: tira N membros do DB num round-trip só. Mesma coreografia do Add:
+        /// o custo do envelope é do TAMANHO do DB (e de quantos offsets o Portal precisa
+        /// recalcular), não do número de membros — apagar 1 membro no meio da `DB GLOBAL` (5 558
+        /// membros, `MemoryLayout: Standard`) custou 17 min, e apagar 10 no mesmo import custa o
+        /// mesmo tanto, uma vez só. Idempotente: membro ausente é no-op. Como no rename, o código
+        /// que referencia o membro NÃO é corrigido — fica inconsistente até alguém mexer
+        /// (`xref --name DB` mostra quem).
         /// </summary>
-        public static object Remove(PlcSoftware plc, string dbName, string path, string name,
+        public static object Remove(PlcSoftware plc, string dbName, IList<MemberSpec> members,
             string outDir, bool apply)
         {
-            if (string.IsNullOrEmpty(name))
+            if (members == null || members.Count == 0)
                 throw new ArgumentException("--name is required.");
+            foreach (var m in members)
+                if (string.IsNullOrEmpty(m.Name)) throw new ArgumentException("--name is required.");
+            RejectDuplicates(members);
 
             var db = ReplicateFc.FindDataBlock(plc.BlockGroup, dbName);
             if (db == null)
                 throw new InvalidOperationException("Data block '" + dbName + "' not found.");
 
-            var edit = default(Edit);
-            var result = Ops.EditBlock(plc, db, "delmember_", outDir, apply, new[]
+            // Fundo primeiro: com A.B e A.B.C na mesma chamada, apagar A.B antes levaria C junto e
+            // o passo de C sairia "missing (no-op)" — verdadeiro, mas mentiroso sobre quem o apagou.
+            var order = Order(members).AsEnumerable().Reverse().ToList();
+            var edits = new Dictionary<MemberSpec, Edit>();
+            var steps = order.Select(m => new Ops.BlockEditStep
             {
-                new Ops.BlockEditStep
-                {
-                    Label = "a remoção de '" + name + "'",
-                    Apply = doc => edit = RemoveFromXml(doc, path, name),
-                    Proof = doc => MemberOf(doc, path, name) == null,
-                },
-            });
+                Label = "a remoção de '" + m.Name + "'",
+                Apply = doc => edits[m] = RemoveFromXml(doc, m.Path, m.Name),
+                Proof = doc => MemberOf(doc, m.Path, m.Name) == null,
+            }).ToList();
+
+            var result = Ops.EditBlock(plc, db, "delmember_", outDir, apply, steps);
             var dbLabel = (string)result["block"];
-            result["db"] = dbLabel;
-            result.Remove("block");
-            result["path"] = string.IsNullOrEmpty(path) ? "Static" : path;
-            result["member"] = name;
-            result["datatype"] = edit.Datatype;
-            result["action"] = edit.Action;
-            if (edit.Action == "delete")
+            result = Rows(result, members, m => new Dictionary<string, object>
+            {
+                { "path", string.IsNullOrEmpty(m.Path) ? "Static" : m.Path },
+                { "member", m.Name },
+                { "datatype", edits[m].Datatype },
+                { "action", edits[m].Action },
+            });
+            if (members.Any(m => edits[m].Action == "delete"))
                 result["warning"] = "deleting a member does not fix its references — check `xref --name " + dbLabel + "`.";
             return result;
         }

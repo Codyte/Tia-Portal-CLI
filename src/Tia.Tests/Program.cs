@@ -570,6 +570,18 @@ namespace Tia.Tests
             Check(DbMember.ParseSpec("X:Array[0..9] of Bool").Type == "Array[0..9] of Bool",
                 "tipo com espaço e colchete sobrevive");
             Check(Throws(() => DbMember.ParseSpec("SEM_TIPO")), "--member sem ':' falha");
+
+            // delete: mesmo --member, sem tipo (o delete não tem tipo a informar)
+            var d7 = DbMember.ParseSpec("AREA.ALARMES.ALM_X", false);
+            Check(d7.Path == "AREA.ALARMES" && d7.Name == "ALM_X" && d7.Type == null,
+                "--member do delete parte em caminho e nome, sem tipo");
+            Check(Throws(() => DbMember.ParseSpec("", false)), "--member vazio falha mesmo sem tipo");
+            // N remoções no mesmo XML: um round-trip, e o fundo sai antes do raso
+            var d8 = db();
+            Check(DbMember.RemoveFromXml(d8, "AREA", "BOMBA_A").Action == "delete"
+                && DbMember.RemoveFromXml(d8, null, "AREA").Action == "delete"
+                && DbMember.RemoveFromXml(d8, null, "AREA").Action == "missing (no-op)",
+                "N remoções no mesmo doc: fundo primeiro, depois o raso, e repetir é no-op");
             Check(Throws(() => DbMember.ParseSpec("X:")), "--member sem tipo depois do ':' falha");
 
             // raso primeiro: A.B tem que nascer antes de A.B.C, senão structsCreated mente

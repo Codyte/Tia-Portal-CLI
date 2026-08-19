@@ -95,7 +95,7 @@
 - `set-retain --block FB --member M [--off] [--out DIR] [--apply]  (Remanence na declaração do FB; o Openness recusa em iDB e o import-source não expressa)`
 - `add-db-member --db X --member "A.B.NOME:Tipo" [--member ...] | --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]  (--member é repetível: N membros num export/compile/import só — o custo do envelope é do tamanho do DB, não do número de membros. Caminho e tipo no mesmo argumento porque duas listas pareadas por posição desalinham em silêncio)`
 - `edit-db-member --db X --name M [--path A.B] [--type T] [--rename NEW] [--out DIR] [--apply]  (rename não corrige quem referencia o membro)`
-- `delete-db-member --db X --name M [--path A.B] [--out DIR] [--apply]  (não corrige quem referencia o membro)`
+- `delete-db-member --db X --member "A.B.NOME" [--member ...] | --name M [--path A.B] [--out DIR] [--apply]  (--member é repetível, sem tipo: N membros num export/compile/import só. Apagar no MEIO de DB Standard grande é caro — o Portal recalcula o offset de tudo que vem depois; apagar de uma vez paga esse preço uma vez. Não corrige quem referencia o membro)`
 - `compile [--block X | --folder A/B] [--errors] [--apply]  (--errors = lista plana {where,message,count} em vez da árvore)`
 - `diff-block --file F.xml [--name X]  (read-only, normalized compare)`
 - `doctor [--verb V] [--config F]  (read-only preflight dos verbos geradores)`

@@ -15,8 +15,8 @@
   <sub>L17:class Param  L23:.ToString  L32:class BlockInterface  L37:.Run  L87:.Collect  L93:núcleo puro (sem Openness: testável offline)  L96:.FromXml  L116:.Describe</sub>
 - **Clone.cs** (233 ln)
   <sub>L24:class Clone  L26:.Run  L98:.InstancesInXml  L116:.Rewrite  L144:.Readdress  L195:.RewriteFile  L210:.ParseReplaces  L223:.ObjectName</sub>
-- **DbMember.cs** (431 ln)
-  <sub>L41:class DbMember  L51:class MemberSpec  L64:.ParseSpec  L85:.Order  L94:.Add  L124:.Validate  L140:.Row  L158:.Rows  L177:.Change  L223:.Remove  L255:núcleo comum (o envelope mora em Ops.EditBlock)  L258:.MemberOf  L270:.RemoveFromXml  L283:struct Delta  L291:.ChangeInXml  L329:struct Edit  L342:.AddToXml  L381:.ResolveSection  L416:.NameOf  L422:.Datatype</sub>
+- **DbMember.cs** (457 ln)
+  <sub>L42:class DbMember  L52:class MemberSpec  L66:.ParseSpec  L92:.RejectDuplicates  L106:.Order  L115:.Add  L140:.Validate  L156:.Row  L174:.Rows  L193:.Change  L243:.Remove  L281:núcleo comum (o envelope mora em Ops.EditBlock)  L284:.MemberOf  L296:.RemoveFromXml  L309:struct Delta  L317:.ChangeInXml  L355:struct Edit  L368:.AddToXml  L407:.ResolveSection  L442:.NameOf  L448:.Datatype</sub>
 - **Doctor.cs** (183 ln)
   <sub>L14:class Doctor  L23:.Run  L43:.CheckVerb  L67:case "gen-profinet"  L84:case "standardize-tags"  L93:case "gen-fault-ob"  L109:case "replicate-fc"  L126:case "gen-alarm-fc"  L144:case "replicate-instruments"  L175:.AnyFc</sub>
 - **Drives.cs** (234 ln)

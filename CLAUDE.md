@@ -395,6 +395,24 @@ O runner é `scripts/taskrun.ps1`. Não exige janela interativa aberta pelo user
 O portal só morre junto com a task se tiver sido *iniciado por ela* (fica na árvore de processos);
 portal aberto à mão pelo user sobrevive.
 
+**A janela de console que pisca na sessão 1 é a da task, e se configura em
+`workspace/console.json`** (arquivo local, gitignored; modelo em `docs/examples/console.json`).
+Sem o arquivo, nada muda — posição padrão do host e janela em branco. Duas chaves:
+
+- **`window`**: `default` (o de sempre) · `remember` (nasce onde a última ficou; o
+  `taskrun.ps1` grava `rect` no próprio arquivo ao terminar) · `hidden` (`ShowWindow SW_HIDE`) ·
+  `"X,Y,W,H"` em pixels (posição fixa). Só há `rect` a guardar porque o Windows guarda posição de
+  console **por atalho**, e a task não roda por atalho — daí a janela sempre voltar ao mesmo lugar.
+- **`show`**: `none` (o de sempre) · `command` (imprime `HH:mm:ss <exe> <linha>` antes de rodar —
+  é o único texto visível *durante* a corrida, porque stdout/stderr vão redirecionados para
+  `workspace/taskio/`) · `all` (o mesmo, mais o conteúdo dos dois arquivos e o `exit=N` no fim).
+
+O trabalho pós-fim (imprimir saída, guardar `rect`) acontece **depois** de `exit-<id>.txt`, que é o
+sinal de fim para o cliente: a task é `MultipleInstances=IgnoreNew`, então runner que demora a sair
+engole a chamada seguinte em silêncio. Por isso também não existe "manter a janela aberta N
+segundos" — quem quer ler a saída lê `workspace/taskio/out-<id>.txt`.
+`Add-Type` do P/Invoke só roda quando `window` não é `default` (~150 ms que o default não paga).
+
 **`EngineeringSecurityException` + `The operation has timed out` = diálogo modal de autorização
 esperando clique na tela, não falha.** Acontece sempre que o hash do `tia.exe` muda (todo
 `rebuild.ps1`) com o Portal já aberto. O usuário clica em OK depois de o verbo já ter estourado o

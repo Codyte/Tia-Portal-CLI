@@ -88,6 +88,11 @@ tia doctor                                    # preflight, se o shim está no PA
 pwsh "$env:TIA_CLI_HOME\scripts\tia.ps1" tree --plc "CPU1"      # de qualquer diretório
 ```
 
+Pela rota da task aparece uma janela de console na sessão 1. Ela se configura em
+`workspace/console.json` (modelo: `docs/examples/console.json`): `window` =
+`default`/`remember`/`hidden`/`"X,Y,W,H"` e `show` = `none`/`command`/`all`. Sem o arquivo, tudo
+como sempre foi — janela em branco na posição padrão. Detalhe e porquês no `CLAUDE.md`.
+
 ## 4. Antes de escrever código: estude
 
 **Toda tarefa de engenharia de PLC começa aqui, antes do primeiro verbo de escrita:**

@@ -983,20 +983,70 @@ namespace Tia.Core
             return result;
         }
 
-        public static object ImportType(PlcSoftware plc, string file, bool apply)
+        public static object ImportType(PlcSoftware plc, string file, string folder, bool apply)
         {
             var full = RequireFile(file);
             RequireRootType(full, "SW.Types.");
             var name = XmlObjectName(full);
+            var target = string.IsNullOrEmpty(folder) ? null : folder.Trim('/');
             var result = new Dictionary<string, object>
             {
                 { "file", full },
                 { "type", name },
+                { "folder", target ?? "" },
                 { "action", name != null && FindType(plc.TypeGroup, name) != null ? "override" : "create" },
                 { "applied", apply },
             };
             if (apply)
-                plc.TypeGroup.Types.Import(new FileInfo(full), ImportOptions.Override);
+            {
+                var group = target == null ? plc.TypeGroup : (PlcTypeGroup)ResolveTypeFolder(plc, target, true);
+                group.Types.Import(new FileInfo(full), ImportOptions.Override);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Move UDT de pasta. Como o MoveBlock: o Openness nao tem move, e export -> delete -> import
+        /// nessa ordem (importar com o original no lugar colide de nome). Sem compile no meio: UDT nao
+        /// referencia bloco, so o contrario, e quem usa o UDT so fica inconsistente depois do delete —
+        /// o import seguinte resolve, e o compile do portao da fase fecha.
+        /// </summary>
+        public static object MoveType(PlcSoftware plc, string name, string folderPath, string outDir, bool apply)
+        {
+            if (string.IsNullOrEmpty(folderPath))
+                throw new InvalidOperationException("--folder required (destino do move).");
+            if (string.IsNullOrEmpty(name))
+                throw new InvalidOperationException("--name X required.");
+            var target = folderPath.Trim('/');
+            var hit = ((List<object>)Inventory.Types(plc)).Cast<Dictionary<string, object>>()
+                .FirstOrDefault(t => string.Equals((string)t["name"], name, StringComparison.OrdinalIgnoreCase));
+            if (hit == null)
+                throw new InvalidOperationException("UDT '" + name + "' not found.");
+            var from = (string)hit["folder"];
+            var dir = string.IsNullOrEmpty(outDir) ? Path.Combine(Path.GetTempPath(), "tia-move") : outDir;
+            var result = new Dictionary<string, object>
+            {
+                { "type", hit["name"] }, { "from", from }, { "to", target },
+                { "alreadyThere", string.Equals(from, target, StringComparison.OrdinalIgnoreCase) },
+                { "xmlDir", dir },
+                { "applied", apply },
+            };
+            if (!apply || (bool)result["alreadyThere"]) return result;
+
+            var file = (string)((Dictionary<string, object>)ExportType(plc, (string)hit["name"], dir))["file"];
+            result["file"] = file;
+            DeleteType(plc, (string)hit["name"], true);
+            try
+            {
+                ImportType(plc, file, target, true);
+            }
+            catch (Exception)
+            {
+                // SAFE-08: o delete ja aconteceu. Devolve o UDT a pasta de origem antes de propagar,
+                // senao um destino recusado apaga trabalho e deixa so um XML em pasta temporaria.
+                ImportType(plc, file, from, true);
+                throw;
+            }
             return result;
         }
 

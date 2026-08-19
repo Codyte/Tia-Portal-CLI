@@ -4,15 +4,15 @@
 <!--   L22    session -->
 <!--   L28    read -->
 <!--   L57    structure -->
-<!--   L67    hardware -->
-<!--   L83    write -->
-<!--   L110   library -->
-<!--   L118   multiuser -->
-<!--   L121   bulk -->
-<!--   L126   batch -->
-<!--   L129   sim -->
-<!--   L133   meta -->
-<!--   L136   notas -->
+<!--   L68    hardware -->
+<!--   L84    write -->
+<!--   L111   library -->
+<!--   L119   multiuser -->
+<!--   L122   bulk -->
+<!--   L127   batch -->
+<!--   L130   sim -->
+<!--   L134   meta -->
+<!--   L137   notas -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao)
@@ -61,7 +61,8 @@
 - `create-instance-db --name X --of FB [--folder A/B] [--apply]  (molde importado por XML chega sem iDB → 'Missing instance DB')`
 - `move-block --name X | --pattern P* --folder A/B [--out DIR] [--apply]  (export→delete→import; o Openness não move bloco)`
 - `delete-type --name X [--apply]  (UDT)`
-- `import-type --file F.xml [--apply]`
+- `import-type --file F.xml [--folder A/B] [--apply]  (--folder e caminho completo a partir da raiz de UDT, criado se faltar; sem ele o UDT cai na raiz)`
+- `move-type --name X --folder A/B [--out DIR] [--apply]  (export->delete->import, como o move-block; o Openness nao move UDT)`
 - `scaffold --manifest F.json [--replace OLD=NEW ...] [--apply] [--force]  (árvore da lei + moldes num projeto novo; --replace troca no XML e nas pastas antes do import; "Cpu" no manifesto barra família errada, --force ignora)`
 
 ## hardware

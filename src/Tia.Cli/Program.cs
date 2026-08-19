@@ -260,7 +260,8 @@ namespace Tia.Cli
                         "move-block --name X | --pattern P* --folder A/B [--out DIR] [--apply]  "
                             + "(export→delete→import; o Openness não move bloco)",
                         "delete-type --name X [--apply]  (UDT)",
-                        "import-type --file F.xml [--apply]",
+                        "import-type --file F.xml [--folder A/B] [--apply]  (--folder e caminho completo a partir da raiz de UDT, criado se faltar; sem ele o UDT cai na raiz)",
+                    "move-type --name X --folder A/B [--out DIR] [--apply]  (export->delete->import, como o move-block; o Openness nao move UDT)",
                         "scaffold --manifest F.json [--replace OLD=NEW ...] [--apply] [--force]  "
                             + "(árvore da lei + moldes num projeto novo; --replace troca no XML e nas pastas antes do import; "
                             + "\"Cpu\" no manifesto barra família errada, --force ignora)" } },
@@ -915,7 +916,13 @@ namespace Tia.Cli
                         break;
                     case "import-type":
                         using (WriteLock(session, apply, verb))
-                            result = Core.Ops.ImportType(session.GetPlc(plcName), Require(args, "--file"), apply);
+                            result = Core.Ops.ImportType(session.GetPlc(plcName), Require(args, "--file"),
+                                OptionValue(args, "--folder"), apply);
+                        break;
+                    case "move-type":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Ops.MoveType(session.GetPlc(plcName), Require(args, "--name"),
+                                Require(args, "--folder"), outDir, apply);
                         break;
                     case "scaffold":
                         var manifestFile = Path.GetFullPath(Require(args, "--manifest"));

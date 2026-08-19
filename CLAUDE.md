@@ -145,6 +145,15 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     `create` num caminho que você esperava existir é o sinal de que o caminho está errado.
   - **`move-block --name X | --pattern P* --folder A/B [--apply]`** — o Openness não move bloco; o
     verbo faz `export` (de todos primeiro) → `delete` → `import --folder`.
+  - **UDT em pasta: `import-type --folder A/B` e `move-type --name X --folder A/B` (2026-08-19).**
+    `import-type` sem `--folder` deixa o UDT na raiz, que é onde os 13 do projeto-molde estavam;
+    `move-type` é o mesmo `export → delete → import` do `move-block`, e devolve o UDT à pasta de
+    origem se o import no destino falhar. `--folder` é caminho completo a partir da raiz de UDT.
+  - **Instância de bloco de biblioteca fica NA biblioteca.** O `PADRAO.md` diz "nada de instância"
+    na pasta 1, mas o check `biblioteca não depende de bloco de área` do `audit` é mais forte:
+    tirar o `DIAG to STRING_DB` de lá (ele é chamado por `FB DIAG MODULES`, que é bloco de
+    biblioteca) trocou uma violação não-checada por uma checada, e o `audit` reprovou. Medido
+    2026-08-19. Instância de biblioteca só sai da pasta 1 virando multi-instância.
   - **Chamada em LAD (R8) = `add-call`, nunca FlgNet na mão.** A ordem que funciona:
     `list-interface --folder "1. FB Bilbiotecas"` (todas as assinaturas numa chamada) → `clone` do
     molde → `delete-network --index N` nas redes que não servem → `add-call --block X --fb NOME

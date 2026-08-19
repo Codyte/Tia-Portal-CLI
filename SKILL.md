@@ -1,7 +1,7 @@
 ---
 name: tia
 description: >-
-  Dirigir o TIA Portal (Siemens) pela linha de comando via Openness — CLI `tia`, 92 verbos com
+  Dirigir o TIA Portal (Siemens) pela linha de comando via Openness — CLI `tia`, 93 verbos com
   JSON na entrada e na saída: ler projeto, exportar/importar bloco, tags, hardware, compilar,
   replicar FC de acionamento/alarme/instrumento, instalar biblioteca de blocos num PLC.
   Use sempre que a conversa envolver TIA Portal, Openness, PLC S7-1500, bloco FB/FC/OB/DB, UDT,
@@ -232,7 +232,7 @@ Exemplo trabalhado, com contagem real (11 chamadas contra 80+):
 
 | Preciso de | Arquivo |
 |---|---|
-| assinatura dos 92 verbos | `$env:TIA_CLI_HOME\docs\VERBS.md` (~90 linhas, gerado do help) |
+| assinatura dos 93 verbos | `$env:TIA_CLI_HOME\docs\VERBS.md` (~90 linhas, gerado do help) |
 | **o que estudar antes de fazer** | `python "$env:TIA_CLI_HOME\scripts\tia-help.py" --study "tema"` — **primeira parada de qualquer tarefa de engenharia**; roda sem Portal aberto |
 | guia oficial da Siemens + bibliotecas gratuitas | `$env:TIA_CLI_HOME\docs\GUIA-SIEMENS.md` (entry IDs do SIOS e onde a casa é mais estrita) |
 | **o que a API NÃO faz** | `$env:TIA_CLI_HOME\docs\LIMITES.md` — limite de API × decisão do repo × DLL faltando, cada um com evidência e saída. **Ler antes de sondar API que "devia existir".** |

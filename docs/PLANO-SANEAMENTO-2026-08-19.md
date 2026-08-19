@@ -223,6 +223,14 @@ painel é pergunta de campo, não de projeto. Documentado, não automatizado.
   modal esperando clique. **CPU zero não distingue os dois casos**; quem distingue é `attachMs` no
   resultado, e ele só existe depois que a chamada volta. Verbo de escrita na DB grande vai de
   `run_in_background`, com timeout folgado.
+  **Investigado depois (2026-08-19, tabela em `BENCHMARKS.md`): o custo NÃO é do membro.** Medido
+  na mesma DB, apagar no meio e apagar no fim custam o mesmo (~44 s), e membro a mais custa ~0,5 s
+  — 77% do piso é o `importMs` dos 862 KB de XML. A hipótese de que apagar no meio de uma DB
+  `MemoryLayout: Standard` obriga o Portal a re-endereçar tudo abaixo foi **refutada por medição**.
+  Os 17 min continuam sem causa provada; a hipótese aberta é o PLC estar sujo naquele instante
+  (F1/F2 tinham acabado de reimportar 10 tabelas de tag), fazendo o `Compile()` do bloco arrastar
+  o programa. **Consequência prática para F3: contar ~45 s por chamada, e apagar tudo numa
+  chamada só** (`--member` é repetível desde `32c9ae8`).
 - **`busy.lock` sobreviveu a duas chamadas que terminaram bem** (o cliente solta o lock só depois
   de a task parar; a chamada seguinte chegou antes). O sintoma é `outra chamada tia em andamento`
   sem `tia.exe` vivo e com a task em `Ready` — conferir os dois antes de apagar o lock.

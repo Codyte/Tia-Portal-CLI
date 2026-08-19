@@ -199,3 +199,30 @@ painel é pergunta de campo, não de projeto. Documentado, não automatizado.
 | F5 resto | 2 | D4 |
 
 **~11 chamadas ao Portal no total.** A mesma lista de tarefas em chamadas soltas passa de 80.
+
+---
+
+## Execução — 2026-08-19
+
+| Fase | Estado | O que de fato aconteceu |
+|---|---|---|
+| F1.b (D1) | **feito** | Repo alinhado à grafia do projeto no commit `6b3514d`. Além dos 4 arquivos previstos: `install-lib.ps1` tinha o mesmo default de `-Root`, `library/library.json` tinha os mesmos 41 caminhos de `generic.json`, e o nome aparecia em doc (`PADRAO.md`, `study-map.json`, `library/README.md`) e em comentário (`Audit.cs`, `Inventory.cs`). `library/packages.json` **não** citava o nome — o plano errava nesse item. |
+| F1.a (D2) | **feito** | `Reator (MBBR2)` → `(MBBR3)`, 10 tabelas. **Ordem invertida em relação ao plano**: `delete-folder` primeiro, `import-tags` depois. Tag de PLC é única no CPU — importar as 10 tabelas com a pasta velha de pé colidiria nome a nome. A rede não é a ordem, é o XML já exportado em `workspace/f1`. |
+| F1.c | **feito em parte** | `Name` é gravável (provado com `--apply`). `REM.RM2.1` → `REM_RM2.1`. **Cuidado com o alvo:** `set-attr --device X` resolve para a **estação** que contém o item, não para o item — renomear a cabeça exige `--item`. As 34 estações SINAMICS ficaram **fora**: o nome-alvo (`INVERSOR_<TAG>_<CCM>`) é o nome que o drive object de dentro já tem, e é dele que saem as 34 constantes de HWID. Ganho é a vista de rede; risco é o endereço que o programa usa. |
+| F2 | **feito** | As 5 pastas de `2. Alarmes` **já existiam, vazias** — `plc-navi` só lista pasta que tem tabela, então a leitura da análise as deu por ausentes. Criadas as 5 de `5.1 Aferição Analógica`. |
+| F3 | **bloqueado — falta dado de engenharia** | No modelo (`PRELIMINAR`), `INSTRUMENTACAO` é um membro por instrumento do tipo UDT `"SensorDados"`; o nome do membro é `<TAG>_<DESCRIÇÃO>`. O projeto inteiro tem **17 tags `_PV_`**, e das 5 áreas só a Casa de Cloro tem candidata (`P-CC-01_PV_SENSOR_CLORO_GAS_ALARME_PRESENCA`, talvez `FQIT-06/07`, `FIT-05`). Desarenador, Casa de Sopradores, Adensadores e Desidratação não têm nenhuma. Qual instrumento vive em qual área é P&ID, não CLI. |
+| F4 | **bloqueado por F3** | `gen-alarm-fc` também depende de tabela de alarme nas pastas `2.N`, que nasceram vazias. |
+| F5 + D3 | **feito** | `DECANTADOR_LAMELAR` fora da `DB GLOBAL`, `FB MODBUS SCAN DRIVERS V1` apagado, `5. Teste` apagada. Export antes de cada delete em `workspace/f5`. `move-block` do `DIAG to STRING_DB` **não** foi feito: a pasta de destino ("do consumidor") continua sem decisão. |
+| portão | **verde** | `compile --apply --errors` limpo e `audit` com `ok: true`, `complete: true`, 10 checks, `scanned` 90/475/46/193. |
+
+### O que a execução ensinou sobre custo
+
+- **`delete-db-member` na `DB GLOBAL` custou 1 009 968 ms (17 min)**, contra os ~23 s medidos em
+  `BENCHMARKS.md` para `add-db-member`. Não foi diálogo modal: `attachMs` foi 324. O que se vê de
+  fora durante essa espera é `tia.exe` com **CPU 0 e 17 MB** — que é exatamente a assinatura de um
+  modal esperando clique. **CPU zero não distingue os dois casos**; quem distingue é `attachMs` no
+  resultado, e ele só existe depois que a chamada volta. Verbo de escrita na DB grande vai de
+  `run_in_background`, com timeout folgado.
+- **`busy.lock` sobreviveu a duas chamadas que terminaram bem** (o cliente solta o lock só depois
+  de a task parar; a chamada seguinte chegou antes). O sintoma é `outra chamada tia em andamento`
+  sem `tia.exe` vivo e com a task em `Ready` — conferir os dois antes de apagar o lock.

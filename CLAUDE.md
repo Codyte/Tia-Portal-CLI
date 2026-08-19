@@ -395,23 +395,23 @@ O runner é `scripts/taskrun.ps1`. Não exige janela interativa aberta pelo user
 O portal só morre junto com a task se tiver sido *iniciado por ela* (fica na árvore de processos);
 portal aberto à mão pelo user sobrevive.
 
-**A janela de console que pisca na sessão 1 é a da task, e se configura em
-`workspace/console.json`** (arquivo local, gitignored; modelo em `docs/examples/console.json`).
-Sem o arquivo, nada muda — posição padrão do host e janela em branco. Duas chaves:
+**A janela de console que pisca na sessão 1 é a da task, e desde 2026-08-19 ela se comporta sozinha:
+reabre onde foi deixada e mostra o comando que está rodando.** Nada a configurar, nada a passar por
+argumento — o `taskrun.ps1` grava a geometria em `workspace/taskio/console-rect.txt` (estado, não
+configuração) e a lê na chamada seguinte. Antes disso a janela sempre voltava à posição padrão do
+host porque o Windows guarda posição de console **por atalho**, e a task não roda por atalho.
 
-- **`window`**: `default` (o de sempre) · `remember` (nasce onde a última ficou; o
-  `taskrun.ps1` grava `rect` no próprio arquivo ao terminar) · `hidden` (`ShowWindow SW_HIDE`) ·
-  `"X,Y,W,H"` em pixels (posição fixa). Só há `rect` a guardar porque o Windows guarda posição de
-  console **por atalho**, e a task não roda por atalho — daí a janela sempre voltar ao mesmo lugar.
-- **`show`**: `none` (o de sempre) · `command` (imprime `HH:mm:ss <exe> <linha>` antes de rodar —
-  é o único texto visível *durante* a corrida, porque stdout/stderr vão redirecionados para
-  `workspace/taskio/`) · `all` (o mesmo, mais o conteúdo dos dois arquivos e o `exit=N` no fim).
+Só para **sair** desse comportamento existe `workspace/console.json` (local, gitignored; modelo em
+`docs/examples/console.json`): `window` = `default` (o de antes) · `remember` (o default) ·
+`hidden` · `"X,Y,W,H"` em pixels; `show` = `none` · `command` (o default) · `all` (imprime também
+stdout/stderr e `exit=N` no fim — durante a corrida não há o que imprimir, a saída vai redirecionada
+para `workspace/taskio/`).
 
-O trabalho pós-fim (imprimir saída, guardar `rect`) acontece **depois** de `exit-<id>.txt`, que é o
-sinal de fim para o cliente: a task é `MultipleInstances=IgnoreNew`, então runner que demora a sair
-engole a chamada seguinte em silêncio. Por isso também não existe "manter a janela aberta N
-segundos" — quem quer ler a saída lê `workspace/taskio/out-<id>.txt`.
-`Add-Type` do P/Invoke só roda quando `window` não é `default` (~150 ms que o default não paga).
+O trabalho de fim (imprimir saída, guardar a geometria) acontece **antes** de `exit-<id>.txt`. O
+cliente só solta o `busy.lock` quando a task já parou (`_common.ps1`), então runner que continua
+trabalhando depois do sinal de fim deixa o lock preso e a chamada seguinte morre em `outra chamada
+tia em andamento` até o coletor de órfão. Pelo mesmo motivo não existe "manter a janela aberta N
+segundos". `Add-Type` do P/Invoke custa ~150 ms por chamada e só não roda com `window: default`.
 
 **`EngineeringSecurityException` + `The operation has timed out` = diálogo modal de autorização
 esperando clique na tela, não falha.** Acontece sempre que o hash do `tia.exe` muda (todo

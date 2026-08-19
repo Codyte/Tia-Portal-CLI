@@ -1,4 +1,5 @@
 {
+  "_": "Opcional. Sem este arquivo a janela da task ja' lembra a posicao (window=remember) e mostra o comando (show=command). Ele so' serve pra SAIR desse default.",
   "window": "remember",
   "show": "command"
 }

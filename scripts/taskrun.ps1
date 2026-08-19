@@ -1,10 +1,11 @@
 # NAV INDEX
 # 1-9    header / protocolo
-# 11-17  caminhos + citacao compartilhada (_common.ps1)
-# 19-49  janela do console (workspace/console.json: window/show) — ausente = como sempre foi
-# 51-95  le cmd.json (array cru OU {id,args}) e executa tia.exe (ou macro ps1), stdout/stderr SEPARADOS
-# 97-103 catch + exit-<id>.txt (sinal de fim, gravado por ultimo)
-# 105-122 pos-fim: imprime a saida com show=all, guarda a posicao da janela com window=remember
+# 11-17   caminhos + citacao compartilhada (_common.ps1)
+# 21-58   janela do console: lembra a posicao sozinha (console.json so' pra sair do default)
+# 60-105  le cmd.json (array cru OU {id,args}) e executa tia.exe (ou macro ps1), stdout/stderr SEPARADOS
+# 106-111 catch (falha antes do exe ainda tem de gravar exit)
+# 112-132 antes do fim: saida com show=all, posicao da janela com window=remember
+# 134     exit-<id>.txt = sinal de fim, sempre por ultimo
 # Runner da task "TiaSmokeRun" (LogonType Interactive = sessao 1, onde o TIA vive;
 # de S4U/sessao 0 o Attach() nunca enxerga o portal — ver CLAUDE.md).
 # Cliente = scripts/tia.ps1 (Invoke-Tia). Protocolo: cmd.json entra ->
@@ -18,20 +19,26 @@ $tia = Join-Path $repo 'src\Tia.Cli\bin\Debug\net48\tia.exe'
 
 Set-Location $repo
 
-# --- janela do console (workspace/console.json; ausente = comportamento de sempre) ---------
+# --- janela do console: lembra sozinha onde ficou -------------------------------------------
 # A task roda pwsh SEM -WindowStyle, entao aparece um console na sessao 1; toda a saida vai por
-# redirecionamento pra arquivo, e por isso ele fica em branco e sempre na posicao padrao do host
-# (o Windows so' guarda posicao de console por atalho, e aqui nao ha atalho). Modelo do arquivo:
+# redirecionamento pra arquivo, e por isso ele nascia em branco e sempre na posicao padrao do host
+# (o Windows so' guarda posicao de console por atalho, e aqui nao ha atalho).
+# Default = "remember" + "command": ninguem precisa configurar nada, a janela reabre onde foi
+# deixada e diz o que esta rodando. A posicao e' ESTADO (console-rect.txt, escrito pelo runner),
+# nao configuracao. workspace/console.json e' opcional e so' serve pra sair do default:
+# {"window":"default|remember|hidden|X,Y,W,H", "show":"none|command|all"} — modelo em
 # docs/examples/console.json.
 $conf = $null
 $confFile = Join-Path $repo 'workspace\console.json'
 if (Test-Path $confFile) {
     try { $conf = Get-Content $confFile -Raw -Encoding utf8 | ConvertFrom-Json } catch { $conf = $null }
 }
-$window = if ($conf -and $conf.window) { "$($conf.window)" } else { 'default' }
-$show   = if ($conf -and $conf.show)   { "$($conf.show)"   } else { 'none' }
+$window = if ($conf -and $conf.window) { "$($conf.window)" } else { 'remember' }
+$show   = if ($conf -and $conf.show)   { "$($conf.show)"   } else { 'command' }
+$rectFile = Join-Path $dir 'console-rect.txt'
 if ($window -ne 'default') {
-    # Add-Type so' quando ha' o que fazer: sao ~150 ms por chamada, e o default nao paga.
+    # ~150 ms de Add-Type por chamada, contra ~7 s de attach do verbo mais barato. So' o
+    # "default" explicito nao paga.
     Add-Type -Namespace TiaWin -Name Api -MemberDefinition @'
 [DllImport("kernel32.dll")] public static extern System.IntPtr GetConsoleWindow();
 [DllImport("user32.dll")] public static extern bool ShowWindow(System.IntPtr h, int cmd);
@@ -40,8 +47,9 @@ if ($window -ne 'default') {
 public struct RECT { public int Left, Top, Right, Bottom; }
 '@
     $hwnd = [TiaWin.Api]::GetConsoleWindow()
-    # rect vem do proprio arquivo em "remember"; em "X,Y,W,H" vem do texto do modo
-    $rect = if ($window -eq 'remember') { $conf.rect } elseif ($window -match '^\s*-?\d+\s*,') { $window } else { $null }
+    # rect vem do estado em "remember"; em "X,Y,W,H" vem do texto do proprio modo
+    $rect = if ($window -eq 'remember') { Get-Content $rectFile -ErrorAction SilentlyContinue | Select-Object -First 1 }
+            elseif ($window -match '^\s*-?\d+\s*,') { $window } else { $null }
     if ($window -eq 'hidden') { [void][TiaWin.Api]::ShowWindow($hwnd, 0) }   # SW_HIDE
     elseif ($rect) {
         $n = @("$rect" -split ',' | ForEach-Object { [int]$_.Trim() })
@@ -102,24 +110,26 @@ try {
     $_.Exception.Message | Out-File "$dir\err$sfx.txt" -Encoding utf8
     $code = 99
 }
-$code | Out-File "$dir\exit$sfx.txt" -Encoding ascii
-
-# Depois do exit-<id>.txt de proposito: ele e' o sinal de fim pro cliente, e nada aqui pode
-# atrasa-lo — a task tem MultipleInstances=IgnoreNew, entao runner lento engole a chamada seguinte.
+# ANTES do exit-<id>.txt, e nao depois: o cliente solta o busy.lock so' quando a task ja parou
+# (_common.ps1), entao runner que continua trabalhando depois do sinal de fim deixa o lock preso e
+# a chamada seguinte morre em "outra chamada tia em andamento" ate o coletor de orfao (10 min).
+# Sao milissegundos de leitura de arquivo e uma chamada GetWindowRect — nao ha' o que adiar.
 if ($show -eq 'all') {
     foreach ($f in "$dir\out$sfx.txt", "$dir\err$sfx.txt") {
         if ((Test-Path $f) -and (Get-Item $f).Length -gt 0) { Get-Content $f -Encoding utf8 | Write-Host }
     }
     Write-Host "exit=$code" -ForegroundColor Cyan
 }
-# "remember": grava onde a janela ficou, e a proxima chamada nasce ali. Mover a janela no meio de
-# uma corrida vale pra proxima, que e' o comportamento que se espera de "ultima posicao".
+# "remember" (o default): grava onde a janela ficou, e a proxima chamada nasce ali. Mover a janela
+# no meio de uma corrida vale pra proxima, que e' o que se espera de "ultima posicao". Vai pro
+# console-rect.txt e nao pro console.json de proposito: o json e' escrito pelo humano, e runner que
+# reescreve arquivo de configuracao acaba comendo comentario e chave que nao entendeu.
 if ($window -eq 'remember') {
     $r = New-Object TiaWin.Api+RECT
     if ([TiaWin.Api]::GetWindowRect($hwnd, [ref]$r) -and $r.Right -gt $r.Left) {
-        $out = if ($conf) { $conf } else { [pscustomobject]@{ window = 'remember'; show = $show } }
-        $out | Add-Member -NotePropertyName rect `
-            -NotePropertyValue ("{0},{1},{2},{3}" -f $r.Left, $r.Top, ($r.Right - $r.Left), ($r.Bottom - $r.Top)) -Force
-        $out | ConvertTo-Json | Set-Content $confFile -Encoding utf8
+        ("{0},{1},{2},{3}" -f $r.Left, $r.Top, ($r.Right - $r.Left), ($r.Bottom - $r.Top)) |
+            Set-Content $rectFile -Encoding ascii
     }
 }
+
+$code | Out-File "$dir\exit$sfx.txt" -Encoding ascii   # sinal de fim: por ultimo, sempre

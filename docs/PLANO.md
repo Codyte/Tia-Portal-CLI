@@ -1189,3 +1189,38 @@ alvo descartável), não do envelope.
 **Backup do `--force` uma vez por chamada** ficou sem código porque não há o que fazer: nenhum verbo
 de edição por XML aceita `--force` (o backup vive nos verbos que apagam bloco/pasta/tag). Se um dia
 um verbo plural ganhar `--force`, o backup vai no envelope, não no step.
+
+### F17 — pendentes da F15 validados no Portal vivo (2026-08-19)
+
+Cenários montados no projeto-molde (`CPU1.0 CCO`), tudo apagado depois.
+
+- **SAFE-09 (backup do `--force`) — validado.** `scaffold --apply --force` com o mesmo bloco
+  (`ZZ_TESTE_F15_FC`, molde `FcModeloAlarmes.xml`) apontado para outra pasta cai no ramo
+  `AlreadyInAnotherFolder` → `DeleteObject` → `Ops.Backup`. Resultado: `action: "deleted+imported"`
+  e `recoveryDir: workspace/recovery/scaffold-20260819-095057/`, com o XML de 15,9 KB do bloco
+  exportado **antes** do delete. Fail-closed não foi forçado (exigiria export que falha); é a
+  propagação da exceção antes do `Delete()`, verificada em código.
+- **API-11 (download que falha aborta) — validado.** Bloco quebrado de propósito (`--replace
+  DB_DUMMY=ZZ_NAO_EXISTE_DB`) faz o PLC compilar com erro; `sim-run --apply` devolve
+  `error: "…'Software compiling completed with error.'"`, `errorType:
+  EngineeringTargetInvocationException`, **nenhum passo executado** e **exit 1**. O caminho medido
+  foi a exceção do `Download`, não `ErrorCount > 0`; a garantia ("não segue para os passos") é a
+  mesma nos dois.
+- **PLC-05 (projeto online sob `--allow-physical`) — não reproduzível em laboratório.** O ramo
+  exige o projeto **online por um access point que não é PLCSIM**, ou seja, conexão com CPU física.
+  Sem CPU real não há como chegar lá, e forçar `--allow-physical` contra um adaptador real seria
+  download em hardware — recusado. Validado o guarda anterior, que é o que protege na prática:
+  `sim-run --apply --pc-interface "Realtek Gaming 2.5GbE Family Controller"` sai
+  `ArgumentException` + **exit 2**, antes de qualquer download.
+
+**Achado de fora do escopo**: `sim-host.ps1 -Start`/`-Stop` decidem "host de pé" pela última linha
+do `workspace/sim-host.log`. Log de sessão anterior cujo processo já morreu (reboot/logoff) faz o
+`-Start` virar no-op ("host ja rodando") com **zero instâncias registradas**, e o `sim-run` seguinte
+falha com `-4, DoesNotExist`. Saída: apagar `workspace/sim-host.log` e re-`-Start`. Correção
+possível (não feita): gravar o PID do host no log e conferir se o processo vive.
+
+**Também encontrado, não é regressão desta sessão**: o PLC do projeto-molde **não compila limpo** —
+2 erros pré-existentes em `PARTIDA_BOMBA (B-99A) (FC900)`, rede 10, `Tag
+"INVERSOR_B-99A_CCM2~PROFINET_interface~Standard_telegram_20" not defined.` É o resto da área de
+teste `4.2.9 ZZ_TESTE (ZT-01)` da F14, sem o drive SINAMICS no hardware (pré-requisito 4). Não foi
+apagado: decisão do usuário.

@@ -395,17 +395,21 @@ O runner é `scripts/taskrun.ps1`. Não exige janela interativa aberta pelo user
 O portal só morre junto com a task se tiver sido *iniciado por ela* (fica na árvore de processos);
 portal aberto à mão pelo user sobrevive.
 
-**A janela de console que pisca na sessão 1 é a da task, e desde 2026-08-19 ela se comporta sozinha:
-reabre onde foi deixada e mostra o comando que está rodando.** Nada a configurar, nada a passar por
-argumento — o `taskrun.ps1` grava a geometria em `workspace/taskio/console-rect.txt` (estado, não
-configuração) e a lê na chamada seguinte. Antes disso a janela sempre voltava à posição padrão do
-host porque o Windows guarda posição de console **por atalho**, e a task não roda por atalho.
+**A janela de console que pisca na sessão 1 é a da task, e desde 2026-08-19 ela reabre onde foi
+deixada.** Nada a configurar, nada a passar por argumento — o `taskrun.ps1` grava a geometria em
+`workspace/taskio/console-rect.txt` (estado, não configuração) e a lê na chamada seguinte. Antes
+disso a janela sempre voltava à posição padrão do host porque o Windows guarda posição de console
+**por atalho**, e a task não roda por atalho.
 
 Só para **sair** desse comportamento existe `workspace/console.json` (local, gitignored; modelo em
 `docs/examples/console.json`): `window` = `default` (o de antes) · `remember` (o default) ·
-`hidden` · `"X,Y,W,H"` em pixels; `show` = `none` · `command` (o default) · `all` (imprime também
-stdout/stderr e `exit=N` no fim — durante a corrida não há o que imprimir, a saída vai redirecionada
-para `workspace/taskio/`).
+`hidden` · `"X,Y,W,H"` em pixels; `show` = `none` (o default) · `command` (imprime a linha de
+comando antes de rodar) · `all` (imprime também stdout/stderr e `exit=N` no fim).
+
+**`show` fica em `none` por um motivo, não por gosto: console com QuickEdit — o padrão do Windows —
+bloqueia quem escreve nele enquanto houver seleção de mouse.** Um clique na janela penduraria o
+runner, e com ele o `busy.lock` e a chamada seguinte. A janela muda não tem esse risco; ligar
+`command`/`all` é aceitá-lo. A saída de verdade está sempre em `workspace/taskio/out-<id>.txt`.
 
 O trabalho de fim (imprimir saída, guardar a geometria) acontece **antes** de `exit-<id>.txt`. O
 cliente só solta o `busy.lock` quando a task já parou (`_common.ps1`), então runner que continua

@@ -88,10 +88,11 @@ tia doctor                                    # preflight, se o shim está no PA
 pwsh "$env:TIA_CLI_HOME\scripts\tia.ps1" tree --plc "CPU1"      # de qualquer diretório
 ```
 
-Pela rota da task aparece uma janela de console na sessão 1. Ela **reabre onde foi deixada e mostra
-o comando que está rodando, sem configuração nenhuma** — a geometria vive em
-`workspace/taskio/console-rect.txt`, escrita pelo próprio runner. Para sair disso (`hidden`,
-posição fixa, sem texto) existe `workspace/console.json`; chaves e porquês no `CLAUDE.md`.
+Pela rota da task aparece uma janela de console na sessão 1. Ela **reabre onde foi deixada, sem
+configuração nenhuma** — a geometria vive em `workspace/taskio/console-rect.txt`, escrita pelo
+próprio runner. Fica muda de propósito: console com QuickEdit bloqueia quem escreve nele enquanto
+houver seleção de mouse, e isso penduraria o runner. Para sair disso (`hidden`, posição fixa,
+imprimir o comando) existe `workspace/console.json`; chaves e porquês no `CLAUDE.md`.
 
 ## 4. Antes de escrever código: estude
 

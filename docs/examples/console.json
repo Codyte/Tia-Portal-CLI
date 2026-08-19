@@ -1,5 +1,5 @@
 {
-  "_": "Opcional. Sem este arquivo a janela da task ja' lembra a posicao (window=remember) e mostra o comando (show=command). Ele so' serve pra SAIR desse default.",
+  "_": "Opcional. Sem este arquivo a janela da task ja' lembra a posicao (window=remember) e fica muda (show=none). Ele so' serve pra SAIR desse default. Atencao: show != none escreve no console, e console com QuickEdit trava quem escreve enquanto houver selecao de mouse.",
   "window": "remember",
-  "show": "command"
+  "show": "none"
 }

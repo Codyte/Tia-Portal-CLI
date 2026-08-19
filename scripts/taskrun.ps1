@@ -23,8 +23,8 @@ Set-Location $repo
 # A task roda pwsh SEM -WindowStyle, entao aparece um console na sessao 1; toda a saida vai por
 # redirecionamento pra arquivo, e por isso ele nascia em branco e sempre na posicao padrao do host
 # (o Windows so' guarda posicao de console por atalho, e aqui nao ha atalho).
-# Default = "remember" + "command": ninguem precisa configurar nada, a janela reabre onde foi
-# deixada e diz o que esta rodando. A posicao e' ESTADO (console-rect.txt, escrito pelo runner),
+# Default = "remember" + "none": ninguem precisa configurar nada, a janela reabre onde foi deixada
+# e continua muda. A posicao e' ESTADO (console-rect.txt, escrito pelo runner),
 # nao configuracao. workspace/console.json e' opcional e so' serve pra sair do default:
 # {"window":"default|remember|hidden|X,Y,W,H", "show":"none|command|all"} — modelo em
 # docs/examples/console.json.
@@ -34,7 +34,10 @@ if (Test-Path $confFile) {
     try { $conf = Get-Content $confFile -Raw -Encoding utf8 | ConvertFrom-Json } catch { $conf = $null }
 }
 $window = if ($conf -and $conf.window) { "$($conf.window)" } else { 'remember' }
-$show   = if ($conf -and $conf.show)   { "$($conf.show)"   } else { 'command' }
+# show fica em 'none' por default: console com QuickEdit (o padrao do Windows) BLOQUEIA quem
+# escreve nele enquanto houver selecao de mouse — um clique na janela penduraria o runner, e com
+# ele o busy.lock e a chamada seguinte. Quem liga 'command'/'all' aceita esse risco por escrito.
+$show   = if ($conf -and $conf.show)   { "$($conf.show)"   } else { 'none' }
 $rectFile = Join-Path $dir 'console-rect.txt'
 if ($window -ne 'default') {
     # ~150 ms de Add-Type por chamada, contra ~7 s de attach do verbo mais barato. So' o

@@ -16,10 +16,10 @@ description: >-
 <!--   L27    1. Achar o CLI -->
 <!--   L45    2. Instalar numa máquina nova -->
 <!--   L79    3. Chamar -->
-<!--   L91    4. Antes de escrever código: estude -->
-<!--   L118   5. Invariantes (ignorar custa sessão) -->
-<!--   L181   6. Orçamento de contexto (o CLI devolve volume que estoura sessão) -->
-<!--   L191   7. Referência (ler no repo, não deduzir) -->
+<!--   L97    4. Antes de escrever código: estude -->
+<!--   L124   5. Invariantes (ignorar custa sessão) -->
+<!--   L187   6. Orçamento de contexto (o CLI devolve volume que estoura sessão) -->
+<!--   L231   7. Referência (ler no repo, não deduzir) -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # tia — CLI do TIA Portal Openness
@@ -193,6 +193,40 @@ responde pergunta em prosa).
   são 821 KB no contexto.
 - **Nunca `list-blocks` sem filtro** (~480 blocos): use `--folder`, `--type` ou `--count`.
 - **`run --script ops.json --summary`** para lote: 1 attach (~3 s) em vez de um por chamada.
+
+### Trabalho em fases: um batch por fase, não N chamadas
+
+Vale para qualquer tarefa de mais de dois passos. O gargalo não é o Portal — é a conversa, que é
+**re-enviada inteira a cada chamada**. Dez chamadas soltas custam dez cópias do contexto; um batch
+de dez steps custa uma.
+
+1. **Uma fase = um `run --script`.** Attach é ~7 s **por chamada**, não por step. Corolário: step
+   barato entra no batch de graça — a leitura que a fase seguinte precisa vai junto, no mesmo attach.
+2. **`--summary` sempre.** A conversa recebe `{steps, failed, ms, slowest[3], errors[]}` — ~10
+   linhas — em vez do resultado de cada step. É a regra que mais segura o tamanho da sessão.
+3. **Todo step de leitura com `--out-file`.** JSON completo no disco; depois `grep` no arquivo, e
+   só no que falhou. Nunca `Read` do arquivo inteiro — ele gruda e é re-enviado todo turno.
+4. **O mesmo arquivo roda dry e apply.** A única diferença é `--apply` nos steps. Corrigir e
+   repetir = editar uma linha, não remontar o batch.
+5. **`--fail-fast` em corrente de escrita; sem ele em bateria de diagnóstico.** Numa corrente, o
+   step seguinte trabalha em cima do que o anterior não fez. Num diagnóstico, quer-se todos os
+   erros de uma vez.
+
+**Reentrada é por índice de step.** `errors[]` do `--summary` diz qual falhou: conserta aquele,
+roda o mesmo arquivo. A maioria dos verbos é barata de repetir (`create-folder` = `reuse`,
+`gen-alarm-fc` = `in-sync`, `compile` idempotente, XML igual = `changed: false` sem import).
+
+**Camadas — a ordem que evita retrabalho.** Cada camada endereça a de cima pelo nome; mexer numa
+depois de construir a de baixo é refazer o de baixo:
+
+`decisões (0 Portal)` → `nomenclatura` → `estrutura de pastas` → `dados (DB global / tags)` →
+`geradores` → `compile + audit`
+
+O portão (`compile --apply` + `audit`) entra como **últimos steps do batch da fase**, nunca como
+chamada separada — assim custa zero attach.
+
+Exemplo trabalhado, com contagem real (11 chamadas contra 80+):
+`docs/PLANO-SANEAMENTO-2026-08-19.md`.
 
 ## 7. Referência (ler no repo, não deduzir)
 

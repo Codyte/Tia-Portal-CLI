@@ -11,7 +11,7 @@
       "hardware": [],
       "warn": ["Bloco nasce na pasta certa (R6) — mover depois custa export/delete/import e quebra o vínculo chamada↔iDB."],
       "rules": ["R1", "R2", "R3", "R4", "R6", "R9"],
-      "next": ["tia tree", "tia list-interface --folder \"1. FB Bibliotecas\"", "tia audit"]
+      "next": ["tia tree", "tia list-interface --folder \"1. FB Bilbiotecas\"", "tia audit"]
     },
     {
       "name": "motion / eixos / cinemática",
@@ -308,7 +308,7 @@
 
   "workflow": [
     "1. `tia tree` → plc-navi.md: o que já existe no PLC (não recriar o que está lá).",
-    "2. `tia list-interface --folder \"1. FB Bibliotecas\"`: as assinaturas dos FB da casa.",
+    "2. `tia list-interface --folder \"1. FB Bilbiotecas\"`: as assinaturas dos FB da casa.",
     "3. Biblioteca oficial antes de código autoral: `retrieve-library` + `list-library`.",
     "4. Escrever seguindo R1–R9; chamada em LAD é `add-call`, nunca FlgNet na mão.",
     "5. Aceite: `tia audit` (10 checks), não `compile`."

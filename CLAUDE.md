@@ -146,7 +146,7 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
   - **`move-block --name X | --pattern P* --folder A/B [--apply]`** — o Openness não move bloco; o
     verbo faz `export` (de todos primeiro) → `delete` → `import --folder`.
   - **Chamada em LAD (R8) = `add-call`, nunca FlgNet na mão.** A ordem que funciona:
-    `list-interface --folder "1. FB Bibliotecas"` (todas as assinaturas numa chamada) → `clone` do
+    `list-interface --folder "1. FB Bilbiotecas"` (todas as assinaturas numa chamada) → `clone` do
     molde → `delete-network --index N` nas redes que não servem → `add-call --block X --fb NOME
     [--inst iDB] --param P=<tag|DB.caminho.membro|const>`.
     `--fb` aceita o nome com ou sem prefixo `FB `/`FC `. `--inst` é **exigido para FB e recusado

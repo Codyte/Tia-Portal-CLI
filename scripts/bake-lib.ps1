@@ -8,7 +8,7 @@
 param(
     [string]$Plc = 'PLC_GEN',
     [string]$File,   # default = a única .al21 sob src/Tia.Lib (Resolve-LibFile)
-    [string]$Root = '1. FB Bibliotecas',
+    [string]$Root = '1. FB Bilbiotecas',
     [string]$Portal,
     # Moldes (pastas declaradas no packages.json) e UDT/tabelas vivem FORA de $Root e num PLC
     # diferente do que tem a biblioteca (PLC_ZERO do Project1, gerado pelo scaffold). -MoldsOnly

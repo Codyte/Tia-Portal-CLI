@@ -41,7 +41,7 @@ este tem — é aqui que `replicate-fc` deve ser exercitado.
 ```
 0. Main (16)                    FB INTERTRAVAMENTO_PAINEL_<QA/CCM> + FB ALARME DIGITAL_<QA>
                                 OB Resets(129) · Paineis Intertravamento(128) · Paineis %I -> %M(133)
-1. FB Bibliotecas (34)          biblioteca — nada de instância aqui. FB BITS TO WORD, FB FALHA,
+1. FB Bilbiotecas (34)          biblioteca — nada de instância aqui. FB BITS TO WORD, FB FALHA,
                                 FB CONDIÇÃO DE PARTIDA, FB SETPOINT MANUAL/ESCALONAMENTO,
                                 FB INVERSOR SIEMENS, SINA_SPEED_TLG20, FB MODBUS *, FB DIAG MODULES...
 2. Fluxo de Controle (4)        OB_MOLDE_PARTIDAS + CHAMADA_INVERSORES_CCM{1,2,3}
@@ -122,7 +122,7 @@ que já existe é `skip (exists)` — rodar de novo não sobrescreve nada.
 
 Fonte dos XMLs: `library/blocks/` (gitignored — conteúdo da casa, não vai pro repo público).
 66 itens (inventário completo em [`library/README.md`](../library/README.md)): 13 UDTs,
-33 FBs + 1 iDB de `1. FB Bibliotecas`, `DB GLOBAL`, os 6 moldes
+33 FBs + 1 iDB de `1. FB Bilbiotecas`, `DB GLOBAL`, os 6 moldes
 (`FC_Modelo`+`FB BITS TO WORD MODELO`+`DB_DUMMY`, `OB_MOLDE_ALARMES`, `OB_MOLDE_PARTIDAS`,
 `MODULE_ERROR_MOLDE`+`FB DIAG MODULES_DB`+`DB DIAGNOSTICO DISPOSITIVOS`, `MOLDE_ANALOGS`,
 `MOLDE TOT1`), o acionamento-modelo `Soprador 1 (S-01A)` (6 blocos) e 2 tabelas de tags.

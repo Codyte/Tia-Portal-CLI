@@ -5,8 +5,8 @@
 <!--   L37    One attach instead of five -->
 <!--   L52    Output volume — the constraint nobody expects -->
 <!--   L67    The write path — cost is the block, not the edit -->
-<!--   L117   What is not measured here -->
-<!--   L132   A real cycle, captured -->
+<!--   L118   What is not measured here -->
+<!--   L133   A real cycle, captured -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Measured behaviour
@@ -85,11 +85,12 @@ Openness raises a modal authorization dialog in the interactive session; every c
 an earlier internal note recorded ">600 s" for this exact verb for that reason. If `info`, the
 cheapest call there is, does not answer in seconds, the environment is what you are timing.
 
-**Since F16 the result says so itself.** Every verb returns `ms` (whole process) and `attachMs`
-(the attach alone — where that dialog hangs), so the verb's own cost is `ms - attachMs` and no
-control call is needed to tell the two apart. First `info` after a rebuild with the Portal open:
-`{"ms": 46192, "attachMs": 45647}` — 545 ms of verb, 45.6 s waiting for a click. The very next call:
-`attachMs: 336`.
+**Since F16 the result says so itself.** Every verb returns `ms` — the work alone — plus
+`attachMs`, the attach, which is where that dialog hangs. Total is `ms + attachMs`, and no control
+call is needed to tell the two apart. First `info` after a rebuild with the Portal open:
+`{"ms": 507, "attachMs": 33465}` — half a second of verb, 33 s waiting for a click. The very next
+call: `{"ms": 571, "attachMs": 310}`. A step inside `run --script` has always reported work-only
+`ms`; a standalone verb now agrees with it.
 
 **The cost scales with the block, not with the number of edits.** Ten members added one call at a
 time are ten full round-trips of the same DB. Since F16 (2026-08-19) the envelope takes N edits, and

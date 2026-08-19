@@ -10,112 +10,112 @@
 //   L504   .SingleCall
 //   L520   class Release
 //   L531   .RunExclusive
-//   L684   .ParseScript
-//   L706   .DispatchWithRetry
-//   L720   .IsBusy
-//   L727   .Dispatch
-//   L737   case "save-project"
-//   L740   case "close-project"
-//   L743   case "info"
-//   L746   case "list-devices"
-//   L749   case "list-blocks"
-//   L753   case "list-tags"
-//   L756   case "tree"
-//   L760   case "list-types"
-//   L763   case "find"
-//   L767   case "snapshot"
-//   L770   case "xref"
-//   L773   case "trace"
-//   L776   case "list-hmi"
-//   L779   case "export-hmi-tags"
-//   L783   case "import-hmi-tags"
-//   L790   case "hmi-tree"
-//   L793   case "export-screen"
-//   L797   case "import-screen"
-//   L804   case "delete-screen"
-//   L809   case "list-screen-items"
-//   L814   case "audit-screen"
-//   L819   case "set-screen-items"
-//   L827   case "copy-screen-items"
-//   L835   case "list-motion"
-//   L839   case "free-memory"
-//   L845   case "export-block"
-//   L848   case "explain-block"
-//   L853   case "export-tags"
-//   L856   case "list-interface"
-//   L862   case "import-block"
-//   L869   case "import-ladder"
-//   L877   case "import-source"
-//   L882   case "create-folder"
-//   L887   case "delete-folder"
-//   L892   case "delete-block"
-//   L896   case "move-block"
-//   L901   case "delete-type"
-//   L905   case "export-type"
-//   L908   case "import-type"
-//   L912   case "scaffold"
-//   L921   case "clone"
-//   L928   case "add-call"
-//   L933   case "delete-network"
-//   L938   case "set-retain"
-//   L943   case "add-db-member"
-//   L948   case "import-tags"
-//   L955   case "retrieve-library"
-//   L960   case "create-library"
-//   L964   case "list-library"
-//   L967   case "import-master-copy"
-//   L973   case "add-master-copy"
-//   L979   case "create-instance-db"
-//   L984   case "delete-master-copy"
-//   L989   case "add-device"
-//   L994   case "delete-device"
-//   L998   case "add-tag"
-//   L1004  case "delete-tag"
-//   L1009  case "edit-db-member"
-//   L1015  case "delete-db-member"
-//   L1020  case "rename-block"
-//   L1025  case "set-tag"
-//   L1032  case "set-attr"
-//   L1038  case "list-attrs"
-//   L1042  case "plug-module"
-//   L1048  case "list-telegrams"
-//   L1051  case "insert-telegram"
-//   L1058  case "set-address"
-//   L1064  case "set-io-address"
-//   L1070  case "list-io-map"
-//   L1074  case "set-memory-bytes"
-//   L1080  case "connect-subnet"
-//   L1085  case "export-cax"
-//   L1088  case "import-cax"
-//   L1092  case "compile"
-//   L1107  case "sim-run"
-//   L1116  case "diff-block"
-//   L1120  case "audit"
-//   L1125  case "doctor"
-//   L1133  case "gen-profinet"
-//   L1138  case "standardize-tags"
-//   L1146  case "gen-fault-ob"
-//   L1154  case "replicate-fc"
-//   L1164  case "gen-alarm-fc"
-//   L1174  case "replicate-instruments"
-//   L1216  .ValidateOptions
-//   L1246  .HasError
-//   L1253  .OptionValue
-//   L1259  .ParseInt
-//   L1265  .ParseByte
-//   L1272  .OptionValues
-//   L1281  .WriteLock
-//   L1286  .Require
-//   L1293  .RequireValues
-//   L1306  .ParseMembers
-//   L1330  .ParseCalls
-//   L1387  .Print
-//   L1407  .Sanitize
-//   L1414  .WriteOut
-//   L1436  .CountOf
-//   L1458  .ResolveSiemensAssembly
-//   L1477  .PlcSimProbeDirs
-//   L1491  .SiemensProbeDirs
+//   L688   .ParseScript
+//   L710   .DispatchWithRetry
+//   L724   .IsBusy
+//   L731   .Dispatch
+//   L741   case "save-project"
+//   L744   case "close-project"
+//   L747   case "info"
+//   L750   case "list-devices"
+//   L753   case "list-blocks"
+//   L757   case "list-tags"
+//   L760   case "tree"
+//   L764   case "list-types"
+//   L767   case "find"
+//   L771   case "snapshot"
+//   L774   case "xref"
+//   L777   case "trace"
+//   L780   case "list-hmi"
+//   L783   case "export-hmi-tags"
+//   L787   case "import-hmi-tags"
+//   L794   case "hmi-tree"
+//   L797   case "export-screen"
+//   L801   case "import-screen"
+//   L808   case "delete-screen"
+//   L813   case "list-screen-items"
+//   L818   case "audit-screen"
+//   L823   case "set-screen-items"
+//   L831   case "copy-screen-items"
+//   L839   case "list-motion"
+//   L843   case "free-memory"
+//   L849   case "export-block"
+//   L852   case "explain-block"
+//   L857   case "export-tags"
+//   L860   case "list-interface"
+//   L866   case "import-block"
+//   L873   case "import-ladder"
+//   L881   case "import-source"
+//   L886   case "create-folder"
+//   L891   case "delete-folder"
+//   L896   case "delete-block"
+//   L900   case "move-block"
+//   L905   case "delete-type"
+//   L909   case "export-type"
+//   L912   case "import-type"
+//   L916   case "scaffold"
+//   L925   case "clone"
+//   L932   case "add-call"
+//   L937   case "delete-network"
+//   L942   case "set-retain"
+//   L947   case "add-db-member"
+//   L952   case "import-tags"
+//   L959   case "retrieve-library"
+//   L964   case "create-library"
+//   L968   case "list-library"
+//   L971   case "import-master-copy"
+//   L977   case "add-master-copy"
+//   L983   case "create-instance-db"
+//   L988   case "delete-master-copy"
+//   L993   case "add-device"
+//   L998   case "delete-device"
+//   L1002  case "add-tag"
+//   L1008  case "delete-tag"
+//   L1013  case "edit-db-member"
+//   L1019  case "delete-db-member"
+//   L1024  case "rename-block"
+//   L1029  case "set-tag"
+//   L1036  case "set-attr"
+//   L1042  case "list-attrs"
+//   L1046  case "plug-module"
+//   L1052  case "list-telegrams"
+//   L1055  case "insert-telegram"
+//   L1062  case "set-address"
+//   L1068  case "set-io-address"
+//   L1074  case "list-io-map"
+//   L1078  case "set-memory-bytes"
+//   L1084  case "connect-subnet"
+//   L1089  case "export-cax"
+//   L1092  case "import-cax"
+//   L1096  case "compile"
+//   L1111  case "sim-run"
+//   L1120  case "diff-block"
+//   L1124  case "audit"
+//   L1129  case "doctor"
+//   L1137  case "gen-profinet"
+//   L1142  case "standardize-tags"
+//   L1150  case "gen-fault-ob"
+//   L1158  case "replicate-fc"
+//   L1168  case "gen-alarm-fc"
+//   L1178  case "replicate-instruments"
+//   L1220  .ValidateOptions
+//   L1250  .HasError
+//   L1257  .OptionValue
+//   L1263  .ParseInt
+//   L1269  .ParseByte
+//   L1276  .OptionValues
+//   L1285  .WriteLock
+//   L1290  .Require
+//   L1297  .RequireValues
+//   L1310  .ParseMembers
+//   L1334  .ParseCalls
+//   L1391  .Print
+//   L1411  .Sanitize
+//   L1418  .WriteOut
+//   L1440  .CountOf
+//   L1462  .ResolveSiemensAssembly
+//   L1481  .PlcSimProbeDirs
+//   L1495  .SiemensProbeDirs
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -668,7 +668,11 @@ namespace Tia.Cli
                 var dict = result as IDictionary<string, object>;
                 if (dict != null && !dict.ContainsKey("ms"))
                 {
-                    dict["ms"] = _clock.ElapsedMilliseconds;
+                    // `ms` é trabalho, `attachMs` é o attach, e o total é a soma. Somar é trivial;
+                    // subtrair exige lembrar que o modal de autorização pendura dentro do attach —
+                    // e é justo o esquecimento que fez "48 s" virar ">600 s" no registro. Mesma
+                    // conta do `ms` de step do `run --script`, que sempre foi só trabalho.
+                    dict["ms"] = _clock.ElapsedMilliseconds - Math.Max(_attachMs, 0);
                     if (_attachMs >= 0) dict["attachMs"] = _attachMs;
                 }
                 Print(result);

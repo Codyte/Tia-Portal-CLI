@@ -1173,11 +1173,13 @@ menor (crescente pegaria a rede vizinha a partir da segunda) — os três com te
 `--fb` anterior), que é o mesmo motivo do `--member "path.nome:tipo"`: duas listas pareadas por
 posição desalinham em silêncio.
 
-Adjacentes fechados junto: **`ms` + `attachMs` em todo verbo**. O relógio começa antes do attach,
-e o diálogo modal de autorização pendura **dentro** do attach — então `ms` sozinho mede o clique
-junto com o verbo, que é exatamente o erro que abriu esta fase. `attachMs` isola: custo do verbo é
-`ms - attachMs`. Medido no 1º `info` depois de um `rebuild.ps1` com o Portal aberto:
-`ms: 46192, attachMs: 45647` (545 ms de verbo); na chamada seguinte, `attachMs: 336`. Também:
+Adjacentes fechados junto: **`ms` + `attachMs` em todo verbo**. O diálogo modal de autorização
+pendura **dentro** do attach, então um `ms` de processo inteiro mediria o clique junto com o verbo —
+exatamente o erro que abriu esta fase. Os dois campos são separados: **`ms` é só o trabalho**
+(alinhado com o `ms` de step do `run --script`, que nunca incluiu attach) e `attachMs` é o attach;
+total = soma. Somar é trivial, subtrair exigiria lembrar do modal. Medido no 1º `info` depois de um
+`rebuild.ps1` com o Portal aberto: `ms: 507, attachMs: 33465`; na chamada seguinte, `attachMs: 310`.
+Também:
 `action`/`changed: false` real quando o XML não muda; dica no timeout do `Invoke-Tia` mandando rodar
 `tia info`. Dos quatro pendentes da F15, **`--fail-fast` foi validado** (`steps: 1, failed: 1,
 aborted: 1`); abort do `API-11`, bloqueio do `PLC-05` e backup do `SAFE-09` continuam pendentes —

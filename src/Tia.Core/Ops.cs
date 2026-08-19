@@ -84,6 +84,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -1305,8 +1306,12 @@ namespace Tia.Core
                 prefix + string.Join("_", label.Split(Path.GetInvalidFileNameChars())) + ".xml"));
             // bloco recém-importado por outro verbo chega inconsistente e o Openness recusa exportar
             // ("Inconsistent blocks ... cannot be exported") — o pré-compile mora no ExportFresh
+            var phases = new Dictionary<string, object>();
+            var clock = Stopwatch.StartNew();
             ExportFresh(block, file, ExportOptions.WithDefaults);
+            phases["exportMs"] = clock.ElapsedMilliseconds;
 
+            clock.Restart();
             var doc = XDocument.Load(file);
             var before = doc.ToString(SaveOptions.DisableFormatting);
             foreach (var step in steps)
@@ -1323,11 +1328,12 @@ namespace Tia.Core
             // e recompilava o mesmo bloco. O envelope já compara o XML para decidir o import.
             bool changed = doc.ToString(SaveOptions.DisableFormatting) != before;
             if (changed) doc.Save(file);
-            if (apply && changed) ImportAndProve(plc, group, label, file, steps);
+            phases["patchMs"] = clock.ElapsedMilliseconds;
+            if (apply && changed) ImportAndProve(plc, group, label, file, steps, phases);
             return new Dictionary<string, object>
             {
                 { "block", label }, { "file", file }, { "applied", apply && changed },
-                { "changed", changed },
+                { "changed", changed }, { "phases", phases },
             };
         }
 
@@ -1340,11 +1346,15 @@ namespace Tia.Core
         /// que o patch está no projeto, não só no arquivo.
         /// </summary>
         private static void ImportAndProve(PlcSoftware plc, PlcBlockGroup group, string blockName,
-            string file, IList<BlockEditStep> steps)
+            string file, IList<BlockEditStep> steps, Dictionary<string, object> phases)
         {
             var what = string.Join(" + ", steps.Select(s => s.Label));
+            // Onde o tempo vai: sem isso, "17 min" é um número só e não se sabe qual fase otimizar
+            var clock = Stopwatch.StartNew();
             group.Blocks.Import(new FileInfo(file), ImportOptions.Override);
+            phases["importMs"] = clock.ElapsedMilliseconds;
 
+            clock.Restart();
             var block = FindBlock(plc, blockName);
             if (block == null)
                 throw new InvalidOperationException("Block '" + blockName + "' disappeared after import.");
@@ -1352,12 +1362,14 @@ namespace Tia.Core
             if (compiler != null)
             {
                 var compiled = compiler.Compile();
+                phases["compileMs"] = clock.ElapsedMilliseconds;
                 if (compiled.ErrorCount > 0)
                     throw new InvalidOperationException("O import entrou, mas o compile de '" + blockName
                         + "' acusou " + compiled.ErrorCount + " erro(s) — " + what + " deixou o bloco "
                         + "inconsistente. Primeiro erro: " + FirstError(compiled.Messages));
             }
 
+            clock.Restart();
             var proof = Path.Combine(Path.GetDirectoryName(file), "proof_" + Path.GetFileName(file));
             string missing;
             try { missing = Prove(block, proof, steps); }
@@ -1380,6 +1392,7 @@ namespace Tia.Core
                         + again.Message, first);
                 }
             }
+            phases["proofMs"] = clock.ElapsedMilliseconds;
             if (missing != null)
                 throw new InvalidOperationException("O import de '" + blockName + "' passou, mas " + missing
                     + " não está no bloco depois do compile: o patch foi calculado em cima de um "

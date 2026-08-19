@@ -200,15 +200,19 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     patches = nenhum import** (`changed: false`, 1,3 s em vez de 23 s): a idempotência era funcional,
     agora é real. A prova (compile + re-export) continua inteira, e o erro nomeia qual edição não
     entrou.
-  - **Apagar membro no MEIO de DB `Standard` grande custa minutos, e o preço é por chamada.**
-    `delete-db-member` de um membro no meio da `DB GLOBAL` (5 558 membros, `MemoryLayout: Standard`,
-    862 KB de XML) custou **1 009 968 ms (17 min)** contra 25,6 s para apagar um membro do fim e
-    23,4 s para o `add` no mesmo DB. Não é modal (`attachMs: 324`) nem o compile do PLC inteiro (o
-    ramo caro do `ImportAndProve` não escreveu em `workspace/telemetry.log`): em DB não otimizada
-    todo membro tem offset absoluto, e apagar no meio faz o Portal re-endereçar tudo que vem depois.
-    **O custo é do offset deslocado, não do número de edições** — daí apagar N membros de uma vez,
-    num `--member` repetível, pagar os 17 min uma vez em vez de N. Verbo de escrita em DB grande vai
-    de `run_in_background`.
+  - **Editar a `DB GLOBAL` custa ~44 s por CHAMADA, não por membro (medido 2026-08-19).** O piso é
+    o round-trip, e **77% dele é o `importMs`** — `Blocks.Import(Override)` de 862 KB de XML, ~34 s,
+    antes de qualquer compile; o compile do bloco são 8-11 s, export e patch ~0,1 s. **Posição não
+    importa** (meio e fim custam o mesmo) e **membro a mais é quase de graça**: 5 remoções numa
+    chamada custam 46,3 s contra 44,2 s de uma — ~0,5 s por membro extra. Daí `add-db-member` e
+    `delete-db-member` aceitarem `--member` repetível: a economia é não pagar o piso N vezes.
+    Todo verbo que edita por XML devolve **`phases`** (`exportMs`/`patchMs`/`importMs`/`compileMs`/
+    `proofMs`) — é como se sabe qual fase custou, em vez de olhar um `ms` só.
+    **Os 17 min do saneamento continuam sem explicação provada**: não foi modal (`attachMs: 324`),
+    não foi o compile do PLC inteiro do `ImportAndProve` (nada em `workspace/telemetry.log`), e não
+    foi a posição do membro (a hipótese do offset em DB `Standard` foi medida e **refutada**). A
+    hipótese aberta é o PLC estar sujo naquele instante (F1/F2 tinham acabado de reimportar 10
+    tabelas de tag), fazendo o compile do bloco arrastar o programa.
   - **Todo verbo devolve `ms` e `attachMs`**, não só step de `run --script`. **`ms` é só o
     trabalho** (a mesma conta do `ms` de step, que nunca incluiu attach) e **`attachMs` é o attach,
     que é onde o diálogo modal de autorização pendura**. Total = `ms + attachMs`; somar é trivial,

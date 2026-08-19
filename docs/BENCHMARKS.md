@@ -115,22 +115,42 @@ functional, so the second `--apply` still reimported and recompiled an identical
 The dry-run figures are low because the DB was already compiled; the 9.5 s above includes the
 compile that `ExportFresh` does when the block arrives dirty.
 
-### Where the member sits dominates everything else
+### The 17-minute delete: hypothesis refuted, and what the floor really is
 
-| Call, same `DB GLOBAL` (5 558 members, `MemoryLayout: Standard`, 862 KB of XML) | Wall clock |
-|---|---|
-| `add-db-member --apply`, new struct **appended at the end** | 23.4 s |
-| `delete-db-member --apply`, that same struct **at the end** | 25.6 s |
-| `delete-db-member --apply`, a top-level struct **in the middle** (line 5816 of 12554) | **1 009 968 ms (17 min)** |
+`delete-db-member` of one mid-DB member during the 2026-08-19 clean-up cost **1 009 968 ms
+(17 min)**. It was not a modal dialog (`attachMs: 324`) and not the expensive `ImportAndProve`
+branch (no `workspace/telemetry.log` was ever written, so the whole-PLC compile never ran). The
+first hypothesis — non-optimized DB, so deleting in the middle makes the Portal re-address every
+member below — **is wrong**. Measured against it, same project family, same `DB GLOBAL`
+(`MemoryLayout: Standard`, ~5 558 members, 862 KB of XML), one batch, one attach:
 
-Not a modal dialog (`attachMs: 324`) and not the expensive `ImportAndProve` branch (no
-`workspace/telemetry.log` was written, so the whole-PLC compile never ran). In a non-optimized DB
-every member carries an absolute offset, so deleting in the middle makes the Portal re-address
-everything below it — nothing referenced the deleted member and it still cost 17 min.
+| Call (`--apply`, `ZZ_TESTE_*` members) | `ms` | `importMs` | `compileMs` |
+|---|---|---|---|
+| `add`, **6** members inside `PAINEIS` (the DB's first struct) | 38.4 s | 26.2 s | 11.1 s |
+| `delete`, **1** member in that same middle position | 44.2 s | 34.9 s | 8.2 s |
+| `delete`, **5** members in the middle, one call | 46.3 s | 34.4 s | 10.7 s |
+| `add`, 1 member **at the end** of the DB | 43.6 s | 34.3 s | 8.2 s |
+| `delete`, that member **at the end** | 44.1 s | 34.3 s | 8.3 s |
+| `compile --apply --errors` (whole PLC, already clean) | 11.1 s | — | — |
 
-The cost therefore tracks **how many offsets move**, not how many edits are in the call: since
-2026-08-19 `delete-db-member --member` is repeatable, so N deletions pay that price once. Write
-verbs against a big DB belong in `run_in_background`.
+Batch total 228 s, `attachMs` 369, `errors: 0`.
+
+Three things fall out, and only the third is a guess:
+
+1. **Position does not matter.** Middle and end cost the same, within noise. The offset story is dead.
+2. **Count is nearly free.** Five deletions in one call cost 2 s more than one — ~0.5 s per extra
+   member against a ~44 s floor. Deleting everything in a single call is the right move, just not
+   for the reason first assumed.
+3. **The floor is the round-trip, and 77 % of it is `importMs`** — `Blocks.Import(Override)` of an
+   862 KB DB, ~34 s, before any compile. `compileMs` is 8–11 s, export and patch are ~0.1 s
+   together. Nothing in the CLI can shrink the import; the only lever is calling it fewer times.
+
+So the 17 min came from something outside the member itself. The open hypothesis — **not measured
+yet** — is the state of the PLC at that moment: that call came right after F1/F2 had re-imported
+ten tag tables and deleted folders, so `compiler.Compile()` on the DB may have dragged a dirty
+program along with it. Here the project was already clean and `compileMs` stayed at 8–11 s. The
+test that would settle it is to dirty the PLC on purpose (e.g. edit a widely used UDT), then time
+one `delete-db-member`.
 
 ## What is not measured here
 

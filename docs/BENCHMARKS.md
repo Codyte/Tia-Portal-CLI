@@ -1,11 +1,12 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L11    Measured behaviour -->
-<!--   L21    Time to answer, per verb -->
-<!--   L36    One attach instead of five -->
-<!--   L51    Output volume — the constraint nobody expects -->
-<!--   L66    What is not measured here -->
-<!--   L81    A real cycle, captured -->
+<!--   L12    Measured behaviour -->
+<!--   L22    Time to answer, per verb -->
+<!--   L37    One attach instead of five -->
+<!--   L52    Output volume — the constraint nobody expects -->
+<!--   L67    The write path — cost is the block, not the edit -->
+<!--   L91    What is not measured here -->
+<!--   L106   A real cycle, captured -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Measured behaviour
@@ -62,6 +63,30 @@ On a real project (476 blocks, 194 tag tables, 13 UDTs) `tree` produces a 39 KB 
 in about 4 s, against roughly 150 KB for the equivalent JSON. `find --pattern "*" --kind tag` on
 that project is 821 KB — which is why every read verb accepts `--out-file F.json`: the full JSON
 goes to the file and stdout returns `{file,bytes,count,head}`.
+
+## The write path — cost is the block, not the edit
+
+Measured 2026-08-19 on the real template project, against its global DB. Every XML-editing verb
+(`add/edit/delete-db-member`, `add-call`, `delete-network`, `set-retain`) runs the same envelope:
+export a freshly compiled block, patch the XML, import with `Override`, compile, re-export to prove
+the patch landed.
+
+| Call | Wall clock |
+|---|---|
+| `info` (control — proves no authorization dialog is hanging) | 3.4 s |
+| `add-db-member` dry-run (compile + export of the whole DB) | 9.5 s |
+| `add-db-member --apply` (one Bool member under a new struct) | 47.9 s |
+| `delete-db-member --apply` (removing that struct) | 25.6 s |
+| `compile --block --apply` afterwards | Success, 0 errors / 0 warnings |
+
+**The control call is not optional.** When the `tia.exe` hash changes with the Portal already open,
+Openness raises a modal authorization dialog in the interactive session; every call then hangs at
+~0 % CPU until a human clicks it. A number captured in that state measures the dialog, not the API —
+an earlier internal note recorded ">600 s" for this exact verb for that reason. If `info`, the
+cheapest call there is, does not answer in seconds, the environment is what you are timing.
+
+**The cost scales with the block, not with the number of edits.** Ten members added one call at a
+time are ten full round-trips of the same DB. Batching them into one envelope is `PLANO.md` F16.
 
 ## What is not measured here
 

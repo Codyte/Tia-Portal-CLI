@@ -1,27 +1,28 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L27    PLANO — TIA Portal Openness API (V19+) -->
-<!--   L32    Objetivo -->
-<!--   L38    Decisões travadas (mudar só com motivo forte) -->
-<!--   L52    Delimitações — o que a API NÃO é -->
-<!--   L59    Arquitetura -->
-<!--   L82    Fases -->
-<!--   L104   Verificação (cada fase) -->
-<!--   L112   Economia de tokens (regras da sessão) -->
-<!--   L124   Skills em uso (nada novo pra instalar) -->
-<!--   L135   Ambiente (descoberto na F1) -->
-<!--   L163   Backlog v2 (cobertura Openness — priorizado) -->
-<!--   L266   Projeto de referência (2026-07-27) -->
-<!--   L272   Fronteira da engine — F7 itens 3-5 decididos (2026-08-07) -->
-<!--   L299   D8 fechada — sem superfície online, e não é adiamento (2026-08-07) -->
-<!--   L318   Pendências / decisões futuras -->
-<!--   L359   F11 — IHM (em andamento, 2026-08-17) -->
-<!--   L444   F13 — objetos de dentro da tela ✅ (2026-08-17) -->
-<!--   L595   F14 — área nova ponta a ponta ✅ (2026-08-18) -->
-<!--   L644   F12 — `sim-diag` camada 1 ✅ (2026-08-17) -->
-<!--   L673   Teste cego ponta a ponta — caderno escrito (2026-08-07) -->
-<!--   L942   Histórico fechado -->
-<!--   L955   F15 — auditoria externa: P0 fechados ✅ (2026-08-18) -->
+<!--   L28    PLANO — TIA Portal Openness API (V19+) -->
+<!--   L33    Objetivo -->
+<!--   L39    Decisões travadas (mudar só com motivo forte) -->
+<!--   L53    Delimitações — o que a API NÃO é -->
+<!--   L60    Arquitetura -->
+<!--   L83    Fases -->
+<!--   L105   Verificação (cada fase) -->
+<!--   L113   Economia de tokens (regras da sessão) -->
+<!--   L125   Skills em uso (nada novo pra instalar) -->
+<!--   L136   Ambiente (descoberto na F1) -->
+<!--   L164   Backlog v2 (cobertura Openness — priorizado) -->
+<!--   L267   Projeto de referência (2026-07-27) -->
+<!--   L273   Fronteira da engine — F7 itens 3-5 decididos (2026-08-07) -->
+<!--   L300   D8 fechada — sem superfície online, e não é adiamento (2026-08-07) -->
+<!--   L319   Pendências / decisões futuras -->
+<!--   L360   F11 — IHM (em andamento, 2026-08-17) -->
+<!--   L445   F13 — objetos de dentro da tela ✅ (2026-08-17) -->
+<!--   L596   F14 — área nova ponta a ponta ✅ (2026-08-18) -->
+<!--   L645   F12 — `sim-diag` camada 1 ✅ (2026-08-17) -->
+<!--   L674   Teste cego ponta a ponta — caderno escrito (2026-08-07) -->
+<!--   L943   Histórico fechado -->
+<!--   L956   F15 — auditoria externa: P0 fechados ✅ (2026-08-18) -->
+<!--   L1041  F16 — envelope plural de edição por XML (próxima, 2026-08-19) -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # PLANO — TIA Portal Openness API (V19+)
@@ -1036,3 +1037,110 @@ Tropeço da rodada: o primeiro `open-project` morreu em `EngineeringSecurityExce
 autorização esperando clique, porque o hash do `tia.exe` mudou nos rebuilds do dia. Sintoma de
 diagnóstico: task `TiaSmokeRun` em `Running` **e** processo do Portal sem consumir CPU.
 
+
+## F16 — envelope plural de edição por XML (próxima, 2026-08-19)
+
+### Descoberta que abriu a fase
+
+O `standing.md` carregava "escrita no `DB GLOBAL` passa dos 600 s do `TIA_TIMEOUT`", medido em
+2026-08-17. **Era o diálogo modal de autorização**, o mesmo tropeço registrado no fim da F15 — não
+custo do verbo. Re-medido em 2026-08-19 no projeto-molde, com `tia info` de controle antes:
+
+| Passo | Tempo |
+|---|---|
+| `info` (controle: sem modal pendurado) | 3,4 s |
+| `add-db-member` dry na `DB GLOBAL` (compile + export do bloco inteiro) | 9,5 s |
+| `add-db-member --apply` (`ZZ_TESTE_VIDEO.ALM_ZZ : Bool`) | **47,9 s** |
+| `delete-db-member --apply` (limpeza do mesmo ramo) | 25,6 s |
+| `compile --block "DB GLOBAL" --apply` depois | Success, 0 erros / 0 warnings |
+
+Nada ficou no projeto (o membro de teste foi removido) e nada foi salvo em disco.
+
+**Regra que sai daqui:** antes de atribuir lentidão a um verbo, rodar `tia info`. Se a chamada mais
+barata também demora, é ambiente — nunca custo de API. Já estava escrito na seção Ambiente
+(L156), e não foi seguido na medição de 2026-08-17.
+
+### O problema real
+
+O custo é do tamanho do bloco, não do número de edições — mas o envelope
+(`export → patch → Import Override → compile → re-export de prova`) roda **uma vez por edição**.
+Dez membros na `DB GLOBAL` são dez round-trips: ~480 s onde ~50 s bastariam. Vale para todo verbo
+que edita por XML: `add/edit/delete-db-member`, `add-call`, `delete-network`, `set-retain`.
+
+`run --script` não ajuda: ele compartilha o attach (~2 s/chamada), não o envelope.
+
+### Decisão
+
+Generalizar o envelope para N edições, mantendo a prova inteira. **A prova não se corta** — sem
+compile + re-export, o bloco fica modificado-não-compilado e o export seguinte devolve o conteúdo
+anterior (foi como um `edit-db-member --rename` saiu `ok: true` sem ter mudado nada,
+`docs/teste-cego/resultado-FP-03.md` §5.6).
+
+```
+Ops.EditBlock(plc, blockName, IList<Edit> edits)   // Edit = { Label, Apply(XDocument), Proof(XDocument) }
+```
+
+1. um `ExportFresh`;
+2. aplica os N edits em ordem no mesmo `XDocument`; **qualquer falha aborta antes do import** (hoje,
+   numa corrente, os anteriores já entraram);
+3. zero mudança efetiva = **nenhum import** (`action: "unchanged"`);
+4. um `Import Override`, um compile, um re-export;
+5. **todas** as provas conferidas contra esse export; o erro nomeia qual edit não entrou.
+
+A base já existe: `BlockEdit.Patch` (L234-258) é esse envelope na forma singular. O `DbMember` tem
+três cópias manuais dele — a fase mata as cópias de quebra.
+
+### Passo a passo
+
+| # | O quê | Onde |
+|---|-------|------|
+| 1 | `Ops.EditBlock` plural; `ImportAndProve` recebe lista de provas rotuladas | `Ops.cs`, `BlockEdit.cs` |
+| 2 | `DbMember` roteado pelo envelope (mata as 3 cópias) — sem mudança de comportamento visível | `DbMember.cs` |
+| 3 | `add-db-member --member "<path>.<nome>:<tipo>"` repetível (a forma antiga segue valendo) | `DbMember.cs`, `Program.cs` |
+| 4 | `delete-network --index` repetível e `add-call --fb` repetível | `BlockEdit.cs`, `Program.cs` |
+| 5 | Testes offline dos transforms N-edit + entradas em `Program.KnownOptions` | `Tia.Tests` |
+| 6 | `docs/VERBS.md` (sai do `rebuild.ps1`), regra no `CLAUDE.md`, tabela nova em `BENCHMARKS.md` | docs |
+
+**Por que `--member "path.nome:tipo"` e não `--name` repetido:** `--name A --type Bool --name B
+--type Int` obriga o parser a parear duas listas por posição, e desalinhamento vira membro com o
+tipo errado **em silêncio**. O triplo num argumento só não tem como desalinhar.
+
+### Guardrails (é o que separa rápido de confiável)
+
+- **`delete-network --index` repetido**: o índice é 1-based sobre o documento *antes* da edição.
+  Remover em ordem crescente apaga a rede errada a partir da segunda — coletar os nós primeiro e
+  remover depois, ou ordem decrescente explícita.
+- **`--member` duplicado na mesma chamada**: rejeitar antes do export, não deixar o segundo
+  sobrescrever o primeiro calado.
+- **`--path` aninhado** (`A.B` e `A.B.C` na mesma chamada): ordem determinística, raso primeiro,
+  senão `structsCreated` mente.
+- **Backup do `--force`**: uma vez por chamada, não por edit.
+- **Dry-run** lista os N edits com `action` por edit.
+
+### Adjacentes que entram na mesma rodada de teste
+
+1. **`ms` em todo verbo**, não só em step de `run --script`. É a causa-raiz desta fase: sem o tempo
+   interno, ninguém distingue custo de API de espera do wrapper — foi assim que 48 s viraram
+   ">600 s" no registro. `ms` baixo com relógio alto = ambiente, sem precisar de teste de controle.
+2. **No-op de verdade.** Hoje a idempotência é *funcional*: o segundo apply reimporta e recompila o
+   mesmo bloco (F8). O envelope já compara "o XML mudou?" para decidir o import, então
+   `action: "unchanged"` sai de graça.
+3. **Dica no timeout do `Invoke-Tia`** (`scripts/_common.ps1`): ao estourar, imprimir "rode
+   `tia info`; se a chamada mais barata também demora, é o diálogo modal, não o verbo". Três linhas
+   que impedem a repetição exata do erro corrigido aqui.
+4. **`BENCHMARKS.md` não tem uma única medida do caminho de escrita.** A validação vai rodar esses
+   verbos de qualquer jeito — a tabela sai como subproduto e vira a prova do ganho.
+5. **Os quatro pendentes da F15**, que precisam do mesmo Portal vivo: abort do `API-11` (download
+   que falha), bloqueio do `PLC-05` (projeto online), backup do `SAFE-09` (`--force --apply`) e
+   `--fail-fast` com step que falha.
+
+### Recusado
+
+- **Coalescer steps automaticamente dentro do `run --script`.** Exigiria o CLI saber, por verbo, que
+  duas edições arbitrárias comutam — motor de transação sobre uma API sem transação, que é o que a
+  §0 da auditoria recusa.
+- **Cortar o compile e o re-export de prova.** Já foi o comportamento; produziu perda silenciosa
+  (FP-03 §5.6).
+- **Cache de export entre verbos no mesmo processo.** Economizaria o `ExportFresh` do verbo seguinte
+  numa corrente, mas depende de saber que nada externo mexeu no bloco entre as duas chamadas — a
+  mesma aposta que o FP-03 já cobrou uma vez.

@@ -1,13 +1,13 @@
-# __navi__ · repo tree — 106 files in 10 folders
-<!-- navindex · 2026-08-18 · DO NOT EDIT BY HAND; regen via navindex skill -->
+# __navi__ · repo tree — 107 files in 10 folders
+<!-- navindex · 2026-08-19 · DO NOT EDIT BY HAND; regen via navindex skill -->
 
 Universal index: every folder below -> filenames; Markdown adds only its in-file NAV range. A `→ __navi__.md` marker means that folder has a detailed code map — open `<that path>/__navi__.md` for exact symbol lines.
 
 ## `./` (7 files) → __navi__.md
 CHANGELOG.md(281; NAV L1-L6)  CLAUDE.md(402; NAV L1-L10)  CONTRIBUTING.md(64)  LICENSE(21)  README.md(299)  SECURITY.md(66)  SKILL.md(204; NAV L13-L23)
 
-## `docs/` (11 files) → __navi__.md
-AUDITORIA-COMPLETA-2026-08-18.md(763; NAV L1-L27)  BENCHMARKS.md(125; NAV L1-L9)  BOAS-PRATICAS.md(183; NAV L1-L7)  DIARIO.md(832; NAV L1-L11)  GUIA-SIEMENS.md(81; NAV L1-L8)  LIMITES.md(82; NAV L1-L9)  PADRAO.md(213; NAV L1-L11)  PLANO.md(1038; NAV L1-L25)  VERBS.md(138; NAV L1-L16)  projeto-real-fase-A.md(85; NAV L1-L8)  study-map.json(316)
+## `docs/` (12 files) → __navi__.md
+AUDITORIA-COMPLETA-2026-08-18.md(763; NAV L1-L27)  BENCHMARKS.md(150; NAV L1-L10)  BOAS-PRATICAS.md(183; NAV L1-L7)  DIARIO.md(832; NAV L1-L11)  DIVULGACAO.md(153; NAV L1-L9)  GUIA-SIEMENS.md(81; NAV L1-L8)  LIMITES.md(82; NAV L1-L9)  PADRAO.md(213; NAV L1-L11)  PLANO.md(1146; NAV L1-L26)  VERBS.md(138; NAV L1-L16)  projeto-real-fase-A.md(85; NAV L1-L8)  study-map.json(316)
 
 ## `docs/examples/` (9 files)
 batch.json(6)  gen-all.json(8)  install-full.json(11)  profinet.json(10)  replicate-fc-soprador.json(9)  replicate-fc.json(8)  replicate-instruments.json(9)  replicate-soprador-run.json(8)  sim-smoke.json(10)

@@ -7,16 +7,16 @@
 - **AssemblyInfo.cs** (3 ln)
 - **Audit.cs** (456 ln)
   <sub>L49:class Audit  L75:.HasInverter  L82:.MissingCore  L90:.TagOf  L97:.CarriesTag  L104:.NormalizeArea  L120:.IsCallBlock  L130:.IsLooseScalar  L141:.RootMembers  L152:.Run  L257:.NonGraphicCalls  L277:.MisplacedCalls  L303:.DbGlobalCheck  L323:.FindGlobalDb  L337:.Skipped  L346:.CountTypes  L351:.CollectLanguages  L364:.LayerLeaks  L390:.IsLibrary  L397:.AreaConflicts  L424:.Check  L440:.CollectBlocks  L448:.CollectTables</sub>
-- **BlockEdit.cs** (517 ln)
-  <sub>L60:class BlockEdit  L78:delete-network  L84:.DeleteNetwork  L100:add-call  L113:.AddCall  L198:set-retain  L206:.SetRetain  L228:coreografia  L234:.Patch  L261:núcleo puro (sem Openness: testável offline)  L263:class CallSpec  L276:.StripTypePrefix  L281:.CountNetworks  L287:.RemoveNetworkFromXml  L307:.InsertCallInXml  L392:.SetRetainInXml  L400:.RetainOf  L406:.FindMember  L424:helpers de FlgNet  L426:.ParseParams  L439:.Access  L469:.Wire  L478:.Text  L493:.NextId …</sub>
+- **BlockEdit.cs** (584 ln)
+  <sub>L57:class BlockEdit  L75:delete-network  L82:.DeleteNetwork  L122:add-call  L135:.AddCall  L169:class CallRequest  L180:class Prepared  L188:.Describe  L202:.Prepare  L272:set-retain  L280:.SetRetain  L302:coreografia  L308:.Patch  L318:núcleo puro (sem Openness: testável offline)  L320:class CallSpec  L333:.StripTypePrefix  L343:.DeleteOrder  L348:.CountNetworks  L354:.RemoveNetworkFromXml  L374:.InsertCallInXml  L459:.SetRetainInXml  L467:.RetainOf  L473:.FindMember  L491:helpers de FlgNet …</sub>
 - **BlockExplain.cs** (381 ln)
   <sub>L42:class BlockExplain  L44:.Explain  L84:.Val  L91:.Kids  L97:interface / membros de DB  L100:.Interface  L116:.Members  L125:.Member  L139:rede  L141:.Network  L160:.Text  L172:.Collapse  L173:.Cut  L175:FlgNet → expressão  L177:class Net  L362:rótulo do operando</sub>
 - **BlockInterface.cs** (140 ln)
   <sub>L17:class Param  L23:.ToString  L32:class BlockInterface  L37:.Run  L87:.Collect  L93:núcleo puro (sem Openness: testável offline)  L96:.FromXml  L116:.Describe</sub>
 - **Clone.cs** (233 ln)
   <sub>L24:class Clone  L26:.Run  L98:.InstancesInXml  L116:.Rewrite  L144:.Readdress  L195:.RewriteFile  L210:.ParseReplaces  L223:.ObjectName</sub>
-- **DbMember.cs** (389 ln)
-  <sub>L48:class DbMember  L57:.Add  L106:.Change  L152:.Remove  L182:coreografia comum: export → patch → Import Override → prova  L191:.ExportFresh  L197:.MemberOf  L209:.RemoveFromXml  L222:struct Delta  L230:.ChangeInXml  L268:struct Edit  L281:.AddToXml  L320:.ResolveSection  L355:.NameOf  L361:.Datatype  L369:.Safe  L374:.Report</sub>
+- **DbMember.cs** (431 ln)
+  <sub>L41:class DbMember  L51:class MemberSpec  L64:.ParseSpec  L85:.Order  L94:.Add  L124:.Validate  L140:.Row  L158:.Rows  L177:.Change  L223:.Remove  L255:núcleo comum (o envelope mora em Ops.EditBlock)  L258:.MemberOf  L270:.RemoveFromXml  L283:struct Delta  L291:.ChangeInXml  L329:struct Edit  L342:.AddToXml  L381:.ResolveSection  L416:.NameOf  L422:.Datatype</sub>
 - **Doctor.cs** (183 ln)
   <sub>L14:class Doctor  L23:.Run  L43:.CheckVerb  L67:case "gen-profinet"  L84:case "standardize-tags"  L93:case "gen-fault-ob"  L109:case "replicate-fc"  L126:case "gen-alarm-fc"  L144:case "replicate-instruments"  L175:.AnyFc</sub>
 - **Drives.cs** (234 ln)
@@ -41,8 +41,8 @@
   <sub>L27:class Motion  L31:.List  L43:.Collect  L67:.Parameters  L80:.Safe</sub>
 - **Multiuser.cs** (110 ln)
   <sub>L14:class Multiuser  L21:.ListServerProjects  L66:.ResolveServer  L81:.Describe</sub>
-- **Ops.cs** (1432 ln)
-  <sub>L101:class Ops  L103:lookup  L105:.FindBlock  L115:.FindGroup  L130:.FindGroupByName  L148:.FindTagGroup  L163:.FindTagGroupByName  L176:.FindBlockIn  L189:.ResolveFolder  L201:.SplitPath  L225:.WalkFolders  L252:.FindTagTable  L265:.ResolveTagFolder  L273:.ResolveTypeFolder  L280:.FindType  L292:structure  L294:.CreateFolder  L326:.CreateFolders  L361:.DeleteFolder  L388:.TypeFolderAction  L409:.CountTypes  L414:.CountBlocks  L419:.CountTables  L428:.CreateInstanceDb …</sub>
+- **Ops.cs** (1517 ln)
+  <sub>L104:class Ops  L106:lookup  L108:.FindBlock  L118:.FindGroup  L133:.FindGroupByName  L151:.FindTagGroup  L166:.FindTagGroupByName  L179:.FindBlockIn  L192:.ResolveFolder  L204:.SplitPath  L228:.WalkFolders  L255:.FindTagTable  L268:.ResolveTagFolder  L276:.ResolveTypeFolder  L283:.FindType  L295:structure  L297:.CreateFolder  L329:.CreateFolders  L364:.DeleteFolder  L391:.TypeFolderAction  L412:.CountTypes  L417:.CountBlocks  L422:.CountTables  L431:.CreateInstanceDb …</sub>
 - **Profinet.cs** (166 ln)
   <sub>L12:class ProfinetConfig  L14:.Devices  L15:.StartByte  L16:.TagFolder  L17:.TagTable  L20:class ProfinetMapping  L22:.Hardware  L23:.EquipmentTag  L24:.DeviceNumber  L28:class Profinet  L30:.Generate  L92:.TagName  L97:.FindTable  L103:.ResolveTable  L111:.FindIoDeviceNames  L130:.FindNetworkItem  L143:class BoolAddressAllocator  L148:.BoolAddressAllocator  L153:.Next  L161:.Skip</sub>
 - **Replicate.cs** (586 ln)

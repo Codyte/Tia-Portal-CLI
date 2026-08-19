@@ -1,118 +1,121 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L134   class Program
-//   L136   .Main
-//   L426   .ExitCodeFor
-//   L440   .RunLadderDryRun
-//   L450   .RunExplainFile
-//   L458   .RunInterfaceFile
-//   L472   .Run
-//   L487   .SingleCall
-//   L503   class Release
-//   L514   .RunExclusive
-//   L652   .ParseScript
-//   L674   .DispatchWithRetry
-//   L688   .IsBusy
-//   L695   .Dispatch
-//   L705   case "save-project"
-//   L708   case "close-project"
-//   L711   case "info"
-//   L714   case "list-devices"
-//   L717   case "list-blocks"
-//   L721   case "list-tags"
-//   L724   case "tree"
-//   L728   case "list-types"
-//   L731   case "find"
-//   L735   case "snapshot"
-//   L738   case "xref"
-//   L741   case "trace"
-//   L744   case "list-hmi"
-//   L747   case "export-hmi-tags"
-//   L751   case "import-hmi-tags"
-//   L758   case "hmi-tree"
-//   L761   case "export-screen"
-//   L765   case "import-screen"
-//   L772   case "delete-screen"
-//   L777   case "list-screen-items"
-//   L782   case "audit-screen"
-//   L787   case "set-screen-items"
-//   L795   case "copy-screen-items"
-//   L803   case "list-motion"
-//   L807   case "free-memory"
-//   L813   case "export-block"
-//   L816   case "explain-block"
-//   L821   case "export-tags"
-//   L824   case "list-interface"
-//   L830   case "import-block"
-//   L837   case "import-ladder"
-//   L845   case "import-source"
-//   L850   case "create-folder"
-//   L855   case "delete-folder"
-//   L860   case "delete-block"
-//   L864   case "move-block"
-//   L869   case "delete-type"
-//   L873   case "export-type"
-//   L876   case "import-type"
-//   L880   case "scaffold"
-//   L889   case "clone"
-//   L896   case "add-call"
-//   L903   case "delete-network"
-//   L908   case "set-retain"
-//   L913   case "add-db-member"
-//   L919   case "import-tags"
-//   L926   case "retrieve-library"
-//   L931   case "create-library"
-//   L935   case "list-library"
-//   L938   case "import-master-copy"
-//   L944   case "add-master-copy"
-//   L950   case "create-instance-db"
-//   L955   case "delete-master-copy"
-//   L960   case "add-device"
-//   L965   case "delete-device"
-//   L969   case "add-tag"
-//   L975   case "delete-tag"
-//   L980   case "edit-db-member"
-//   L986   case "delete-db-member"
-//   L991   case "rename-block"
-//   L996   case "set-tag"
-//   L1003  case "set-attr"
-//   L1009  case "list-attrs"
-//   L1013  case "plug-module"
-//   L1019  case "list-telegrams"
-//   L1022  case "insert-telegram"
-//   L1029  case "set-address"
-//   L1035  case "set-io-address"
-//   L1041  case "list-io-map"
-//   L1045  case "set-memory-bytes"
-//   L1051  case "connect-subnet"
-//   L1056  case "export-cax"
-//   L1059  case "import-cax"
-//   L1063  case "compile"
-//   L1078  case "sim-run"
-//   L1087  case "diff-block"
-//   L1091  case "audit"
-//   L1096  case "doctor"
-//   L1104  case "gen-profinet"
-//   L1109  case "standardize-tags"
-//   L1117  case "gen-fault-ob"
-//   L1125  case "replicate-fc"
-//   L1135  case "gen-alarm-fc"
-//   L1145  case "replicate-instruments"
-//   L1187  .ValidateOptions
-//   L1217  .HasError
-//   L1224  .OptionValue
-//   L1230  .ParseInt
-//   L1236  .ParseByte
-//   L1243  .OptionValues
-//   L1252  .WriteLock
-//   L1257  .Require
-//   L1289  .Print
-//   L1309  .Sanitize
-//   L1316  .WriteOut
-//   L1338  .CountOf
-//   L1360  .ResolveSiemensAssembly
-//   L1379  .PlcSimProbeDirs
-//   L1393  .SiemensProbeDirs
+//   L137   class Program
+//   L142   .Main
+//   L440   .ExitCodeFor
+//   L454   .RunLadderDryRun
+//   L464   .RunExplainFile
+//   L472   .RunInterfaceFile
+//   L486   .Run
+//   L501   .SingleCall
+//   L517   class Release
+//   L528   .RunExclusive
+//   L671   .ParseScript
+//   L693   .DispatchWithRetry
+//   L707   .IsBusy
+//   L714   .Dispatch
+//   L724   case "save-project"
+//   L727   case "close-project"
+//   L730   case "info"
+//   L733   case "list-devices"
+//   L736   case "list-blocks"
+//   L740   case "list-tags"
+//   L743   case "tree"
+//   L747   case "list-types"
+//   L750   case "find"
+//   L754   case "snapshot"
+//   L757   case "xref"
+//   L760   case "trace"
+//   L763   case "list-hmi"
+//   L766   case "export-hmi-tags"
+//   L770   case "import-hmi-tags"
+//   L777   case "hmi-tree"
+//   L780   case "export-screen"
+//   L784   case "import-screen"
+//   L791   case "delete-screen"
+//   L796   case "list-screen-items"
+//   L801   case "audit-screen"
+//   L806   case "set-screen-items"
+//   L814   case "copy-screen-items"
+//   L822   case "list-motion"
+//   L826   case "free-memory"
+//   L832   case "export-block"
+//   L835   case "explain-block"
+//   L840   case "export-tags"
+//   L843   case "list-interface"
+//   L849   case "import-block"
+//   L856   case "import-ladder"
+//   L864   case "import-source"
+//   L869   case "create-folder"
+//   L874   case "delete-folder"
+//   L879   case "delete-block"
+//   L883   case "move-block"
+//   L888   case "delete-type"
+//   L892   case "export-type"
+//   L895   case "import-type"
+//   L899   case "scaffold"
+//   L908   case "clone"
+//   L915   case "add-call"
+//   L920   case "delete-network"
+//   L925   case "set-retain"
+//   L930   case "add-db-member"
+//   L935   case "import-tags"
+//   L942   case "retrieve-library"
+//   L947   case "create-library"
+//   L951   case "list-library"
+//   L954   case "import-master-copy"
+//   L960   case "add-master-copy"
+//   L966   case "create-instance-db"
+//   L971   case "delete-master-copy"
+//   L976   case "add-device"
+//   L981   case "delete-device"
+//   L985   case "add-tag"
+//   L991   case "delete-tag"
+//   L996   case "edit-db-member"
+//   L1002  case "delete-db-member"
+//   L1007  case "rename-block"
+//   L1012  case "set-tag"
+//   L1019  case "set-attr"
+//   L1025  case "list-attrs"
+//   L1029  case "plug-module"
+//   L1035  case "list-telegrams"
+//   L1038  case "insert-telegram"
+//   L1045  case "set-address"
+//   L1051  case "set-io-address"
+//   L1057  case "list-io-map"
+//   L1061  case "set-memory-bytes"
+//   L1067  case "connect-subnet"
+//   L1072  case "export-cax"
+//   L1075  case "import-cax"
+//   L1079  case "compile"
+//   L1094  case "sim-run"
+//   L1103  case "diff-block"
+//   L1107  case "audit"
+//   L1112  case "doctor"
+//   L1120  case "gen-profinet"
+//   L1125  case "standardize-tags"
+//   L1133  case "gen-fault-ob"
+//   L1141  case "replicate-fc"
+//   L1151  case "gen-alarm-fc"
+//   L1161  case "replicate-instruments"
+//   L1203  .ValidateOptions
+//   L1233  .HasError
+//   L1240  .OptionValue
+//   L1246  .ParseInt
+//   L1252  .ParseByte
+//   L1259  .OptionValues
+//   L1268  .WriteLock
+//   L1273  .Require
+//   L1280  .RequireValues
+//   L1293  .ParseMembers
+//   L1317  .ParseCalls
+//   L1374  .Print
+//   L1394  .Sanitize
+//   L1401  .WriteOut
+//   L1423  .CountOf
+//   L1445  .ResolveSiemensAssembly
+//   L1464  .PlcSimProbeDirs
+//   L1478  .SiemensProbeDirs
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -133,6 +136,9 @@ namespace Tia.Cli
     /// </summary>
     internal static class Program
     {
+        /// <summary>Relógio do processo — vira o `ms` de todo verbo que devolve dicionário.</summary>
+        private static readonly System.Diagnostics.Stopwatch _clock = System.Diagnostics.Stopwatch.StartNew();
+
         private static int Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -299,14 +305,22 @@ namespace Tia.Cli
                             + "a mesma profundidade da origem. --with-instances cria os iDBs que o clone passa a "
                             + "referenciar; sem eles o compile morre em 'Missing instance DB')",
                         "add-call --block X --fb NOME [--inst iDB] [--param P=<tag|DB.caminho.membro|const>] "
-                            + "[--after N] [--title T] [--comment C] [--out DIR] [--apply]  "
+                            + "[--after N] [--title T] [--comment C] [--fb OUTRO ...] [--out DIR] [--apply]  "
                             + "(rede LAD com a chamada, EN no powerrail; os pinos saem da interface do bloco chamado. "
                             + "--fb aceita o nome com ou sem o prefixo 'FB '/'FC '. "
-                            + "--inst é exigido para FB e recusado para FC. --after 0 = primeira rede, omitido = no fim)",
-                        "delete-network --block X --index N [--out DIR] [--apply]  (N é 1-based, a numeração do explain-block)",
+                            + "--inst é exigido para FB e recusado para FC. --after 0 = primeira rede, omitido = no fim. "
+                            + "--fb é repetível: N chamadas num export/import só, e cada --inst/--param/--after/"
+                            + "--title/--comment pertence ao --fb que veio antes dele)",
+                        "delete-network --block X --index N [--index M ...] [--out DIR] [--apply]  "
+                            + "(N é 1-based, a numeração do explain-block; --index é repetível e os índices são "
+                            + "os do bloco ANTES da chamada — o verbo apaga do maior para o menor)",
                         "set-retain --block FB --member M [--off] [--out DIR] [--apply]  "
                             + "(Remanence na declaração do FB; o Openness recusa em iDB e o import-source não expressa)",
-                        "add-db-member --db X --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]",
+                        "add-db-member --db X --member \"A.B.NOME:Tipo\" [--member ...] "
+                            + "| --name M [--path A.B] [--type T | --like SIBLING] [--out DIR] [--apply]  "
+                            + "(--member é repetível: N membros num export/compile/import só — o custo do "
+                            + "envelope é do tamanho do DB, não do número de membros. Caminho e tipo no mesmo "
+                            + "argumento porque duas listas pareadas por posição desalinham em silêncio)",
                         "edit-db-member --db X --name M [--path A.B] [--type T] [--rename NEW] [--out DIR] [--apply]  "
                             + "(rename não corrige quem referencia o membro)",
                         "delete-db-member --db X --name M [--path A.B] [--out DIR] [--apply]  "
@@ -639,6 +653,11 @@ namespace Tia.Cli
                     return failed > 0 ? 1 : 0;
                 }
                 var result = DispatchWithRetry(session, args, args);
+                // ms do processo inteiro (attach incluído): sem ele ninguém distingue custo de API
+                // de espera do wrapper, e foi assim que 48 s de add-db-member viraram ">600 s" no
+                // registro — o que demorava era o diálogo modal de autorização (F16).
+                var dict = result as IDictionary<string, object>;
+                if (dict != null && !dict.ContainsKey("ms")) dict["ms"] = _clock.ElapsedMilliseconds;
                 Print(result);
                 return HasError(result) ? 1 : 0;
             }
@@ -896,14 +915,12 @@ namespace Tia.Cli
                     case "add-call":
                         using (WriteLock(session, apply, verb))
                             result = Core.BlockEdit.AddCall(session.GetPlc(plcName), Require(args, "--block"),
-                                Require(args, "--fb"), OptionValue(args, "--inst"), OptionValues(args, "--param"),
-                                int.Parse(OptionValue(args, "--after") ?? "-1"), OptionValue(args, "--title"),
-                                OptionValue(args, "--comment"), outDir, apply);
+                                ParseCalls(args), outDir, apply);
                         break;
                     case "delete-network":
                         using (WriteLock(session, apply, verb))
                             result = Core.BlockEdit.DeleteNetwork(session.GetPlc(plcName), Require(args, "--block"),
-                                int.Parse(Require(args, "--index")), outDir, apply);
+                                RequireValues(args, "--index").Select(int.Parse).ToList(), outDir, apply);
                         break;
                     case "set-retain":
                         using (WriteLock(session, apply, verb))
@@ -913,8 +930,7 @@ namespace Tia.Cli
                     case "add-db-member":
                         using (WriteLock(session, apply, verb))
                             result = Core.DbMember.Add(session.GetPlc(plcName), Require(args, "--db"),
-                                OptionValue(args, "--path"), Require(args, "--name"),
-                                OptionValue(args, "--type"), OptionValue(args, "--like"), outDir, apply);
+                                ParseMembers(args), outDir, apply);
                         break;
                     case "import-tags":
                         using (WriteLock(session, apply, verb))
@@ -1259,6 +1275,75 @@ namespace Tia.Cli
             var v = OptionValue(args, name);
             if (v == null) throw new ArgumentException("Missing required option " + name + ".");
             return v;
+        }
+
+        private static List<string> RequireValues(string[] args, string name)
+        {
+            var values = OptionValues(args, name);
+            if (values.Count == 0) throw new ArgumentException("Missing required option " + name + ".");
+            return values;
+        }
+
+        /// <summary>
+        /// `--member "A.B.NOME:Tipo"` (repetível) e/ou a forma antiga `--name M [--path A.B]
+        /// [--type T|--like S]`. O triplo num argumento só é o que impede o desalinhamento
+        /// silencioso de duas listas pareadas por posição (`--name A --type Bool --name B` com um
+        /// --type a menos daria a B o tipo de ninguém).
+        /// </summary>
+        private static List<Core.DbMember.MemberSpec> ParseMembers(string[] args)
+        {
+            var specs = OptionValues(args, "--member").Select(Core.DbMember.ParseSpec).ToList();
+            var name = OptionValue(args, "--name");
+            if (name != null)
+                specs.Add(new Core.DbMember.MemberSpec
+                {
+                    Path = OptionValue(args, "--path"),
+                    Name = name,
+                    Type = OptionValue(args, "--type"),
+                    Like = OptionValue(args, "--like"),
+                });
+            if (specs.Count == 0)
+                throw new ArgumentException("Passe --member \"A.B.NOME:Tipo\" (repetível) "
+                    + "ou --name M [--path A.B] --type T.");
+            return specs;
+        }
+
+        /// <summary>
+        /// N chamadas num round-trip só: cada `--fb` abre uma chamada e o que vier depois
+        /// (`--inst`, `--param`, `--after`, `--title`, `--comment`) é dela. Agrupar por ordem em vez
+        /// de parear listas por posição — desalinhar as listas poria a instância no FB errado sem
+        /// dizer nada, que é justo o silêncio que a F16 recusou.
+        /// </summary>
+        private static List<Core.BlockEdit.CallRequest> ParseCalls(string[] args)
+        {
+            var calls = new List<Core.BlockEdit.CallRequest>();
+            for (int i = 0; i < args.Length; i++)
+            {
+                var opt = args[i];
+                if (opt != "--fb" && opt != "--inst" && opt != "--param" && opt != "--after"
+                    && opt != "--title" && opt != "--comment") continue;
+                if (i + 1 >= args.Length || args[i + 1].StartsWith("--"))
+                    throw new ArgumentException(opt + " sem valor.");
+                var value = args[++i];
+                if (opt == "--fb")
+                {
+                    calls.Add(new Core.BlockEdit.CallRequest { Fb = value, Params = new List<string>() });
+                    continue;
+                }
+                if (calls.Count == 0)
+                    throw new ArgumentException(opt + " antes de qualquer --fb: cada chamada começa no seu --fb.");
+                var call = calls[calls.Count - 1];
+                switch (opt)
+                {
+                    case "--inst": call.Instance = value; break;
+                    case "--param": call.Params.Add(value); break;
+                    case "--after": call.After = int.Parse(value); break;
+                    case "--title": call.Title = value; break;
+                    case "--comment": call.Comment = value; break;
+                }
+            }
+            if (calls.Count == 0) throw new ArgumentException("Missing required option --fb.");
+            return calls;
         }
 
         /// <summary>

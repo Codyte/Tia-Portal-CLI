@@ -100,7 +100,15 @@ function Invoke-Tia {
 
         $deadline = (Get-Date).AddSeconds($timeout)
         while (-not (Test-Path $exitFile)) {
-            if ((Get-Date) -gt $deadline) { throw "timeout ${timeout}s: tia $($tiaArgs -join ' ')" }
+            # A dica nao e' decorativa: ">600 s de escrita no DB GLOBAL" ficou 2 dias no registro e
+            # era o dialogo modal de autorizacao (o verbo real leva 48 s). `tia info` responde em
+            # segundos quando o ambiente esta' limpo — se ele tambem pendura, e' o modal, nao a API.
+            if ((Get-Date) -gt $deadline) {
+                throw ("timeout ${timeout}s: tia $($tiaArgs -join ' '). Rode ``tia info``: se a " +
+                       "chamada mais barata tambem demora, ha' um dialogo modal de autorizacao " +
+                       "esperando clique na tela (todo rebuild muda o hash do tia.exe) — nao e' " +
+                       "custo do verbo. O campo ``ms`` do resultado mede o processo por dentro.")
+            }
             Start-Sleep -Seconds 1
         }
 

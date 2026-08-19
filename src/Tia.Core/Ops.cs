@@ -1,82 +1,85 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L101   class Ops
-//   L103   lookup
-//   L105   .FindBlock
-//   L115   .FindGroup
-//   L130   .FindGroupByName
-//   L148   .FindTagGroup
-//   L163   .FindTagGroupByName
-//   L176   .FindBlockIn
-//   L189   .ResolveFolder
-//   L201   .SplitPath
-//   L225   .WalkFolders
-//   L252   .FindTagTable
-//   L265   .ResolveTagFolder
-//   L273   .ResolveTypeFolder
-//   L280   .FindType
-//   L292   structure
-//   L294   .CreateFolder
-//   L326   .CreateFolders
-//   L361   .DeleteFolder
-//   L388   .TypeFolderAction
-//   L409   .CountTypes
-//   L414   .CountBlocks
-//   L419   .CountTables
-//   L428   .CreateInstanceDb
-//   L465   .FbsLike
-//   L472   .NearestFbs
-//   L481   .AllFbs
-//   L489   .Squash
-//   L498   .DeleteBlock
-//   L513   .DeleteType
-//   L527   export
-//   L529   .ExportBlock
-//   L550   .ExportFresh
-//   L571   .ExportFresh
-//   L591   .IsInconsistentExport
-//   L599   .ExportTagTable
-//   L609   .ExportType
-//   L619   .ExportPath
-//   L638   .IsBusyMessage
-//   L646   recovery (SAFE-09)
-//   L655   .RecoveryDir
-//   L663   .Backup
-//   L672   .BackupInto
-//   L691   .BackupGroup
-//   L698   import
-//   L705   .FolderAction
-//   L711   .ImportBlock
-//   L743   .MoveBlock
-//   L826   .ImportTagTable
-//   L854   .AddTag
-//   L890   .DeleteTag
-//   L913   .SetTag
-//   L956   .Rename
-//   L982   .ImportType
-//   L1006  .ImportSource
-//   L1077  .Generated
-//   L1083  .SourceDeclNames
-//   L1099  .RequireUtf8Bom
-//   L1112  .RequireFile
-//   L1120  .XmlRootType
-//   L1130  .RequireRootType
-//   L1139  .XmlCultures
-//   L1154  .ProjectOf
-//   L1164  .EnsureCultures
-//   L1186  .XmlObjectName
-//   L1195  diff
-//   L1198  .DiffBlock
-//   L1216  .BlocksIdentical
-//   L1258  import com prova
-//   L1268  .ImportAndProve
-//   L1320  .LogFallback
-//   L1333  .Prove
-//   L1341  .FirstError
-//   L1353  compile
-//   L1356  .Compile
-//   L1398  .FlattenErrors
-//   L1421  .MessageTree
+//   L104   class Ops
+//   L106   lookup
+//   L108   .FindBlock
+//   L118   .FindGroup
+//   L133   .FindGroupByName
+//   L151   .FindTagGroup
+//   L166   .FindTagGroupByName
+//   L179   .FindBlockIn
+//   L192   .ResolveFolder
+//   L204   .SplitPath
+//   L228   .WalkFolders
+//   L255   .FindTagTable
+//   L268   .ResolveTagFolder
+//   L276   .ResolveTypeFolder
+//   L283   .FindType
+//   L295   structure
+//   L297   .CreateFolder
+//   L329   .CreateFolders
+//   L364   .DeleteFolder
+//   L391   .TypeFolderAction
+//   L412   .CountTypes
+//   L417   .CountBlocks
+//   L422   .CountTables
+//   L431   .CreateInstanceDb
+//   L468   .FbsLike
+//   L475   .NearestFbs
+//   L484   .AllFbs
+//   L492   .Squash
+//   L501   .DeleteBlock
+//   L516   .DeleteType
+//   L530   export
+//   L532   .ExportBlock
+//   L553   .ExportFresh
+//   L574   .ExportFresh
+//   L594   .IsInconsistentExport
+//   L602   .ExportTagTable
+//   L612   .ExportType
+//   L622   .ExportPath
+//   L641   .IsBusyMessage
+//   L649   recovery (SAFE-09)
+//   L658   .RecoveryDir
+//   L666   .Backup
+//   L675   .BackupInto
+//   L694   .BackupGroup
+//   L701   import
+//   L708   .FolderAction
+//   L714   .ImportBlock
+//   L746   .MoveBlock
+//   L829   .ImportTagTable
+//   L857   .AddTag
+//   L893   .DeleteTag
+//   L916   .SetTag
+//   L959   .Rename
+//   L985   .ImportType
+//   L1009  .ImportSource
+//   L1080  .Generated
+//   L1086  .SourceDeclNames
+//   L1102  .RequireUtf8Bom
+//   L1115  .RequireFile
+//   L1123  .XmlRootType
+//   L1133  .RequireRootType
+//   L1142  .XmlCultures
+//   L1157  .ProjectOf
+//   L1167  .EnsureCultures
+//   L1189  .XmlObjectName
+//   L1198  diff
+//   L1201  .DiffBlock
+//   L1219  .BlocksIdentical
+//   L1261  envelope de edição por XML
+//   L1268  class BlockEditStep
+//   L1283  .EditBlock
+//   L1296  .EditBlock
+//   L1342  .ImportAndProve
+//   L1397  .LogFallback
+//   L1413  .Prove
+//   L1426  .FirstError
+//   L1438  compile
+//   L1441  .Compile
+//   L1483  .FlattenErrors
+//   L1506  .MessageTree
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -1255,19 +1258,91 @@ namespace Tia.Core
             finally { if (File.Exists(tmp)) File.Delete(tmp); }
         }
 
-        // ---------- import com prova ----------
+        // ---------- envelope de edição por XML ----------
 
         /// <summary>
-        /// Import Override + prova, para todo verbo que edita bloco por XML (`*-db-member`,
-        /// `add-call`, `delete-network`, `set-retain`). Depois do import o bloco fica
-        /// modificado-não-compilado e o export seguinte pode devolver o conteúdo anterior — foi
+        /// Uma edição dentro do envelope: o que muda no XML e como se prova que entrou.
+        /// <see cref="Proof"/> nulo = edição sem prova própria (a rede apagada não tem marca
+        /// individual — quem prova é a contagem, no último step).
+        /// </summary>
+        public sealed class BlockEditStep
+        {
+            /// <summary>Trecho para a mensagem de erro: "o membro 'X'".</summary>
+            public string Label;
+            public Action<XDocument> Apply;
+            public Func<XDocument, bool> Proof;
+        }
+
+        /// <summary>
+        /// export → N patches no MESMO XDocument → um Import Override com prova (F16). O custo do
+        /// envelope é do tamanho do bloco, não do número de edições: dez membros na `DB GLOBAL` em
+        /// dez chamadas são dez round-trips de ~48 s; numa chamada, um só. Patch que falha aborta
+        /// ANTES do import — numa corrente de chamadas, os anteriores já teriam entrado.
+        /// XML idêntico depois dos patches = nenhum import (`action: "unchanged"`).
+        /// </summary>
+        internal static Dictionary<string, object> EditBlock(PlcSoftware plc, string blockName,
+            string prefix, string outDir, bool apply, IList<BlockEditStep> steps)
+        {
+            var block = FindBlock(plc, blockName);
+            if (block == null)
+                throw new InvalidOperationException("Block '" + blockName + "' not found.");
+            return EditBlock(plc, block, prefix, outDir, apply, steps);
+        }
+
+        /// <summary>
+        /// Mesmo envelope com o bloco já resolvido — o `*-db-member` acha a DB por substring
+        /// (<see cref="ReplicateFc.FindDataBlock"/>), não pelo nome exato do <see cref="FindBlock"/>.
+        /// </summary>
+        internal static Dictionary<string, object> EditBlock(PlcSoftware plc, PlcBlock block,
+            string prefix, string outDir, bool apply, IList<BlockEditStep> steps)
+        {
+            // Import Override descarta o objeto atual: ler nome/grupo ANTES de importar
+            var label = block.Name;
+            var group = block.Parent as PlcBlockGroup ?? plc.BlockGroup;
+
+            Directory.CreateDirectory(outDir);
+            var file = Path.GetFullPath(Path.Combine(outDir,
+                prefix + string.Join("_", label.Split(Path.GetInvalidFileNameChars())) + ".xml"));
+            // bloco recém-importado por outro verbo chega inconsistente e o Openness recusa exportar
+            // ("Inconsistent blocks ... cannot be exported") — o pré-compile mora no ExportFresh
+            ExportFresh(block, file, ExportOptions.WithDefaults);
+
+            var doc = XDocument.Load(file);
+            var before = doc.ToString(SaveOptions.DisableFormatting);
+            foreach (var step in steps)
+            {
+                try { step.Apply(doc); }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException("NADA foi importado em '" + label + "': "
+                        + step.Label + " falhou e o envelope aborta antes do import. " + ex.Message, ex);
+                }
+            }
+
+            // No-op de verdade: até a F16 a idempotência era funcional — o segundo apply reimportava
+            // e recompilava o mesmo bloco. O envelope já compara o XML para decidir o import.
+            bool changed = doc.ToString(SaveOptions.DisableFormatting) != before;
+            if (changed) doc.Save(file);
+            if (apply && changed) ImportAndProve(plc, group, label, file, steps);
+            return new Dictionary<string, object>
+            {
+                { "block", label }, { "file", file }, { "applied", apply && changed },
+                { "changed", changed },
+            };
+        }
+
+        /// <summary>
+        /// Import Override + prova das N edições, para todo verbo que edita bloco por XML
+        /// (`*-db-member`, `add-call`, `delete-network`, `set-retain`). Depois do import o bloco
+        /// fica modificado-não-compilado e o export seguinte pode devolver o conteúdo anterior — foi
         /// assim que um `edit-db-member --rename` saiu `ok: true` sem ter mudado nada
         /// (docs/teste-cego/resultado-FP-03.md §5.6). Compilar fecha a janela; re-exportar prova
         /// que o patch está no projeto, não só no arquivo.
         /// </summary>
-        internal static void ImportAndProve(PlcSoftware plc, PlcBlockGroup group, string blockName,
-            string file, string what, Func<XDocument, bool> patched)
+        private static void ImportAndProve(PlcSoftware plc, PlcBlockGroup group, string blockName,
+            string file, IList<BlockEditStep> steps)
         {
+            var what = string.Join(" + ", steps.Select(s => s.Label));
             group.Blocks.Import(new FileInfo(file), ImportOptions.Override);
 
             var block = FindBlock(plc, blockName);
@@ -1284,8 +1359,8 @@ namespace Tia.Core
             }
 
             var proof = Path.Combine(Path.GetDirectoryName(file), "proof_" + Path.GetFileName(file));
-            bool ok;
-            try { ok = Prove(block, proof, patched); }
+            string missing;
+            try { missing = Prove(block, proof, steps); }
             catch (Exception first)
             {
                 // O export recusa bloco inconsistente, e compilar só o bloco não limpa dependência de
@@ -1295,7 +1370,7 @@ namespace Tia.Core
                 LogFallback(blockName, what, first.Message);
                 var soft = plc.GetService<ICompilable>();
                 if (soft != null) soft.Compile();
-                try { ok = Prove(block, proof, patched); }
+                try { missing = Prove(block, proof, steps); }
                 catch (Exception again)
                 {
                     throw new InvalidOperationException("ATENÇÃO — " + what + " JÁ ENTROU em '" + blockName
@@ -1305,10 +1380,12 @@ namespace Tia.Core
                         + again.Message, first);
                 }
             }
-            if (!ok)
-                throw new InvalidOperationException("O import de '" + blockName + "' passou, mas " + what
+            if (missing != null)
+                throw new InvalidOperationException("O import de '" + blockName + "' passou, mas " + missing
                     + " não está no bloco depois do compile: o patch foi calculado em cima de um "
-                    + "export defasado. Rode `compile --apply` e repita o verbo.");
+                    + "export defasado. Rode `compile --apply` e repita o verbo."
+                    + (steps.Count > 1 ? " ATENÇÃO: a chamada tinha " + steps.Count + " edições no mesmo "
+                        + "import — as outras podem ter entrado. Confira com `explain-block`." : ""));
         }
 
         /// <summary>
@@ -1329,11 +1406,19 @@ namespace Tia.Core
             catch { }
         }
 
-        /// <summary>Re-exporta o bloco e confere o patch no que voltou. Deixa o arquivo limpo.</summary>
-        private static bool Prove(PlcBlock block, string proof, Func<XDocument, bool> patched)
+        /// <summary>
+        /// Re-exporta o bloco UMA vez e confere as N provas no que voltou. Devolve o rótulo da
+        /// primeira edição que não está lá, ou null se todas entraram. Deixa o arquivo limpo.
+        /// </summary>
+        private static string Prove(PlcBlock block, string proof, IList<BlockEditStep> steps)
         {
             ExportFresh(block, proof, ExportOptions.WithDefaults);
-            try { return patched(XDocument.Load(proof)); }
+            try
+            {
+                var doc = XDocument.Load(proof);
+                var failed = steps.FirstOrDefault(s => s.Proof != null && !s.Proof(doc));
+                return failed == null ? null : failed.Label;
+            }
             finally { if (File.Exists(proof)) File.Delete(proof); }
         }
 

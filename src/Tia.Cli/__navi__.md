@@ -4,5 +4,5 @@
 
 - **ConfigJson.cs** (48 ln)
   <sub>L18:class ConfigJson  L38:.Read  L43:.Read</sub>
-- **Program.cs** (1409 ln)
-  <sub>L134:class Program  L136:.Main  L426:.ExitCodeFor  L440:.RunLadderDryRun  L450:.RunExplainFile  L458:.RunInterfaceFile  L472:.Run  L487:.SingleCall  L503:class Release  L514:.RunExclusive  L652:.ParseScript  L674:.DispatchWithRetry  L688:.IsBusy  L695:.Dispatch  L705:case "save-project"  L708:case "close-project"  L711:case "info"  L714:case "list-devices"  L717:case "list-blocks"  L721:case "list-tags"  L724:case "tree"  L728:case "list-types"  L731:case "find"  L735:case "snapshot" …</sub>
+- **Program.cs** (1494 ln)
+  <sub>L137:class Program  L142:.Main  L440:.ExitCodeFor  L454:.RunLadderDryRun  L464:.RunExplainFile  L472:.RunInterfaceFile  L486:.Run  L501:.SingleCall  L517:class Release  L528:.RunExclusive  L671:.ParseScript  L693:.DispatchWithRetry  L707:.IsBusy  L714:.Dispatch  L724:case "save-project"  L727:case "close-project"  L730:case "info"  L733:case "list-devices"  L736:case "list-blocks"  L740:case "list-tags"  L743:case "tree"  L747:case "list-types"  L750:case "find"  L754:case "snapshot" …</sub>

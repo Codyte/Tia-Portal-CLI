@@ -22,7 +22,7 @@
 <!--   L674   Teste cego ponta a ponta — caderno escrito (2026-08-07) -->
 <!--   L943   Histórico fechado -->
 <!--   L956   F15 — auditoria externa: P0 fechados ✅ (2026-08-18) -->
-<!--   L1041  F16 — envelope plural de edição por XML (próxima, 2026-08-19) -->
+<!--   L1041  F16 — envelope plural de edição por XML (✅ fechada 2026-08-19) -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # PLANO — TIA Portal Openness API (V19+)
@@ -1038,7 +1038,7 @@ autorização esperando clique, porque o hash do `tia.exe` mudou nos rebuilds do
 diagnóstico: task `TiaSmokeRun` em `Running` **e** processo do Portal sem consumir CPU.
 
 
-## F16 — envelope plural de edição por XML (próxima, 2026-08-19)
+## F16 — envelope plural de edição por XML (✅ fechada 2026-08-19)
 
 ### Descoberta que abriu a fase
 
@@ -1144,3 +1144,42 @@ tipo errado **em silêncio**. O triplo num argumento só não tem como desalinha
 - **Cache de export entre verbos no mesmo processo.** Economizaria o `ExportFresh` do verbo seguinte
   numa corrente, mas depende de saber que nada externo mexeu no bloco entre as duas chamadas — a
   mesma aposta que o FP-03 já cobrou uma vez.
+
+### Feito (2026-08-19, medido no `PROJETO-MOLDE_V21`)
+
+`Ops.EditBlock(plc, bloco, prefixo, out, apply, IList<BlockEditStep>)` é o envelope único: um
+`ExportFresh` → N `Apply(XDocument)` em ordem no mesmo documento → um `Import Override` → um compile
+→ um re-export com **todas** as provas conferidas. `BlockEdit.Patch` virou wrapper de um step só, e
+as três cópias manuais da coreografia no `DbMember` morreram (`ImportAndProve` passou a ser privado,
+com um chamador só). Patch que falha aborta **antes** do import, e a mensagem diz que nada entrou.
+
+| Medida | Antes | Agora |
+|---|---|---|
+| 1 membro na `DB GLOBAL` `--apply` | 47,9 s (2026-08-19, sessão anterior) | **23,4 s** |
+| 5 membros (um sob um segundo Struct novo) | 5 × ~23 s = ~117 s | **23,9 s** (4,9×) |
+| repetir 2 membros que já existem | ~23 s (reimportava e recompilava) | **1,3 s**, `changed: false` |
+| `delete-network --index 2 --index 4` num OB de 6 redes | 2 round-trips | **1,8 s**, sobraram as redes certas |
+| `add-call --fb A --fb B` no mesmo OB | 2 round-trips | **6,8 s** |
+
+Provado por conteúdo, não só por `ok: true`: o `explain-block` depois do `delete-network` mostrou
+BEF-01/03/05 (as removidas foram 02 e 04, os índices pedidos) e depois do `add-call` mostrou as duas
+chamadas de volta. Limpeza: bloco e struct de teste apagados, `compile --block "DB GLOBAL"` Success
+0/0, `find --pattern "ZZ_TESTE*"` = 0. Nada salvo em disco.
+
+Guardrails que entraram: `--member` duplicado é erro antes do export; `--path` aninhado aplica do
+mais raso para o mais fundo (senão `structsCreated` mente); `--index` repetido apaga do maior para o
+menor (crescente pegaria a rede vizinha a partir da segunda) — os três com teste offline.
+`--fb` repetido agrupa **por ordem** (`--inst`/`--param`/`--after`/`--title`/`--comment` pertencem ao
+`--fb` anterior), que é o mesmo motivo do `--member "path.nome:tipo"`: duas listas pareadas por
+posição desalinham em silêncio.
+
+Adjacentes fechados junto: **`ms` em todo verbo** (relógio do processo, attach incluído);
+`action`/`changed: false` real quando o XML não muda; dica no timeout do `Invoke-Tia` mandando rodar
+`tia info`. Dos quatro pendentes da F15, **`--fail-fast` foi validado** (`steps: 1, failed: 1,
+aborted: 1`); abort do `API-11`, bloqueio do `PLC-05` e backup do `SAFE-09` continuam pendentes —
+os três precisam de um cenário de falha montado (download que quebra, projeto online, `--force` num
+alvo descartável), não do envelope.
+
+**Backup do `--force` uma vez por chamada** ficou sem código porque não há o que fazer: nenhum verbo
+de edição por XML aceita `--force` (o backup vive nos verbos que apagam bloco/pasta/tag). Se um dia
+um verbo plural ganhar `--force`, o backup vai no envelope, não no step.

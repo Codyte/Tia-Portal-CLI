@@ -1,41 +1,38 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L60    class BlockEdit
-//   L78    delete-network
-//   L84    .DeleteNetwork
-//   L100   add-call
-//   L113   .AddCall
-//   L198   set-retain
-//   L206   .SetRetain
-//   L228   coreografia
-//   L234   .Patch
-//   L261   núcleo puro (sem Openness: testável offline)
-//   L263   class CallSpec
-//   L276   .StripTypePrefix
-//   L281   .CountNetworks
-//   L287   .RemoveNetworkFromXml
-//   L307   .InsertCallInXml
-//   L392   .SetRetainInXml
-//   L400   .RetainOf
-//   L406   .FindMember
-//   L424   helpers de FlgNet
-//   L426   .ParseParams
-//   L439   .Access
-//   L469   .Wire
-//   L478   .Text
-//   L493   .NextId
-//   L506   .Escape
-//   L512   .Safe
+//   L57    class BlockEdit
+//   L75    delete-network
+//   L82    .DeleteNetwork
+//   L122   add-call
+//   L135   .AddCall
+//   L169   class CallRequest
+//   L180   class Prepared
+//   L188   .Describe
+//   L202   .Prepare
+//   L272   set-retain
+//   L280   .SetRetain
+//   L302   coreografia
+//   L308   .Patch
+//   L318   núcleo puro (sem Openness: testável offline)
+//   L320   class CallSpec
+//   L333   .StripTypePrefix
+//   L343   .DeleteOrder
+//   L348   .CountNetworks
+//   L354   .RemoveNetworkFromXml
+//   L374   .InsertCallInXml
+//   L459   .SetRetainInXml
+//   L467   .RetainOf
+//   L473   .FindMember
+//   L491   helpers de FlgNet
+//   L493   .ParseParams
+//   L506   .Access
+//   L536   .Wire
+//   L545   .Text
+//   L560   .NextId
+//   L573   .Escape
+//   L579   .Safe
 // ======================= END NAV INDEX =======================
 
-// NAV INDEX
-//   1-40     usings, namespace, constantes
-//   42-96    BlockEdit.DeleteNetwork — verbo delete-network
-//   98-170   AddCall — verbo add-call (interface do FB vira os pinos)
-//  172-214   SetRetain — verbo set-retain (Remanence na declaração do FB)
-//  216-250   Patch — coreografia comum: export → patch → import com prova
-//  252-330   núcleo puro: RemoveNetworkFromXml, InsertCallInXml, SetRetainInXml
-//  332-380   helpers de FlgNet: Access, Wire, Escape, NextId
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -78,22 +75,47 @@ namespace Tia.Core
         // ---------- delete-network ----------
 
         /// <summary>
-        /// Apaga a rede de índice N (1-based, a mesma numeração do `explain-block`). Sem isso,
-        /// trocar duas redes de um molde exigia editar o XML fora do CLI.
+        /// Apaga as redes de índice N (1-based, a mesma numeração do `explain-block`). Sem isso,
+        /// trocar duas redes de um molde exigia editar o XML fora do CLI. `--index` é repetível:
+        /// N redes num round-trip só (F16).
         /// </summary>
-        public static object DeleteNetwork(PlcSoftware plc, string blockName, int index,
+        public static object DeleteNetwork(PlcSoftware plc, string blockName, IList<int> indexes,
             string outDir, bool apply)
         {
-            string removed = null;
-            int before = 0;
-            var result = Patch(plc, blockName, "delnet_", outDir, apply,
-                doc => { before = CountNetworks(doc); removed = RemoveNetworkFromXml(doc, index); },
-                () => "a remoção da rede " + index,
-                doc => CountNetworks(doc) == before - 1);
-            result["network"] = index;
-            result["title"] = removed;
-            result["networksBefore"] = before;
-            result["networksAfter"] = before - 1;
+            if (indexes == null || indexes.Count == 0)
+                throw new ArgumentException("--index is required.");
+            var dup = indexes.GroupBy(i => i).FirstOrDefault(g => g.Count() > 1);
+            if (dup != null)
+                throw new ArgumentException("Rede " + dup.Key + " repetida em --index: só existe uma.");
+
+            int? before = null;
+            var titles = new Dictionary<int, string>();
+            var order = DeleteOrder(indexes);
+            var steps = order.Select((index, n) => new Ops.BlockEditStep
+            {
+                Label = "a remoção da rede " + index,
+                Apply = doc =>
+                {
+                    if (before == null) before = CountNetworks(doc);
+                    titles[index] = RemoveNetworkFromXml(doc, index);
+                },
+                // Rede apagada não deixa marca própria — quem prova é a contagem, e ela só fecha
+                // depois da última remoção. Daí a prova morar num step só.
+                Proof = n < order.Count - 1 ? null
+                    : (Func<XDocument, bool>)(doc => CountNetworks(doc) == before - order.Count),
+            }).ToList();
+
+            var result = Ops.EditBlock(plc, blockName, "delnet_", outDir, apply, steps);
+            result["networksBefore"] = before ?? 0;
+            result["networksAfter"] = (before ?? 0) - order.Count;
+            if (indexes.Count == 1)
+            {
+                result["network"] = indexes[0];
+                result["title"] = titles.TryGetValue(indexes[0], out var t) ? t : null;
+            }
+            else
+                result["networks"] = indexes.Select(i => new Dictionary<string, object>
+                    { { "network", i }, { "title", titles.TryGetValue(i, out var t) ? t : null } }).ToList();
             return result;
         }
 
@@ -110,10 +132,76 @@ namespace Tia.Core
         /// ponytail: rede incondicional (sem contatos em série). Condição continua sendo cirurgia
         /// manual ou clone de um molde que já a tenha.
         /// </summary>
-        public static object AddCall(PlcSoftware plc, string blockName, string fbName, string instance,
-            IEnumerable<string> paramArgs, int after, string title, string comment,
+        public static object AddCall(PlcSoftware plc, string blockName, IList<CallRequest> calls,
             string outDir, bool apply)
         {
+            if (calls == null || calls.Count == 0)
+                throw new ArgumentException("--fb is required.");
+            var prepared = calls.Select(c => Prepare(plc, c, outDir)).ToList();
+
+            // networksBefore/After: o --index do delete-network é às cegas sem isso, e clone de molde
+            // com rede vazia chega sem rede nenhuma — foi como a FP-05 apagou a rede errada (T7).
+            int before = 0;
+            var steps = prepared.Select((p, n) => new Ops.BlockEditStep
+            {
+                Label = "a chamada de '" + p.Spec.Fb + "'",
+                Apply = doc =>
+                {
+                    if (n == 0) before = CountNetworks(doc);
+                    InsertCallInXml(doc, p.Spec, p.After);
+                },
+                Proof = doc => doc.Descendants().Any(e => e.Name.LocalName == "CallInfo"
+                    && (string)e.Attribute("Name") == p.Spec.Fb),
+            }).ToList();
+
+            var result = Ops.EditBlock(plc, blockName, "addcall_", outDir, apply, steps);
+            result["networksBefore"] = before;
+            result["networksAfter"] = before + prepared.Count;
+            result["networks"] = before + prepared.Count;
+            if (prepared.Count == 1)
+                foreach (var kv in Describe(prepared[0])) result[kv.Key] = kv.Value;
+            else
+                result["calls"] = prepared.Select(Describe).ToList();
+            return result;
+        }
+
+        /// <summary>Uma chamada a inserir. `--fb` abre uma; o que vier depois dela é dela.</summary>
+        public sealed class CallRequest
+        {
+            public string Fb;
+            public string Instance;
+            public List<string> Params;
+            /// <summary>Posição no documento COMO ELE ESTÁ nesta hora; -1 = no fim.</summary>
+            public int After = -1;
+            public string Title;
+            public string Comment;
+        }
+
+        private sealed class Prepared
+        {
+            public CallSpec Spec;
+            public int After;
+            public int Parameters;
+            public List<string> Unwired;
+        }
+
+        private static Dictionary<string, object> Describe(Prepared p)
+        {
+            var d = new Dictionary<string, object>
+            {
+                { "fb", p.Spec.Fb }, { "blockType", p.Spec.BlockType },
+                { "instance", p.Spec.Instance }, { "parameters", p.Parameters },
+            };
+            if (p.Unwired.Count > 0)
+                d["warning"] = "pino de entrada sem valor (fica solto na rede, como no molde da "
+                    + "casa): " + string.Join(", ", p.Unwired) + ". Confira no compile.";
+            return d;
+        }
+
+        /// <summary>Resolve o bloco chamado e monta o <see cref="CallSpec"/> — sem tocar no alvo.</summary>
+        private static Prepared Prepare(PlcSoftware plc, CallRequest call, string outDir)
+        {
+            string fbName = call.Fb, instance = call.Instance;
             var called = Ops.FindBlock(plc, fbName);
             if (!(called is FB) && !(called is FC))
             {
@@ -145,7 +233,7 @@ namespace Tia.Core
             // estática retentiva (FP-05, T5).
             var iface = BlockInterface.FromXml(XDocument.Load(ifaceFile));
 
-            var values = ParseParams(paramArgs);
+            var values = ParseParams(call.Params);
             var unknown = values.Keys.Where(k => !iface.Any(p => p.Name == k)).ToList();
             if (unknown.Count > 0)
                 throw new ArgumentException("Parâmetro inexistente em '" + called.Name + "': "
@@ -162,37 +250,23 @@ namespace Tia.Core
             var unwiredInputs = iface.Where(p => p.Section == "Input" && !values.ContainsKey(p.Name))
                 .Select(p => p.Name + " : " + p.Datatype).ToList();
 
-            var spec = new CallSpec
+            return new Prepared
             {
-                Fb = called.Name,
-                BlockType = isFb ? "FB" : "FC",
-                Instance = instance,
-                Title = title ?? ((isFb ? "Function Block " : "Function ")
-                    + Regex.Replace(called.Name, @"^F[BC]\s+", "")),
-                Comment = comment,
-                Params = iface,
-                Values = values,
+                Spec = new CallSpec
+                {
+                    Fb = called.Name,
+                    BlockType = isFb ? "FB" : "FC",
+                    Instance = instance,
+                    Title = call.Title ?? ((isFb ? "Function Block " : "Function ")
+                        + Regex.Replace(called.Name, @"^F[BC]\s+", "")),
+                    Comment = call.Comment,
+                    Params = iface,
+                    Values = values,
+                },
+                After = call.After,
+                Parameters = iface.Count,
+                Unwired = unwiredInputs,
             };
-
-            // networksBefore/After: o --index do delete-network é às cegas sem isso, e clone de molde
-            // com rede vazia chega sem rede nenhuma — foi como a FP-05 apagou a rede errada (T7).
-            int before = 0, after1 = 0;
-            var result = Patch(plc, blockName, "addcall_", outDir, apply,
-                doc => { before = CountNetworks(doc); after1 = before + 1; InsertCallInXml(doc, spec, after); },
-                () => "a chamada de '" + called.Name + "'",
-                doc => doc.Descendants().Any(e => e.Name.LocalName == "CallInfo"
-                    && (string)e.Attribute("Name") == called.Name));
-            result["fb"] = called.Name;
-            result["blockType"] = spec.BlockType;
-            result["instance"] = instance;
-            result["parameters"] = iface.Count;
-            result["networks"] = after1;
-            result["networksBefore"] = before;
-            result["networksAfter"] = after1;
-            if (unwiredInputs.Count > 0)
-                result["warning"] = "pino de entrada sem valor (fica solto na rede, como no molde da "
-                    + "casa): " + string.Join(", ", unwiredInputs) + ". Confira no compile.";
-            return result;
         }
 
         // ---------- set-retain ----------
@@ -228,34 +302,17 @@ namespace Tia.Core
         // ---------- coreografia ----------
 
         /// <summary>
-        /// export → patch → Import Override com prova (<see cref="Ops.ImportAndProve"/>). O bloco
-        /// volta para a MESMA pasta: o grupo sai do `Parent` antes do import, que descarta o objeto.
+        /// Uma edição pelo envelope de N (<see cref="Ops.EditBlock"/>): export → patch →
+        /// Import Override com prova. O bloco volta para a MESMA pasta.
         /// </summary>
         private static Dictionary<string, object> Patch(PlcSoftware plc, string blockName, string prefix,
             string outDir, bool apply, Action<XDocument> patch, Func<string> what,
             Func<XDocument, bool> proof)
         {
-            var block = Ops.FindBlock(plc, blockName);
-            if (block == null)
-                throw new InvalidOperationException("Block '" + blockName + "' not found.");
-            var label = block.Name;
-            var group = block.Parent as PlcBlockGroup ?? plc.BlockGroup;
-
-            Directory.CreateDirectory(outDir);
-            var file = Path.GetFullPath(Path.Combine(outDir, prefix + Safe(label) + ".xml"));
-            // bloco recém-importado por outro verbo chega inconsistente e o Openness recusa exportar
-            // ("Inconsistent blocks ... cannot be exported") — o pré-compile mora no Ops.ExportFresh
-            Ops.ExportFresh(block, file, ExportOptions.WithDefaults);
-
-            var doc = XDocument.Load(file);
-            patch(doc);
-            doc.Save(file);
-
-            if (apply) Ops.ImportAndProve(plc, group, label, file, what(), proof);
-            return new Dictionary<string, object>
+            return Ops.EditBlock(plc, blockName, prefix, outDir, apply, new[]
             {
-                { "block", label }, { "file", file }, { "applied", apply },
-            };
+                new Ops.BlockEditStep { Label = what(), Apply = patch, Proof = proof },
+            });
         }
 
         // ---------- núcleo puro (sem Openness: testável offline) ----------
@@ -276,6 +333,16 @@ namespace Tia.Core
         internal static string StripTypePrefix(string name)
         {
             return name == null ? null : Regex.Replace(name, @"^F[BC]\s+", "");
+        }
+
+        /// <summary>
+        /// Ordem de remoção: do maior índice para o menor. O `--index` é 1-based sobre o documento
+        /// ANTES da edição — apagar em ordem crescente desloca as redes seguintes e a 2ª remoção
+        /// pega a errada. Decrescente mantém válidos justo os índices que ainda faltam apagar.
+        /// </summary>
+        internal static List<int> DeleteOrder(IList<int> indexes)
+        {
+            return indexes.OrderByDescending(i => i).ToList();
         }
 
         internal static int CountNetworks(XDocument doc)

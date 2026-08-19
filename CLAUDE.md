@@ -3,10 +3,10 @@
 <!--   L12    TIA Portal Openness API — instruções do repo -->
 <!--   L26    Regras duras -->
 <!--   L72    Build / run (a partir da F1) -->
-<!--   L296   Antes de escrever programa de PLC: `--study` -->
-<!--   L318   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
-<!--   L350   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
-<!--   L398   Economia de tokens -->
+<!--   L311   Antes de escrever programa de PLC: `--study` -->
+<!--   L333   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
+<!--   L365   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
+<!--   L413   Economia de tokens -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # TIA Portal Openness API — instruções do repo
@@ -186,6 +186,21 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
   - **`add-db-member --path` cria o ramo que faltar**, como Struct, já com o membro-folha dentro
     (`structsCreated` lista o que nasceu). `--type Struct` continua recusado: struct vazio deixa o
     DB inconsistente e trava todo verbo que exporta.
+  - **Edição por XML é plural desde 2026-08-19 (F16): N edições, um round-trip.** O custo é do
+    tamanho do bloco, não do número de edições — 5 membros na `DB GLOBAL` numa chamada custam 23,9 s,
+    os mesmos 23,4 s de 1 (medido, `docs/BENCHMARKS.md`). `add-db-member --member "A.B.NOME:Tipo"`
+    (repetível, caminho+nome+tipo no mesmo argumento porque listas pareadas por posição desalinham
+    em silêncio; `--name/--path/--type/--like` seguem valendo), `delete-network --index N --index M`
+    (índices são os do bloco **antes** da chamada; o verbo apaga do maior para o menor) e
+    **`add-call --fb A ... --fb B ...`**, onde cada `--inst/--param/--after/--title/--comment`
+    pertence ao `--fb` que veio antes dele. Membro repetido na mesma chamada é erro antes do export.
+    **Patch que falha aborta antes do import** — nada entra pela metade. **XML igual depois dos
+    patches = nenhum import** (`changed: false`, 1,3 s em vez de 23 s): a idempotência era funcional,
+    agora é real. A prova (compile + re-export) continua inteira, e o erro nomeia qual edição não
+    entrou.
+  - **Todo verbo devolve `ms`** (o processo por dentro, attach incluído), não só step de
+    `run --script`. Relógio de parede alto com `ms` baixo = espera do wrapper; ambos altos com
+    `tia info` também lento = diálogo modal de autorização, nunca custo de API.
   - **`connect-subnet` com nome que não existe lista as subnets do projeto** (`existingSubnets`).
   - **Biblioteca da Siemens chega arquivada: `retrieve-library --file X.zal19 [--dir D] [--upgrade]`.**
     O SIOS entrega `.zal1x` e todo o resto do CLI (`list-library`, `import-master-copy`,

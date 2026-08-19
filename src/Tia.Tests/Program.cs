@@ -1,65 +1,52 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L75    class Program
-//   L79    .Check
-//   L86    .RepoRoot
-//   L95    .Fixture
-//   L97    .OutDir
-//   L104   .Main
-//   L153   .AlarmFc_BuildFcXml
-//   L181   .AlarmFc_BuildCallObXml
-//   L203   .FaultOb_BuildObXml
-//   L229   .InstrumentFc_BuildAreaFcXml
-//   L266   .LadConverter_Convert
-//   L289   .BlockExplain_Explain
-//   L313   .Ops_RequireRootType
-//   L335   .TempXml
-//   L343   class Folder
-//   L355   .Ops_WalkFolders
-//   L396   .Ops_SplitPath
-//   L413   .Inventory_FolderMatches
-//   L435   .Ops_RequireUtf8Bom
-//   L462   .InstrumentFc_FcName
-//   L473   .Profinet_TagName
-//   L483   .Audit_Naming
-//   L500   .DbMember_AddToXml
-//   L577   .Memory_Occupied
-//   L595   .Clone_Rewrite
-//   L656   .Hmi_StripScreenNumber
-//   L684   .ScreenItems_Core
-//   L794   .Scaffold_Plan
-//   L840   list-interface / add-call / delete-network / set-retain
-//   L843   .Fc
-//   L862   .BlockInterface_FromXml
-//   L878   .BlockEdit_InsertCallInXml
-//   L1021  .BlockEdit_StripTypePrefix
-//   L1033  .BlockEdit_RemoveNetworkFromXml
-//   L1045  .BlockEdit_SetRetainInXml
-//   L1055  .Clone_InstancesInXml
-//   L1067  .Audit_DriveShape
-//   L1080  .Audit_LawChecks
-//   L1109  .Ops_Squash
-//   L1123  .Hardware_MemoryAttrs
-//   L1140  .Sim_DownloadState
-//   L1155  .Sim_AccessPointGuard
-//   L1169  .Cli_BusyWords
-//   L1185  .Cli_KnownOptions
-//   L1210  .Throws
+//   L62    class Program
+//   L66    .Check
+//   L73    .RepoRoot
+//   L82    .Fixture
+//   L84    .OutDir
+//   L91    .Main
+//   L140   .AlarmFc_BuildFcXml
+//   L168   .AlarmFc_BuildCallObXml
+//   L190   .FaultOb_BuildObXml
+//   L216   .InstrumentFc_BuildAreaFcXml
+//   L253   .LadConverter_Convert
+//   L276   .BlockExplain_Explain
+//   L300   .Ops_RequireRootType
+//   L322   .TempXml
+//   L330   class Folder
+//   L342   .Ops_WalkFolders
+//   L383   .Ops_SplitPath
+//   L400   .Inventory_FolderMatches
+//   L422   .Ops_RequireUtf8Bom
+//   L449   .InstrumentFc_FcName
+//   L460   .Profinet_TagName
+//   L470   .Audit_Naming
+//   L487   .DbMember_AddToXml
+//   L586   .Memory_Occupied
+//   L604   .Clone_Rewrite
+//   L665   .Hmi_StripScreenNumber
+//   L693   .ScreenItems_Core
+//   L803   .Scaffold_Plan
+//   L849   list-interface / add-call / delete-network / set-retain
+//   L852   .Fc
+//   L871   .BlockInterface_FromXml
+//   L887   .BlockEdit_InsertCallInXml
+//   L1030  .BlockEdit_StripTypePrefix
+//   L1042  .BlockEdit_RemoveNetworkFromXml
+//   L1066  .BlockEdit_SetRetainInXml
+//   L1076  .Clone_InstancesInXml
+//   L1088  .Audit_DriveShape
+//   L1101  .Audit_LawChecks
+//   L1130  .Ops_Squash
+//   L1144  .Hardware_MemoryAttrs
+//   L1161  .Sim_DownloadState
+//   L1176  .Sim_AccessPointGuard
+//   L1190  .Cli_BusyWords
+//   L1206  .Cli_KnownOptions
+//   L1231  .Throws
 // ======================= END NAV INDEX =======================
 
-// NAV INDEX
-// 24-52    infra: Check/Fail, repo root, out dir
-// 54-82    Main — roda todos os testes, resume pass/fail
-// 83-110   AlarmFc_BuildFcXml (3 vars → 1 word; 17 vars → 2 words)
-// 111-132  AlarmFc_BuildCallObXml (2 FCs, número, título sem prefixo numérico)
-// 133-158  FaultOb_BuildObXml (ordena por HW id, troca 999, slice x0/x1)
-// 159-195  InstrumentFc_BuildAreaFcXml (8888/9999, instance DB, path global-DB, prefixo tag)
-// 196-218  LadConverter_Convert (ladder.scl → XML LAD; pinos pre/in1/in2, OR vira parte "O")
-// 219-242  BlockExplain_Explain (XML → texto compacto)
-// 243-252  Ops_RequireRootType (root do XML valida kind no dry-run) + Throws helper
-// 253-273  InstrumentFc_FcName / Profinet_TagName (regras de nome)
-// 274-334  Audit_Naming, DbMember_AddToXml
-// 335-413  Memory_Occupied, Clone_Rewrite, Scaffold_Plan
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -572,6 +559,28 @@ namespace Tia.Tests
             Check(Throws(() => DbMember.RemoveFromXml(db(), "NAO_EXISTE", "BOMBA_A")), "--path inexistente falha");
             Check(DbMember.AddToXml(d5, "AREA", "BOMBA_B", "Real", null).Action == "create",
                 "struct esvaziado pelo delete continua struct");
+
+            // F16: --member "A.B.NOME:Tipo" — caminho, nome e tipo no mesmo argumento
+            var s1 = DbMember.ParseSpec("AREA.ALARMES.ALM_X:Bool");
+            Check(s1.Path == "AREA.ALARMES" && s1.Name == "ALM_X" && s1.Type == "Bool",
+                "--member parte em caminho, nome e tipo");
+            var s2 = DbMember.ParseSpec("NIVEL:\"MotorDados\"");
+            Check(s2.Path == null && s2.Name == "NIVEL" && s2.Type == "\"MotorDados\"",
+                "sem caminho = raiz da Static, e o tipo pode vir entre aspas");
+            Check(DbMember.ParseSpec("X:Array[0..9] of Bool").Type == "Array[0..9] of Bool",
+                "tipo com espaço e colchete sobrevive");
+            Check(Throws(() => DbMember.ParseSpec("SEM_TIPO")), "--member sem ':' falha");
+            Check(Throws(() => DbMember.ParseSpec("X:")), "--member sem tipo depois do ':' falha");
+
+            // raso primeiro: A.B tem que nascer antes de A.B.C, senão structsCreated mente
+            var ordered = DbMember.Order(new[]
+            {
+                DbMember.ParseSpec("A.B.C.FUNDO:Bool"),
+                DbMember.ParseSpec("RASO:Bool"),
+                DbMember.ParseSpec("A.MEIO:Bool"),
+            });
+            Check(ordered.Select(m => m.Name).SequenceEqual(new[] { "RASO", "MEIO", "FUNDO" }),
+                "ordem de aplicação é do caminho mais raso para o mais fundo");
         }
 
         private static void Memory_Occupied()
@@ -1040,6 +1049,18 @@ namespace Tia.Tests
                 "a rede certa saiu");
             Check(Throws(() => BlockEdit.RemoveNetworkFromXml(Fc(2), 3)), "índice fora da faixa falha");
             Check(Throws(() => BlockEdit.RemoveNetworkFromXml(Fc(2), 0)), "índice 0 falha (a numeração é 1-based)");
+
+            // F16: --index repetível. Os índices são do documento ANTES da edição — apagar do maior
+            // para o menor é o que impede a 2ª remoção de pegar a rede vizinha (guardrail da fase).
+            Check(BlockEdit.DeleteOrder(new[] { 2, 4, 1 }).SequenceEqual(new[] { 4, 2, 1 }),
+                "remoção sai do maior índice para o menor");
+            var multi = Fc(4);
+            foreach (var i in BlockEdit.DeleteOrder(new[] { 2, 4 }))
+                BlockEdit.RemoveNetworkFromXml(multi, i);
+            var left = multi.Descendants().Where(e => e.Name.LocalName == "Text")
+                .Select(e => e.Value).Where(v => v.StartsWith("Rede ")).ToList();
+            Check(BlockEdit.CountNetworks(multi) == 2 && left.SequenceEqual(new[] { "Rede 1", "Rede 3" }),
+                "sobraram as redes 1 e 3 (crescente teria apagado a 5ª inexistente ou a errada)");
         }
 
         private static void BlockEdit_SetRetainInXml()

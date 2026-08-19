@@ -5,8 +5,8 @@
 <!--   L37    One attach instead of five -->
 <!--   L52    Output volume — the constraint nobody expects -->
 <!--   L67    The write path — cost is the block, not the edit -->
-<!--   L91    What is not measured here -->
-<!--   L106   A real cycle, captured -->
+<!--   L111   What is not measured here -->
+<!--   L126   A real cycle, captured -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Measured behaviour
@@ -86,7 +86,27 @@ an earlier internal note recorded ">600 s" for this exact verb for that reason. 
 cheapest call there is, does not answer in seconds, the environment is what you are timing.
 
 **The cost scales with the block, not with the number of edits.** Ten members added one call at a
-time are ten full round-trips of the same DB. Batching them into one envelope is `PLANO.md` F16.
+time are ten full round-trips of the same DB. Since F16 (2026-08-19) the envelope takes N edits, and
+the projection above is now measured — same project, same DB, same session:
+
+| Call | Wall clock (`ms` from the verb itself) |
+|---|---|
+| `info` (control) | 0.9 s |
+| `add-db-member` dry-run, 3 members | 1.3 s |
+| `add-db-member --apply`, **1** member (new struct) | 23.4 s |
+| `add-db-member --apply`, **5** members (one of them under a second new struct) | 23.9 s |
+| `add-db-member --apply`, 2 members **that already exist** | 1.3 s |
+| `delete-network --apply --index 2 --index 4` (6-network OB clone) | 1.8 s |
+| `add-call --apply --fb A --fb B` (two FC calls into the same OB) | 6.8 s |
+| `delete-block` + `delete-db-member` + `compile --block` (cleanup batch) | 25.0 s, 0 errors |
+
+Five members in one call cost the same as one (23.9 s vs 23.4 s) — **4.9×** against the five
+sequential calls the CLI used to require. And a call whose edits all turn out to be no-ops now
+compares the XML and imports nothing (1.3 s instead of ~23 s): before F16, idempotence was
+functional, so the second `--apply` still reimported and recompiled an identical block.
+
+The dry-run figures are low because the DB was already compiled; the 9.5 s above includes the
+compile that `ExportFresh` does when the block arrives dirty.
 
 ## What is not measured here
 

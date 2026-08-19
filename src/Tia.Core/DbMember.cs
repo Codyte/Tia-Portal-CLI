@@ -1,34 +1,27 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L48    class DbMember
-//   L57    .Add
-//   L106   .Change
-//   L152   .Remove
-//   L182   coreografia comum: export → patch → Import Override → prova
-//   L191   .ExportFresh
-//   L197   .MemberOf
-//   L209   .RemoveFromXml
-//   L222   struct Delta
-//   L230   .ChangeInXml
-//   L268   struct Edit
-//   L281   .AddToXml
-//   L320   .ResolveSection
-//   L355   .NameOf
-//   L361   .Datatype
-//   L369   .Safe
-//   L374   .Report
+//   L41    class DbMember
+//   L51    class MemberSpec
+//   L64    .ParseSpec
+//   L85    .Order
+//   L94    .Add
+//   L124   .Validate
+//   L140   .Row
+//   L158   .Rows
+//   L177   .Change
+//   L223   .Remove
+//   L255   núcleo comum (o envelope mora em Ops.EditBlock)
+//   L258   .MemberOf
+//   L270   .RemoveFromXml
+//   L283   struct Delta
+//   L291   .ChangeInXml
+//   L329   struct Edit
+//   L342   .AddToXml
+//   L381   .ResolveSection
+//   L416   .NameOf
+//   L422   .Datatype
 // ======================= END NAV INDEX =======================
 
-// NAV INDEX
-//   1-32     usings, namespace, tipos primitivos conhecidos
-//   34-72    DbMember.Add — export do DB, edição do XML, import com prova
-//   74-119   Change (edit-db-member) — troca tipo e/ou nome
-//   121-158  Remove (delete-db-member)
-//   160-186  ExportFresh (compila o alvo sujo antes de exportar) + MemberOf
-//   188-199  RemoveFromXml — núcleo puro
-//   201-245  ChangeInXml — núcleo puro do edit
-//   247-286  AddToXml — núcleo puro: resolve seção, clona/insere Member
-//   288-345  helpers: ResolveSection, NameOf, Datatype, Safe, Report
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -54,47 +47,125 @@ namespace Tia.Core
             "Date", "DTL", "Time_Of_Day", "TOD", "S5Time", "Struct", "Variant",
         };
 
-        public static object Add(PlcSoftware plc, string dbName, string path, string name,
-            string type, string like, string outDir, bool apply)
+        /// <summary>Um membro a criar. `--member "A.B.NOME:Tipo"` é repetível; `--name` é a forma antiga.</summary>
+        public sealed class MemberSpec
         {
-            if (string.IsNullOrEmpty(name))
+            public string Path;
+            public string Name;
+            public string Type;
+            public string Like;
+        }
+
+        /// <summary>
+        /// "AREA.ALARMES.ALM_X:Bool" → path AREA.ALARMES, nome ALM_X, tipo Bool. Caminho, nome e
+        /// tipo no MESMO argumento porque duas listas pareadas por posição (`--name`/`--type`)
+        /// desalinham e dão a um membro o tipo do vizinho, em silêncio.
+        /// </summary>
+        public static MemberSpec ParseSpec(string spec)
+        {
+            var colon = (spec ?? "").LastIndexOf(':');
+            if (colon <= 0 || colon == spec.Length - 1)
+                throw new ArgumentException("--member \"" + spec + "\" sem tipo: a forma é "
+                    + "\"A.B.NOME:Tipo\" (o caminho é opcional, o tipo não).");
+            var full = spec.Substring(0, colon).Trim();
+            var dot = full.LastIndexOf('.');
+            return new MemberSpec
+            {
+                Path = dot < 0 ? null : full.Substring(0, dot),
+                Name = dot < 0 ? full : full.Substring(dot + 1),
+                Type = spec.Substring(colon + 1).Trim(),
+            };
+        }
+
+        /// <summary>
+        /// Ordem de aplicação: raso primeiro. Com `A.B` e `A.B.C` na mesma chamada, o pedido mais
+        /// fundo criaria o ramo e o `structsCreated` do outro mentiria. OrderBy é estável — entre
+        /// membros da mesma profundidade vale a ordem da linha de comando.
+        /// </summary>
+        internal static List<MemberSpec> Order(IList<MemberSpec> members)
+        {
+            return members.OrderBy(m => (m.Path ?? "").Count(c => c == '.')).ToList();
+        }
+
+        /// <summary>
+        /// Cria N membros num round-trip só (F16): o custo do envelope é do tamanho do DB, não do
+        /// número de membros. Membro já existente é no-op — e se TODOS existirem, nada é importado.
+        /// </summary>
+        public static object Add(PlcSoftware plc, string dbName, IList<MemberSpec> members,
+            string outDir, bool apply)
+        {
+            if (members == null || members.Count == 0)
                 throw new ArgumentException("--name is required.");
-            if (string.IsNullOrEmpty(type) && string.IsNullOrEmpty(like))
-                throw new ArgumentException("Pass --type <Udt|Bool|...> or --like <existing sibling member>.");
-            // Struct vazio é inválido ("A structure without components is not allowed") e deixa o DB
-            // inconsistente — daí em diante todo verbo que exporta o bloco morre, inclusive o
-            // add-db-member seguinte que criaria o primeiro membro. Sem saída sem reimportar o DB.
-            if (string.Equals(type, "Struct", StringComparison.OrdinalIgnoreCase))
-                throw new ArgumentException("--type Struct cria uma estrutura vazia, que deixa o DB "
-                    + "inconsistente e trava os próximos verbos (o Openness não exporta bloco inconsistente). "
-                    + "Ramo com membro dentro sai do próprio --path: `--path AREA.ALARMES --name X "
-                    + "--type Bool` cria AREA e ALARMES como Struct e põe X dentro, num import só.");
+            foreach (var m in members) Validate(m);
+            // --member repetido: deixar o segundo passar calado é o silêncio que a F16 quis evitar
+            var dup = members.GroupBy(m => (m.Path ?? "") + "." + m.Name, StringComparer.OrdinalIgnoreCase)
+                .FirstOrDefault(g => g.Count() > 1);
+            if (dup != null)
+                throw new ArgumentException("Membro repetido na mesma chamada: '" + dup.Key.TrimStart('.')
+                    + "'. Um membro por edição.");
 
             var db = ReplicateFc.FindDataBlock(plc.BlockGroup, dbName);
             if (db == null)
                 throw new InvalidOperationException("Data block '" + dbName + "' not found.");
 
-            // Import Override descarta o objeto atual: ler nome/grupo ANTES de importar
-            var dbLabel = db.Name;
-            var group = db.Parent as PlcBlockGroup ?? plc.BlockGroup;
+            var order = Order(members);
+            var edits = new Dictionary<MemberSpec, Edit>();
+            var steps = order.Select(m => new Ops.BlockEditStep
+            {
+                Label = "o membro '" + m.Name + "'",
+                Apply = doc => edits[m] = AddToXml(doc, m.Path, m.Name, m.Type, m.Like),
+                Proof = doc => MemberOf(doc, m.Path, m.Name) != null,
+            }).ToList();
 
-            Directory.CreateDirectory(outDir);
-            var file = Path.GetFullPath(Path.Combine(outDir, "addmember_" + Safe(dbLabel) + ".xml"));
-            ExportFresh(db, file);
+            var result = Ops.EditBlock(plc, db, "addmember_", outDir, apply, steps);
+            return Rows(result, members, m => Row(m, edits[m]));
+        }
 
-            var doc = XDocument.Load(file);
-            var edit = AddToXml(doc, path, name, type, like);
-            if (edit.Action == "exists")
-                return Report(dbLabel, path, name, edit.Datatype, "exists", file, false);
+        private static void Validate(MemberSpec m)
+        {
+            if (string.IsNullOrEmpty(m.Name))
+                throw new ArgumentException("--name is required.");
+            if (string.IsNullOrEmpty(m.Type) && string.IsNullOrEmpty(m.Like))
+                throw new ArgumentException("Pass --type <Udt|Bool|...> or --like <existing sibling member>.");
+            // Struct vazio é inválido ("A structure without components is not allowed") e deixa o DB
+            // inconsistente — daí em diante todo verbo que exporta o bloco morre, inclusive o
+            // add-db-member seguinte que criaria o primeiro membro. Sem saída sem reimportar o DB.
+            if (string.Equals(m.Type, "Struct", StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentException("--type Struct cria uma estrutura vazia, que deixa o DB "
+                    + "inconsistente e trava os próximos verbos (o Openness não exporta bloco inconsistente). "
+                    + "Ramo com membro dentro sai do próprio --path: `--path AREA.ALARMES --name X "
+                    + "--type Bool` cria AREA e ALARMES como Struct e põe X dentro, num import só.");
+        }
 
-            doc.Save(file);
-            if (apply)
-                Ops.ImportAndProve(plc, group, dbLabel, file, "o membro '" + name + "'",
-                    d => MemberOf(d, path, name) != null);
-            var report = Report(dbLabel, path, name, edit.Datatype, "create", file, apply);
+        private static Dictionary<string, object> Row(MemberSpec m, Edit edit)
+        {
+            var row = new Dictionary<string, object>
+            {
+                { "path", string.IsNullOrEmpty(m.Path) ? "Static" : m.Path },
+                { "member", m.Name },
+                { "datatype", edit.Datatype },
+                { "action", edit.Action },
+            };
             if (edit.StructsCreated != null && edit.StructsCreated.Count > 0)
-                report["structsCreated"] = edit.StructsCreated;
-            return report;
+                row["structsCreated"] = edit.StructsCreated;
+            return row;
+        }
+
+        /// <summary>
+        /// Resultado do envelope + uma linha por membro. Com um membro só, as linhas sobem para o
+        /// topo — é a forma que o CLI sempre devolveu, e o que já lê `action`/`member` continua valendo.
+        /// </summary>
+        private static Dictionary<string, object> Rows(Dictionary<string, object> result,
+            IList<MemberSpec> members, Func<MemberSpec, Dictionary<string, object>> row)
+        {
+            result["db"] = result["block"];
+            result.Remove("block");
+            var rows = members.Select(row).ToList();
+            if (rows.Count == 1)
+                foreach (var kv in rows[0]) result[kv.Key] = kv.Value;
+            else
+                result["members"] = rows;
+            return result;
         }
 
         /// <summary>
@@ -114,33 +185,33 @@ namespace Tia.Core
             var db = ReplicateFc.FindDataBlock(plc.BlockGroup, dbName);
             if (db == null)
                 throw new InvalidOperationException("Data block '" + dbName + "' not found.");
-            var dbLabel = db.Name;
-            var group = db.Parent as PlcBlockGroup ?? plc.BlockGroup;
 
-            Directory.CreateDirectory(outDir);
-            var file = Path.GetFullPath(Path.Combine(outDir, "editmember_" + Safe(dbLabel) + ".xml"));
-            ExportFresh(db, file);
-
-            var doc = XDocument.Load(file);
-            var changes = ChangeInXml(doc, path, name, type, rename);
-            var result = Report(dbLabel, path, name, changes.Datatype, changes.Action, file,
-                apply && changes.Action == "update");
+            string after = string.IsNullOrEmpty(rename) ? name : rename;
+            var changes = default(Delta);
+            var result = Ops.EditBlock(plc, db, "editmember_", outDir, apply, new[]
+            {
+                new Ops.BlockEditStep
+                {
+                    Label = "o membro '" + after + "'",
+                    Apply = doc => changes = ChangeInXml(doc, path, name, type, rename),
+                    Proof = doc =>
+                    {
+                        var m = MemberOf(doc, path, after);
+                        return m != null && (string.IsNullOrEmpty(type)
+                            || Datatype(type) == (string)m.Attribute("Datatype"));
+                    },
+                },
+            });
+            var dbLabel = (string)result["block"];
+            result["db"] = dbLabel;
+            result.Remove("block");
+            result["path"] = string.IsNullOrEmpty(path) ? "Static" : path;
+            result["member"] = name;
+            result["datatype"] = changes.Datatype;
+            result["action"] = changes.Action;
             result["changes"] = changes.Changes;
             if (changes.Action == "update" && !string.IsNullOrEmpty(rename))
                 result["warning"] = "renaming a member does not fix its references — check `xref --name " + dbLabel + "`.";
-            if (changes.Action != "update") return result;
-
-            doc.Save(file);
-            if (apply)
-            {
-                string after = string.IsNullOrEmpty(rename) ? name : rename;
-                Ops.ImportAndProve(plc, group, dbLabel, file, "o membro '" + after + "'", d =>
-                {
-                    var m = MemberOf(d, path, after);
-                    return m != null && (string.IsNullOrEmpty(type)
-                        || Datatype(type) == (string)m.Attribute("Datatype"));
-                });
-            }
             return result;
         }
 
@@ -158,40 +229,30 @@ namespace Tia.Core
             var db = ReplicateFc.FindDataBlock(plc.BlockGroup, dbName);
             if (db == null)
                 throw new InvalidOperationException("Data block '" + dbName + "' not found.");
-            var dbLabel = db.Name;
-            var group = db.Parent as PlcBlockGroup ?? plc.BlockGroup;
 
-            Directory.CreateDirectory(outDir);
-            var file = Path.GetFullPath(Path.Combine(outDir, "delmember_" + Safe(dbLabel) + ".xml"));
-            ExportFresh(db, file);
-
-            var doc = XDocument.Load(file);
-            var edit = RemoveFromXml(doc, path, name);
-            var result = Report(dbLabel, path, name, edit.Datatype, edit.Action, file,
-                apply && edit.Action == "delete");
-            if (edit.Action != "delete") return result;
-
-            result["warning"] = "deleting a member does not fix its references — check `xref --name " + dbLabel + "`.";
-            doc.Save(file);
-            if (apply)
-                Ops.ImportAndProve(plc, group, dbLabel, file, "a remoção de '" + name + "'",
-                    d => MemberOf(d, path, name) == null);
+            var edit = default(Edit);
+            var result = Ops.EditBlock(plc, db, "delmember_", outDir, apply, new[]
+            {
+                new Ops.BlockEditStep
+                {
+                    Label = "a remoção de '" + name + "'",
+                    Apply = doc => edit = RemoveFromXml(doc, path, name),
+                    Proof = doc => MemberOf(doc, path, name) == null,
+                },
+            });
+            var dbLabel = (string)result["block"];
+            result["db"] = dbLabel;
+            result.Remove("block");
+            result["path"] = string.IsNullOrEmpty(path) ? "Static" : path;
+            result["member"] = name;
+            result["datatype"] = edit.Datatype;
+            result["action"] = edit.Action;
+            if (edit.Action == "delete")
+                result["warning"] = "deleting a member does not fix its references — check `xref --name " + dbLabel + "`.";
             return result;
         }
 
-        // ---------- coreografia comum: export → patch → Import Override → prova ----------
-
-        /// <summary>
-        /// Export pronto para patch. Bloco recém-importado por outro verbo chega
-        /// modificado-não-compilado, e nesse estado o export devolve conteúdo defasado (ou recusa):
-        /// o patch sairia calculado em cima de XML de outra época. Compilar antes é mais barato que
-        /// descobrir depois. A política mora em <see cref="Ops.ExportFresh(PlcBlock,string,ExportOptions)"/>,
-        /// uma só para os 16 exports do repo.
-        /// </summary>
-        private static void ExportFresh(DataBlock db, string file)
-        {
-            Ops.ExportFresh(db, file, ExportOptions.WithDefaults);
-        }
+        // ---------- núcleo comum (o envelope mora em Ops.EditBlock) ----------
 
         /// <summary>Membro no caminho, ou null — caminho inexistente conta como ausente.</summary>
         private static XElement MemberOf(XDocument doc, string path, string name)
@@ -366,24 +427,5 @@ namespace Tia.Core
             return "\"" + t + "\"";
         }
 
-        private static string Safe(string name)
-        {
-            return string.Join("_", name.Split(Path.GetInvalidFileNameChars()));
-        }
-
-        private static Dictionary<string, object> Report(string db, string path, string name, string datatype,
-            string action, string file, bool applied)
-        {
-            return new Dictionary<string, object>
-            {
-                { "db", db },
-                { "path", string.IsNullOrEmpty(path) ? "Static" : path },
-                { "member", name },
-                { "datatype", datatype },
-                { "action", action },
-                { "file", file },
-                { "applied", applied },
-            };
-        }
     }
 }

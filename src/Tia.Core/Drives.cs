@@ -1,21 +1,23 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L37    class Drives
-//   L40    .DriveObjects
-//   L47    .Collect
-//   L67    .Try
-//   L73    .Describe
-//   L121   list-telegrams
-//   L123   .ListTelegrams
-//   L134   list-drive-params
-//   L144   .ListParams
-//   L203   set-drive-param
-//   L214   .SetParam
-//   L276   .OutOfRange
-//   L285   .TryNumber
-//   L293   insert-telegram
-//   L299   .InsertTelegram
-//   L388   .ParseType
+//   L39    class Drives
+//   L42    .DriveObjects
+//   L49    .Collect
+//   L69    .Try
+//   L75    .Describe
+//   L123   list-telegrams
+//   L125   .ListTelegrams
+//   L136   list-drive-params
+//   L146   .ListParams
+//   L206   set-drive-param
+//   L217   .SetParam
+//   L283   .Matches
+//   L298   .Scalar
+//   L311   .OutOfRange
+//   L320   .TryNumber
+//   L328   insert-telegram
+//   L334   .InsertTelegram
+//   L423   .ParseType
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -155,7 +157,7 @@ namespace Tia.Core
                 if (driveObjectNumber.HasValue && !Equals(number, driveObjectNumber.Value)) continue;
 
                 var rows = new List<object>();
-                int total = 0;
+                int total = 0, matched = 0;
                 var listing = Try(() =>
                 {
                     foreach (DriveParameter parameter in drive.Parameters)
@@ -163,20 +165,21 @@ namespace Tia.Core
                         total++;
                         var name = Try(() => parameter.Name) as string;
                         var num = Try(() => (object)parameter.Number);
-                        if (like != null
-                            && (name == null || name.IndexOf(like, StringComparison.OrdinalIgnoreCase) < 0)
-                            && Convert.ToString(num).IndexOf(like, StringComparison.OrdinalIgnoreCase) < 0)
-                            continue;
+                        var text = Try(() => parameter.ParameterText) as string;
+                        if (like != null && !Matches(like, name, Convert.ToString(num), text)) continue;
+                        matched++;
+                        // --count é a sonda barata antes do dump: sem contar o que casa, `--like X
+                        // --count` respondia só o total do drive, que é a pergunta que ninguém fez.
                         if (countOnly) continue;
                         rows.Add(new Dictionary<string, object>
                         {
                             { "name", name },
                             { "number", num },
-                            { "value", Try(() => parameter.Value) },
+                            { "value", Scalar(Try(() => parameter.Value)) },
                             { "unit", Try(() => parameter.Unit) },
-                            { "min", Try(() => parameter.MinValue) },
-                            { "max", Try(() => parameter.MaxValue) },
-                            { "text", Try(() => parameter.ParameterText) },
+                            { "min", Scalar(Try(() => parameter.MinValue)) },
+                            { "max", Scalar(Try(() => parameter.MaxValue)) },
+                            { "text", text },
                         });
                     }
                     return total;
@@ -186,7 +189,7 @@ namespace Tia.Core
                     { "item", pair.Key },
                     { "driveObject", number },
                     { "parameters", total },
-                    { "matched", countOnly ? (object)null : rows.Count },
+                    { "matched", matched },
                 };
                 if (!countOnly) described["values"] = rows;
                 if (!(listing is int)) described["parametersError"] = listing;
@@ -246,6 +249,10 @@ namespace Tia.Core
                 throw new InvalidOperationException("Parameter '" + parameterName
                     + "' reads null — an array parent carries no value of its own. Set the indexed "
                     + "element instead (e.g. '" + parameterName + "[0]').");
+            if (!Equals(Scalar(current), current))
+                throw new InvalidOperationException("Parameter '" + parameterName
+                    + "' holds an interconnection (BICO), not a scalar: " + Scalar(current)
+                    + ". Openness writes the value, not the wiring — refusing to set.");
             var parsed = Hardware.Coerce(value, current);
 
             var min = Try(() => found.MinValue);
@@ -270,6 +277,34 @@ namespace Tia.Core
             };
             if (apply && !Equals(parsed, current)) found.Value = parsed;
             return result;
+        }
+
+        /// <summary>Substring match against any of the fields, case- and accent-blind enough for p/r names.</summary>
+        private static bool Matches(string like, params string[] fields)
+        {
+            foreach (var field in fields)
+                if (field != null && field.IndexOf(like, StringComparison.OrdinalIgnoreCase) >= 0)
+                    return true;
+            return false;
+        }
+
+        /// <summary>
+        /// A BICO parameter answers <c>Value</c> with another <see cref="DriveParameter"/>
+        /// (p840 pointing at r722.0), and that object walks back to its own composition — the JSON
+        /// serializer hit "Self referencing loop detected" on the 452nd parameter of a real G120.
+        /// Anything that is not a scalar is flattened to its text here, which is also what makes
+        /// <see cref="SetParam"/> able to tell an interconnection from a value it may write.
+        /// </summary>
+        private static object Scalar(object value)
+        {
+            if (value == null || value is string || value is bool || value is decimal
+                || value is DateTime || value.GetType().IsPrimitive || value.GetType().IsEnum)
+                return value;
+            // DriveParameter não sobrescreve ToString, então o BICO saía como o nome da classe.
+            // O que interessa é para onde ele aponta: p840[0] = "r722[0]".
+            var wired = value as DriveParameter;
+            if (wired != null) return Try(() => wired.Name);
+            return Convert.ToString(value);
         }
 
         /// <summary>null when inside the limits (or when a limit is missing/not numeric).</summary>

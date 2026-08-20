@@ -72,7 +72,7 @@
 - `set-attr --device X [--item I] --name A --value V [--apply]  (qualquer atributo que o list-attrs mostrar; tipo vem do valor atual)`
 - `plug-module --device X [--item I] [--type TID] [--name N] [--pos P] [--apply]  (sem --type: lista slots livres; com --type: canPlug e, com --apply, pluga. Alvo de plug é o rack: --item Rack_0, não o device. MLFB sem versão devolve plugAs com a 1ª versão que o slot aceita)`
 - `list-telegrams --device X  (read-only: drive objects SINAMICS, telegramas de cada um e o endereço de cada telegrama — %IB/%QB, que não aparece em DeviceItem.Addresses)`
-- `list-drive-params --device X [--item I] [--drive-object N] [--like SUB] [--count]  (read-only: parametros p/r do drive SINAMICS; list-attrs nao alcanca, eles vivem em DriveObject.Parameters, nao no DeviceItem)`
+- `list-drive-params --device X [--item I] [--drive-object N] [--like SUB] [--count]  (read-only: parametros p/r do drive SINAMICS; list-attrs nao alcanca, eles vivem em DriveObject.Parameters, nao no DeviceItem. --like casa nome, numero e a descricao: --like speed acha p1082)`
 - `set-drive-param --device X [--item I] --name p1082[0] --value V [--apply]  (valor de projeto do parametro; array responde no elemento indexado, nao no pai; dry-run confere min/max. Chega no inversor no download)`
 - `insert-telegram --device X --number N [--type Main|Supplementary|Safety|Torque|Edge] [--item I] [--drive-object D] [--change] [--apply]  (--change troca o telegrama presente: G120 novo já vem com o 1)  (telegrama de drive NÃO é submódulo de catálogo — plug-module não coloca)`
 - `set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--item X1] [--apply]  (device com mais de uma interface exige --item)`

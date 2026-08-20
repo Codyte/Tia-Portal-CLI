@@ -45,7 +45,9 @@
         "O programa usa o HWID da constante, nunca o endereço de I/O do telegrama.",
         "Parâmetro p/r do drive não é atributo de device item: `list-attrs`/`set-attr` nunca o enxergam. Ele vive em `DriveObject.Parameters` — os verbos são `list-drive-params` e `set-drive-param`.",
         "Parâmetro array responde no elemento indexado (`p1082[0]`); o pai (`p1082`) lê null. `set-drive-param` recusa o pai, porque valor nulo não prova tipo.",
-        "`set-drive-param` escreve o valor de projeto; o inversor só recebe no download."
+        "`set-drive-param` escreve o valor de projeto; o inversor só recebe no download.",
+        "`--like` casa a descrição do parâmetro, não só o nome: `--like \"ramp-up time\"` acha o p1120 sem saber o número. `--count` honra o filtro e é a sonda antes do dump (o dump inteiro é 1,1 MB).",
+        "Parâmetro BICO lê o parâmetro-fonte (`p840[0]` = `r2090.0`), e `set-drive-param` o recusa: Openness escreve valor, não fiação."
       ],
       "rules": ["R8"],
       "next": ["tia list-telegrams --device X", "tia insert-telegram --device X --change", "tia connect-subnet", "tia list-drive-params --device X --like p1082", "tia set-drive-param --device X --name p1082[0] --value V --apply"]

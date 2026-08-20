@@ -281,7 +281,8 @@ namespace Tia.Cli
                             + "e o endereço de cada telegrama — %IB/%QB, que não aparece em DeviceItem.Addresses)",
                         "list-drive-params --device X [--item I] [--drive-object N] [--like SUB] [--count]  "
                             + "(read-only: parametros p/r do drive SINAMICS; list-attrs nao alcanca, "
-                            + "eles vivem em DriveObject.Parameters, nao no DeviceItem)",
+                            + "eles vivem em DriveObject.Parameters, nao no DeviceItem. "
+                            + "--like casa nome, numero e a descricao: --like speed acha p1082)",
                         "set-drive-param --device X [--item I] --name p1082[0] --value V [--apply]  "
                             + "(valor de projeto do parametro; array responde no elemento indexado, "
                             + "nao no pai; dry-run confere min/max. Chega no inversor no download)",

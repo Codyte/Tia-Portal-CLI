@@ -3,10 +3,10 @@
 <!--   L12    TIA Portal Openness API — instruções do repo -->
 <!--   L26    Regras duras -->
 <!--   L72    Build / run (a partir da F1) -->
-<!--   L354   Antes de escrever programa de PLC: `--study` -->
-<!--   L376   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
-<!--   L408   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
-<!--   L478   Economia de tokens -->
+<!--   L364   Antes de escrever programa de PLC: `--study` -->
+<!--   L386   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
+<!--   L418   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
+<!--   L488   Economia de tokens -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # TIA Portal Openness API — instruções do repo
@@ -279,8 +279,18 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     atributo de device item: `list-attrs`/`set-attr` varrem `DeviceItem.GetAttributeInfos` e nunca
     enxergam parâmetro de drive, que vive em `DriveObject.Parameters` (`DriveParameterComposition`,
     assembly Startdrive). Medido no projeto-molde: **5149 parâmetros** num G120 configurado, lidos
-    offline com o Portal aberto, ~2 s. `list-drive-params --like p1082` filtra por nome ou número;
-    `--count` devolve só o total.
+    offline com o Portal aberto, ~2 s — mas o dump inteiro são **1,1 MB de JSON**, então a consulta
+    é o `--like`, nunca o dump.
+    **`--like` casa nome, número e a descrição do parâmetro** (`ParameterText`, em inglês): é o que
+    responde "qual é o parâmetro da rampa" sem saber que é o `p1120` — `--like "ramp-up time"`
+    devolve 10 linhas com `p1120` dentro. **`--count` é a sonda barata**: honra o `--like` e devolve
+    `matched` × `parameters` (`--like speed` = 246 de 5149), que é como se refina o termo antes de
+    pedir os valores.
+    **Parâmetro BICO devolve o parâmetro-fonte, não um número**: `p840[0]` (ON/OFF1) lê
+    `"r2090.0"`. `DriveParameter` não sobrescreve `ToString`, então sem tratamento isso saía como o
+    nome da classe — e, pior, o serializer entrava em `Self referencing loop detected` no 452º
+    parâmetro de um G120 real, derrubando o verbo inteiro. `set-drive-param` **recusa** parâmetro
+    BICO: Openness escreve o valor, não a fiação.
     **Parâmetro array responde no elemento indexado**: `p1082[0]` = `1500 rpm`, `min 0`, `max
     210000`; o pai `p1082` lê `null` e carrega só o `ParameterText`. `set-drive-param` **recusa o
     pai** — valor nulo não prova tipo, a mesma regra do `set-attr` — e **confere `--value` contra

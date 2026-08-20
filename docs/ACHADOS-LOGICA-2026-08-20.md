@@ -82,6 +82,12 @@ intencional; não está escrito em lugar nenhum.
 **Saída:** corrigir o comentário para o que o código faz e declarar a prioridade. Trocar os valores
 não é opção sem varrer a IHM antes.
 
+**RESOLVIDO 2026-08-20** no projeto de trabalho (`_1`), via `export-block` -> patch do XML ->
+`import-block --folder "1. FB Bilbiotecas/1.1 Acionamento" --apply`. O comentario agora diz
+`Local Manual = 0, Local Automatico = 1, Remoto Automatico = 2, Remoto Manual = 3` e declara a
+prioridade implicita (a ultima atribuicao executada prevalece). Os valores nao foram tocados.
+Pendente: replicar o mesmo patch no projeto-molde, que tem a biblioteca sem subpastas.
+
 ## A3 · `FB CONDIÇÃO DE PARTIDA` NW2: ordem das atribuições atrasa a troca de modo em um scan — MÉDIO
 
 A rede 2 calcula os modos **antes** de atualizar a variável de que eles dependem:

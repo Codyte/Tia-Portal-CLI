@@ -99,6 +99,9 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     pacote + UDT/tabelas da pasta `extras` da própria `.al21` + iDBs + compile). Sem pacote = lista
     os disponíveis. Pula o que já existe, então repetir é no-op. `scripts/bake-lib.ps1` faz o inverso
     (PLC → library). **Com mais de um TIA Portal aberto, todo verbo exige `--portal <projeto|PID>`.**
+    **`--portal` casa por substring**: `..._V21` seleciona `..._V21_1` (medido 2026-08-20, com só
+    esse aberto). Nome que e prefixo de outro nao identifica projeto — conferir o campo `project`
+    do retorno de `info`, ou passar o PID.
   - `tia run --script ops.json` = batch de verbos, attach 1x (~7s por chamada solta). Fluxo FINAIS
     completo em dry: `tia run --script docs/examples/gen-all.json`.
     **Isola steps**: step que falha vira `{ok:false,error,type}` e o batch segue; `exit 1` se algum

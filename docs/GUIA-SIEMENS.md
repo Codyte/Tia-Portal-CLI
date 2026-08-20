@@ -35,7 +35,7 @@ Nada da Siemens é redistribuído aqui: são ponteiros por **Entry ID do SIOS**
 | Entry ID | Biblioteca | Cobre |
 |---|---|---|
 | **109479728** | **LGF** — Library of General Functions | escala, normalização, matemática, string, conversão, tempo, geradores de sinal, contadores. É a primeira parada antes de escrever FB utilitário. |
-| **206539** | **DriveLib** | `SINA_SPEED`, `SINA_POS`, `SINA_PARA` — controle de SINAMICS por telegrama. |
+| **109475044** | **DriveLib** | `SINA_SPEED`, `SINA_POS`, `SINA_PARA` — controle de SINAMICS por telegrama. **O download é este entry**; o `206539` que circula é o post de fórum que aponta para ele, e não tem arquivo. |
 | **109747655** | **LSINAExt** | extensão da anterior para controle de SINAMICS por blocos. |
 
 Como consumir, agora que existe o verbo:

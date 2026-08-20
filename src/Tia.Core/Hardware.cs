@@ -662,7 +662,7 @@ namespace Tia.Core
         }
 
         /// <summary>String da linha de comando → o tipo que o atributo já tem (enum inclusive).</summary>
-        private static object Coerce(string value, object current)
+        internal static object Coerce(string value, object current)
         {
             if (current == null) return value;
             var type = current.GetType();

@@ -5,14 +5,14 @@
 <!--   L28    read -->
 <!--   L57    structure -->
 <!--   L68    hardware -->
-<!--   L84    write -->
-<!--   L111   library -->
-<!--   L119   multiuser -->
-<!--   L122   bulk -->
-<!--   L127   batch -->
-<!--   L130   sim -->
-<!--   L134   meta -->
-<!--   L137   notas -->
+<!--   L86    write -->
+<!--   L113   library -->
+<!--   L121   multiuser -->
+<!--   L124   bulk -->
+<!--   L129   batch -->
+<!--   L132   sim -->
+<!--   L136   meta -->
+<!--   L139   notas -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao)
@@ -72,6 +72,8 @@
 - `set-attr --device X [--item I] --name A --value V [--apply]  (qualquer atributo que o list-attrs mostrar; tipo vem do valor atual)`
 - `plug-module --device X [--item I] [--type TID] [--name N] [--pos P] [--apply]  (sem --type: lista slots livres; com --type: canPlug e, com --apply, pluga. Alvo de plug é o rack: --item Rack_0, não o device. MLFB sem versão devolve plugAs com a 1ª versão que o slot aceita)`
 - `list-telegrams --device X  (read-only: drive objects SINAMICS, telegramas de cada um e o endereço de cada telegrama — %IB/%QB, que não aparece em DeviceItem.Addresses)`
+- `list-drive-params --device X [--item I] [--drive-object N] [--like SUB] [--count]  (read-only: parametros p/r do drive SINAMICS; list-attrs nao alcanca, eles vivem em DriveObject.Parameters, nao no DeviceItem)`
+- `set-drive-param --device X [--item I] --name p1082[0] --value V [--apply]  (valor de projeto do parametro; array responde no elemento indexado, nao no pai; dry-run confere min/max. Chega no inversor no download)`
 - `insert-telegram --device X --number N [--type Main|Supplementary|Safety|Torque|Edge] [--item I] [--drive-object D] [--change] [--apply]  (--change troca o telegrama presente: G120 novo já vem com o 1)  (telegrama de drive NÃO é submódulo de catálogo — plug-module não coloca)`
 - `set-address --device X [--ip A.B.C.D] [--mask M] [--pn-name N] [--item X1] [--apply]  (device com mais de uma interface exige --item)`
 - `set-io-address --device X [--item I] [--io Input|Output] [--start N] [--apply]  (endereço inicial do módulo de I/O; não é atributo — set-attr não alcança, e o import-cax ignora. Sem --item: varre o device (sonda). Sem --start: só lista)`

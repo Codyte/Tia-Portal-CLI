@@ -34,7 +34,7 @@
       "name": "drives / inversores",
       "match": ["drive", "inversor", "sinamics", "g120", "g220", "s120", "v90", "telegrama", "telegram", "vfd", "partida", "soft starter"],
       "f1": ["SINAMICS Motion Control", "Standard telegram", "PROFIdrive"],
-      "sdk": ["TelegramComposition", "InsertMainTelegram", "Telegram Addresses"],
+      "sdk": ["TelegramComposition", "InsertMainTelegram", "Telegram Addresses", "DriveObject Parameters", "DriveParameter Value"],
       "libs": ["DriveLib", "LSINAExt"],
       "hardware": [
         "Drive da família System (Startdrive) já nasce com MainTelegram #1: trocar exige `insert-telegram --change`, o Portal recusa apagar o Main.",
@@ -42,10 +42,13 @@
       ],
       "warn": [
         "A constante `<drive>~PROFINET_interface~Standard_telegram_20` só nasce quando o drive é IO device daquele controlador — dois `connect-subnet` na ordem (PLC cria o IO system, drive junta).",
-        "O programa usa o HWID da constante, nunca o endereço de I/O do telegrama."
+        "O programa usa o HWID da constante, nunca o endereço de I/O do telegrama.",
+        "Parâmetro p/r do drive não é atributo de device item: `list-attrs`/`set-attr` nunca o enxergam. Ele vive em `DriveObject.Parameters` — os verbos são `list-drive-params` e `set-drive-param`.",
+        "Parâmetro array responde no elemento indexado (`p1082[0]`); o pai (`p1082`) lê null. `set-drive-param` recusa o pai, porque valor nulo não prova tipo.",
+        "`set-drive-param` escreve o valor de projeto; o inversor só recebe no download."
       ],
       "rules": ["R8"],
-      "next": ["tia list-telegrams --device X", "tia insert-telegram --device X --change", "tia connect-subnet"]
+      "next": ["tia list-telegrams --device X", "tia insert-telegram --device X --change", "tia connect-subnet", "tia list-drive-params --device X --like p1082", "tia set-drive-param --device X --name p1082[0] --value V --apply"]
     },
     {
       "name": "PROFINET / I/O",

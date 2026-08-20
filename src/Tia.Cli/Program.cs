@@ -1,121 +1,124 @@
 ﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L137   class Program
-//   L145   .Main
-//   L443   .ExitCodeFor
-//   L457   .RunLadderDryRun
-//   L467   .RunExplainFile
-//   L475   .RunInterfaceFile
-//   L489   .Run
-//   L504   .SingleCall
-//   L520   class Release
-//   L531   .RunExclusive
-//   L688   .ParseScript
-//   L710   .DispatchWithRetry
-//   L724   .IsBusy
-//   L731   .Dispatch
-//   L741   case "save-project"
-//   L744   case "close-project"
-//   L747   case "info"
-//   L750   case "list-devices"
-//   L753   case "list-blocks"
-//   L757   case "list-tags"
-//   L760   case "tree"
-//   L764   case "list-types"
-//   L767   case "find"
-//   L771   case "snapshot"
-//   L774   case "xref"
-//   L777   case "trace"
-//   L780   case "list-hmi"
-//   L783   case "export-hmi-tags"
-//   L787   case "import-hmi-tags"
-//   L794   case "hmi-tree"
-//   L797   case "export-screen"
-//   L801   case "import-screen"
-//   L808   case "delete-screen"
-//   L813   case "list-screen-items"
-//   L818   case "audit-screen"
-//   L823   case "set-screen-items"
-//   L831   case "copy-screen-items"
-//   L839   case "list-motion"
-//   L843   case "free-memory"
-//   L849   case "export-block"
-//   L852   case "explain-block"
-//   L857   case "export-tags"
-//   L860   case "list-interface"
-//   L866   case "import-block"
-//   L873   case "import-ladder"
-//   L881   case "import-source"
-//   L886   case "create-folder"
-//   L891   case "delete-folder"
-//   L896   case "delete-block"
-//   L900   case "move-block"
-//   L905   case "delete-type"
-//   L909   case "export-type"
-//   L912   case "import-type"
-//   L916   case "scaffold"
-//   L925   case "clone"
-//   L932   case "add-call"
-//   L937   case "delete-network"
-//   L942   case "set-retain"
-//   L947   case "add-db-member"
-//   L952   case "import-tags"
-//   L959   case "retrieve-library"
-//   L964   case "create-library"
-//   L968   case "list-library"
-//   L971   case "import-master-copy"
-//   L977   case "add-master-copy"
-//   L983   case "create-instance-db"
-//   L988   case "delete-master-copy"
-//   L993   case "add-device"
-//   L998   case "delete-device"
-//   L1002  case "add-tag"
-//   L1008  case "delete-tag"
-//   L1013  case "edit-db-member"
-//   L1019  case "delete-db-member"
-//   L1024  case "rename-block"
-//   L1029  case "set-tag"
-//   L1036  case "set-attr"
-//   L1042  case "list-attrs"
-//   L1046  case "plug-module"
-//   L1052  case "list-telegrams"
-//   L1055  case "insert-telegram"
-//   L1062  case "set-address"
-//   L1068  case "set-io-address"
-//   L1074  case "list-io-map"
-//   L1078  case "set-memory-bytes"
-//   L1084  case "connect-subnet"
-//   L1089  case "export-cax"
-//   L1092  case "import-cax"
-//   L1096  case "compile"
-//   L1111  case "sim-run"
-//   L1120  case "diff-block"
-//   L1124  case "audit"
-//   L1129  case "doctor"
-//   L1137  case "gen-profinet"
-//   L1142  case "standardize-tags"
-//   L1150  case "gen-fault-ob"
-//   L1158  case "replicate-fc"
-//   L1168  case "gen-alarm-fc"
-//   L1178  case "replicate-instruments"
-//   L1220  .ValidateOptions
-//   L1250  .HasError
-//   L1257  .OptionValue
-//   L1263  .ParseInt
-//   L1269  .ParseByte
-//   L1276  .OptionValues
-//   L1285  .WriteLock
-//   L1290  .Require
-//   L1297  .RequireValues
-//   L1310  .ParseMembers
-//   L1334  .ParseCalls
-//   L1391  .Print
-//   L1411  .Sanitize
-//   L1418  .WriteOut
-//   L1440  .CountOf
-//   L1462  .ResolveSiemensAssembly
-//   L1481  .PlcSimProbeDirs
-//   L1495  .SiemensProbeDirs
+//   L140   class Program
+//   L148   .Main
+//   L457   .ExitCodeFor
+//   L471   .RunLadderDryRun
+//   L481   .RunExplainFile
+//   L489   .RunInterfaceFile
+//   L503   .Run
+//   L518   .SingleCall
+//   L534   class Release
+//   L545   .RunExclusive
+//   L702   .ParseScript
+//   L724   .DispatchWithRetry
+//   L738   .IsBusy
+//   L745   .Dispatch
+//   L755   case "save-project"
+//   L758   case "close-project"
+//   L761   case "info"
+//   L764   case "list-devices"
+//   L767   case "list-blocks"
+//   L771   case "list-tags"
+//   L774   case "tree"
+//   L778   case "list-types"
+//   L781   case "find"
+//   L785   case "snapshot"
+//   L788   case "xref"
+//   L791   case "trace"
+//   L794   case "list-hmi"
+//   L797   case "export-hmi-tags"
+//   L801   case "import-hmi-tags"
+//   L808   case "hmi-tree"
+//   L811   case "export-screen"
+//   L815   case "import-screen"
+//   L822   case "delete-screen"
+//   L827   case "list-screen-items"
+//   L832   case "audit-screen"
+//   L837   case "set-screen-items"
+//   L845   case "copy-screen-items"
+//   L853   case "list-motion"
+//   L857   case "free-memory"
+//   L863   case "export-block"
+//   L866   case "explain-block"
+//   L871   case "export-tags"
+//   L874   case "list-interface"
+//   L880   case "import-block"
+//   L887   case "import-ladder"
+//   L895   case "import-source"
+//   L900   case "create-folder"
+//   L905   case "delete-folder"
+//   L910   case "delete-block"
+//   L914   case "move-block"
+//   L919   case "delete-type"
+//   L923   case "export-type"
+//   L926   case "import-type"
+//   L931   case "move-type"
+//   L936   case "scaffold"
+//   L945   case "clone"
+//   L952   case "add-call"
+//   L957   case "delete-network"
+//   L962   case "set-retain"
+//   L967   case "add-db-member"
+//   L972   case "import-tags"
+//   L979   case "retrieve-library"
+//   L984   case "create-library"
+//   L988   case "list-library"
+//   L991   case "import-master-copy"
+//   L997   case "add-master-copy"
+//   L1003  case "create-instance-db"
+//   L1008  case "delete-master-copy"
+//   L1013  case "add-device"
+//   L1018  case "delete-device"
+//   L1022  case "add-tag"
+//   L1028  case "delete-tag"
+//   L1033  case "edit-db-member"
+//   L1039  case "delete-db-member"
+//   L1044  case "rename-block"
+//   L1049  case "set-tag"
+//   L1056  case "set-attr"
+//   L1062  case "list-attrs"
+//   L1066  case "plug-module"
+//   L1072  case "list-telegrams"
+//   L1075  case "list-drive-params"
+//   L1080  case "set-drive-param"
+//   L1086  case "insert-telegram"
+//   L1093  case "set-address"
+//   L1099  case "set-io-address"
+//   L1105  case "list-io-map"
+//   L1109  case "set-memory-bytes"
+//   L1115  case "connect-subnet"
+//   L1120  case "export-cax"
+//   L1123  case "import-cax"
+//   L1127  case "compile"
+//   L1142  case "sim-run"
+//   L1151  case "diff-block"
+//   L1155  case "audit"
+//   L1160  case "doctor"
+//   L1168  case "gen-profinet"
+//   L1173  case "standardize-tags"
+//   L1181  case "gen-fault-ob"
+//   L1189  case "replicate-fc"
+//   L1199  case "gen-alarm-fc"
+//   L1209  case "replicate-instruments"
+//   L1251  .ValidateOptions
+//   L1281  .HasError
+//   L1288  .OptionValue
+//   L1294  .ParseInt
+//   L1300  .ParseByte
+//   L1307  .OptionValues
+//   L1316  .WriteLock
+//   L1321  .Require
+//   L1328  .RequireValues
+//   L1341  .ParseMembers
+//   L1366  .ParseCalls
+//   L1423  .Print
+//   L1443  .Sanitize
+//   L1450  .WriteOut
+//   L1472  .CountOf
+//   L1494  .ResolveSiemensAssembly
+//   L1513  .PlcSimProbeDirs
+//   L1527  .SiemensProbeDirs
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -276,6 +279,12 @@ namespace Tia.Cli
                             + "devolve plugAs com a 1ª versão que o slot aceita)",
                         "list-telegrams --device X  (read-only: drive objects SINAMICS, telegramas de cada um "
                             + "e o endereço de cada telegrama — %IB/%QB, que não aparece em DeviceItem.Addresses)",
+                        "list-drive-params --device X [--item I] [--drive-object N] [--like SUB] [--count]  "
+                            + "(read-only: parametros p/r do drive SINAMICS; list-attrs nao alcanca, "
+                            + "eles vivem em DriveObject.Parameters, nao no DeviceItem)",
+                        "set-drive-param --device X [--item I] --name p1082[0] --value V [--apply]  "
+                            + "(valor de projeto do parametro; array responde no elemento indexado, "
+                            + "nao no pai; dry-run confere min/max. Chega no inversor no download)",
                         "insert-telegram --device X --number N [--type Main|Supplementary|Safety|Torque|Edge] "
                             + "[--item I] [--drive-object D] [--change] [--apply]  "
                             + "(--change troca o telegrama presente: G120 novo já vem com o 1)  "
@@ -1062,6 +1071,17 @@ namespace Tia.Cli
                         break;
                     case "list-telegrams":
                         result = Core.Drives.ListTelegrams(session, Require(args, "--device"));
+                        break;
+                    case "list-drive-params":
+                        result = Core.Drives.ListParams(session, Require(args, "--device"),
+                            OptionValue(args, "--item"), ParseInt(OptionValue(args, "--drive-object")),
+                            OptionValue(args, "--like"), args.Contains("--count"));
+                        break;
+                    case "set-drive-param":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Drives.SetParam(session, Require(args, "--device"),
+                                OptionValue(args, "--item"), Require(args, "--name"),
+                                Require(args, "--value"), apply);
                         break;
                     case "insert-telegram":
                         using (WriteLock(session, apply, verb))

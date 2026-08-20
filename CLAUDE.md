@@ -3,10 +3,10 @@
 <!--   L12    TIA Portal Openness API — instruções do repo -->
 <!--   L26    Regras duras -->
 <!--   L72    Build / run (a partir da F1) -->
-<!--   L315   Antes de escrever programa de PLC: `--study` -->
-<!--   L337   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
-<!--   L369   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
-<!--   L417   Economia de tokens -->
+<!--   L354   Antes de escrever programa de PLC: `--study` -->
+<!--   L376   Não sabe como a API se comporta? Consulte a ajuda oficial, não deduza -->
+<!--   L408   Sessão 0 × sessão 1 (por que `tia` às vezes não roda direto) -->
+<!--   L478   Economia de tokens -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # TIA Portal Openness API — instruções do repo
@@ -275,6 +275,18 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
     só nasce quando o drive é IO device daquele controlador — dois `connect-subnet` na ordem, PLC
     (`--io-system NOME`, cria) e depois o drive (junta). Nome de IO system por PLC, senão o drive
     entra no controlador errado quando duas CPUs dividem a subnet.
+  - **Parâmetro p/r de drive = `list-drive-params` / `set-drive-param` (2026-08-20).** Não é
+    atributo de device item: `list-attrs`/`set-attr` varrem `DeviceItem.GetAttributeInfos` e nunca
+    enxergam parâmetro de drive, que vive em `DriveObject.Parameters` (`DriveParameterComposition`,
+    assembly Startdrive). Medido no projeto-molde: **5149 parâmetros** num G120 configurado, lidos
+    offline com o Portal aberto, ~2 s. `list-drive-params --like p1082` filtra por nome ou número;
+    `--count` devolve só o total.
+    **Parâmetro array responde no elemento indexado**: `p1082[0]` = `1500 rpm`, `min 0`, `max
+    210000`; o pai `p1082` lê `null` e carrega só o `ParameterText`. `set-drive-param` **recusa o
+    pai** — valor nulo não prova tipo, a mesma regra do `set-attr` — e **confere `--value` contra
+    `MinValue`/`MaxValue` no dry**, antes de qualquer escrita. `Value` é o único membro gravável do
+    `DriveParameter` (todo o resto é read-only), então não há verbo para renomear ou mudar limite.
+    É **valor de projeto**: chega ao inversor no download, não na hora.
   - **Rodar o programa e observar = `pwsh scripts/sim-host.ps1 -Start` e depois `sim-run`.** O host
     segura uma instância do **S7-PLCSIM Advanced** viva (`-Start`/`-Stop`/`-Status`, task
     `TiaSimHost`) e o verbo faz attach nela, baixa o programa por Openness e roda os passos do

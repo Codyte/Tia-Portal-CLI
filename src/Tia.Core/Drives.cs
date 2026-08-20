@@ -1,15 +1,21 @@
-// ====================== BEGIN NAV INDEX ======================
+﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L31    class Drives
-//   L34    .DriveObjects
-//   L41    .Collect
-//   L61    .Try
-//   L67    .Describe
-//   L115   list-telegrams
-//   L117   .ListTelegrams
-//   L128   insert-telegram
-//   L134   .InsertTelegram
-//   L223   .ParseType
+//   L37    class Drives
+//   L40    .DriveObjects
+//   L47    .Collect
+//   L67    .Try
+//   L73    .Describe
+//   L121   list-telegrams
+//   L123   .ListTelegrams
+//   L134   list-drive-params
+//   L144   .ListParams
+//   L203   set-drive-param
+//   L214   .SetParam
+//   L276   .OutOfRange
+//   L285   .TryNumber
+//   L293   insert-telegram
+//   L299   .InsertTelegram
+//   L388   .ParseType
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -123,6 +129,165 @@ namespace Tia.Core
                 { "device", device.Name },
                 { "driveObjects", drives.Select(d => (object)Describe(d.Key, d.Value)).ToList() },
             };
+        }
+
+        // ---------- list-drive-params ----------
+
+        /// <summary>
+        /// Parameters (p/r) of every drive object on a device. These are NOT DeviceItem attributes:
+        /// `list-attrs`/`set-attr` walk <c>DeviceItem.GetAttributeInfos</c> and can never see them,
+        /// because the parameter set hangs off <c>DriveObject.Parameters</c>
+        /// (<c>DriveParameterComposition</c>) instead. A commissioned G120 answers with thousands
+        /// of them, so <paramref name="like"/> (substring of name or number) and
+        /// <paramref name="countOnly"/> exist to keep the payload readable.
+        /// </summary>
+        public static object ListParams(TiaSession session, string deviceName, string itemName,
+            int? driveObjectNumber, string like, bool countOnly)
+        {
+            var device = Hardware.FindDevice(session, deviceName);
+            var objects = new List<object>();
+            foreach (var pair in DriveObjects(device))
+            {
+                if (itemName != null && !pair.Key.EndsWith("/" + itemName, StringComparison.OrdinalIgnoreCase))
+                    continue;
+                var drive = pair.Value;
+                var number = Try(() => (object)drive.DriveObjectNumber);
+                if (driveObjectNumber.HasValue && !Equals(number, driveObjectNumber.Value)) continue;
+
+                var rows = new List<object>();
+                int total = 0;
+                var listing = Try(() =>
+                {
+                    foreach (DriveParameter parameter in drive.Parameters)
+                    {
+                        total++;
+                        var name = Try(() => parameter.Name) as string;
+                        var num = Try(() => (object)parameter.Number);
+                        if (like != null
+                            && (name == null || name.IndexOf(like, StringComparison.OrdinalIgnoreCase) < 0)
+                            && Convert.ToString(num).IndexOf(like, StringComparison.OrdinalIgnoreCase) < 0)
+                            continue;
+                        if (countOnly) continue;
+                        rows.Add(new Dictionary<string, object>
+                        {
+                            { "name", name },
+                            { "number", num },
+                            { "value", Try(() => parameter.Value) },
+                            { "unit", Try(() => parameter.Unit) },
+                            { "min", Try(() => parameter.MinValue) },
+                            { "max", Try(() => parameter.MaxValue) },
+                            { "text", Try(() => parameter.ParameterText) },
+                        });
+                    }
+                    return total;
+                });
+                var described = new Dictionary<string, object>
+                {
+                    { "item", pair.Key },
+                    { "driveObject", number },
+                    { "parameters", total },
+                    { "matched", countOnly ? (object)null : rows.Count },
+                };
+                if (!countOnly) described["values"] = rows;
+                if (!(listing is int)) described["parametersError"] = listing;
+                objects.Add(described);
+            }
+            return new Dictionary<string, object>
+            {
+                { "device", device.Name },
+                { "like", like },
+                { "driveObjects", objects },
+            };
+        }
+
+        // ---------- set-drive-param ----------
+
+        /// <summary>
+        /// Writes one drive parameter offline (the project value, not the drive on the wire — a
+        /// download is what carries it to the hardware). <c>DriveParameter.Value</c> is the only
+        /// settable member of the type: name, unit and the limits are read-only, which is why the
+        /// dry-run can prove the range before <c>--apply</c> touches anything.
+        /// An array parameter answers on its indexed element (<c>p1082[0]</c>), never on the parent
+        /// (<c>p1082</c> reads null) — a null current value proves no type, so it is refused here
+        /// for the same reason <see cref="Hardware.SetAttr"/> refuses it.
+        /// </summary>
+        public static object SetParam(TiaSession session, string deviceName, string itemName,
+            string parameterName, string value, bool apply)
+        {
+            var device = Hardware.FindDevice(session, deviceName);
+            DriveParameter found = null;
+            string foundItem = null;
+            foreach (var pair in DriveObjects(device))
+            {
+                if (itemName != null && !pair.Key.EndsWith("/" + itemName, StringComparison.OrdinalIgnoreCase))
+                    continue;
+                foreach (DriveParameter parameter in pair.Value.Parameters)
+                {
+                    var name = Try(() => parameter.Name) as string;
+                    if (!string.Equals(name, parameterName, StringComparison.OrdinalIgnoreCase)) continue;
+                    if (found != null)
+                        throw new InvalidOperationException("Parameter '" + parameterName
+                            + "' is ambiguous in '" + device.Name
+                            + "': more than one drive object answers to it. Narrow with --item.");
+                    found = parameter;
+                    foundItem = pair.Key;
+                }
+            }
+            if (found == null)
+                throw new InvalidOperationException("Parameter '" + parameterName + "' not found in '"
+                    + (itemName ?? device.Name) + "'. Run tia list-drive-params --device " + deviceName
+                    + " --like " + parameterName + ".");
+
+            var current = Try(() => found.Value);
+            if (current is string && ((string)current).StartsWith("unavailable: "))
+                throw new InvalidOperationException("Parameter '" + parameterName + "' is unreadable ("
+                    + current + "). Without the current value the target type cannot be proven — refusing to set.");
+            if (current == null)
+                throw new InvalidOperationException("Parameter '" + parameterName
+                    + "' reads null — an array parent carries no value of its own. Set the indexed "
+                    + "element instead (e.g. '" + parameterName + "[0]').");
+            var parsed = Hardware.Coerce(value, current);
+
+            var min = Try(() => found.MinValue);
+            var max = Try(() => found.MaxValue);
+            var outOfRange = OutOfRange(parsed, min, max);
+            if (outOfRange != null)
+                throw new InvalidOperationException("Value " + value + " for '" + parameterName
+                    + "' is " + outOfRange + " (min " + min + ", max " + max + ").");
+
+            var result = new Dictionary<string, object>
+            {
+                { "device", device.Name },
+                { "item", foundItem },
+                { "parameter", parameterName },
+                { "from", current },
+                { "to", parsed },
+                { "unit", Try(() => found.Unit) },
+                { "min", min },
+                { "max", max },
+                { "action", Equals(parsed, current) ? "none (already set)" : "set" },
+                { "applied", apply },
+            };
+            if (apply && !Equals(parsed, current)) found.Value = parsed;
+            return result;
+        }
+
+        /// <summary>null when inside the limits (or when a limit is missing/not numeric).</summary>
+        private static string OutOfRange(object parsed, object min, object max)
+        {
+            double v, limit;
+            if (!TryNumber(parsed, out v)) return null;
+            if (TryNumber(min, out limit) && v < limit) return "below the minimum";
+            if (TryNumber(max, out limit) && v > limit) return "above the maximum";
+            return null;
+        }
+
+        private static bool TryNumber(object value, out double number)
+        {
+            number = 0;
+            if (value == null || value is string || value is bool) return false;
+            try { number = Convert.ToDouble(value); return true; }
+            catch { return false; }
         }
 
         // ---------- insert-telegram ----------

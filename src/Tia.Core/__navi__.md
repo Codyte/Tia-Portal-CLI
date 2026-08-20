@@ -1,5 +1,5 @@
 # __navi__ · `src/Tia.Core/` — 28 files → code symbols / text NAV ranges
-<!-- navindex · 2026-08-19 · DO NOT EDIT BY HAND; regen via navindex skill -->
+<!-- navindex · 2026-08-20 · DO NOT EDIT BY HAND; regen via navindex skill -->
 ↑ repo tree: [`../../__navi__.md`](../../__navi__.md)
 
 - **AlarmFc.cs** (750 ln)
@@ -19,8 +19,8 @@
   <sub>L42:class DbMember  L52:class MemberSpec  L66:.ParseSpec  L92:.RejectDuplicates  L106:.Order  L115:.Add  L140:.Validate  L156:.Row  L174:.Rows  L193:.Change  L243:.Remove  L281:núcleo comum (o envelope mora em Ops.EditBlock)  L284:.MemberOf  L296:.RemoveFromXml  L309:struct Delta  L317:.ChangeInXml  L355:struct Edit  L368:.AddToXml  L407:.ResolveSection  L442:.NameOf  L448:.Datatype</sub>
 - **Doctor.cs** (183 ln)
   <sub>L14:class Doctor  L23:.Run  L43:.CheckVerb  L67:case "gen-profinet"  L84:case "standardize-tags"  L93:case "gen-fault-ob"  L109:case "replicate-fc"  L126:case "gen-alarm-fc"  L144:case "replicate-instruments"  L175:.AnyFc</sub>
-- **Drives.cs** (234 ln)
-  <sub>L31:class Drives  L34:.DriveObjects  L41:.Collect  L61:.Try  L67:.Describe  L115:list-telegrams  L117:.ListTelegrams  L128:insert-telegram  L134:.InsertTelegram  L223:.ParseType</sub>
+- **Drives.cs** (399 ln)
+  <sub>L37:class Drives  L40:.DriveObjects  L47:.Collect  L67:.Try  L73:.Describe  L121:list-telegrams  L123:.ListTelegrams  L134:list-drive-params  L144:.ListParams  L203:set-drive-param  L214:.SetParam  L276:.OutOfRange  L285:.TryNumber  L293:insert-telegram  L299:.InsertTelegram  L388:.ParseType</sub>
 - **FaultOb.cs** (360 ln)
   <sub>L40:class FaultObConfig  L43:.GroupPrefix  L45:.Devices  L46:.TemplateOb  L47:.ObNamePrefix  L53:.AlarmDb  L54:.CommentCultures  L62:class FaultOb  L69:class Module  L76:.Generate  L155:.DiscoverTasks  L184:.AllDeviceGroups  L191:.WithSubGroups  L199:.CollectModules  L210:XML generation  L212:.BuildObXml  L242:.RewireNetwork  L279:.AddMasterCommentEntry  L308:.ReassignUids  L328:.ModuleType  L340:.WriteCsv</sub>
 - **Hardware.cs** (951 ln)
@@ -41,8 +41,8 @@
   <sub>L27:class Motion  L31:.List  L43:.Collect  L67:.Parameters  L80:.Safe</sub>
 - **Multiuser.cs** (110 ln)
   <sub>L14:class Multiuser  L21:.ListServerProjects  L66:.ResolveServer  L81:.Describe</sub>
-- **Ops.cs** (1517 ln)
-  <sub>L104:class Ops  L106:lookup  L108:.FindBlock  L118:.FindGroup  L133:.FindGroupByName  L151:.FindTagGroup  L166:.FindTagGroupByName  L179:.FindBlockIn  L192:.ResolveFolder  L204:.SplitPath  L228:.WalkFolders  L255:.FindTagTable  L268:.ResolveTagFolder  L276:.ResolveTypeFolder  L283:.FindType  L295:structure  L297:.CreateFolder  L329:.CreateFolders  L364:.DeleteFolder  L391:.TypeFolderAction  L412:.CountTypes  L417:.CountBlocks  L422:.CountTables  L431:.CreateInstanceDb …</sub>
+- **Ops.cs** (1581 ln)
+  <sub>L106:class Ops  L108:lookup  L110:.FindBlock  L120:.FindGroup  L135:.FindGroupByName  L153:.FindTagGroup  L168:.FindTagGroupByName  L181:.FindBlockIn  L194:.ResolveFolder  L206:.SplitPath  L230:.WalkFolders  L257:.FindTagTable  L270:.ResolveTagFolder  L278:.ResolveTypeFolder  L285:.FindType  L297:structure  L299:.CreateFolder  L331:.CreateFolders  L366:.DeleteFolder  L393:.TypeFolderAction  L414:.CountTypes  L419:.CountBlocks  L424:.CountTables  L433:.CreateInstanceDb …</sub>
 - **Profinet.cs** (166 ln)
   <sub>L12:class ProfinetConfig  L14:.Devices  L15:.StartByte  L16:.TagFolder  L17:.TagTable  L20:class ProfinetMapping  L22:.Hardware  L23:.EquipmentTag  L24:.DeviceNumber  L28:class Profinet  L30:.Generate  L92:.TagName  L97:.FindTable  L103:.ResolveTable  L111:.FindIoDeviceNames  L130:.FindNetworkItem  L143:class BoolAddressAllocator  L148:.BoolAddressAllocator  L153:.Next  L161:.Skip</sub>
 - **Replicate.cs** (586 ln)

@@ -47,14 +47,20 @@ if ($window -ne 'default') {
 [DllImport("user32.dll")] public static extern bool ShowWindow(System.IntPtr h, int cmd);
 [DllImport("user32.dll")] public static extern bool SetWindowPos(System.IntPtr h, System.IntPtr after, int x, int y, int cx, int cy, uint flags);
 [DllImport("user32.dll")] public static extern bool GetWindowRect(System.IntPtr h, out RECT r);
+[DllImport("user32.dll")] public static extern bool IsWindowVisible(System.IntPtr h);
 public struct RECT { public int Left, Top, Right, Bottom; }
 '@
     $hwnd = [TiaWin.Api]::GetConsoleWindow()
+    # Windows 11 poe o Windows Terminal como host de console por padrao, e ai GetConsoleWindow
+    # devolve a janela invisivel do conpty: mover/esconder nao faz nada visivel, e GetWindowRect
+    # devolveria geometria que nao e' da janela que o humano ve'. Sem janela propria, o modo de
+    # janela simplesmente nao se aplica.
+    $hwndOk = $hwnd -ne [IntPtr]::Zero -and [TiaWin.Api]::IsWindowVisible($hwnd)
     # rect vem do estado em "remember"; em "X,Y,W,H" vem do texto do proprio modo
-    $rect = if ($window -eq 'remember') { Get-Content $rectFile -ErrorAction SilentlyContinue | Select-Object -First 1 }
+    $rect = if ($window -eq 'remember' -and $hwndOk) { Get-Content $rectFile -ErrorAction SilentlyContinue | Select-Object -First 1 }
             elseif ($window -match '^\s*-?\d+\s*,') { $window } else { $null }
-    if ($window -eq 'hidden') { [void][TiaWin.Api]::ShowWindow($hwnd, 0) }   # SW_HIDE
-    elseif ($rect) {
+    if ($window -eq 'hidden' -and $hwndOk) { [void][TiaWin.Api]::ShowWindow($hwnd, 0) }   # SW_HIDE
+    elseif ($rect -and $hwndOk) {
         $n = @("$rect" -split ',' | ForEach-Object { [int]$_.Trim() })
         # 0x14 = SWP_NOZORDER | SWP_NOACTIVATE: mover a janela nao rouba o foco de quem trabalha
         if ($n.Count -eq 4) { [void][TiaWin.Api]::SetWindowPos($hwnd, [IntPtr]::Zero, $n[0], $n[1], $n[2], $n[3], 0x14) }
@@ -127,7 +133,7 @@ if ($show -eq 'all') {
 # no meio de uma corrida vale pra proxima, que e' o que se espera de "ultima posicao". Vai pro
 # console-rect.txt e nao pro console.json de proposito: o json e' escrito pelo humano, e runner que
 # reescreve arquivo de configuracao acaba comendo comentario e chave que nao entendeu.
-if ($window -eq 'remember') {
+if ($window -eq 'remember' -and $hwndOk) {
     $r = New-Object TiaWin.Api+RECT
     if ([TiaWin.Api]::GetWindowRect($hwnd, [ref]$r) -and $r.Right -gt $r.Left) {
         ("{0},{1},{2},{3}" -f $r.Left, $r.Top, ($r.Right - $r.Left), ($r.Bottom - $r.Top)) |

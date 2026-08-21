@@ -67,6 +67,8 @@ que é o que impede nome de projeto de cliente de voltar pra árvore commitada.
 - Nunca rodar `tia` em paralelo (Openness single-session) — desde 2026-08-18 o próprio `tia.exe`
   recusa a 2ª chamada simultânea (mutex por sessão de logon), além do lock da rota da task.
 - Nunca commitar `Siemens.Engineering.dll`.
+- **Nenhuma marca de agente nos commits**: sem trailer `Co-Authored-By: Claude`, sem "Generated
+  with". A autoria do repo e do humano — a mensagem descreve a mudanca, nada mais.
 - Testes só contra projeto TIA de teste, nunca produção.
 
 ## Build / run (a partir da F1)

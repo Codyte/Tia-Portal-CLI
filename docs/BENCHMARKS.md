@@ -5,8 +5,8 @@
 <!--   L37    One attach instead of five -->
 <!--   L52    Output volume — the constraint nobody expects -->
 <!--   L67    The write path — cost is the block, not the edit -->
-<!--   L118   What is not measured here -->
-<!--   L133   A real cycle, captured -->
+<!--   L155   What is not measured here -->
+<!--   L170   A real cycle, captured -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Measured behaviour

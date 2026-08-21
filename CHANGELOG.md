@@ -2,8 +2,8 @@
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
 <!--   L9     Changelog -->
 <!--   L16    [Unreleased] -->
-<!--   L18    [2.0.0] — 2026-08-21 -->
-<!--   L340   [1.0.0] — 2026-08-11 -->
+<!--   L51    [2.0.0] — 2026-08-21 -->
+<!--   L373   [1.0.0] — 2026-08-11 -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Changelog
@@ -14,6 +14,39 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); version
 shapes and exit codes. A breaking change to any of those bumps MAJOR.
 
 ## [Unreleased]
+
+98 verbs, against 95 at 2.0.0.
+
+### Added
+
+- **`create-motion --name X --type T [--version V] [--folder A/B] [--apply]`,
+  `delete-motion --name X [--apply] [--no-backup]` and
+  `set-motion-param --name X --param P --value V [--apply]`** — technology objects are created,
+  deleted and parameterised from the CLI. `TechnologicalInstanceDBComposition.Create(name, type,
+  Version)` accepts only the pairs of the *Overview of technology objects and versions* table
+  (`TOOpennessenUS/.../95673198603`); the API exposes no catalogue to consult beforehand, so
+  without `--version` the verb inherits the version of a TO of the same type already in the PLC,
+  which is the replicate-the-GUI-model case. `delete-motion` exports the instance DB to
+  `workspace/recovery/` first, like every other `--force`-class delete.
+- **`--search` ranks a title that starts with the term first** (`scripts/tia-help.py`). Nothing is
+  filtered and `hits` is still the total: `TON` matched inside "Button" and "autonegotiation" and
+  the right topic fell outside the first 15 of 828 hits. The instruction topics were always in the
+  F1 index, under the language packages — `ProgKOP2MenUS` (LAD, 192 topics), `ProgSCL2MenUS` (154),
+  `ProgFUP2MenUS` (197), `ProgAWL15enUS` (292).
+- **`--study` knows "editor instruction"** (`docs/study-map.json`, 23 domains).
+
+### Fixed
+
+- **A decimal `--value` was parsed with the machine's culture** — `2.5` was written as **25** under
+  pt-BR. `Hardware.Coerce` now parses and formats with `InvariantCulture`; it is the shared coercion
+  of `set-attr`, `set-drive-param` and `set-motion-param`. Offline test in `Tia.Tests`.
+- **Correction to 2.0.0:** the `list-motion` entry there states that a technology object cannot be
+  created by the API. That was wrong, and it came from a `--sdk` search truncated at 15 hits —
+  `Create` was below the cut. Measured 2026-08-21: `Create` exists and works. `Config.*` parameters
+  are writable (`InputUpperLimit` 120 → 3 → 42.5, always re-read); `Retain.*` refuses with
+  `EngineeringNotSupportedException` (`'set_Value' is not supported … read-only`), and
+  `SetAttribute("Value", x)` lands in the same setter. The refusal only shows up on the attempt —
+  no attribute declares it beforehand.
 
 ## [2.0.0] — 2026-08-21
 

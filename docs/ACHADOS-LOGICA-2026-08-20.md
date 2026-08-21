@@ -1,3 +1,20 @@
+<!-- ====================== BEGIN NAV INDEX ====================== -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!--   L18    Achados de lógica — biblioteca `1. FB Bilbiotecas` (2026-08-20) -->
+<!--   L51    A1 · `FB INTERTRAVAMENTO_PAINEL`: `INPUT_TESTE` anula todos os intertravamentos — FECHADO, é comissionamento -->
+<!--   L79    A2 · `FB MODOS DE OPERAÇÃO`: comentário contradiz o código — ALTO (documental) -->
+<!--   L108   A3 · `FB CONDIÇÃO DE PARTIDA` NW2: ordem das atribuições atrasa a troca de modo em um scan — MÉDIO -->
+<!--   L127   A4 · `FB CONDIÇÃO DE PARTIDA`: saída `STS_INTERTRAVAMENTO_AUTOMATICO` nunca escrita — MÉDIO -->
+<!--   L136   A5 · Cinco blocos sem nenhum chamador — MÉDIO -->
+<!--   L159   A6 · `AFERIÇÃO INSTRUMENTOS` × `AFERIÇÃO INVERSORES`: gêmeos que divergem no rompimento de fio — MÉDIO -->
+<!--   L179   A7 · `FB FILTRO DE AMOSTRAGEM  ANALÍTICA`: comentário diz 4 amostras, código guarda 8 — BAIXO -->
+<!--   L188   A8 · R3 (≤8 parâmetros escalares por FB) violado em massa — BAIXO, estrutural -->
+<!--   L205   A9 · Redes vazias e redes sem bobina — BAIXO -->
+<!--   L214   A10 · `FB VALVULA`: `FECHA_VALVULA` sem intertravamento — BAIXO -->
+<!--   L232   A11 · `FB VALVULA`: `PARAMETRO_ABRE` e `PARAMETRO_FECHA` nunca lidos — MÉDIO -->
+<!--   L249   O que foi conferido e está certo -->
+<!-- ======================= END NAV INDEX ======================= -->
+
 # Achados de lógica — biblioteca `1. FB Bilbiotecas` (2026-08-20)
 
 Leitura dos FBs da pasta 1, em **dois projetos**:

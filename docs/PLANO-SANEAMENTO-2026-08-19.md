@@ -1,15 +1,16 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L15    Plano de saneamento — `PROJETO-MOLDE_V21` (PLC) -->
-<!--   L20    Por que estrutura e nomenclatura vêm primeiro -->
-<!--   L45    Economia de tokens — as cinco regras deste plano -->
-<!--   L66    F0 — decisões (sem Portal, sem risco) -->
-<!--   L77    F1 — nomenclatura (1 batch dry + 1 apply) -->
-<!--   L109   F2 — estrutura de pastas (1 batch dry + 1 apply) -->
-<!--   L135   F3 — `DB GLOBAL` (1 batch dry + 1 apply, `--fail-fast`) -->
-<!--   L156   F4 — geradores (1 batch dry + 1 apply, `--fail-fast`) -->
-<!--   L179   F5 — resto (1 batch) -->
-<!--   L189   Contagem -->
+<!--   L16    Plano de saneamento — `PROJETO-MOLDE_V21` (PLC) -->
+<!--   L21    Por que estrutura e nomenclatura vêm primeiro -->
+<!--   L46    Economia de tokens — as cinco regras deste plano -->
+<!--   L67    F0 — decisões — **TOMADAS pelo usuário em 2026-08-19** -->
+<!--   L79    F1 — nomenclatura (1 batch dry + 1 apply) -->
+<!--   L111   F2 — estrutura de pastas (1 batch dry + 1 apply) -->
+<!--   L137   F3 — `DB GLOBAL` (1 batch dry + 1 apply, `--fail-fast`) -->
+<!--   L158   F4 — geradores (1 batch dry + 1 apply, `--fail-fast`) -->
+<!--   L181   F5 — resto (1 batch) -->
+<!--   L191   Contagem -->
+<!--   L206   Execução — 2026-08-19 -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Plano de saneamento — `PROJETO-MOLDE_V21` (PLC)

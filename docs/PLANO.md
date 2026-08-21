@@ -1,28 +1,30 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L28    PLANO — TIA Portal Openness API (V19+) -->
-<!--   L33    Objetivo -->
-<!--   L39    Decisões travadas (mudar só com motivo forte) -->
-<!--   L53    Delimitações — o que a API NÃO é -->
-<!--   L60    Arquitetura -->
-<!--   L83    Fases -->
-<!--   L105   Verificação (cada fase) -->
-<!--   L113   Economia de tokens (regras da sessão) -->
-<!--   L125   Skills em uso (nada novo pra instalar) -->
-<!--   L136   Ambiente (descoberto na F1) -->
-<!--   L164   Backlog v2 (cobertura Openness — priorizado) -->
-<!--   L267   Projeto de referência (2026-07-27) -->
-<!--   L273   Fronteira da engine — F7 itens 3-5 decididos (2026-08-07) -->
-<!--   L300   D8 fechada — sem superfície online, e não é adiamento (2026-08-07) -->
-<!--   L319   Pendências / decisões futuras -->
-<!--   L360   F11 — IHM (em andamento, 2026-08-17) -->
-<!--   L445   F13 — objetos de dentro da tela ✅ (2026-08-17) -->
-<!--   L596   F14 — área nova ponta a ponta ✅ (2026-08-18) -->
-<!--   L645   F12 — `sim-diag` camada 1 ✅ (2026-08-17) -->
-<!--   L674   Teste cego ponta a ponta — caderno escrito (2026-08-07) -->
-<!--   L943   Histórico fechado -->
-<!--   L956   F15 — auditoria externa: P0 fechados ✅ (2026-08-18) -->
-<!--   L1041  F16 — envelope plural de edição por XML (✅ fechada 2026-08-19) -->
+<!--   L30    PLANO — TIA Portal Openness API (V19+) -->
+<!--   L35    Objetivo -->
+<!--   L41    Decisões travadas (mudar só com motivo forte) -->
+<!--   L55    Delimitações — o que a API NÃO é -->
+<!--   L62    Arquitetura -->
+<!--   L85    Fases -->
+<!--   L117   Verificação (cada fase) -->
+<!--   L125   Economia de tokens (regras da sessão) -->
+<!--   L137   Skills em uso (nada novo pra instalar) -->
+<!--   L148   Ambiente (descoberto na F1) -->
+<!--   L176   Backlog v2 (cobertura Openness — priorizado) -->
+<!--   L279   Projeto de referência (2026-07-27) -->
+<!--   L285   Fronteira da engine — F7 itens 3-5 decididos (2026-08-07) -->
+<!--   L312   D8 fechada — sem superfície online, e não é adiamento (2026-08-07) -->
+<!--   L331   Pendências / decisões futuras -->
+<!--   L372   F11 — IHM (em andamento, 2026-08-17) -->
+<!--   L457   F13 — objetos de dentro da tela ✅ (2026-08-17) -->
+<!--   L608   F14 — área nova ponta a ponta ✅ (2026-08-18) -->
+<!--   L657   F12 — `sim-diag` camada 1 ✅ (2026-08-17) -->
+<!--   L686   Teste cego ponta a ponta — caderno escrito (2026-08-07) -->
+<!--   L955   F18 — parâmetro de drive SINAMICS ✅ (2026-08-20) -->
+<!--   L975   F19 — objeto tecnológico e instrução do editor ✅ (2026-08-21) -->
+<!--   L1018  Histórico fechado -->
+<!--   L1031  F15 — auditoria externa: P0 fechados ✅ (2026-08-18) -->
+<!--   L1116  F16 — envelope plural de edição por XML (✅ fechada 2026-08-19) -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # PLANO — TIA Portal Openness API (V19+)
@@ -98,6 +100,16 @@ Verbos por fase (nomes finais definidos na F1):
 | F8 | Caminho de escrita exercitado contra projeto real (`--apply` de verdade, não dry) | cada verbo de escrita aplicado + `compile` 0 erros | ✅ **fechada 2026-08-07** — `replicate-instruments --apply` era o último e escreveu de verdade (ver "F8 fechada" abaixo). 2026-07-28 no `Software de ETE Modelo_Inicial_V21` (projeto de teste com backup; tudo em `ClaudeTest/`). **Primitivas 11/11 ✅**: `create-folder`, `import-block` (FC real de 90 KB), `import-tags`, `clone`, `export-type`→`import-type`, `import-source`, `add-db-member`, `delete-block`, `compile` — pasta compila Success/0 erros. **`import-ladder --apply` ✅** (2 bugs de FlgNet corrigidos, ver item 1b). **6 geradores ✅ em dry** (`gen-all.json`, 0 falhas) + payload de `gen-fault-ob` (OB de 88 KB) e `gen-alarm-fc` importado no sandbox → compile 0 erros → `explain-block` round-trip: o FlgNet desses builders já estava certo. **Pré-requisito descoberto**: `replicate-fc`/`gen-alarm-fc`/`replicate-instruments` falham com `Inconsistent blocks ... cannot be exported` se o PLC não foi compilado antes (eles exportam o GlobalDB) — `compile --apply` do PLC inteiro resolveu (projeto real: Success/0 erros, os 26 erros antigos já não existem). Guard novo em `Ops.ExportBlock` traduz essa mensagem. **Fechado 2026-07-28 (2ª sessão), escopado ao tipo `Soprador` na árvore de produção**: dry = 1 grupo, molde `Soprador 1 (S-01A)`, 2 alvos `overwrite` (S-01B/C — o projeto só tem 3 sopradores nessa pasta, não 6), 6 blocos cada, nada fora de `4. Motores/Bombas`. `--apply` exige **`--force`** quando a pasta-alvo já tem blocos (guard correto: sem ele o batch falha com `2 target folder(s) already have blocks…`). Batch `replicate-soprador-run.json` (save → apply → compile → apply → compile → save) = **0 falhas, os dois compiles Success/0 erros/0 warnings**. **Conteúdo conferido, não só compilação**: export de `PARTIDA_SOPRADOR_2 (S-01B)` e `_3 (S-01C)`, normalizando o ID de volta pro do molde, difere do template em **5 linhas de 1993** — `Created` (timestamp), `Number` (FC 151/152 vs 153), 2 `Component` de tag de IO (sufixo `_2`/`_3` do equipamento) e `ConstantValue` (301/302 vs 300); tudo o que o replicador deve reescrever, nada mais. Idempotência é *funcional*, não no-op: o 2º apply reimporta os mesmos blocos (o verbo não detecta in-sync) e o 2º compile recompila — resultado idêntico, 0 erros. **`gen-profinet --apply` + `standardize-tags --apply` ✅** no mesmo projeto: profinet 43 IO devices, 3 tags `exists` (no-op); tags 131 tabelas = 126 `ok` + 5 `rebuilt` (`SOPRADOR_TANQUE_AERACAO S-02A..E`); `compile --apply` depois = Success/0 erros/0 warnings + `save-project`. ~~**Falta**~~ ✅ **fechado 2026-08-07**: `replicate-instruments --apply` criou `TESTE_TOTALIZADOR` num instrumento novo (Success/0 erros) e `import-master-copy` foi exercitado na régua da CPU virgem `PLC_LIB2` — ver as duas seções de 2026-08-07 na parte da biblioteca. Registro do que estava pendente: `replicate-instruments --apply` (dry dava `in-sync`), `import-master-copy` real — a `.al21` deixou de ser hipótese em 2026-07-29 (bake real, 148 KB, 10 master copies), mas o `--force --apply` numa CPU virgem parou no bug do `CreateFrom` duplicado; fix commitado (`a0df2f7`) e **não re-testado** — ver "Bake real da `.al21`" na seção da biblioteca |
 | F9 | Distribuição: o repo deixa de exigir toolchain pra ser experimentado | release baixável + CI verde + portas de entrada (CHANGELOG/CONTRIBUTING/SECURITY/templates) | ✅ **2026-08-11**. Diagnóstico que abriu a fase: 25 dias público, 1 star, 0 fork — o produto tinha profundidade e a distribuição estava em zero (sem release, sem tag, sem CI, sem versão; experimentar exigia clonar + SDK 8 + compilar). Entregue: `tia --version` (versão + qual Openness o exe carrega; o resolver virou `SiemensProbeDirs()`, compartilhado), `src/Directory.Build.props` (versão única dos 3 projetos), `scripts/pack.ps1` (zip de release do build local — o que entra sai de `git ls-files`, e uma guarda aborta se DLL da Siemens entrar; layout do zip = layout do repo, então whitelist/shim funcionam sem caminho especial), `init.ps1` detecta instalação de release (sem fonte = nada pra buildar) e pula os gates de build via `rebuild.ps1 -WhitelistOnly`. **CI não builda C# e isso é estrutural** — as assemblies do Openness são licenciadas e não existem em runner nenhum; o workflow verifica o que dá sem a Siemens: parse dos scripts, JSON válido, versão com entrada no CHANGELOG e a regra dura de nunca versionar DLL licenciada ou payload de cliente (`ci` verde na 1ª rodada). Release [v1.0.0](https://github.com/Codyte/Tia-Portal-CLI/releases/tag/v1.0.0) publicada, 614 KB, zero binário Siemens; instalação a partir do zip validada por extração + `init.ps1 -Check` (o ramo `$prebuilt` do não-`-Check` não dá pra testar sem sequestrar a whitelist do checkout oficial — um checkout só). SemVer é sobre o **contrato do CLI** (nomes de verbo, flags, shape do JSON, exit codes). 77 verbos na data da release (hoje são **78**, conferidos 1:1 contra o `Program.cs`). |
 | F10 | Execução: o CLI fecha o ciclo escreve → compila → **roda → observa** | `sim-run` baixa o programa num PLC virtual e lê/escreve tag | ✅ **2026-08-17**. `sim-run` faz attach numa instância do control panel do **S7-PLCSIM Advanced**, baixa o programa por Openness (`--pc-interface PLCSIM`, default) e roda os passos do `--script` (`write`/`read`/`wait`/`run`/`stop`/`state`/`tags`). Provado no `PROJETO-MOLDE_V21`: download `Success`/0 erros, **41550 tags**, `CMD_LIGA` de um motor do `DB GLOBAL` escrito e relido (`false → true → false`), CPU em `Run`. **Quem liga a instância é um host longevo, e desde 2026-08-17 é o próprio repo** (`scripts/sim-host.ps1 -Start`, task `TiaSimHost`) — registrar dentro do `tia.exe` continua descartado, a instância morre com o processo (o Runtime Manager sobe in-proc, `Get-Service *PLCSIM*` vazio). **Correção do que esta linha dizia antes:** não é o usuário nem o control panel da Siemens — qualquer processo de sessão 1 que fique vivo serve, e o host sobe o Runtime Manager sozinho (medido com control panel e manager **mortos**: `RegisterInstance` ressuscitou o manager, `powerOn=OK`, e o `sim-run --apply` seguinte deu `Success`/0 erros, 41550 tags). O `Connect to module failed` da 1ª tentativa era o clássico sequestrando o canal, não limitação de instância própria. **A parede é a sessão do Windows**, a mesma do Openness: da sessão 0, `SimulationRuntimeManager.Version` volta vazio e `RegisterInstance` dá `-1, InvalidErrorCode` com o manager vivo na sessão 1 — daí `-Start` rotear pela task `TiaSimHost` (`LogonType Interactive`). **Medido o custo:** download = 45-52 s de 49-57 s do verbo (~91%); `--no-download` pula ele e roda os passos no programa que já está na instância. O JSON traz `download.ms` e `ms`. **PLCSIM clássico fechado é pré-requisito**: ele toma o canal (`-48, CommunicationInterfaceNotAvailable`) e sequestra o access point `PLCSIM` do S7ONLINE, onde o download sai `Success` com a instância Advanced vazia — o falso positivo que custou mais tempo nesta fase. Descartado por medição: tipo de CPU no registro (`CPU1515` não muda nada), `ConfigurationTargetInterface.Addresses` (sempre vazio), `RemoteConnect`/`OpenPort` (é ponte entre Runtime Managers de máquinas, não entre produtos). |
+
+| F11 | IHM: ler, exportar e importar tela | roundtrip SimaticML de tela | ✅ 2026-08-17 — só WinCC **clássico** tem roundtrip; Unified não. Detalhe em [§ F11](#f11--ihm-em-andamento-2026-08-17) |
+| F12 | `sim-diag` camada 1 | estado do PLC virtual sem Portal aberto | ✅ 2026-08-17 — [§ F12](#f12--sim-diag-camada-1--2026-08-17) |
+| F13 | Objeto de dentro da tela (`list/copy/set-screen-items`, `audit-screen`) | estampar grupo de objetos numa tela real | ✅ 2026-08-17 — [§ F13](#f13--objetos-de-dentro-da-tela--2026-08-17) |
+| F14 | Área nova ponta a ponta | hardware → blocos → tags → tela, `audit` verde | ✅ 2026-08-18 — **cinco** pré-requisitos, e só o 5º se diagnostica sozinho. [§ F14](#f14--área-nova-ponta-a-ponta--2026-08-18) |
+| F15 | Auditoria externa (170 achados) | P0 fechados | ✅ 2026-08-18 — [§ F15](#f15--auditoria-externa-p0-fechados--2026-08-18) |
+| F16 | Envelope plural de edição por XML | N edições, um round-trip | ✅ 2026-08-19 — 5 membros custam o mesmo que 1 (23,9 s × 23,4 s); XML igual = nenhum import. [§ F16](#f16--envelope-plural-de-edição-por-xml--fechada-2026-08-19) |
+| F17 | Pendentes da F15 validados no Portal vivo | cada P0 conferido contra projeto real | ✅ 2026-08-19 — [§ F17](#f17--pendentes-da-f15-validados-no-portal-vivo-2026-08-19) |
+| F18 | Parâmetro de drive SINAMICS | ler e escrever `p`/`r` de um G120 | ✅ 2026-08-20 — `list-drive-params` / `set-drive-param`, 5149 parâmetros. [§ F18](#f18--parâmetro-de-drive-sinamics--2026-08-20) |
+| F19 | Objeto tecnológico e instrução do editor | TO criado por código; as 5 abas com caminho provado | ✅ 2026-08-21 — `create-motion`/`delete-motion`/`set-motion-param`; instrução do editor entra por SCL. [§ F19](#f19--objeto-tecnológico-e-instrução-do-editor--2026-08-21) |
 
 Regra: **uma fase por vez, commit + handoff no fim de cada uma.** FINAIS vira referência
 read-only — nunca editar lá; extrair pra `src/` e pronto.
@@ -939,6 +951,69 @@ motivo dele:
 
 O custo da conferência foi **um batch de 4 verbos de leitura, 16 s**. O custo de não a ter feito
 seria uma rodada inteira medindo o caderno em vez da ferramenta.
+
+## F18 — parâmetro de drive SINAMICS ✅ (2026-08-20)
+
+`list-drive-params` / `set-drive-param`. Parâmetro de drive **não é atributo de device item**:
+`list-attrs`/`set-attr` varrem `DeviceItem.GetAttributeInfos` e nunca o enxergam — ele vive em
+`DriveObject.Parameters` (`DriveParameterComposition`, assembly Startdrive). Medido no
+projeto-molde: **5149 parâmetros** num G120 configurado, lidos offline com o Portal aberto, ~2 s —
+e **1,1 MB de JSON** no dump inteiro, então a consulta é o `--like`, nunca o dump.
+
+- **`--like` casa nome, número e a descrição** (`ParameterText`, em inglês): `--like "ramp-up time"`
+  devolve 10 linhas com o `p1120` dentro, sem saber o número de antemão. `--count` é a sonda barata
+  (honra o `--like`: `--like speed` = 246 de 5149).
+- **BICO devolve o parâmetro-fonte, não um número** — `p840[0]` lê `"r2090.0"`. `DriveParameter`
+  não sobrescreve `ToString`, e sem tratamento o serializer entrava em `Self referencing loop
+  detected` no 452º parâmetro, derrubando o verbo inteiro. `set-drive-param` **recusa** BICO:
+  Openness escreve valor, não fiação.
+- **Array responde no elemento indexado** (`p1082[0]` = 1500 rpm, min 0, max 210000); o pai lê
+  `null`. `set-drive-param` recusa o pai — valor nulo não prova tipo — e confere `--value` contra
+  `MinValue`/`MaxValue` no dry. `Value` é o único membro gravável, então não há verbo para renomear
+  parâmetro ou mudar limite. É valor de projeto: chega ao inversor no download.
+
+## F19 — objeto tecnológico e instrução do editor ✅ (2026-08-21)
+
+Duas frentes que pareciam limite de API e não eram.
+
+**Objeto tecnológico.** `create-motion` / `delete-motion` / `set-motion-param` (98 verbos).
+`TechnologicalInstanceDBComposition.Create(nome, tipo, Version)` existe e funciona — a afirmação
+contrária, que ficou meses em `docs/LIMITES.md` e entrou no CHANGELOG da 2.0.0, saiu de um `--sdk`
+**cortado em 15 hits**, com o `Create` abaixo do corte. Lição de método, não de API: conferir
+`hits` × `shown` antes de escrever que uma API não existe, e a doc do F1 é a autoridade sobre uma
+medição isolada que falhou.
+
+- A API não expõe catálogo de tipo × versão (a tabela é a do F1,
+  `TOOpennessenUS/.../95673198603`), então **sem `--version` o verbo herda a de um TO do mesmo tipo
+  já no PLC** — que é o caso real de replicar o molde feito na GUI.
+- **Parâmetro escreve onde o Portal dá acesso, e a recusa só aparece na tentativa**: `Config.*`
+  grava (`InputUpperLimit` 120 → 3 → 42,5, sempre relido), `Retain.*` levanta
+  `EngineeringNotSupportedException`. Nenhum atributo declara isso antes.
+- `Ops.Backup` passou a exportar `TechnologicalInstanceDB`, senão `delete-motion` apagaria sem rede.
+- Fora do escopo: bug de cultura em `Hardware.Coerce` (`--value 2.5` gravava **25** em pt-BR),
+  que valia para `set-attr` e `set-drive-param` também. Corrigido com `InvariantCulture` + teste
+  offline.
+
+**Instrução do editor.** As 5 abas do painel *Instructions* são catálogo do editor, não objeto do
+projeto: não há composição a percorrer (`--sdk "instruction"` = 1 membro, e é
+`ModuleUseFromUserProgram`). O acesso já existia e agora está **provado ponta a ponta** — FB `SCL`
+com `TON_TIME` (aba Basic, temporizador IEC) e `NORM_X`/`SCALE_X` (conversão), importado no
+projeto-molde:
+
+| passo | resultado |
+|---|---|
+| `create-folder --path ZZ_TESTE --apply` | `created: 1`, 0,7 s |
+| `import-source --file docs/examples/instructions.scl --folder ZZ_TESTE --apply` | `generated: [ZZ_TESTE_SCL]`, 6,0 s |
+| `compile --block ZZ_TESTE_SCL --apply` | `Warning`, **0 erros / 1 warning** (`A loss of value accuracy is possible.` — a conversão do `NORM_X`), 3,6 s |
+| batch inteiro | 4 steps, `ms: 11776`, `attachMs: 352` |
+
+O compilador resolve o nome da instrução; não é preciso catálogo. Instrução que é bloco de sistema
+entra por `add-call`, e rede LAD pronta, por `clone`. Bloco e pasta de teste apagados no fim.
+
+**O que a rodada mostrou de errado no repo:** `explain-block` **não serve para SCL** — ele lê
+`FlgNet` (LAD/FBD) e num bloco SCL devolve os literais concatenados
+(`"T#5S0.0027648100.0"`), com os membros do `TON_TIME` estático saindo como seção `NONE`. Registrado
+em [`LIMITES.md`](LIMITES.md); ler SCL de volta é `export-block` e ler o XML.
 
 ## Histórico fechado
 

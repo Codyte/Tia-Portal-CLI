@@ -1,8 +1,9 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L8     Changelog -->
-<!--   L15    [Unreleased] -->
-<!--   L221   [1.0.0] — 2026-08-11 -->
+<!--   L9     Changelog -->
+<!--   L16    [Unreleased] -->
+<!--   L18    [2.0.0] — 2026-08-21 -->
+<!--   L340   [1.0.0] — 2026-08-11 -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Changelog
@@ -14,9 +15,17 @@ shapes and exit codes. A breaking change to any of those bumps MAJOR.
 
 ## [Unreleased]
 
-Closes the correction queue that the blind tests opened
-(`docs/BOAS-PRATICAS.md` §3, items 3–6). All four are documented as either shipped or
-deliberately dropped.
+## [2.0.0] — 2026-08-21
+
+95 verbs, against 77 at 1.0.0. The release opens three fronts the first tag did not have — HMI
+screens, running the program on a simulated PLC, and SINAMICS drive parameters — and closes the
+correction queue the blind tests opened (`docs/BOAS-PRATICAS.md` §3, items 3–6).
+
+**Why MAJOR.** SemVer here is over the CLI contract, and five changes break it: a top-level `error`
+now exits 1 (it exited 0), an unknown option exits 2 before the attach, `ms` no longer includes the
+attach (`attachMs` carries it), `--timeout` is refused together with `--apply`, and `sim-run` no
+longer runs its steps when the download failed. A caller that read `ms` as total time, or that
+treated exit 0 as success while the result carried an embedded failure, needs a change.
 
 ### Added
 
@@ -34,6 +43,79 @@ deliberately dropped.
   the project.
 - **`audit --db "DB GLOBAL"`** — names the global DB for the R2 check when the heuristic (a
   `GlobalDB` with "global" in its name) does not find it.
+- **HMI became a first-class device.** `list-hmi` (WinCC classic and Unified, with `api` saying
+  which one answers), `hmi-tree` emitting `hmi-navi.md` as the sibling of `plc-navi.md`,
+  `export-hmi-tags` / `import-hmi-tags` for tag tables, and the screen roundtrip
+  `export-screen` / `import-screen [--replace]` / `delete-screen`. Area screens replicate through
+  `import-screen --replace`; the HMI *tags* still have no import verb, which `audit-screen` reports
+  one by one.
+- **Objects inside a screen: `list-screen-items`, `copy-screen-items`, `set-screen-items`.** The
+  list is one line per object (150 objects = 7.4 KB against 798 KB of XML) and `--group` aggregates
+  by the first equipment code in the tag, returning a `region` ready to stamp. `copy-screen-items`
+  copies what is *entirely* contained in the region, offsets it, renumbers `ID` and de-duplicates
+  `ObjectName`. `set-screen-items` also deletes, renames and groups — `--set`, `--remove`,
+  `--rename`, `--rename-from-tag`, `--group`, all repeatable and all in one export/import, because
+  a screen import costs 58–123 s. Fixed order **set → remove → rename → group**, so a group's
+  region is checked against geometry already corrected by `--set`. Screen objects live inside
+  `Hmi.Screen.ScreenLayer`, not in the screen's `ObjectList`: pasting at the wrong level produces
+  valid-looking XML that the Portal refuses on import.
+- **`audit-screen`** crosses each object's tag with the HMI's own tags: does it exist, and does it
+  carry an equipment code (which is how the editor's `tag1` placeholder shows up by name). Without
+  `--screen` it sweeps every screen of the device at ~9.5 s each — 9 screens and 591 objects took
+  86 s — so iteration goes with `--screen`. Crossing with the *PLC* tag comes back `skipped`: a
+  classic HMI tag exposes only `Name`, and the table's SimaticML carries only the `Connection`.
+- **The program runs and is observed.** `sim-run` attaches to S7-PLCSIM Advanced, downloads the
+  program through Openness and runs the steps of a `--script`
+  (`write`/`read`/`wait`/`run`/`stop`/`state`/`tags`). `scripts/sim-host.ps1`
+  (`-Start`/`-Stop`/`-Status`/`-Ui`) keeps the instance alive, because the Runtime Manager comes up
+  in-process and an instance registered inside `tia.exe` dies with it; the host must live in
+  session 1, so `-Start` routes through the `TiaSimHost` task when the shell is born in session 0.
+  `sim-diag` reads the instance with no Portal open at all. `--no-download` skips the download,
+  which is ~91% of the verb, and an instance answering with 0 tags is an error, not a success.
+- **`python scripts/tia-help.py --study "<task>"`** — the first stop of any PLC engineering task,
+  and it runs with no Portal open. For the subject it returns the F1 topics to read, the Openness
+  members, **the official Siemens library that already solves it**, the hardware restriction that
+  sinks the project when discovered late, the applicable R1–R9 rules and the next verb. The curated
+  knowledge is data, not code: `docs/study-map.json`. Alongside it, `--sdk` searches the 31448
+  documented members of the Openness IntelliSense XML (exact signature, matches in the body, no
+  service required) and `--deep` downloads and greps topic bodies, which is what answers a question
+  written in prose. Two new documents: **`docs/LIMITES.md`** (what Openness and PLCSIM do *not* do,
+  each line with the probe, the exact message and the way out) and **`docs/GUIA-SIEMENS.md`**
+  (official guide, the free libraries — LGF, DriveLib — and where the house standard is stricter
+  on purpose).
+- **`list-drive-params` / `set-drive-param` — the p/r parameters of a SINAMICS drive.** They are not
+  device-item attributes: `list-attrs` and `set-attr` walk `DeviceItem.GetAttributeInfos` and never
+  see a drive parameter, which lives in `DriveObject.Parameters` (`DriveParameterComposition`,
+  Startdrive assembly). A configured G120 answers with **5149 parameters** read offline in ~2 s, but
+  the full dump is 1.1 MB of JSON, so the query is `--like` — which matches the name, the number
+  *and* the parameter's description (`ParameterText`), the only way to ask for "the ramp parameter"
+  without knowing it is `p1120`. `--count` is the cheap probe. A BICO parameter answers with its
+  source parameter (`p840[0]` = `r2090.0`) and is refused for writing — Openness writes the value,
+  not the wiring — as is the parent of an array parameter, whose value is null and therefore proves
+  no type. `--value` is checked against `MinValue`/`MaxValue` in the dry run.
+- **`retrieve-library --file X.zal19 [--dir D] [--upgrade]`** — the SIOS ships libraries archived
+  (`.zal1x`) and every other verb here opens only `.al2x`. The Portal builds
+  `<dir>/<name>/<name>.al2x` and refuses an existing destination, so an occupied path comes back as
+  `action: exists` instead of throwing. `--upgrade` raises the library version in the same step,
+  which is the `.zal19`-on-V21 case.
+- **`list-motion [--like X] [--params]`** — technology objects (axis, cam, kinematics, PID): name,
+  type and version. Read-only by API limit, not by choice: `TechnologicalInstanceDBComposition` has
+  no `Create`, so a TO is born in the GUI or arrives with a project import.
+- **UDTs live in folders too: `import-type --folder A/B` and `move-type --name X --folder A/B`.**
+  Without `--folder` an imported UDT lands at the root. `move-type` is the same
+  `export → delete → import` as `move-block`, and it puts the UDT back in its source folder if the
+  import at the destination fails.
+- **`set-io-address` checks `--start` against the map in the dry run** — `conflictCheck: occupied`
+  plus `conflictsWith`, or `free (pelo mapa)`. It is a reading check: `free` is the absence of a
+  conflict in what the map sees, not a guarantee. The authority remains the Portal's
+  `Next free address: N`.
+- **`audit` reports `scanned`** (`folders`, `blocks`, `callBlocks`, `tagTables`) — the size of the
+  population each check walked, which is how a conforming check is told apart from a blind one.
+- **`workspace/console.json`** configures the console window the task opens in session 1: `window` =
+  `default` · `remember` (the default) · `hidden` · `"X,Y,W,H"`, and `show` = `none` (the default) ·
+  `command` · `all`. `show` stays at `none` for a reason: a console with QuickEdit — the Windows
+  default — blocks whoever writes to it while a mouse selection exists, so one click would hang the
+  runner, and with it the `busy.lock` and the next call.
 
 ### Security
 
@@ -181,6 +263,19 @@ deliberately dropped.
   back to the default `6ES7 515-2AN03-0AB0`.
 - **`whitelist.ps1` reports a missing `tia.exe`** instead of throwing from `Get-Item`, and disposes
   the SHA256 provider.
+- **A BICO parameter took `list-drive-params` down with it.** `DriveParameter` does not override
+  `ToString`, and a BICO parameter's `Value` is another `DriveParameter`: the serializer walked into
+  `Self referencing loop detected` at the 452nd parameter of a real G120 and the whole verb died.
+  The value now comes back as the source parameter's name (`p840[0]` = `r2090.0`), which is the
+  useful information anyway.
+- **`sim-host.ps1` checks the host's pid**, not just the last line of the log — a stale log line
+  reported a host that was no longer running.
+- **The task's console window reopens where it was left.** Windows stores console position *per
+  shortcut*, and a scheduled task does not run from one, so the window kept coming back to the
+  host's default position. `taskrun.ps1` now writes the geometry to
+  `workspace/taskio/console-rect.txt` (state, not configuration) and reads it on the next call.
+- **`gen-verbs.ps1` reapplies the NAV INDEX header to `VERBS.md`**, which the regeneration used to
+  strip.
 
 ### Changed
 
@@ -210,6 +305,30 @@ deliberately dropped.
   single hand-rolled `src/__navi__.md`. The same navindex change makes the walk skip gitignored
   paths, so `proj/`, `workspace/` and `Scripts_Siemens/` can no longer put customer project names
   back into the committed tree.
+- **`ms` is the work; `attachMs` is the attach. Breaking.** Every verb returns both, not only the
+  steps of `run --script`. Total is `ms + attachMs`. The attach is where the Openness authorization
+  dialog hangs, so folding it into `ms` made an environment problem read as an API cost — measured
+  on the first `info` after a `rebuild.ps1` with the Portal open: `ms: 507, attachMs: 33465`, and
+  `attachMs: 310` on the next call. Adding is trivial; subtracting would require remembering the
+  modal existed.
+- **Editing by XML is plural: N edits, one round-trip.** `add-db-member --member "A.B.NAME:Type"`,
+  `delete-db-member --member "A.B.NAME"`, `delete-network --index N --index M` and
+  `add-call --fb A ... --fb B ...` all repeat, and each `--inst`/`--param`/`--after`/`--title`/
+  `--comment` belongs to the `--fb` before it. The cost is the size of the block, not the number of
+  edits: five members in the global DB cost 23.9 s against 23.4 s for one. A patch that fails aborts
+  before the import — nothing lands half-applied — and identical XML after the patches means **no
+  import at all** (`changed: false`, 1.3 s instead of 23 s), so idempotence stopped being merely
+  functional. Every XML-editing verb now returns **`phases`**
+  (`exportMs`/`patchMs`/`importMs`/`compileMs`/`proofMs`), which is how one learns that 77% of a
+  global-DB edit is `Blocks.Import(Override)` of 862 KB of XML.
+- **Exports compile only their own block.** All 16 exports go through `Ops.ExportFresh`, which
+  compiles the target and moves on: `clone`, `diff-block`, `explain-block`, `list-interface` and the
+  four generators no longer require a `compile --apply` of the whole PLC between steps — that was
+  ~20 of the 49 minutes of the FP-06 blind test. What is left is the rare case: an inconsistency
+  coming from *outside* (a UDT or DB the block uses) is not cleared by compiling the block, and the
+  message then asks for `compile --apply`.
+- **The repo says `1. FB Bilbiotecas`**, with the project's typo, instead of silently correcting it
+  in prose — the folder name is what the verbs take.
 
 ### Deliberately not done
 
@@ -279,3 +398,4 @@ fictional machine spec and has to deliver a compiling PLC program.
   `pwsh scripts/rebuild.ps1` on a machine with TIA Portal.
 
 [1.0.0]: https://github.com/Codyte/Tia-Portal-CLI/releases/tag/v1.0.0
+[2.0.0]: https://github.com/Codyte/Tia-Portal-CLI/releases/tag/v2.0.0

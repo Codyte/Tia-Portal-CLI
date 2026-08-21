@@ -3,7 +3,7 @@
   <!-- Versão única dos 3 projetos. Bump aqui, entrada no CHANGELOG.md, tag vX.Y.Z.
        O verbo de versão do CLI lê o InformationalVersion desta propriedade. -->
   <PropertyGroup>
-    <Version>1.0.0</Version>
+    <Version>2.0.0</Version>
     <Company>Codyte</Company>
     <Product>tia-cli</Product>
     <Copyright>MIT</Copyright>

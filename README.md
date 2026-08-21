@@ -17,6 +17,8 @@ who prefer a terminal over ClickOps.*
 [![Platform](https://img.shields.io/badge/platform-Windows%20x64-0078D6?logo=windows)](#requirements)
 [![Dry--run first](https://img.shields.io/badge/writes-dry--run%20by%20default-orange)](#design-contract)
 
+**English** · [Português (Brasil)](README.pt-BR.md)
+
 ### An engineering task, start to finish, without touching the mouse
 
 **Every write is a dry-run until you type `--apply`.** That one property is what makes it safe to

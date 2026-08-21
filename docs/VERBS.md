@@ -7,12 +7,12 @@
 <!--   L71    hardware -->
 <!--   L89    write -->
 <!--   L116   library -->
-<!--   L124   multiuser -->
-<!--   L127   bulk -->
-<!--   L132   batch -->
-<!--   L135   sim -->
-<!--   L139   meta -->
-<!--   L142   notas -->
+<!--   L125   multiuser -->
+<!--   L128   bulk -->
+<!--   L133   batch -->
+<!--   L136   sim -->
+<!--   L140   meta -->
+<!--   L143   notas -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao)
@@ -118,6 +118,7 @@
 - `retrieve-library --file X.zal19 [--dir D] [--upgrade] [--apply]  (dearquiva .zal1x → .al2x; é como se consome biblioteca oficial da Siemens (LGF 109479728, DriveLib 206539), que o SIOS entrega arquivada; --upgrade sobe a versão da library junto)`
 - `create-library --file X.al21 [--apply]  (library vazia; o Portal cria <pasta>/<nome>/<nome>.al21 — caminho real volta em "path")`
 - `import-master-copy --file X.al19 --name M [--folder A/B] [--apply] [--force]  (--force: apaga o de mesmo nome e recria — é como se atualiza pacote já instalado)`
+- `import-library-type --file X.al21 --name T [--folder A/B] [--apply]  (instancia um library TYPE no PLC — a biblioteca oficial da Siemens (LGF) guarda os blocos como types, e import-master-copy não os alcança; usa a última versão committed e o Portal traz as dependências junto)`
 - `add-master-copy --file X.al21 (--name BLOCO | --folder A/B) [--lib-folder L] [--apply]  (PLC → library; --folder = pasta inteira = pacote; substitui se já existir)`
 - `delete-master-copy --file X.al21 --name M [--apply]`
 

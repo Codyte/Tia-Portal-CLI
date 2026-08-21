@@ -2,8 +2,8 @@
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
 <!--   L9     Changelog -->
 <!--   L16    [Unreleased] -->
-<!--   L51    [2.0.0] — 2026-08-21 -->
-<!--   L373   [1.0.0] — 2026-08-11 -->
+<!--   L63    [2.0.0] — 2026-08-21 -->
+<!--   L385   [1.0.0] — 2026-08-11 -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Changelog
@@ -15,9 +15,21 @@ shapes and exit codes. A breaking change to any of those bumps MAJOR.
 
 ## [Unreleased]
 
-98 verbs, against 95 at 2.0.0.
+99 verbs, against 95 at 2.0.0.
 
 ### Added
+
+- **`import-library-type --file X.al21 --name T [--folder A/B] [--apply]`** — instantiates a
+  library *type* into the PLC. Siemens' own libraries keep their blocks as types, not as master
+  copies: LGF V5.4.0 ships **195 types and 13 master copies**, so `import-master-copy` could not
+  reach a single LGF block. The verb resolves the type by name (folder-qualified when ambiguous),
+  takes the highest **committed** version and calls
+  `PlcBlockComposition.CreateFrom(CodeBlockLibraryTypeVersion)` — or
+  `PlcTypeComposition.CreateFrom(PlcTypeLibraryTypeVersion)` for a UDT — letting the Portal pull the
+  type's dependencies along. Measured against LGF V5.4.0 in the reference project:
+  `LGF_ScaleLinear` (version 3.0.1) installed as an SCL FC, PLC compile Success, 0 errors,
+  0 warnings. DriveLib V7.1.0 needs none of this — its 19 objects (`SINA_POS`, `SINA_SPEED`,
+  `SINA_PARA`…) are master copies, and `import-master-copy` already covers them.
 
 - **`create-motion --name X --type T [--version V] [--folder A/B] [--apply]`,
   `delete-motion --name X [--apply] [--no-backup]` and

@@ -1337,7 +1337,7 @@ warnings**.
 | **§2** · área 9 só como dado | **Manter**, decisão do usuário: a área pode entrar em escopo e a IHM pode já apontar para as words. |
 | **§3** · grafia da pasta da biblioteca | **Já fechado**: o repo inteiro (scripts, `library/*.json`, `Audit.cs`, `Inventory.cs`, `PADRAO.md`, `study-map.json`, `CLAUDE.md`) diz `1. FB Bilbiotecas`. A grafia certa só sobrou em documento histórico. |
 | **PID em OB de interrupção cíclica** | **Provado por CLI**, ver abaixo. |
-| **LGF / DriveLib** | **Bloqueado no arquivo**: o SIOS devolve HTTP 403 para o agente (re-medido nesta sessão). O `.zal19` tem que vir do usuário; depois é `retrieve-library --upgrade` + `install-lib`. |
+| **LGF / DriveLib** | **Destravado no mesmo dia**: o usuário baixou (o SIOS devolve 403 para o agente) e deixou em `C:\Softwares Instaladores\Siemens\Lib`. Os pacotes V21 vêm em `.zip` com o `.al21` **já dearquivado** — `retrieve-library` não entra. Ver abaixo. |
 
 **Caminho do PID em OB3x, todo por CLI** (artefatos `ZZ_TESTE_*` apagados no fim, `find "*ZZ_TESTE*"`
 = 0, o `PID_Compact_1` do usuário intocado):
@@ -1357,3 +1357,28 @@ warnings**.
 **Aprendizado que muda regra de operação:** `xref` com `UsedBy` vazio prova *sem chamador*, não
 *sem instância*. Antes de `delete-block`, conferir instância com `find --pattern "*<nome>*" --kind
 block`. Foi o que separou os 3 blocos realmente mortos do `FB SETPOINT MANUAL`.
+
+
+### LGF e DriveLib instaladas: o verbo que faltava
+
+`list-library` no `LGF_V5_4_0_TiaLib_V21.al21` conta **195 types e 13 master copies** — e os 13 são
+tabela de constante e template, não bloco. Quer dizer que `import-master-copy` **não alcançava um
+único bloco da LGF**: biblioteca oficial da Siemens guarda o conteúdo como *library type*, com
+versão, e o `CreateFrom` de master copy não serve. Isso estava em `PLANO` como "fora do V1"
+(instanciar library types) desde a F8; era o que separava "temos o arquivo" de "temos a biblioteca".
+
+**`import-library-type --file X.al21 --name T [--folder A/B] [--apply]`** fecha o buraco
+(`Library.ImportLibraryType`, 99 verbos): resolve o tipo pelo nome (`PASTA/NOME` quando o nome
+repete), pega a maior versão **committed** e chama
+`PlcBlockComposition.CreateFrom(CodeBlockLibraryTypeVersion)` — ou
+`PlcTypeComposition.CreateFrom(PlcTypeLibraryTypeVersion)`, para UDT. As dependências do tipo o
+Portal traz sozinho. Provado no projeto-molde: `LGF_ScaleLinear` **3.0.1** entrou como FC em SCL,
+`compile --apply` do PLC **Success 0/0**; artefatos apagados depois (`find "*ZZ_TESTE*"` = 0).
+
+**DriveLib não precisa do verbo novo**: `LDriveLib_V7_1_0_TiaLib_V21.al21` tem **19 master copies e
+0 types** (`SINA_POS`, `SINA_SPEED`, `SINA_PARA`, `SINA_INFEED`, os UDTs de telegrama) — o
+`import-master-copy` de sempre resolve, e o dry-run já devolve `contentType: FB`.
+
+**Os dois pacotes V21 do SIOS chegam em `.zip` com o `.al21` dentro, não em `.zal1x`**: descompactar
+e apontar o `--file` para o `.al21`. `retrieve-library` continua sendo para o `.zal19` (V19), que é
+o outro download da mesma página.

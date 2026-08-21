@@ -1,18 +1,20 @@
 // ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
-//   L34    class Library
-//   L36    .Open
-//   L60    .Create
-//   L87    .Retrieve
-//   L121   .List
-//   L136   .CollectMasterCopies
-//   L149   .CollectTypes
-//   L167   .ImportMasterCopy
-//   L255   .AddMasterCopy
-//   L313   .DeleteMasterCopy
-//   L332   .ResolveLibFolder
-//   L345   .FindMasterCopy
-//   L363   .Collect
+//   L36    class Library
+//   L38    .Open
+//   L62    .Create
+//   L89    .Retrieve
+//   L123   .List
+//   L138   .CollectMasterCopies
+//   L151   .CollectTypes
+//   L169   .ImportMasterCopy
+//   L257   .AddMasterCopy
+//   L315   .DeleteMasterCopy
+//   L334   .ResolveLibFolder
+//   L350   .ImportLibraryType
+//   L412   .CollectTypeHits
+//   L422   .FindMasterCopy
+//   L440   .Collect
 // ======================= END NAV INDEX =======================
 
 using System;
@@ -342,6 +344,81 @@ namespace Tia.Core
         /// nome pode existir em níveis diferentes (arrastar o bloco pra raiz e pra dentro de uma
         /// pasta cria dois master copies homônimos), e devolver o primeiro achado escolheria em
         /// silêncio. Mesma política do --portal: ambíguo recusa e lista.</summary>
+        /// <summary>Instancia um library TYPE no PLC (LGF e afins guardam os blocos como types,
+        /// não como master copy: `import-master-copy` não os alcança). Usa a última versão
+        /// committed; o Portal traz junto as dependências do tipo.</summary>
+        public static object ImportLibraryType(TiaSession session, PlcSoftware plc, string file,
+            string typeName, string folderPath, bool apply)
+        {
+            var lib = Open(session, file);
+            var hits = new List<KeyValuePair<string, LibraryType>>();
+            var slash = typeName.LastIndexOf('/');
+            var wantFolder = slash < 0 ? null : typeName.Substring(0, slash);
+            var wantName = slash < 0 ? typeName : typeName.Substring(slash + 1);
+            CollectTypeHits(lib.TypeFolder, "", wantName, hits);
+            if (wantFolder != null)
+                hits = hits.Where(h => string.Equals(h.Key, wantFolder, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (hits.Count == 0)
+                throw new InvalidOperationException(
+                    "Library type '" + wantName + "' not found in library '" + lib.Name + "'.");
+            if (hits.Count > 1)
+                throw new InvalidOperationException("Library type '" + wantName + "' existe em "
+                    + hits.Count + " pastas da library (" + string.Join(", ",
+                        hits.Select(h => h.Key.Length == 0 ? "(raiz)" : h.Key)) + "). Passe --name \"PASTA/NOME\".");
+
+            var type = hits[0].Value;
+            // Versão: a maior committed. In-work não instancia (o Portal recusa), então filtrar
+            // aqui devolve mensagem melhor do que a exceção do CreateFrom.
+            var version = type.Versions.Cast<LibraryTypeVersion>()
+                .Where(v => v.State == LibraryTypeVersionState.Committed)
+                .OrderBy(v => v.VersionNumber).LastOrDefault();
+            if (version == null)
+                throw new InvalidOperationException(
+                    "Library type '" + type.Name + "' não tem versão committed para instanciar.");
+
+            var result = new Dictionary<string, object>
+            {
+                { "library", lib.Name },
+                { "type", type.Name },
+                { "libraryFolder", hits[0].Key },
+                { "version", version.VersionNumber == null ? "" : version.VersionNumber.ToString() },
+                { "folder", folderPath ?? "" },
+                { "applied", apply },
+            };
+            var asBlock = version as CodeBlockLibraryTypeVersion;
+            var asType = version as PlcTypeLibraryTypeVersion;
+            result["kind"] = asBlock != null ? "block" : asType != null ? "udt" : version.GetType().Name;
+            if (asBlock == null && asType == null)
+                throw new InvalidOperationException("Library type '" + type.Name + "' é "
+                    + version.GetType().Name + "; só bloco de código e UDT se instanciam por aqui.");
+            if (apply)
+            {
+                if (asBlock != null)
+                {
+                    var group = Ops.ResolveFolder(plc, folderPath, true);
+                    result["created"] = group.Blocks.CreateFrom(asBlock).Name;
+                }
+                else
+                {
+                    var segments = string.IsNullOrEmpty(folderPath)
+                        ? new List<string>() : folderPath.Trim('/').Split('/').ToList();
+                    result["created"] = Scaffold.ResolveTypePath(plc, segments, true).Types.CreateFrom(asType).Name;
+                }
+                result["action"] = "created";
+            }
+            return result;
+        }
+
+        private static void CollectTypeHits(LibraryTypeFolder folder, string path, string name,
+            List<KeyValuePair<string, LibraryType>> into)
+        {
+            foreach (LibraryType t in folder.Types)
+                if (string.Equals(t.Name, name, StringComparison.OrdinalIgnoreCase))
+                    into.Add(new KeyValuePair<string, LibraryType>(path, t));
+            foreach (LibraryTypeUserFolder sub in folder.Folders)
+                CollectTypeHits(sub, path.Length == 0 ? sub.Name : path + "/" + sub.Name, name, into);
+        }
+
         private static MasterCopy FindMasterCopy(MasterCopyFolder root, string name)
         {
             var slash = name.LastIndexOf('/');

@@ -1294,7 +1294,9 @@ do `workspace/sim-host.log`. Log de sessão anterior cujo processo já morreu (r
 falha com `-4, DoesNotExist`. Saída: apagar `workspace/sim-host.log` e re-`-Start`. Correção
 possível (não feita): gravar o PID do host no log e conferir se o processo vive.
 
-**Também encontrado, não é regressão desta sessão**: o PLC do projeto-molde **não compila limpo** —
+**Também encontrado, não é regressão desta sessão** (superado no parágrafo seguinte; reconfirmado
+em 2026-08-21, `compile --apply` do PLC inteiro = Success, 0 erros / 0 warnings): naquele momento o
+PLC do projeto-molde **não compilava limpo** —
 2 erros pré-existentes em `PARTIDA_BOMBA (B-99A) (FC900)`, rede 10, `Tag
 "INVERSOR_B-99A_CCM2~PROFINET_interface~Standard_telegram_20" not defined.` É o resto da área de
 teste `4.2.9 ZZ_TESTE (ZT-01)` da F14, sem o drive SINAMICS no hardware (pré-requisito 4). Não foi

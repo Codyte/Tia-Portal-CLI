@@ -1,30 +1,31 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L30    PLANO — TIA Portal Openness API (V19+) -->
-<!--   L35    Objetivo -->
-<!--   L41    Decisões travadas (mudar só com motivo forte) -->
-<!--   L55    Delimitações — o que a API NÃO é -->
-<!--   L62    Arquitetura -->
-<!--   L85    Fases -->
-<!--   L117   Verificação (cada fase) -->
-<!--   L125   Economia de tokens (regras da sessão) -->
-<!--   L137   Skills em uso (nada novo pra instalar) -->
-<!--   L148   Ambiente (descoberto na F1) -->
-<!--   L176   Backlog v2 (cobertura Openness — priorizado) -->
-<!--   L279   Projeto de referência (2026-07-27) -->
-<!--   L285   Fronteira da engine — F7 itens 3-5 decididos (2026-08-07) -->
-<!--   L312   D8 fechada — sem superfície online, e não é adiamento (2026-08-07) -->
-<!--   L331   Pendências / decisões futuras -->
-<!--   L372   F11 — IHM (em andamento, 2026-08-17) -->
-<!--   L457   F13 — objetos de dentro da tela ✅ (2026-08-17) -->
-<!--   L608   F14 — área nova ponta a ponta ✅ (2026-08-18) -->
-<!--   L657   F12 — `sim-diag` camada 1 ✅ (2026-08-17) -->
-<!--   L686   Teste cego ponta a ponta — caderno escrito (2026-08-07) -->
-<!--   L955   F18 — parâmetro de drive SINAMICS ✅ (2026-08-20) -->
-<!--   L975   F19 — objeto tecnológico e instrução do editor ✅ (2026-08-21) -->
-<!--   L1018  Histórico fechado -->
-<!--   L1031  F15 — auditoria externa: P0 fechados ✅ (2026-08-18) -->
-<!--   L1116  F16 — envelope plural de edição por XML (✅ fechada 2026-08-19) -->
+<!--   L31    PLANO — TIA Portal Openness API (V19+) -->
+<!--   L36    Objetivo -->
+<!--   L42    Decisões travadas (mudar só com motivo forte) -->
+<!--   L56    Delimitações — o que a API NÃO é -->
+<!--   L63    Arquitetura -->
+<!--   L86    Fases -->
+<!--   L119   Verificação (cada fase) -->
+<!--   L127   Economia de tokens (regras da sessão) -->
+<!--   L139   Skills em uso (nada novo pra instalar) -->
+<!--   L150   Ambiente (descoberto na F1) -->
+<!--   L178   Backlog v2 (cobertura Openness — priorizado) -->
+<!--   L281   Projeto de referência (2026-07-27) -->
+<!--   L287   Fronteira da engine — F7 itens 3-5 decididos (2026-08-07) -->
+<!--   L314   D8 fechada — sem superfície online, e não é adiamento (2026-08-07) -->
+<!--   L333   Pendências / decisões futuras -->
+<!--   L374   F11 — IHM (em andamento, 2026-08-17) -->
+<!--   L459   F13 — objetos de dentro da tela ✅ (2026-08-17) -->
+<!--   L610   F14 — área nova ponta a ponta ✅ (2026-08-18) -->
+<!--   L659   F12 — `sim-diag` camada 1 ✅ (2026-08-17) -->
+<!--   L688   Teste cego ponta a ponta — caderno escrito (2026-08-07) -->
+<!--   L957   F18 — parâmetro de drive SINAMICS ✅ (2026-08-20) -->
+<!--   L977   F19 — objeto tecnológico e instrução do editor ✅ (2026-08-21) -->
+<!--   L1020  Histórico fechado -->
+<!--   L1033  F15 — auditoria externa: P0 fechados ✅ (2026-08-18) -->
+<!--   L1118  F16 — envelope plural de edição por XML (✅ fechada 2026-08-19) -->
+<!--   L1326  F20 — saneamento do programa: achados A5/A6 e §1 a §3 (2026-08-21) -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # PLANO — TIA Portal Openness API (V19+)
@@ -110,6 +111,7 @@ Verbos por fase (nomes finais definidos na F1):
 | F17 | Pendentes da F15 validados no Portal vivo | cada P0 conferido contra projeto real | ✅ 2026-08-19 — [§ F17](#f17--pendentes-da-f15-validados-no-portal-vivo-2026-08-19) |
 | F18 | Parâmetro de drive SINAMICS | ler e escrever `p`/`r` de um G120 | ✅ 2026-08-20 — `list-drive-params` / `set-drive-param`, 5149 parâmetros. [§ F18](#f18--parâmetro-de-drive-sinamics--2026-08-20) |
 | F19 | Objeto tecnológico e instrução do editor | TO criado por código; as 5 abas com caminho provado | ✅ 2026-08-21 — `create-motion`/`delete-motion`/`set-motion-param`; instrução do editor entra por SCL. [§ F19](#f19--objeto-tecnológico-e-instrução-do-editor--2026-08-21) |
+| F20 | Saneamento do programa do PLC (achados A5/A6, §1/§2/§3) | achado fechado com medição ou com decisão registrada | ✅ 2026-08-21 — [§ F20](#f20--saneamento-do-programa-achados-a5a6-e-1-a-3-2026-08-21) |
 
 Regra: **uma fase por vez, commit + handoff no fim de cada uma.** FINAIS vira referência
 read-only — nunca editar lá; extrair pra `src/` e pronto.
@@ -1319,3 +1321,39 @@ Dois aprendizados do caminho:
   **de fora** (a constante de HWID do drive que nunca entrou), e o `ExportFresh` compila só o bloco.
   Ou seja: o bloco que mais interessa salvar antes de apagar é justamente o que não sai. Backup de
   área quebrada é parcial por construção.
+
+
+## F20 — saneamento do programa: achados A5/A6 e §1 a §3 (2026-08-21)
+
+Alvo: `PROJETO-MOLDE_V21` (cópia de trabalho `_1`), PLC `CPU1.0 CCO`. Fecha a fila herdada dos dois
+documentos de achados. Projeto salvo no fim, `compile --apply` do PLC = **Success, 0 erros, 0
+warnings**.
+
+| Achado | Resultado |
+|---|---|
+| **A6** · gêmeos que divergem no rompimento de fio | **Corrigido em parte.** `FB AFERIÇÃO INVERSORES` já tinha `PONTO_ZERO : Int` declarado e nunca usado; o comparador da rede 3 estava no literal `0`. Patch de um `<Access>` no XML → `import-block --apply` → compile 0/0 → `explain-block` mostra `IF "ANALOG_IN_4a20mA" < "PONTO_ZERO"`. Falta o clamp de saída negativa (rede nova em LAD, sem verbo). |
+| **A5** · cinco blocos sem chamador | **Três apagados** (`PROFINET_DEVICE_STATES`, `FB INVERSOR SIEMENS`, `AUX_PID`), backup em `workspace/recovery-a5/`. `FB SETPOINT MANUAL` **voltou**: sem chamador, mas com **36 iDBs** — apagá-lo custou 36 erros de compile e um restore. `FB MODBUS SCAN DRIVERS V1` já não existia no `_1`. |
+| **§1** · cinco áreas com instrumentação inacabada | **Não há o que replicar.** O PLC tem 56 tags de I/O analógico e 17 `_PV_`, e nenhuma pertence às cinco áreas: elas têm motor e **não têm instrumento**. O `INSTRUMENTACAO : Bool` é ausência de hardware, não placeholder de programa. Correção depende de projeto elétrico. |
+| **§2** · área 9 só como dado | **Manter**, decisão do usuário: a área pode entrar em escopo e a IHM pode já apontar para as words. |
+| **§3** · grafia da pasta da biblioteca | **Já fechado**: o repo inteiro (scripts, `library/*.json`, `Audit.cs`, `Inventory.cs`, `PADRAO.md`, `study-map.json`, `CLAUDE.md`) diz `1. FB Bilbiotecas`. A grafia certa só sobrou em documento histórico. |
+| **PID em OB de interrupção cíclica** | **Provado por CLI**, ver abaixo. |
+| **LGF / DriveLib** | **Bloqueado no arquivo**: o SIOS devolve HTTP 403 para o agente (re-medido nesta sessão). O `.zal19` tem que vir do usuário; depois é `retrieve-library --upgrade` + `install-lib`. |
+
+**Caminho do PID em OB3x, todo por CLI** (artefatos `ZZ_TESTE_*` apagados no fim, `find "*ZZ_TESTE*"`
+= 0, o `PID_Compact_1` do usuário intocado):
+
+1. `create-motion --name ZZ_TESTE_PID --type PID_Compact --apply` — versão herdada de um TO do
+   mesmo tipo já no PLC (`versionFrom`).
+2. **A chamada vai em SCL**: `import-source` com `"ZZ_TESTE_PID"();` dentro de um
+   `ORGANIZATION_BLOCK`. `add-call --fb PID_Compact` **não serve** — ele resolve o nome na
+   composição de blocos do PLC e devolve `FB/FC 'PID_Compact' not found.`; escrever o `<Call>` na
+   mão também não fecha (schema recusa `Version` no `CallInfo`; sem versão são 3 erros de compile).
+3. **A classe de evento vem por patch de XML**: a fonte SCL sempre gera `ProgramCycle` (nasceu
+   OB142). `export-block` → `<SecondaryType>CyclicInterrupt</SecondaryType>` + `<Number>30</Number>`
+   + `<AutoNumber>false</AutoNumber>` → `import-block --apply` → compile do PLC **Success 0/0**.
+4. O **tempo de ciclo** do OB não está no XML exportado nem tem verbo: é GUI. Os dois limites novos
+   estão em `docs/LIMITES.md`.
+
+**Aprendizado que muda regra de operação:** `xref` com `UsedBy` vazio prova *sem chamador*, não
+*sem instância*. Antes de `delete-block`, conferir instância com `find --pattern "*<nome>*" --kind
+block`. Foi o que separou os 3 blocos realmente mortos do `FB SETPOINT MANUAL`.

@@ -3,15 +3,15 @@
 <!--   L17    Achados — banho de inconsistência no projeto do PLC (2026-08-19) -->
 <!--   L26    0. O que está são (não mexer) -->
 <!--   L41    1. Cinco áreas com instrumentação inacabada -->
-<!--   L58    2. Área 9 existe só como dado -->
-<!--   L69    3. Nome da pasta da biblioteca: o repo e o projeto discordam -->
-<!--   L85    4. Biblioteca: uma instância e uma versão superada -->
-<!--   L98    5. R8 — lógica pesada em LAD -->
-<!--   L110   6. Hardware -->
-<!--   L124   7. Área %M — observação, não risco -->
-<!--   L134   8. Resíduo e pastas vazias -->
-<!--   L141   9. Sobre o `audit` verde -->
-<!--   L151   Ordem sugerida -->
+<!--   L72    2. Área 9 existe só como dado -->
+<!--   L87    3. Nome da pasta da biblioteca: o repo e o projeto discordam -->
+<!--   L109   4. Biblioteca: uma instância e uma versão superada -->
+<!--   L122   5. R8 — lógica pesada em LAD -->
+<!--   L134   6. Hardware -->
+<!--   L148   7. Área %M — observação, não risco -->
+<!--   L158   8. Resíduo e pastas vazias -->
+<!--   L165   9. Sobre o `audit` verde -->
+<!--   L175   Ordem sugerida -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Achados — banho de inconsistência no projeto do PLC (2026-08-19)
@@ -55,6 +55,20 @@ Ordem de correção por área: criar a tabela em `2. Alarmes/2.N` → trocar o m
 (`add-db-member --member "<AREA>.INSTRUMENTACAO.<TAG>:..."` cria o ramo) → `replicate-instruments`.
 É o pré-requisito 5 de área nova do `CLAUDE.md`, aplicado a área que já existe pela metade.
 
+**MEDIDO 2026-08-21 — não há o que replicar hoje.** Uma 4ª evidência mudou a ordem: as cinco áreas
+**não têm instrumento analógico nenhum no projeto**. O PLC inteiro tem **56 tags de I/O analógico**
+(`%IW`/`%QW`, tabelas `ENTRADAS_ANALOG`/`SAIDAS_ANALOG` de QA-01/02/03) e **17 tags `_PV_`**; delas,
+uma única casa com o vocabulário dessas áreas (`LT-06 … TANQUE_LODO_ADENSADO`, que é da Elevatória
+Lodo Adensado, área já pronta). Os 10 códigos de instrumento com `_PV_` são 9 já dentro de um
+`Struct` do `DB GLOBAL` + 2 sensores de umidade digitais dos biofiltros.
+
+Ou seja: as cinco áreas têm motor (`3. Partidas`) e não têm instrumentação — o `Bool` não é só
+placeholder de programa, é a ausência de hardware. `replicate-instruments` seria no-op limpo, e
+trocar o membro para `Struct` exige inventar pelo menos um membro-folha (`--type Struct` é recusado
+por deixar o DB inconsistente). **A correção real depende de projeto elétrico**: quando os
+instrumentos entrarem, entram tag, pasta de alarme e Struct juntos. Até lá o `Bool` é o registro
+honesto de área sem instrumento.
+
 ## 2. Área 9 existe só como dado
 
 `DB GLOBAL.DECANTADOR_LAMELAR` tem `ALARMES` (WORD_ALARMES_1..5) + `EVENTOS`, 10 folhas, e
@@ -63,6 +77,10 @@ equipamento, nenhuma FC, nenhuma tag.
 
 Ou a área entra no escopo e ganha programa, ou o membro sai (`delete-db-member`). Deixar como
 está gasta 5 words de alarme que ninguém escreve e que a IHM pode ler como zero eterno.
+
+**Decisão do usuário 2026-08-21: manter.** A área pode entrar em escopo depois e a IHM pode já
+apontar para esses endereços; o custo de manter é 5 words, o de apagar errado é contrato de tela.
+Fica como pendência declarada, não como dívida a executar.
 
 Os números de área 11, 16, 17 e 18 não existem em lugar nenhum — buracos limpos, sem dado órfão.
 
@@ -81,6 +99,12 @@ colisão de nome — é a regra do `--folder` completo do `CLAUDE.md`, disparada
 
 Decisão pendente: renomear a pasta no projeto (só pela GUI — não há verbo de rename de pasta) ou
 alinhar o repo à grafia real. Não dá para deixar os dois.
+
+**FECHADO 2026-08-21 — o repo já está alinhado** (decisão D1 de `docs/PLANO-SANEAMENTO-2026-08-19.md`,
+reconfirmada pelo usuário). `scripts/bake-lib.ps1`, `scripts/install-lib.ps1`, `library/generic.json`,
+`library/library.json`, `src/Tia.Core/Audit.cs`, `src/Tia.Core/Inventory.cs`, `docs/PADRAO.md`,
+`docs/study-map.json` e o `CLAUDE.md` dizem `1. FB Bilbiotecas`; `library/packages.json` não nomeia
+a pasta-raiz. A grafia correta sobrou só em documento histórico (`DIARIO.md`, `teste-cego/`, handoffs).
 
 ## 4. Biblioteca: uma instância e uma versão superada
 

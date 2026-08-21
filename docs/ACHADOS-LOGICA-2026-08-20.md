@@ -6,13 +6,13 @@
 <!--   L108   A3 · `FB CONDIÇÃO DE PARTIDA` NW2: ordem das atribuições atrasa a troca de modo em um scan — MÉDIO -->
 <!--   L127   A4 · `FB CONDIÇÃO DE PARTIDA`: saída `STS_INTERTRAVAMENTO_AUTOMATICO` nunca escrita — MÉDIO -->
 <!--   L136   A5 · Cinco blocos sem nenhum chamador — MÉDIO -->
-<!--   L159   A6 · `AFERIÇÃO INSTRUMENTOS` × `AFERIÇÃO INVERSORES`: gêmeos que divergem no rompimento de fio — MÉDIO -->
-<!--   L179   A7 · `FB FILTRO DE AMOSTRAGEM  ANALÍTICA`: comentário diz 4 amostras, código guarda 8 — BAIXO -->
-<!--   L188   A8 · R3 (≤8 parâmetros escalares por FB) violado em massa — BAIXO, estrutural -->
-<!--   L205   A9 · Redes vazias e redes sem bobina — BAIXO -->
-<!--   L214   A10 · `FB VALVULA`: `FECHA_VALVULA` sem intertravamento — BAIXO -->
-<!--   L232   A11 · `FB VALVULA`: `PARAMETRO_ABRE` e `PARAMETRO_FECHA` nunca lidos — MÉDIO -->
-<!--   L249   O que foi conferido e está certo -->
+<!--   L171   A6 · `AFERIÇÃO INSTRUMENTOS` × `AFERIÇÃO INVERSORES`: gêmeos que divergem no rompimento de fio — MÉDIO -->
+<!--   L204   A7 · `FB FILTRO DE AMOSTRAGEM  ANALÍTICA`: comentário diz 4 amostras, código guarda 8 — BAIXO -->
+<!--   L213   A8 · R3 (≤8 parâmetros escalares por FB) violado em massa — BAIXO, estrutural -->
+<!--   L230   A9 · Redes vazias e redes sem bobina — BAIXO -->
+<!--   L239   A10 · `FB VALVULA`: `FECHA_VALVULA` sem intertravamento — BAIXO -->
+<!--   L257   A11 · `FB VALVULA`: `PARAMETRO_ABRE` e `PARAMETRO_FECHA` nunca lidos — MÉDIO -->
+<!--   L274   O que foi conferido e está certo -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Achados de lógica — biblioteca `1. FB Bilbiotecas` (2026-08-20)
@@ -156,6 +156,18 @@ reserva deliberada.
 **Saída:** decisão do usuário. Se são reserva de projeto, ficam; se não, `--force` exporta antes de
 apagar (`workspace/recovery/`).
 
+**RESOLVIDO 2026-08-21** no projeto de trabalho (`_1`), com uma correção da própria tabela:
+**`UsedBy` vazio não quer dizer sem instância.** `FB SETPOINT MANUAL` não é chamado por rede
+nenhuma, mas tem **36 iDBs** espalhados por `4. Motores/Bombas` — apagá-lo derrubou o compile em
+36 erros `Data type 'FB SETPOINT MANUAL' no longer exists`, e o bloco voltou do backup
+(`import-block --folder "1. FB Bilbiotecas/1.3 Instrumentação"`), compile de volta a Success 0/0.
+Antes de apagar bloco, conferir **instância** (`find --pattern "*<nome>*" --kind block`), não só
+chamador.
+
+Apagados de fato, os três sem instância nenhuma: `PROFINET_DEVICE_STATES`, `FB INVERSOR SIEMENS`,
+`AUX_PID` (backup em `workspace/recovery-a5/`; `compile --apply` do PLC = Success, 0 erros,
+0 warnings). `FB MODBUS SCAN DRIVERS V1` já não existia no `_1`.
+
 ## A6 · `AFERIÇÃO INSTRUMENTOS` × `AFERIÇÃO INVERSORES`: gêmeos que divergem no rompimento de fio — MÉDIO
 
 Mesma equação da reta, mesmos pinos de configuração (`X1/X2/Y1/Y2_CONFIG`), o de inversores
@@ -175,6 +187,19 @@ funcionando nos dois — o que diverge é o valor entregue ao programa.
 **Saída:** alinhar o bloco de inversores ao de instrumentos (comparar contra `RANGE_MIN_SEM_4mA`), ou
 fundir os dois num só bloco com `GRANDEZA_MAX` opcional. A LGF (SIOS 109479728) tem escala pronta —
 ler `docs/GUIA-SIEMENS.md` antes de reescrever.
+
+**RESOLVIDO EM PARTE 2026-08-21** no projeto de trabalho (`_1`). O bloco de inversores **já tinha**
+o membro certo declarado: `PONTO_ZERO : Int`, comentado *"Range mínimo do equipamento quando é
+diferente de 0"* e **nunca usado** (1 ocorrência no XML, só a declaração). O comparador da rede 3
+estava preso no literal `0`. Patch = trocar o `<Access Scope="LiteralConstant">` do UId 22 por
+`<Access Scope="LocalVariable"><Component Name="PONTO_ZERO"/>`; nenhum fio muda, a interface não
+muda. `import-block --folder "1. FB Bilbiotecas/1.2 Inversores" --apply` → `compile` Success 0/0 →
+`explain-block` confirma `IF "ANALOG_IN_4a20mA" < "PONTO_ZERO" THEN "ANALOG_OUT_4a20mA" := 0.0`.
+
+**Pendente:** o clamp de saída negativa da rede 2 (`IF ANALOG_OUT < 0.0 THEN 0.0`), que o gêmeo tem
+e este não. É **rede nova em LAD**, e não há verbo que a escreva (`add-call` só monta chamada) —
+ou é GUI, ou é FlgNet na mão, que o `CLAUDE.md` proíbe. Sem urgência: o bloco tem **0 instâncias**
+no projeto, o que também explica a divergência ter sobrevivido.
 
 ## A7 · `FB FILTRO DE AMOSTRAGEM  ANALÍTICA`: comentário diz 4 amostras, código guarda 8 — BAIXO
 

@@ -21,9 +21,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Conferir o token
+        env:
+          GH_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+        run: |
+          test -n "$GH_TOKEN" && echo "TRAFFIC_TOKEN presente" || echo "TRAFFIC_TOKEN VAZIO"
+          gh api repos/${{ github.repository }} --jq '.permissions' || true
+
       - name: Ler o tráfego
         env:
-          GH_TOKEN: ${{ secrets.TRAFFIC_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
           TRAFFIC_REPO: ${{ github.repository }}
         run: python scripts/traffic-log.py
 

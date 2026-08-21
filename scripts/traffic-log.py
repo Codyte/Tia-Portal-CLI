@@ -12,7 +12,9 @@ Saída em `docs/traffic/`:
   daily.csv      — uma linha por dia: views, visitantes únicos, clones, clonadores únicos
   referrers.csv  — instantâneo diário de quem manda gente para cá (a API não dá histórico)
 
-Clone é métrica poluída por bot e mirror de CI. A medida honesta de gente é `unique_views`.
+Clone é métrica poluída por bot e mirror de CI. A medida honesta de gente é `unique_views`,
+que o GitHub deduplica na janela inteira: o dono do repo conta como 1 visitante nos 14 dias,
+não como 1 por dia. Já `views` sobe a cada F5 seu — é a coluna que mais mente.
 """
 
 import argparse

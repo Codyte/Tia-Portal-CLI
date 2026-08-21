@@ -3,9 +3,10 @@ name: traffic
 # A API de tráfego do GitHub só guarda 14 dias. Este workflow lê todo dia e dá append em
 # docs/traffic/*.csv, que é o único lugar onde a série histórica vai existir.
 #
-# Precisa de um PAT em `secrets.TRAFFIC_TOKEN` com escopo `repo` (fine-grained: Administration
-# read + Contents write): a API de tráfego exige push, e o GITHUB_TOKEN padrão do runner leva 403.
-# Sem o secret, o job usa o GITHUB_TOKEN e falha alto — que é o certo, em vez de gravar CSV vazio.
+# Precisa de um PAT em `secrets.TRAFFIC_TOKEN` (fine-grained: Administration read neste repo):
+# a API de tráfego exige permissão de admin, e o GITHUB_TOKEN do runner leva 403 nela. O `git push`
+# do último step é outro token — o do checkout — e é dele que vem o `permissions: contents: write`.
+# Secret ausente ou vazio derruba o job, que é o certo: pior que job vermelho é CSV vazio calado.
 
 on:
   schedule:

@@ -210,6 +210,15 @@ São 8 amostras num ciclo de 100 incrementos.
 É também o candidato mais direto a virar biblioteca oficial: média móvel é bloco pronto na LGF, e
 manter 8 redes de `Move` indexado é dívida sem ganho.
 
+**Veredito (2026-08-21, depois de medir): LGF em aplicação nova, o existente fica.** O bloco tem
+**16 iDBs** e é chamado **14 vezes em 13 FCs `*_ANALOGS`** — uma delas é `MOLDE_ANALOGS`, o molde
+do `replicate-instruments`. `LGF_FloatingAverage` tem outra interface, então a troca não é
+`import-block`: seria reescrever a rede de chamada no molde, regenerar as 13 FCs replicadas,
+recriar os 16 iDBs (nome de iDB é o que a IHM e as tabelas de tag endereçam) e reconferir tudo que
+lê esses iDBs. Custo de refactor com programa rodando, contra o ganho de trocar um bloco que
+funciona. `LGF_FloatingAverage` está instalado em `1. FB Bilbiotecas/1.3 Instrumentação` — é o que
+se usa na próxima aplicação de média móvel.
+
 ## A8 · R3 (≤8 parâmetros escalares por FB) violado em massa — BAIXO, estrutural
 
 | Bloco | Escalares |

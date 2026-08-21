@@ -6,26 +6,26 @@
 <!--   L56    Delimitações — o que a API NÃO é -->
 <!--   L63    Arquitetura -->
 <!--   L86    Fases -->
-<!--   L119   Verificação (cada fase) -->
-<!--   L127   Economia de tokens (regras da sessão) -->
-<!--   L139   Skills em uso (nada novo pra instalar) -->
-<!--   L150   Ambiente (descoberto na F1) -->
-<!--   L178   Backlog v2 (cobertura Openness — priorizado) -->
-<!--   L281   Projeto de referência (2026-07-27) -->
-<!--   L287   Fronteira da engine — F7 itens 3-5 decididos (2026-08-07) -->
-<!--   L314   D8 fechada — sem superfície online, e não é adiamento (2026-08-07) -->
-<!--   L333   Pendências / decisões futuras -->
-<!--   L374   F11 — IHM (em andamento, 2026-08-17) -->
-<!--   L459   F13 — objetos de dentro da tela ✅ (2026-08-17) -->
-<!--   L610   F14 — área nova ponta a ponta ✅ (2026-08-18) -->
-<!--   L659   F12 — `sim-diag` camada 1 ✅ (2026-08-17) -->
-<!--   L688   Teste cego ponta a ponta — caderno escrito (2026-08-07) -->
-<!--   L957   F18 — parâmetro de drive SINAMICS ✅ (2026-08-20) -->
-<!--   L977   F19 — objeto tecnológico e instrução do editor ✅ (2026-08-21) -->
-<!--   L1020  Histórico fechado -->
-<!--   L1033  F15 — auditoria externa: P0 fechados ✅ (2026-08-18) -->
-<!--   L1118  F16 — envelope plural de edição por XML (✅ fechada 2026-08-19) -->
-<!--   L1326  F20 — saneamento do programa: achados A5/A6 e §1 a §3 (2026-08-21) -->
+<!--   L120   Verificação (cada fase) -->
+<!--   L128   Economia de tokens (regras da sessão) -->
+<!--   L140   Skills em uso (nada novo pra instalar) -->
+<!--   L151   Ambiente (descoberto na F1) -->
+<!--   L179   Backlog v2 (cobertura Openness — priorizado) -->
+<!--   L282   Projeto de referência (2026-07-27) -->
+<!--   L288   Fronteira da engine — F7 itens 3-5 decididos (2026-08-07) -->
+<!--   L315   D8 fechada — sem superfície online, e não é adiamento (2026-08-07) -->
+<!--   L334   Pendências / decisões futuras -->
+<!--   L375   F11 — IHM (em andamento, 2026-08-17) -->
+<!--   L460   F13 — objetos de dentro da tela ✅ (2026-08-17) -->
+<!--   L611   F14 — área nova ponta a ponta ✅ (2026-08-18) -->
+<!--   L660   F12 — `sim-diag` camada 1 ✅ (2026-08-17) -->
+<!--   L689   Teste cego ponta a ponta — caderno escrito (2026-08-07) -->
+<!--   L958   F18 — parâmetro de drive SINAMICS ✅ (2026-08-20) -->
+<!--   L978   F19 — objeto tecnológico e instrução do editor ✅ (2026-08-21) -->
+<!--   L1021  Histórico fechado -->
+<!--   L1034  F15 — auditoria externa: P0 fechados ✅ (2026-08-18) -->
+<!--   L1119  F16 — envelope plural de edição por XML (✅ fechada 2026-08-19) -->
+<!--   L1327  F20 — saneamento do programa: achados A5/A6 e §1 a §3 (2026-08-21) -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # PLANO — TIA Portal Openness API (V19+)
@@ -112,6 +112,7 @@ Verbos por fase (nomes finais definidos na F1):
 | F18 | Parâmetro de drive SINAMICS | ler e escrever `p`/`r` de um G120 | ✅ 2026-08-20 — `list-drive-params` / `set-drive-param`, 5149 parâmetros. [§ F18](#f18--parâmetro-de-drive-sinamics--2026-08-20) |
 | F19 | Objeto tecnológico e instrução do editor | TO criado por código; as 5 abas com caminho provado | ✅ 2026-08-21 — `create-motion`/`delete-motion`/`set-motion-param`; instrução do editor entra por SCL. [§ F19](#f19--objeto-tecnológico-e-instrução-do-editor--2026-08-21) |
 | F20 | Saneamento do programa do PLC (achados A5/A6, §1/§2/§3) | achado fechado com medição ou com decisão registrada | ✅ 2026-08-21 — [§ F20](#f20--saneamento-do-programa-achados-a5a6-e-1-a-3-2026-08-21) |
+| F21 | Prateleira LGF e veredito do A7 | biblioteca instalada, achado decidido com medição | ✅ 2026-08-21 — 4 blocos LGF na pasta 1.3, `audit` 10/10; A7 fica como está (16 iDBs, 14 chamadas). [§ F21](#f21--prateleira-lgf-montada-e-o-a7-medido-2026-08-21) |
 
 Regra: **uma fase por vez, commit + handoff no fim de cada uma.** FINAIS vira referência
 read-only — nunca editar lá; extrair pra `src/` e pronto.
@@ -1382,3 +1383,19 @@ Portal traz sozinho. Provado no projeto-molde: `LGF_ScaleLinear` **3.0.1** entro
 **Os dois pacotes V21 do SIOS chegam em `.zip` com o `.al21` dentro, não em `.zal1x`**: descompactar
 e apontar o `--file` para o `.al21`. `retrieve-library` continua sendo para o `.zal19` (V19), que é
 o outro download da mesma página.
+
+
+### F21 · Prateleira LGF montada, e o A7 medido (2026-08-21)
+
+Um `run --script` de 6 steps, **um attach de 307 ms e 16,5 s no total**: os três blocos que faltavam
+da LGF instalados em `1. FB Bilbiotecas/1.3 Instrumentação` — `LGF_FloatingAverage` (FB),
+`LGF_AverageAndDeviation` (FC) e `LGF_RampCI` (FB) — mais `compile --apply` e `audit`. Com o
+`LGF_ScaleLinear` da F20 são **4 blocos de biblioteca oficial** na pasta, `audit` **10/10** com
+`complete: true` e projeto salvo.
+
+**O A7 foi medido antes de decidir, e a medida mudou o veredito.** `FB FILTRO DE AMOSTRAGEM
+ANALÍTICA` tem **16 iDBs** e **14 chamadas em 13 FCs `*_ANALOGS`**, uma delas o `MOLDE_ANALOGS` do
+`replicate-instruments`. Trocar por `LGF_FloatingAverage` — interface diferente — seria reescrever
+a rede do molde, regenerar as 13 FCs, recriar os 16 iDBs (que a IHM endereça pelo nome) e reconferir
+quem lê. **Decisão: LGF em aplicação nova; o que roda fica.** O bloco está na prateleira para o
+próximo caso, que é o ponto de instalar biblioteca antes de precisar dela.

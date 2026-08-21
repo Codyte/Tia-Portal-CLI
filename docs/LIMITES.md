@@ -53,6 +53,7 @@ ausência usada aqui.
 | Limite | Natureza | Saída |
 |---|---|---|
 | **Objeto tecnológico (eixo, came, cinemática, PID) não pode ser criado.** `TechnologicalInstanceDBComposition` não tem `Create`. | Limite de API | TO nasce na GUI ou vem no import do projeto. `list-motion` lê o que existe. |
+| **Parâmetro de objeto tecnológico não pode ser escrito.** `TechnologicalParameter.Value` é read-only: `EngineeringNotSupportedException` — `'set_Value' is not supported by type '...TechnologicalParameter'. The property 'Value' is read-only.` `SetAttribute("Value", x)` cai no mesmo `set_Value` (medido 2026-08-21 num `PID_Compact` V3.0 do projeto-molde, parâmetro `Retain.CtrlParams.Gain`). | Limite de API | Ajuste de PID/eixo é GUI ou lógica no programa (escrever no iDB do TO em runtime). `list-motion --params` lê os 86 parâmetros do PID_Compact; o verbo de escrita foi tentado e desfeito. |
 | **`Remanence` em iDB é recusado.** | Limite de API | Retentividade se declara no FB: `set-retain --block <FB> --member M`. `import-source` também não expressa retentividade. |
 | **Openness não move bloco entre pastas.** | Limite de API | `move-block` faz export de todos → delete → import no destino. |
 | **Bloco inconsistente não exporta.** Todo import deixa o alvo inconsistente. | Limite de API | `Ops.ExportFresh` compila só o alvo e segue — já embutido nos 16 exports. Sobra o caso de inconsistência **externa** (UDT/DB que o bloco usa), que exige `compile --apply`. |

@@ -1,4 +1,4 @@
-// ====================== BEGIN NAV INDEX ======================
+﻿// ====================== BEGIN NAV INDEX ======================
 // NAV INDEX — auto-generated symbol map (refresh via the navindex skill)
 //   L27    class Motion
 //   L31    .List
@@ -19,7 +19,9 @@ namespace Tia.Core
     /// Objetos tecnológicos de movimento (eixo, came, cinemática) — read-only.
     ///
     /// Por que só leitura: a composição do Openness (`TechnologicalInstanceDBComposition`) não expõe
-    /// Create. TO nasce na GUI ou vem junto no import de projeto/biblioteca; o que o CLI faz é dizer
+    /// Create, e `TechnologicalParameter.Value` é read-only — `set_Value` levanta
+    /// `EngineeringNotSupportedException`, e `SetAttribute("Value", x)` cai no mesmo setter
+    /// (medido 2026-08-21 num PID_Compact V3.0; `docs/LIMITES.md`). Não há verbo de escrita aqui. TO nasce na GUI ou vem junto no import de projeto/biblioteca; o que o CLI faz é dizer
     /// o que existe, de que tipo, em que versão e com que parâmetros — que é o que um agente precisa
     /// antes de escrever `MC_*`. O vínculo TO↔drive se faz por
     /// `AxisEncoderHardwareConnection.Connect(Telegram)` (assembly Startdrive), fora deste verbo.

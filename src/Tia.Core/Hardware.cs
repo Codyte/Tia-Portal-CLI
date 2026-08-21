@@ -46,6 +46,7 @@
 // ======================= END NAV INDEX =======================
 
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -662,12 +663,30 @@ namespace Tia.Core
         }
 
         /// <summary>String da linha de comando → o tipo que o atributo já tem (enum inclusive).</summary>
-        internal static object Coerce(string value, object current)
+        public static object Coerce(string value, object current)
         {
             if (current == null) return value;
             var type = current.GetType();
             if (type.IsEnum) return Enum.Parse(type, value, true);
-            return Convert.ChangeType(value, type);
+            return Convert.ChangeType(Decimalize(value, type), type, CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
+        /// CULT-01: `Convert.ChangeType` sem provider usa a cultura corrente. Em pt-BR o ponto e'
+        /// separador de milhar, entao `--value 2.5` num Real virava **25** — escrita silenciosa de
+        /// valor errado, medida no `set-motion-param` do PID_Compact. Numero passa a entrar sempre
+        /// invariante, com a virgula decimal aceita como sinonimo do ponto (quem digita `2,5` no
+        /// teclado pt-BR quer 2,5); dois separadores no mesmo numero e' ambiguidade, nao conversao.
+        /// </summary>
+        private static string Decimalize(string value, Type type)
+        {
+            var code = Type.GetTypeCode(type);
+            if (code != TypeCode.Single && code != TypeCode.Double && code != TypeCode.Decimal)
+                return value;
+            var normalized = value.Replace(',', '.');
+            if (normalized.Split('.').Length > 2)
+                throw new FormatException("Value '" + value + "' has more than one decimal separator.");
+            return normalized;
         }
 
         /// <summary>

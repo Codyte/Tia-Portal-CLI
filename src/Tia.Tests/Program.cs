@@ -126,6 +126,7 @@ namespace Tia.Tests
                 { "Sim.DownloadState", Sim_DownloadState },
                 { "Sim.AccessPointGuard", Sim_AccessPointGuard },
                 { "Cli.BusyWords", Cli_BusyWords },
+                { "Hardware.Coerce", Hardware_Coerce },
             };
             foreach (var t in tests)
             {
@@ -1167,6 +1168,28 @@ namespace Tia.Tests
                 "bool de nome parecido fora da lista NAO liga (era o que virava true no escuro)");
             Check(!Tia.Core.Hardware.IsEnableAttribute("ClockMemoryByteAddress"),
                 "campo de endereco nao e' o bool de ligar");
+        }
+
+        /// <summary>
+        /// CULT-01: em pt-BR (a cultura da maquina) `Convert.ChangeType` lia o ponto de "2.5" como
+        /// separador de milhar e gravava 25 — medido no `set-motion-param` do PID_Compact.
+        /// </summary>
+        private static void Hardware_Coerce()
+        {
+            var br = new System.Globalization.CultureInfo("pt-BR");
+            var before = System.Threading.Thread.CurrentThread.CurrentCulture;
+            System.Threading.Thread.CurrentThread.CurrentCulture = br;
+            try
+            {
+                Check((float)Tia.Core.Hardware.Coerce("2.5", 1f) == 2.5f, "ponto decimal em cultura pt-BR (era 25)");
+                Check((float)Tia.Core.Hardware.Coerce("2,5", 1f) == 2.5f, "virgula decimal vale o mesmo");
+                Check((double)Tia.Core.Hardware.Coerce("-0.75", 1d) == -0.75d, "negativo com ponto");
+                Check((int)Tia.Core.Hardware.Coerce("120", 1) == 120, "inteiro intacto");
+                Check((string)Tia.Core.Hardware.Coerce("1.2.3", "x") == "1.2.3", "string nao e' numero: passa inteira");
+                Check(Throws(() => Tia.Core.Hardware.Coerce("1.2.3", 1f)),
+                    "dois separadores num Real e' ambiguidade, nao conversao");
+            }
+            finally { System.Threading.Thread.CurrentThread.CurrentCulture = before; }
         }
 
         /// <summary>PLC-03: a mensagem de instância vazia cita o estado do download que "deu certo".</summary>

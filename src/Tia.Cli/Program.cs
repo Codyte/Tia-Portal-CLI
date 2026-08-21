@@ -248,6 +248,10 @@ namespace Tia.Cli
                         "list-motion [--like X] [--params]  (objetos tecnológicos: eixo, came, cinemática — "
                             + "nome, tipo (TO_PositioningAxis...) e versão; --params traz os parâmetros, "
                             + "centenas por eixo. Read-only: o Openness não cria TO)",
+                        "set-motion-param --name TO --param P --value V [--apply]  (grava parametro de "
+                            + "objeto tecnologico; parametro sem acesso de escrita levanta na tentativa "
+                            + "- os de Config aceitam, os de Retain nao. TO fica inconsistente ate "
+                            + "compile --apply e o valor chega ao PLC no download)",
                         "export-block --name X [--out DIR]", "export-tags --table X [--out DIR]",
                         "explain-block --name X | --file F.xml  (LAD/FBD → texto compacto; --file roda sem TIA)",
                         "list-interface [--folder A/B] [--name X] [--file F.xml] [--out DIR]  "
@@ -854,6 +858,12 @@ namespace Tia.Cli
                     case "list-motion":
                         result = Core.Motion.List(session, session.GetPlc(plcName),
                             OptionValue(args, "--like"), args.Contains("--params"));
+                        break;
+                    case "set-motion-param":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Motion.SetParam(session, session.GetPlc(plcName),
+                                Require(args, "--name"), Require(args, "--param"),
+                                Require(args, "--value"), apply);
                         break;
                     case "free-memory":
                         result = Core.Memory.FreeM(session.GetPlc(plcName),

@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Siemens.Engineering.SW;
 using Siemens.Engineering.SW.TechnologicalObjects;
@@ -64,6 +65,84 @@ namespace Tia.Core
             }
             foreach (TechnologicalInstanceDBUserGroup sub in group.Groups)
                 Collect(sub, path.Length == 0 ? sub.Name : path + "/" + sub.Name, like, withParams, into);
+        }
+
+        /// <summary>
+        /// Escreve um parâmetro do TO. A doc oficial (TOOpennessenUS/.../95763532171) faz exatamente
+        /// isso — `parameter.Value = value` — e avisa: parâmetro **sem acesso de escrita** levanta.
+        /// Medido num PID_Compact V3.0: `Retain.CtrlParams.Gain` recusa (`set_Value ... read-only`),
+        /// e a recusa só aparece na tentativa — não há atributo que declare a gravabilidade antes.
+        /// Daí a mensagem traduzir o erro do Openness em vez de prometer no dry-run.
+        /// É valor de projeto: chega ao PLC no download, e o TO fica inconsistente até o compile.
+        /// </summary>
+        public static object SetParam(TiaSession session, PlcSoftware plc, string toName,
+            string parameterName, string value, bool apply)
+        {
+            var to = Find(plc.TechnologicalObjectGroup, toName);
+            if (to == null)
+                throw new InvalidOperationException("Technology object '" + toName + "' not found in '"
+                    + plc.Name + "'. Run tia list-motion.");
+
+            TechnologicalParameter found = null;
+            foreach (TechnologicalParameter p in to.Parameters)
+                if (string.Equals(Safe(() => p.Name), parameterName, StringComparison.OrdinalIgnoreCase))
+                { found = p; break; }
+            if (found == null)
+                throw new InvalidOperationException("Parameter '" + parameterName + "' not found in '"
+                    + to.Name + "'. Run tia list-motion --like " + to.Name + " --params.");
+
+            object current;
+            try { current = found.Value; }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Parameter '" + parameterName + "' is unreadable ("
+                    + (ex.InnerException ?? ex).Message + "). Without the current value the target type "
+                    + "cannot be proven — refusing to set.");
+            }
+            if (current == null)
+                throw new InvalidOperationException("Parameter '" + parameterName
+                    + "' reads null — no current value, so no type to write against.");
+
+            var parsed = Hardware.Coerce(value, current);
+            var same = Equals(parsed, current);
+            var result = new Dictionary<string, object>
+            {
+                { "plc", plc.Name },
+                { "technologyObject", to.Name },
+                { "type", Safe(() => to.OfSystemLibElement) },
+                { "parameter", parameterName },
+                { "from", current },
+                { "to", parsed },
+                { "action", same ? "none (already set)" : "set" },
+                { "applied", apply },
+            };
+            if (apply && !same)
+            {
+                try { found.Value = parsed; }
+                catch (Exception ex)
+                {
+                    var message = (ex.InnerException ?? ex).Message;
+                    throw new InvalidOperationException("Parameter '" + parameterName + "' of '" + to.Name
+                        + "' does not provide write access: " + message
+                        + " Nem todo parametro de TO e' gravavel (a doc do Openness diz que a recusa so'"
+                        + " aparece na tentativa); os de configuracao aceitam, os de Retain/runtime nao.");
+                }
+                result["verified"] = Safe(() => Convert.ToString(found.Value, CultureInfo.InvariantCulture));
+                result["note"] = "TO inconsistente ate `tia compile --apply`; valor chega ao PLC no download.";
+            }
+            return result;
+        }
+
+        private static TechnologicalInstanceDB Find(TechnologicalInstanceDBGroup group, string name)
+        {
+            foreach (TechnologicalInstanceDB to in group.TechnologicalObjects)
+                if (string.Equals(to.Name, name, StringComparison.OrdinalIgnoreCase)) return to;
+            foreach (TechnologicalInstanceDBUserGroup sub in group.Groups)
+            {
+                var hit = Find(sub, name);
+                if (hit != null) return hit;
+            }
+            return null;
         }
 
         private static List<object> Parameters(TechnologicalInstanceDB to)

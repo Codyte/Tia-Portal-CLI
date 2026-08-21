@@ -246,6 +246,12 @@ def search(base, name, out, term, limit):
     words = [re.compile(re.escape(w), re.I) for w in term.split()]
     with open(out, encoding="utf-8") as fh:
         hits = [l.rstrip('\\n') for l in fh if all(w.search(l) for w in words)]
+    # ponytail: nome curto de instrução afogava em substring — "TON" casa dentro de "Button" e
+    # "autonegotiation", e os 828 hits saíam com o tópico certo fora das 15 primeiras linhas.
+    # Título de instrução tem forma fixa ("TON: Generate on-delay (S7-1500)"), então o que começa
+    # pelo termo sobe. Só reordena: nada é filtrado, e `hits` continua sendo o total casado.
+    head = re.compile(r"\|\s*" + re.escape(term) + r"\s*[:(]", re.I)
+    hits.sort(key=lambda l: 0 if head.search(l) else 1)
     return hits[:limit], len(hits)
 
 

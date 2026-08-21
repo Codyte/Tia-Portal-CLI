@@ -3,16 +3,16 @@
 <!--   L18    Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao) -->
 <!--   L22    session -->
 <!--   L28    read -->
-<!--   L58    structure -->
-<!--   L69    hardware -->
-<!--   L87    write -->
-<!--   L114   library -->
-<!--   L122   multiuser -->
-<!--   L125   bulk -->
-<!--   L130   batch -->
-<!--   L133   sim -->
-<!--   L137   meta -->
-<!--   L140   notas -->
+<!--   L60    structure -->
+<!--   L71    hardware -->
+<!--   L89    write -->
+<!--   L116   library -->
+<!--   L124   multiuser -->
+<!--   L127   bulk -->
+<!--   L132   batch -->
+<!--   L135   sim -->
+<!--   L139   meta -->
+<!--   L142   notas -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # Verbos do `tia` (gerado por `scripts/gen-verbs.ps1` — nao editar a mao)
@@ -47,6 +47,8 @@
 - `set-screen-items --screen "Pasta/Sub/Tela" [--set "Nome:x=530,y=356"] [--remove Nome] [--rename Velho=Novo] [--rename-from-tag] [--group NOME=x,y,w,h] [--device X] [--apply]  (todos repetíveis, um export e um import para N edições — import de tela custa 20-170 s. --set move/redimensiona (x,y,w,h em qualquer combinação); --remove apaga; --rename dá nome auto-descritivo no lugar do contador do editor (Switch_18 -> BF-01-EC-01_CMD_LIGA); --rename-from-tag faz isso na tela inteira, tirando o nome da própria tag a partir do 1º código de equipamento (objeto SEM tag fica com o nome do editor: batizar seria adivinhação; é idempotente e o que não dá vai p/ `skippedRename` com o motivo); --group embrulha num Hmi.Screen.Group os objetos INTEIRAMENTE contidos na região, sem mexer em geometria (coordenada de filho é absoluta). Ordem fixa: set, remove, rename, group. Nome ausente vai p/ `missing` e os outros seguem; nome repetido na tela é erro)`
 - `copy-screen-items --from-screen "<molde>" --region x,y,w,h --screen "<destino>" --at x,y [--replace BF-01=BF-05] [--device X] [--apply]  (estampa: copia os objetos INTEIRAMENTE contidos na região, deslocados, renumerando ID e desduplicando ObjectName. Não há catálogo de estampas no CLI — cada tela da casa tem seu dialeto, então o grupo sai da tela que serve de molde)`
 - `list-motion [--like X] [--params]  (objetos tecnológicos: eixo, came, cinemática — nome, tipo (TO_PositioningAxis...) e versão; --params traz os parâmetros, centenas por eixo. Read-only: o Openness não cria TO)`
+- `create-motion --name X --type PID_Compact [--version 3.0] [--folder A/B] [--apply]  (cria objeto tecnologico; sem --version herda a de um TO do mesmo tipo no PLC. Tipo/versao validos: topico F1 'Overview of technology objects and versions')`
+- `delete-motion --name X [--apply] [--no-backup]  (apaga objeto tecnologico; o XML vai para workspace/recovery/ antes, e export que falha aborta o delete)`
 - `set-motion-param --name TO --param P --value V [--apply]  (grava parametro de objeto tecnologico; parametro sem acesso de escrita levanta na tentativa - os de Config aceitam, os de Retain nao. TO fica inconsistente ate compile --apply e o valor chega ao PLC no download)`
 - `export-block --name X [--out DIR]`
 - `export-tags --table X [--out DIR]`

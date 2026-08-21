@@ -248,6 +248,11 @@ namespace Tia.Cli
                         "list-motion [--like X] [--params]  (objetos tecnológicos: eixo, came, cinemática — "
                             + "nome, tipo (TO_PositioningAxis...) e versão; --params traz os parâmetros, "
                             + "centenas por eixo. Read-only: o Openness não cria TO)",
+                        "create-motion --name X --type PID_Compact [--version 3.0] [--folder A/B] [--apply]  "
+                            + "(cria objeto tecnologico; sem --version herda a de um TO do mesmo tipo no PLC. "
+                            + "Tipo/versao validos: topico F1 'Overview of technology objects and versions')",
+                        "delete-motion --name X [--apply] [--no-backup]  (apaga objeto tecnologico; "
+                            + "o XML vai para workspace/recovery/ antes, e export que falha aborta o delete)",
                         "set-motion-param --name TO --param P --value V [--apply]  (grava parametro de "
                             + "objeto tecnologico; parametro sem acesso de escrita levanta na tentativa "
                             + "- os de Config aceitam, os de Retain nao. TO fica inconsistente ate "
@@ -858,6 +863,17 @@ namespace Tia.Cli
                     case "list-motion":
                         result = Core.Motion.List(session, session.GetPlc(plcName),
                             OptionValue(args, "--like"), args.Contains("--params"));
+                        break;
+                    case "create-motion":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Motion.Create(session, session.GetPlc(plcName),
+                                Require(args, "--name"), Require(args, "--type"),
+                                OptionValue(args, "--version"), OptionValue(args, "--folder"), apply);
+                        break;
+                    case "delete-motion":
+                        using (WriteLock(session, apply, verb))
+                            result = Core.Motion.Delete(session, session.GetPlc(plcName),
+                                Require(args, "--name"), apply);
                         break;
                     case "set-motion-param":
                         using (WriteLock(session, apply, verb))

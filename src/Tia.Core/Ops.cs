@@ -686,6 +686,14 @@ namespace Tia.Core
                 table.Export(new FileInfo(ExportPath(dir, table.Name)), ExportOptions.WithDefaults);
                 return;
             }
+            var to = obj as Siemens.Engineering.SW.TechnologicalObjects.TechnologicalInstanceDB;
+            if (to != null)
+            {
+                // TO exporta direto: não passa pelo ExportFresh porque não é PlcBlock e o compile
+                // de bloco não o alcança.
+                to.Export(new FileInfo(ExportPath(dir, to.Name)), ExportOptions.WithDefaults);
+                return;
+            }
             var group = obj as PlcBlockGroup;
             if (group != null) { BackupGroup(dir, group); return; }
             throw new InvalidOperationException("Backup não sabe exportar " + obj.GetType().Name

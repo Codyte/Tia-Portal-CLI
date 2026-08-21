@@ -133,6 +133,106 @@ namespace Tia.Core
             return result;
         }
 
+        /// <summary>
+        /// Cria um TO. `TechnologicalInstanceDBComposition.Create(nome, tipo, Version)` existe desde
+        /// sempre — a doc é `TOOpennessenUS/.../95672631819` — e só aceita os tipos da tabela
+        /// *Overview of technology objects and versions* (`PID_Compact`, `TO_PositioningAxis`,
+        /// `High_Speed_Counter`, …): tipo ou versão fora dela levanta, e a mensagem do Portal é o
+        /// diagnóstico. Sem `--version`, herda a versão de um TO do mesmo tipo já no PLC — que é o
+        /// caso de replicar o molde feito na GUI; sem molde, a versão é obrigatória porque a API não
+        /// tem catálogo para consultar.
+        /// </summary>
+        public static object Create(TiaSession session, PlcSoftware plc, string name, string type,
+            string version, string folder, bool apply)
+        {
+            if (Find(plc.TechnologicalObjectGroup, name) != null)
+                throw new InvalidOperationException("Technology object '" + name + "' already exists in '"
+                    + plc.Name + "'.");
+
+            var resolved = version;
+            string versionFrom = null;
+            if (resolved == null)
+            {
+                foreach (var peer in All(plc.TechnologicalObjectGroup))
+                    if (string.Equals(Safe(() => peer.OfSystemLibElement), type, StringComparison.OrdinalIgnoreCase))
+                    { resolved = Safe(() => Convert.ToString(peer.OfSystemLibVersion)); versionFrom = peer.Name; break; }
+                if (resolved == null)
+                    throw new InvalidOperationException("No '" + type + "' in '" + plc.Name
+                        + "' to take the version from — pass --version (e.g. 3.0). The Openness API has no "
+                        + "version catalogue: the valid pairs are in the F1 topic "
+                        + "'Overview of technology objects and versions'.");
+            }
+
+            var result = new Dictionary<string, object>
+            {
+                { "plc", plc.Name },
+                { "name", name },
+                { "type", type },
+                { "version", resolved },
+                { "versionFrom", versionFrom },
+                { "folder", folder },
+                { "applied", apply },
+            };
+            if (!apply) return result;
+
+            var group = folder == null ? plc.TechnologicalObjectGroup : Group(plc.TechnologicalObjectGroup, folder);
+            var created = group.TechnologicalObjects.Create(name, type, new Version(resolved));
+            result["created"] = created.Name;
+            result["note"] = "TO inconsistente ate `tia compile --apply`; parametro se escreve com set-motion-param.";
+            return result;
+        }
+
+
+        /// <summary>
+        /// Apaga um TO (`technologicalObject.Delete()`, doc `TOOpennessenUS/.../95672068875`).
+        /// Passa pelo backup da casa: o XML do TO vai para `workspace/recovery/` antes, e export que
+        /// falha aborta o delete — apagar sem rede é `--no-backup`, dito por escrito.
+        /// </summary>
+        public static object Delete(TiaSession session, PlcSoftware plc, string name, bool apply)
+        {
+            var to = Find(plc.TechnologicalObjectGroup, name);
+            if (to == null)
+                throw new InvalidOperationException("Technology object '" + name + "' not found in '"
+                    + plc.Name + "'. Run tia list-motion.");
+            var result = new Dictionary<string, object>
+            {
+                { "plc", plc.Name },
+                { "name", to.Name },
+                { "type", Safe(() => to.OfSystemLibElement) },
+                { "version", Safe(() => Convert.ToString(to.OfSystemLibVersion)) },
+                { "applied", apply },
+            };
+            if (apply)
+            {
+                Ops.Backup(to);
+                to.Delete();
+                result["recoveryDir"] = Ops.RecoveryDir;
+                result["note"] = "Bloco que chamava o TO fica inconsistente ate `tia compile --apply`.";
+            }
+            return result;
+        }
+
+        /// <summary>Caminho completo a partir da raiz, como todo --folder de import do CLI.</summary>
+        private static TechnologicalInstanceDBGroup Group(TechnologicalInstanceDBGroup root, string folder)
+        {
+            var current = root;
+            foreach (var part in Ops.SplitPath(folder))
+            {
+                TechnologicalInstanceDBUserGroup hit = null;
+                foreach (TechnologicalInstanceDBUserGroup sub in current.Groups)
+                    if (string.Equals(sub.Name, part, StringComparison.OrdinalIgnoreCase)) { hit = sub; break; }
+                current = hit ?? current.Groups.Create(part);
+            }
+            return current;
+        }
+
+        private static IEnumerable<TechnologicalInstanceDB> All(TechnologicalInstanceDBGroup group)
+        {
+            foreach (TechnologicalInstanceDB to in group.TechnologicalObjects) yield return to;
+            foreach (TechnologicalInstanceDBUserGroup sub in group.Groups)
+                foreach (var to in All(sub)) yield return to;
+        }
+
         private static TechnologicalInstanceDB Find(TechnologicalInstanceDBGroup group, string name)
         {
             foreach (TechnologicalInstanceDB to in group.TechnologicalObjects)

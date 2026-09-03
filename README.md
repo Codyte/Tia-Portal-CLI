@@ -7,7 +7,7 @@
 **Let an AI agent program for you.**
 
 *AI-assisted PLC programming on your own machine — S7-1500, S7-1200, ET 200, SINAMICS drives, WinCC
-HMI, any device TIA Portal supports. 161 command-line verbs over the Siemens Openness API, JSON in
+HMI, any device TIA Portal supports. 240+ command-line verbs over the Siemens Openness API, JSON in
 and out, nothing written without an explicit `--apply`. Runs offline and on-premise — no cloud, no
 account, your project never leaves your computer.*
 

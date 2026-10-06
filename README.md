@@ -2,121 +2,171 @@
 
 <img src="docs/assets/mascot.png" width="170" alt="tia-cli mascot — an industrial control module whose face is a terminal prompt">
 
-# ⚡ tia-cli — AI PLC programming for Siemens TIA Portal
+# ⚡ tia-cli — AI-assisted PLC engineering for Siemens TIA Portal
 
-**Let an AI agent program for you.**
+**A local, deterministic command line between an AI agent and TIA Portal Openness.**
 
-*AI-assisted PLC programming on your own machine — S7-1500, S7-1200, ET 200, SINAMICS drives, WinCC
-HMI, any device TIA Portal supports. 303+ command-line verbs over the Siemens Openness API, JSON in
-and out, nothing written without an explicit `--apply`. Runs offline and on-premise — no cloud, no
-account, your project never leaves your computer.*
+*Inspect, generate and change PLC, hardware, drive, HMI, Safety, Multiuser and online engineering
+objects through 347 JSON verbs. Nothing is sent to a cloud service, and project writes are previews
+until an explicit `--apply`.*
 
 <img src="docs/assets/demo.gif" width="820" alt="tia-cli installing a block library on an S7-1500 while TIA Portal updates live">
 
-![Version](https://img.shields.io/badge/version-v2.0.0-blue)
+![Version](https://img.shields.io/badge/version-v3.0.0-blue)
 ![Source](https://img.shields.io/badge/source-private-lightgrey)
-![License](https://img.shields.io/badge/license-AGPL--3.0%20%2F%20commercial-blue)
+[![License](https://img.shields.io/badge/license-AGPL--3.0%20%2F%20commercial-blue)](LICENSE)
 [![.NET Framework 4.8](https://img.shields.io/badge/.NET-Framework%204.8-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 ![TIA Portal V19–V21](https://img.shields.io/badge/TIA%20Portal-V19--V21-5A5A5A)
 ![Platform](https://img.shields.io/badge/platform-Windows%20x64-0078D6?logo=windows)
 ![Dry-run first](https://img.shields.io/badge/writes-dry--run%20by%20default-orange)
 
-**The source code is not public.** Want access, a licence, or a demo — **[contato@codyte.com](mailto:contato@codyte.com)**
+**This repository is the public product showcase. The current source and binaries are private.**
+
+For source access, an evaluation build, a commercial licence or a live demo:
+**[contato@codyte.com](mailto:contato@codyte.com)**
 
 </div>
 
-- **Nothing is applied unless you say so.** Every write verb prints what it would change, as JSON, and acts only with `--apply`.
-- **It stays on your machine.** Unlike cloud copilots such as Siemens Industrial Copilot, there is no cloud service behind it: no Azure tenant, no subscription, no project data sent anywhere.
-- **Works with the agent you already use.** Claude Code, Codex, Cursor, Copilot — anything that can run a shell command.
-- **Offline by design.** No go-online, no download to the PLC. Writing to a running plant stays a human job.
+- **Dry-run is the default.** Write verbs return the proposed change and act only with `--apply`.
+- **Local and on-premise.** The agent, CLI, TIA Portal and project stay on the engineering machine.
+- **Agent-neutral.** Codex, Claude Code, Cursor, Copilot or any process that can run a command and
+  read JSON can use it; there is no required editor extension or hosted agent service.
+- **Online access is explicit and guarded.** Discovery is read-only. Online writes require
+  `--apply`; a physical interface additionally requires `--allow-physical`. `sim-run` is restricted
+  to S7-PLCSIM Advanced.
+- **The API boundary is respected.** It uses Siemens TIA Portal Openness and the normal Windows
+  group, executable whitelist and consent flow—no UI scraping or protection bypass.
 
-<sub>Independent project, **not affiliated with, authorised by, or endorsed by Siemens AG** — TIA
-Portal, SIMATIC, SINAMICS, STEP 7 and Openness are trademarks of Siemens AG. Requires your own
-licensed TIA Portal installation; no Siemens binary or data is distributed here.</sub>
+**Supported engineering environment:** Windows x64 with a licensed TIA Portal V19, V20 or V21
+installation. A version-specific worker is built against the PublicAPI assemblies installed on that
+machine, so optional capabilities fail explicitly instead of silently crossing Portal versions.
+
+<sub>Independent project, <strong>not affiliated with, authorised by, or endorsed by Siemens
+AG</strong>. TIA Portal, SIMATIC, SINAMICS, STEP 7 and Openness are trademarks of Siemens AG. The
+product requires the customer's own licensed Siemens installation; no Siemens binary or customer
+project data is distributed here.</sub>
 
 ---
 
 ## Watch it work
 
-Three moments from one session on an empty project. The CLI drives, TIA Portal updates live.
+Three moments from one agent session on an empty project. The CLI drives; TIA Portal updates live.
 
 <img src="docs/assets/demo-hardware-ob1.gif" width="820" alt="tia-cli plugging analog output modules and adding two motor-starter calls to OB1 Main in ladder">
 
-<sub>I/O modules into the rack, two starters called from `Main [OB1]` in ladder. Compile: 0 errors, 0 warnings.</sub>
+<sub>I/O modules are added to the rack and two starters are called from `Main [OB1]` in ladder.
+Compile result: 0 errors, 0 warnings.</sub>
 
-<img src="docs/assets/demo-blocks-audit.gif" width="820" alt="tia-cli running the 10 audit checks while TIA Portal shows the fault and starter blocks generated per pump">
+<img src="docs/assets/demo-blocks-audit.gif" width="820" alt="tia-cli auditing generated fault and starter blocks in TIA Portal">
 
-<sub>Blocks generated per pump, and the 10 `audit` checks grading what came out.</sub>
+<sub>Blocks are generated per pump and the audit checks grade the result.</sub>
 
-<img src="docs/assets/demo-compile.gif" width="820" alt="tia-cli adding a SINAMICS drive to the PROFINET network while the compiler reports what is still missing">
+<img src="docs/assets/demo-compile.gif" width="820" alt="tia-cli adding a SINAMICS drive to PROFINET while the compiler reports missing configuration">
 
-<sub>A SINAMICS drive joins PROFINET. Compile closes at `errors: 3` — the CLI shows what is missing instead of hiding it.</sub>
+<sub>A SINAMICS drive joins PROFINET. The compile closes with three errors, and the CLI reports what
+is missing instead of hiding an incomplete result.</sub>
 
 ---
+
+## What it covers
+
+The current v3 surface contains **347 command-line verbs**, all with structured JSON output and
+stable exit codes. Representative areas:
+
+| Area | Examples |
+|---|---|
+| Project orientation | `env`, `info`, `tree`, `find`, `xref`, `reachable`, `unused`, `trace` |
+| PLC software | blocks, interfaces, DB members, tags, UDTs, sources, LAD calls, compile and diff |
+| Hardware and networks | devices, modules, racks, I/O addresses, subnets, PROFINET and CAx/AML |
+| SINAMICS and starters | telegrams, drive parameters, generated starter logic and simulation scenarios |
+| WinCC Classic | screens, scripts, tags, connections, text lists, templates and screen-object audits |
+| WinCC Unified | screens, items, tags, connections, alarms, events, named objects and runtime settings |
+| Safety | F-program information, runtime groups, settings, signatures, printouts and validation tests |
+| Motion | technology objects, cams, interpreter programs and mappings |
+| Libraries | global libraries, master copies, types, packages and repeatable installation workflows |
+| Multiuser | Project Server discovery, local sessions, marking, commit and check-in |
+| Online and simulation | target discovery, online/offline, compare, download/upload and PLCSIM Advanced |
+| Batch and audit | checked step files, transactions, rehearsal/rollback, compile and acceptance audits |
+
+See [the public capability map](docs/CAPABILITIES.md) for the operating model, safety boundaries and
+more representative commands.
 
 ## An AI agent wrote a PLC program from scratch
 
-The specification for a fictional machine and the pass/fail criteria were written **before** each
-round, by someone who did not run it. The agent got the specification only, and delivered a **PLC
-program that compiles**. The full write-up — the ruler used and the stumbles along the way — is
-available on request.
+For the blind engineering tests, the machine specification and pass/fail ruler were frozen before
+each round by someone who did not execute the work. The agent received only that specification and
+delivered a PLC program that compiled. The result includes the acceptance evidence and the failures
+encountered along the way; the full test pack is available with a product demo.
 
----
+The useful distinction is simple: the model chooses the engineering operation, while deterministic
+C# code performs the Openness call and returns machine-checkable evidence. The model does not click
+through Portal dialogs or invent an unverified success.
 
-## Verbs
+## How an agent uses it
 
-161 verbs, all with JSON output.
+The installed product exposes one `tia` shim on `PATH`:
 
-| Group | | Verbs |
-|---|--:|---|
-| 🔌 Session & project | 5 | `open-project` · `create-project` · `save-project` · `close-project` · `archive-project` |
-| 🔍 Read & orientation | 13 | **`tree`** *(start here)* · `info` · `list-devices` · `list-blocks` · `list-tags` · `list-types` · `find` · `xref` *(cross-reference)* · `trace` · `explain-block` · `list-interface` · `free-memory` · `snapshot` |
-| 📤 Export & import | 10 | `export-block` · `import-block` · `export-tags` · `import-tags` · `export-type` · `import-type` · `import-source` · `export-doc` · `import-doc` · `export-cax` |
-| 🗂️ Structure | 10 | `create-folder` · `delete-folder` · `delete-block` · `delete-type` · `create-instance-db` · `move-block` · `move-type` · `rename-block` · `clone` · `scaffold` |
-| 🛠️ Hardware & network | 14 | `add-device` · `delete-device` · `plug-module` · `list-attrs` · `set-attr` · `list-io-map` · `set-io-address` · `set-address` · `list-net` · `connect-subnet` · `set-memory-bytes` · `import-cax` |
-| ⚡ SINAMICS drives | 4 | `list-telegrams` · `insert-telegram` · `list-drive-params` · `set-drive-param` |
-| ✍️ Block editing | 10 | `add-call` · `delete-network` · `add-db-member` · `edit-db-member` · `delete-db-member` · `add-fb-param` · `delete-fb-param` · `set-retain` · `compile` · `diff-block` |
-| 🏷️ Tags | 3 | `add-tag` · `set-tag` · `delete-tag` |
-| ⚙️ Code generation & audit | 8 | `gen-profinet` · `gen-fault-ob` · `gen-alarm-fc` · `replicate-fc` · `replicate-instruments` · `standardize-tags` · `doctor` · `audit` |
-| 🖥️ HMI & screens | 11 | `list-hmi` · `hmi-tree` · `export-screen` · `import-screen` · `delete-screen` · `list-screen-items` · `set-screen-items` · `copy-screen-items` · `audit-screen` · `export-hmi-tags` · `import-hmi-tags` |
-| 🎛️ Motion | 4 | `list-motion` · `create-motion` · `delete-motion` · `set-motion-param` |
-| 👁️ Simulation & watch | 4 | `sim-run` · `sim-diag` · `list-watch-tables` · `set-watch-table` |
-| 📚 Library | 8 | `list-library` · `create-library` · `retrieve-library` · `lib-update-check` · `import-master-copy` · `import-library-type` · `add-master-copy` · `delete-master-copy` |
-| 📦 Batch & Multiuser | 2 | `run --script ops.json` *(dozens of verbs in a single attach)* · `list-server-projects` |
+```powershell
+tia env                              # Portal processes, products and options; no attach
+tia tree                             # compact PLC map; read-only
+tia standardize-tags                 # preview only
+tia standardize-tags --apply         # explicit project write
+tia compile --apply                  # compile and return structured messages
+```
 
-Global options: `--plc NAME`, `--portal PROJECT|PID` (required when more than one Portal is open),
-`--out DIR`, `--apply`, `--out-file F.json`, `--retry N`, `--timeout SEC`.
+For multi-step work, the agent maps the project, studies the relevant engineering rules, validates a
+batch offline, rehearses it when possible, then applies that same reviewed batch with compile and
+audit as acceptance steps. A single Openness session executes the sequence; concurrent Portal calls
+are refused.
+
+Large results can be written to a file while stdout receives only a bounded digest. Agent mode also
+provides a fixed envelope—`{verb, ok, action, data, warnings, next, ms}`—so automation does not have
+to scrape human console text.
 
 ## How it works
 
-Headless TIA Portal scripting, from any shell. Otherwise, TIA Portal automation means clicking, or
-writing a throwaway C# Openness app for every task — project discovery, attach, whitelist and XML
-plumbing rewritten from scratch each time. `tia-cli` reduces that to one whitelisted exe: stdout is
-always JSON, stderr is a human log, exit codes are stable, and a batch file runs dozens of verbs in
-a single attach.
-
 ```mermaid
 flowchart LR
-    A["🤖 AI agent / engineer<br/>(shell)"] -->|"tia &lt;verb&gt; --json args"| B["tia.exe<br/>(net48 x64, whitelisted)"]
-    B -->|Openness API| C["TIA Portal V19–V21<br/>(running instance)"]
-    B -->|SimaticML / AML / CSV| D[("workspace/<br/>exports")]
-    C --> E["PLC project<br/>(offline)"]
+    A["🤖 AI agent / engineer<br/>(local shell)"] -->|"tia &lt;verb&gt; --json args"| B["tia worker<br/>(.NET Framework 4.8 x64)"]
+    B -->|"TIA Portal Openness"| C["TIA Portal V19–V21<br/>(running instance)"]
+    B -->|"SimaticML / AML / CSV / XLSX"| D[("local workspace")]
+    C --> E["Engineering project"]
+    B -. explicit guarded path .-> F["PLCSIM or online target"]
 ```
 
-Every call attaches to a running Portal instance and works by XML round-trip: export SimaticML →
-transform → import. The high-level verbs are built on top of that. One call at a time: Openness is
-not thread-safe for this use.
+The shim selects the worker compiled for the target Portal major. The worker attaches through
+Openness, uses typed APIs or controlled SimaticML/AML round trips, and returns JSON on stdout with a
+stable process exit code. Ring-0 diagnostics such as `env`, `licenses` and `sim-diag` do not attach
+to Portal; engineering verbs serialize access to the single Openness session.
 
-Large output does not flood the terminal — `--out-file F.json` sends the full JSON to the file and
-returns only `{file,bytes,count,head}` on stdout. That matters more than it sounds: on a 476-block
-project, `find --pattern "*" --kind tag` is 821 KB, while `tree` answers most orientation questions
-in 39 KB of markdown.
+## Safety boundaries
+
+- Project-changing verbs are dry-run unless `--apply` is present. Lifecycle operations are
+  explicitly documented exceptions because opening, saving or closing is their purpose.
+- Destructive replacement workflows create a local recovery export first when the API permits it;
+  that safety net does not replace a project backup.
+- Physical online access is never implicit: a write needs `--apply`, and a physical interface needs
+  the additional `--allow-physical` opt-in. `sim-run` refuses a real CPU.
+- The product sends no telemetry or project content to a hosted service. Optional Project Server
+  access goes only to the server named by the operator; local telemetry, when enabled, stays local.
+- Openness limitations are reported as capability errors. The CLI does not work around unavailable
+  APIs by automating the GUI.
+
+Please report a suspected vulnerability privately as described in [SECURITY.md](SECURITY.md).
 
 ## Access and licensing
 
-The repository is private and development continues there. Releases up to **v2.0.0** were published
-under MIT and stay MIT — that grant is irrevocable, and anyone who obtained those versions keeps it.
-Later versions are not distributed publicly.
+The current product is **v3.0.0**. Its source code and distributable builds are not published in
+this showcase repository.
 
-Source access, a commercial licence, an evaluation build, or a live demo:
-**[contato@codyte.com](mailto:contato@codyte.com)**
+Copyright (c) 2026 Codyte.
+
+Current versions are available under **AGPL-3.0** or a separate commercial licence. Using the CLI
+internally on your own engineering projects does not by itself distribute the software. A commercial
+licence without copyleft obligations is available for organizations that need it.
+
+Releases through **v2.0.0** were published under MIT and remain MIT; that historical grant is
+irrevocable. It does not make later private versions or their source part of this repository.
+
+For evaluation, licensing, source access, integration work or a live demonstration, contact
+**[contato@codyte.com](mailto:contato@codyte.com)**.

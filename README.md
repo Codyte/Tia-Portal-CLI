@@ -20,6 +20,10 @@ until an explicit `--apply`.*
 ![Platform](https://img.shields.io/badge/platform-Windows%20x64-0078D6?logo=windows)
 ![Dry-run first](https://img.shields.io/badge/writes-dry--run%20by%20default-orange)
 
+<!-- langs -->
+English · **[Português (Brasil)](README.pt-BR.md)** · **[Deutsch](README.de.md)**
+<!-- /langs -->
+
 **This repository is the public product showcase. The current source and binaries are private.**
 
 For source access, an evaluation build, a commercial licence or a live demo:

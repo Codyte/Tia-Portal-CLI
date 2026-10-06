@@ -2,7 +2,7 @@
 
 <img src="docs/assets/mascot.png" width="170" alt="tia-cli mascot — an industrial control module whose face is a terminal prompt">
 
-# ⚡ tia-cli — AI-assisted PLC engineering for Siemens TIA Portal
+# ⚡ Tia-Portal-CLI — AI-assisted PLC engineering for Siemens TIA Portal
 
 **A local, deterministic command line between an AI agent and TIA Portal Openness.**
 

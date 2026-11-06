@@ -1,14 +1,14 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L20     3.6K  ⚡ tia-cli — KI-gestütztes PLC-Engineering für Siemens TIA Portal -->
-<!--   L77     1.0K  Dabei zusehen, wie es arbeitet -->
-<!--   L97     2.0K  Funktionsumfang -->
-<!--   L126    761B  Ein KI-Agent schrieb ein PLC-Programm von Grund auf -->
-<!--   L138    1.1K  Verwendung durch einen Agenten -->
-<!--   L160    867B  Funktionsweise -->
-<!--   L177    995B  Sicherheitsgrenzen -->
-<!--   L192    843B  Trial verfügbar -->
-<!--   L205    1.7K  Zugang und Lizenzierung -->
+<!--   L20     3.5K  ⚡ tia-cli — KI-gestütztes PLC-Engineering für Siemens TIA Portal -->
+<!--   L76     1.0K  Dabei zusehen, wie es arbeitet -->
+<!--   L96     2.0K  Funktionsumfang -->
+<!--   L125    761B  Ein KI-Agent schrieb ein PLC-Programm von Grund auf -->
+<!--   L137    1.1K  Verwendung durch einen Agenten -->
+<!--   L159    867B  Funktionsweise -->
+<!--   L176    995B  Sicherheitsgrenzen -->
+<!--   L191    703B  Trial verfügbar -->
+<!--   L203    988B  Zugang und Lizenzierung -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 > Übersetzt aus [README.md](README.md). **Die englische Fassung ist maßgeblich** — bei Widersprüchen gilt die englische Version.
@@ -44,10 +44,9 @@ Projektänderungen bleiben Vorschauen, bis `--apply` ausdrücklich angegeben wir
 Für einen begleiteten Trial von 2 bis 3 Tagen, Quellcodezugang, eine kommerzielle Lizenz oder eine Live-Demo:
 **[contato@codyte.com](mailto:contato@codyte.com)**
 
-[![2 BIS 3 TAGE TRIAL ANFRAGEN](https://img.shields.io/badge/2_BIS_3_TAGE_TRIAL_ANFRAGEN-0A7F3F?style=for-the-badge)][trial-request]
-[![ÜBER START-WEBSITE ANFRAGEN](https://img.shields.io/badge/%C3%9CBER_START--WEBSITE_ANFRAGEN-145DA0?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+[![2 BIS 3 TAGE TRIAL ANFRAGEN](https://img.shields.io/badge/2_BIS_3_TAGE_TRIAL_ANFRAGEN-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
 
-<sub>Grün öffnet eine vorausgefüllte E-Mail; Blau führt zur Kontaktseite von START Automação.</sub>
+<sub>Öffnet die Kontaktseite von START Automação mit ausgewähltem Service und einer vorbereiteten Anfrage.</sub>
 
 </div>
 
@@ -199,8 +198,7 @@ auf dem Rechner des Kunden; der Support bittet um den Fehlertext, nicht um das P
 Siehe [Ablauf des Trials](docs/TRIAL.md) oder schreiben Sie an
 **[contato@codyte.com](mailto:contato@codyte.com)**.
 
-[![2 BIS 3 TAGE TRIAL ANFRAGEN](https://img.shields.io/badge/2_BIS_3_TAGE_TRIAL_ANFRAGEN-0A7F3F?style=for-the-badge)][trial-request]
-[![ÜBER START-WEBSITE ANFRAGEN](https://img.shields.io/badge/%C3%9CBER_START--WEBSITE_ANFRAGEN-145DA0?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+[![2 BIS 3 TAGE TRIAL ANFRAGEN](https://img.shields.io/badge/2_BIS_3_TAGE_TRIAL_ANFRAGEN-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
 
 ## Zugang und Lizenzierung
 
@@ -221,5 +219,3 @@ nicht Teil dieses Repositorys.
 
 Für Trial, Lizenzierung, Quellcodezugang, Integration oder eine Live-Demo schreiben Sie an
 **[contato@codyte.com](mailto:contato@codyte.com)**.
-
-[trial-request]: mailto:contato@startautomation.com.br?subject=Anfrage%20f%C3%BCr%20einen%20begleiteten%20tia-cli-Trial&body=Hallo%2C%0D%0A%0D%0Aich%20m%C3%B6chte%20den%20begleiteten%20tia-cli-Trial%20f%C3%BCr%202%20bis%203%20Tage%20anfragen.%0D%0A%0D%0AQuelle%3A%20%C3%B6ffentliche%20GitHub-Produktvitrine%0D%0AName%3A%20%0D%0AUnternehmen%3A%20%0D%0AE-Mail%20f%C3%BCr%20Antwort%3A%20%0D%0ALand%20und%20Zeitzone%3A%20%0D%0ATIA-Portal-Version%20%28V19%2FV20%2FV21%29%3A%20%0D%0AWindows-Version%3A%20%0D%0AKI-Agent%20%28Codex%2FClaude%20Code%2FCursor%2Fandere%29%3A%20%0D%0ATestprojekt-Kopie%20bereit%20%28ja%2Fnein%29%3A%20%0D%0AAufgabe%2C%20die%20ich%20bewerten%20m%C3%B6chte%3A%20%0D%0A%0D%0AIch%20werde%20keine%20Projektdateien%20oder%20Zugangsdaten%20senden.

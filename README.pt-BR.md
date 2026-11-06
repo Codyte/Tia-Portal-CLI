@@ -1,14 +1,14 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L20     3.4K  ⚡ tia-cli — engenharia de CLP com IA para Siemens TIA Portal -->
-<!--   L75     1.0K  Veja funcionando -->
-<!--   L95     1.9K  O que ele cobre -->
-<!--   L124    747B  Um agente de IA escreveu um programa de CLP do zero -->
-<!--   L135    1.1K  Como um agente usa o produto -->
-<!--   L156    855B  Como funciona -->
-<!--   L172    994B  Limites de segurança -->
-<!--   L187    820B  Trial disponível -->
-<!--   L200    1.7K  Acesso e licenciamento -->
+<!--   L20     3.3K  ⚡ tia-cli — engenharia de CLP com IA para Siemens TIA Portal -->
+<!--   L74     1.0K  Veja funcionando -->
+<!--   L94     1.9K  O que ele cobre -->
+<!--   L123    747B  Um agente de IA escreveu um programa de CLP do zero -->
+<!--   L134    1.1K  Como um agente usa o produto -->
+<!--   L155    855B  Como funciona -->
+<!--   L171    994B  Limites de segurança -->
+<!--   L186    685B  Trial disponível -->
+<!--   L198    931B  Acesso e licenciamento -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 > Traduzido de [README.md](README.md). **O inglês é a referência** — em caso de divergência, vale a versão em inglês.
@@ -44,10 +44,9 @@ são apenas prévias até um `--apply` explícito.*
 Para um trial assistido de 2 a 3 dias, acesso ao código, licença comercial ou demonstração ao vivo:
 **[contato@codyte.com](mailto:contato@codyte.com)**
 
-[![SOLICITAR TRIAL DE 2 A 3 DIAS](https://img.shields.io/badge/SOLICITAR_TRIAL_DE_2_A_3_DIAS-0A7F3F?style=for-the-badge)][trial-request]
-[![SOLICITAR PELO SITE DA START](https://img.shields.io/badge/SOLICITAR_PELO_SITE_DA_START-145DA0?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+[![SOLICITAR TRIAL DE 2 A 3 DIAS](https://img.shields.io/badge/SOLICITAR_TRIAL_DE_2_A_3_DIAS-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
 
-<sub>Use o botão verde para abrir um e-mail preenchido ou o azul para acessar a página de contato da START Automação.</sub>
+<sub>Abre a página de contato da START Automação com o serviço marcado e uma solicitação pronta para editar.</sub>
 
 </div>
 
@@ -194,8 +193,7 @@ cliente; o suporte solicita o texto do erro, não o projeto.
 Veja [como funciona o trial](docs/TRIAL.md) ou escreva para
 **[contato@codyte.com](mailto:contato@codyte.com)**.
 
-[![SOLICITAR TRIAL DE 2 A 3 DIAS](https://img.shields.io/badge/SOLICITAR_TRIAL_DE_2_A_3_DIAS-0A7F3F?style=for-the-badge)][trial-request]
-[![SOLICITAR PELO SITE DA START](https://img.shields.io/badge/SOLICITAR_PELO_SITE_DA_START-145DA0?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+[![SOLICITAR TRIAL DE 2 A 3 DIAS](https://img.shields.io/badge/SOLICITAR_TRIAL_DE_2_A_3_DIAS-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
 
 ## Acesso e licenciamento
 
@@ -214,5 +212,3 @@ irrevogável. Ela não torna as versões privadas posteriores nem seu código pa
 
 Para trial, licenciamento, acesso ao código, integração ou demonstração ao vivo, escreva para
 **[contato@codyte.com](mailto:contato@codyte.com)**.
-
-[trial-request]: mailto:contato@startautomation.com.br?subject=Solicita%C3%A7%C3%A3o%20de%20trial%20assistido%20do%20tia-cli&body=Ol%C3%A1%2C%0D%0A%0D%0AGostaria%20de%20solicitar%20o%20trial%20assistido%20de%202%20a%203%20dias%20do%20tia-cli.%0D%0A%0D%0AOrigem%3A%20vitrine%20p%C3%BAblica%20no%20GitHub%0D%0ANome%3A%20%0D%0AEmpresa%3A%20%0D%0AE-mail%20para%20resposta%3A%20%0D%0APa%C3%ADs%20e%20fuso%20hor%C3%A1rio%3A%20%0D%0AVers%C3%A3o%20do%20TIA%20Portal%20%28V19%2FV20%2FV21%29%3A%20%0D%0AVers%C3%A3o%20do%20Windows%3A%20%0D%0AAgente%20de%20IA%20%28Codex%2FClaude%20Code%2FCursor%2Foutro%29%3A%20%0D%0AC%C3%B3pia%20de%20projeto%20de%20teste%20pronta%20%28sim%2Fn%C3%A3o%29%3A%20%0D%0ATarefa%20que%20quero%20avaliar%3A%20%0D%0A%0D%0AN%C3%A3o%20enviarei%20arquivos%20do%20projeto%20nem%20credenciais.

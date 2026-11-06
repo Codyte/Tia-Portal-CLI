@@ -29,10 +29,9 @@ English · **[Português (Brasil)](README.pt-BR.md)** · **[Deutsch](README.de.m
 For a 2–3 day assisted trial, source access, a commercial licence or a live demo:
 **[contato@codyte.com](mailto:contato@codyte.com)**
 
-[![REQUEST A 2–3 DAY TRIAL](https://img.shields.io/badge/REQUEST_A_2%E2%80%933_DAY_TRIAL-0A7F3F?style=for-the-badge)][trial-request]
-[![REQUEST VIA START WEBSITE](https://img.shields.io/badge/REQUEST_VIA_START_WEBSITE-145DA0?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+[![REQUEST A 2–3 DAY TRIAL](https://img.shields.io/badge/REQUEST_A_2%E2%80%933_DAY_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
 
-<sub>Use the green button for a pre-filled email, or the blue button for START Automação's contact page.</sub>
+<sub>Opens START Automação's contact page with the trial service selected and a ready-to-edit request.</sub>
 
 </div>
 
@@ -178,8 +177,7 @@ text, not the project.
 See [how the trial works](docs/TRIAL.md) or contact
 **[contato@codyte.com](mailto:contato@codyte.com)**.
 
-[![REQUEST A 2–3 DAY TRIAL](https://img.shields.io/badge/REQUEST_A_2%E2%80%933_DAY_TRIAL-0A7F3F?style=for-the-badge)][trial-request]
-[![REQUEST VIA START WEBSITE](https://img.shields.io/badge/REQUEST_VIA_START_WEBSITE-145DA0?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+[![REQUEST A 2–3 DAY TRIAL](https://img.shields.io/badge/REQUEST_A_2%E2%80%933_DAY_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
 
 ## Access and licensing
 
@@ -198,5 +196,3 @@ irrevocable. It does not make later private versions or their source part of thi
 
 For a trial, licensing, source access, integration work or a live demonstration, contact
 **[contato@codyte.com](mailto:contato@codyte.com)**.
-
-[trial-request]: mailto:contato@startautomation.com.br?subject=tia-cli%20assisted%20trial%20request&body=Hello%2C%0D%0A%0D%0AI%20would%20like%20to%20request%20the%202%E2%80%933%20day%20assisted%20tia-cli%20trial.%0D%0A%0D%0ASource%3A%20GitHub%20public%20showcase%0D%0AName%3A%20%0D%0ACompany%3A%20%0D%0AReply%20email%3A%20%0D%0ACountry%20and%20time%20zone%3A%20%0D%0ATIA%20Portal%20version%20%28V19%2FV20%2FV21%29%3A%20%0D%0AWindows%20version%3A%20%0D%0AAI%20agent%20%28Codex%2FClaude%20Code%2FCursor%2Fother%29%3A%20%0D%0ATest-project%20copy%20ready%20%28yes%2Fno%29%3A%20%0D%0ATask%20I%20want%20to%20evaluate%3A%20%0D%0A%0D%0AI%20will%20not%20send%20project%20files%20or%20credentials.

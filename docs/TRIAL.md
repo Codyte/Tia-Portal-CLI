@@ -1,9 +1,9 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L9      1.0K  tia-cli assisted trial -->
-<!--   L25     584B  Before the licence is issued -->
-<!--   L38     656B  Process -->
-<!--   L50     1.4K  Safety and privacy -->
+<!--   L9      904B  tia-cli assisted trial -->
+<!--   L24     584B  Before the licence is issued -->
+<!--   L37     656B  Process -->
+<!--   L49     757B  Safety and privacy -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # tia-cli assisted trial
@@ -15,12 +15,11 @@ agreed task safely on a copy of the evaluator's real project?
 The public showcase is maintained under Codyte. The commercial evaluation package and licence
 identify **START Automação Industrial Ltda.** as the supplier and licensor.
 
-[![REQUEST A 2–3 DAY TRIAL](https://img.shields.io/badge/REQUEST_A_2%E2%80%933_DAY_TRIAL-0A7F3F?style=for-the-badge)][trial-request]
-[![REQUEST VIA START WEBSITE](https://img.shields.io/badge/REQUEST_VIA_START_WEBSITE-145DA0?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+[![REQUEST A 2–3 DAY TRIAL](https://img.shields.io/badge/REQUEST_A_2%E2%80%933_DAY_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
 
-The green button opens the configured email application with the recipient, subject and checklist
-filled in. The blue button opens START Automação's contact page. Neither reads browser or machine
-data; the evaluator completes the requested fields before sending.
+The button opens START Automação's contact page with the engineering-automation service selected and
+a ready-to-edit trial request. It does not read browser or machine data; the evaluator completes the
+requested fields before copying the message into their webmail.
 
 ## Before the licence is issued
 
@@ -60,5 +59,3 @@ Siemens exposes different optional APIs across products and versions.
 The licence terms delivered with the evaluation package govern the supplied build. Product access,
 commercial licensing and live demonstrations are available through
 [contato@startautomation.com.br](mailto:contato@startautomation.com.br).
-
-[trial-request]: mailto:contato@startautomation.com.br?subject=tia-cli%20assisted%20trial%20request&body=Hello%2C%0D%0A%0D%0AI%20would%20like%20to%20request%20the%202%E2%80%933%20day%20assisted%20tia-cli%20trial.%0D%0A%0D%0ASource%3A%20GitHub%20public%20showcase%0D%0AName%3A%20%0D%0ACompany%3A%20%0D%0AReply%20email%3A%20%0D%0ACountry%20and%20time%20zone%3A%20%0D%0ATIA%20Portal%20version%20%28V19%2FV20%2FV21%29%3A%20%0D%0AWindows%20version%3A%20%0D%0AAI%20agent%20%28Codex%2FClaude%20Code%2FCursor%2Fother%29%3A%20%0D%0ATest-project%20copy%20ready%20%28yes%2Fno%29%3A%20%0D%0ATask%20I%20want%20to%20evaluate%3A%20%0D%0A%0D%0AI%20will%20not%20send%20project%20files%20or%20credentials.

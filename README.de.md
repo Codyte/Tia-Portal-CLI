@@ -1,13 +1,14 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L19     3.2K  ⚡ tia-cli — KI-gestütztes PLC-Engineering für Siemens TIA Portal -->
-<!--   L71     1.0K  Dabei zusehen, wie es arbeitet -->
-<!--   L91     1.5K  Funktionsumfang -->
-<!--   L114    761B  Ein KI-Agent schrieb ein PLC-Programm von Grund auf -->
-<!--   L126    1.1K  Verwendung durch einen Agenten -->
-<!--   L148    867B  Funktionsweise -->
-<!--   L165    995B  Sicherheitsgrenzen -->
-<!--   L180    902B  Zugang und Lizenzierung -->
+<!--   L20     3.6K  ⚡ tia-cli — KI-gestütztes PLC-Engineering für Siemens TIA Portal -->
+<!--   L77     1.0K  Dabei zusehen, wie es arbeitet -->
+<!--   L97     2.0K  Funktionsumfang -->
+<!--   L126    761B  Ein KI-Agent schrieb ein PLC-Programm von Grund auf -->
+<!--   L138    1.1K  Verwendung durch einen Agenten -->
+<!--   L160    867B  Funktionsweise -->
+<!--   L177    995B  Sicherheitsgrenzen -->
+<!--   L192    843B  Trial verfügbar -->
+<!--   L205    1.7K  Zugang und Lizenzierung -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 > Übersetzt aus [README.md](README.md). **Die englische Fassung ist maßgeblich** — bei Widersprüchen gilt die englische Version.
@@ -20,13 +21,13 @@
 
 **Eine lokale, deterministische Kommandozeile zwischen einem KI-Agenten und TIA Portal Openness.**
 
-*PLC-, Hardware-, Antriebs-, HMI-, Safety-, Multiuser- und Online-Engineering-Objekte mit 347
-JSON-Verben prüfen, erzeugen und ändern. Es werden keine Daten an einen Cloud-Dienst gesendet, und
+*PLC-, Hardware-, Antriebs-, HMI-, Safety-, Multiuser- und Online-Engineering-Objekte mit 346
+eindeutigen JSON-Verben prüfen, erzeugen und ändern. Es werden keine Daten an einen Cloud-Dienst gesendet, und
 Projektänderungen bleiben Vorschauen, bis `--apply` ausdrücklich angegeben wird.*
 
 <img src="docs/assets/demo.gif" width="820" alt="tia-cli installiert eine Bausteinbibliothek auf einer S7-1500, während TIA Portal live aktualisiert wird">
 
-![Version](https://img.shields.io/badge/version-v3.0.0-blue)
+![Produktlinie](https://img.shields.io/badge/produkt-v3-blue)
 ![Quellcode](https://img.shields.io/badge/quellcode-privat-lightgrey)
 [![Lizenz](https://img.shields.io/badge/lizenz-AGPL--3.0%20%2F%20kommerziell-blue)](LICENSE)
 [![.NET Framework 4.8](https://img.shields.io/badge/.NET-Framework%204.8-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
@@ -40,8 +41,13 @@ Projektänderungen bleiben Vorschauen, bis `--apply` ausdrücklich angegeben wir
 
 **Dieses Repository ist die öffentliche Produktvitrine. Aktueller Quellcode und Binärdateien sind privat.**
 
-Für Quellcodezugang, einen Evaluierungs-Build, eine kommerzielle Lizenz oder eine Live-Demo:
+Für einen begleiteten Trial von 2 bis 3 Tagen, Quellcodezugang, eine kommerzielle Lizenz oder eine Live-Demo:
 **[contato@codyte.com](mailto:contato@codyte.com)**
+
+[![2 BIS 3 TAGE TRIAL ANFRAGEN](https://img.shields.io/badge/2_BIS_3_TAGE_TRIAL_ANFRAGEN-0A7F3F?style=for-the-badge)][trial-request]
+[![ÜBER START-WEBSITE ANFRAGEN](https://img.shields.io/badge/%C3%9CBER_START--WEBSITE_ANFRAGEN-145DA0?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+
+<sub>Grün öffnet eine vorausgefüllte E-Mail; Blau führt zur Kontaktseite von START Automação.</sub>
 
 </div>
 
@@ -90,8 +96,9 @@ die CLI meldet die fehlenden Angaben, statt ein unvollständiges Ergebnis zu ver
 
 ## Funktionsumfang
 
-Die aktuelle v3-Oberfläche umfasst **347 Kommandozeilen-Verben**, alle mit strukturierter JSON-Ausgabe
-und stabilen Exitcodes. Repräsentative Bereiche:
+Die aktuelle v3-Oberfläche umfasst **346 eindeutige Kommandozeilen-Verben** in **347 generierten
+Help-Signaturen** (`find` hat zwei Formen), alle mit strukturierter JSON-Ausgabe und stabilen
+Exitcodes. Repräsentative Bereiche:
 
 | Bereich | Beispiele |
 |---|---|
@@ -110,6 +117,11 @@ und stabilen Exitcodes. Repräsentative Bereiche:
 
 Die [öffentliche Funktionsübersicht](docs/CAPABILITIES.md) beschreibt Betriebsmodell,
 Sicherheitsgrenzen und weitere repräsentative Befehle.
+
+**Validierungsstand (19.10.2026):** Für 230 Verben liegen erfolgreiche Live-Nachweise unter V21
+vor, für 100 Schreibverben V21-Dry-run-Nachweise, für 43 direkte V19-Nachweise und für 41 direkte
+V20-Nachweise. Die Versionszahlen überlappen; 16 Verben haben noch keinen aufgezeichneten
+Live-Nachweis und werden nicht als nachgewiesen dargestellt.
 
 ## Ein KI-Agent schrieb ein PLC-Programm von Grund auf
 
@@ -177,10 +189,24 @@ einzelne Openness-Sitzung.
 
 Melden Sie eine vermutete Schwachstelle bitte vertraulich gemäß [SECURITY.md](SECURITY.md).
 
+## Trial verfügbar
+
+Ein begleiteter **Trial von 2 bis 3 Tagen** ist für einen Engineering-Rechner und eine Kopie eines
+Testprojekts verfügbar. Bevor die Lizenzlaufzeit beginnt, muss die Installationsprüfung erfolgreich
+sein und ein kleines, konkretes Erfolgskriterium schriftlich vereinbart werden. Das Projekt bleibt
+auf dem Rechner des Kunden; der Support bittet um den Fehlertext, nicht um das Projekt.
+
+Siehe [Ablauf des Trials](docs/TRIAL.md) oder schreiben Sie an
+**[contato@codyte.com](mailto:contato@codyte.com)**.
+
+[![2 BIS 3 TAGE TRIAL ANFRAGEN](https://img.shields.io/badge/2_BIS_3_TAGE_TRIAL_ANFRAGEN-0A7F3F?style=for-the-badge)][trial-request]
+[![ÜBER START-WEBSITE ANFRAGEN](https://img.shields.io/badge/%C3%9CBER_START--WEBSITE_ANFRAGEN-145DA0?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+
 ## Zugang und Lizenzierung
 
-Das aktuelle Produkt ist **v3.0.0**. Quellcode und verteilbare Builds werden in diesem
-Vitrinen-Repository nicht veröffentlicht.
+Die aktuelle Produktlinie ist **v3**. Der genaue Evaluierungs- oder kommerzielle Build wird durch
+`tia --version` identifiziert; Quellcode und verteilbare Builds werden in diesem Vitrinen-Repository
+nicht veröffentlicht.
 
 Copyright (c) 2026 Codyte.
 
@@ -193,5 +219,7 @@ Releases bis einschließlich **v2.0.0** wurden unter MIT veröffentlicht und ble
 historische Gewährung ist unwiderruflich. Spätere private Versionen oder ihr Quellcode werden dadurch
 nicht Teil dieses Repositorys.
 
-Für Evaluierung, Lizenzierung, Quellcodezugang, Integration oder eine Live-Demo schreiben Sie an
+Für Trial, Lizenzierung, Quellcodezugang, Integration oder eine Live-Demo schreiben Sie an
 **[contato@codyte.com](mailto:contato@codyte.com)**.
+
+[trial-request]: mailto:contato@startautomation.com.br?subject=Anfrage%20f%C3%BCr%20einen%20begleiteten%20tia-cli-Trial&body=Hallo%2C%0D%0A%0D%0Aich%20m%C3%B6chte%20den%20begleiteten%20tia-cli-Trial%20f%C3%BCr%202%20bis%203%20Tage%20anfragen.%0D%0A%0D%0AQuelle%3A%20%C3%B6ffentliche%20GitHub-Produktvitrine%0D%0AName%3A%20%0D%0AUnternehmen%3A%20%0D%0AE-Mail%20f%C3%BCr%20Antwort%3A%20%0D%0ALand%20und%20Zeitzone%3A%20%0D%0ATIA-Portal-Version%20%28V19%2FV20%2FV21%29%3A%20%0D%0AWindows-Version%3A%20%0D%0AKI-Agent%20%28Codex%2FClaude%20Code%2FCursor%2Fandere%29%3A%20%0D%0ATestprojekt-Kopie%20bereit%20%28ja%2Fnein%29%3A%20%0D%0AAufgabe%2C%20die%20ich%20bewerten%20m%C3%B6chte%3A%20%0D%0A%0D%0AIch%20werde%20keine%20Projektdateien%20oder%20Zugangsdaten%20senden.

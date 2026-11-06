@@ -1,25 +1,28 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L14     264B  tia-cli capability map -->
-<!--   L20     659B  Operating contract -->
-<!--   L31     565B  Project discovery and analysis -->
-<!--   L43     565B  PLC software and data -->
-<!--   L52     497B  Hardware, networks and drives -->
-<!--   L61     570B  HMI and WinCC Unified -->
-<!--   L70     642B  Safety, motion, libraries and collaboration -->
-<!--   L80     488B  Online and simulation boundary -->
-<!--   L90     556B  What is deliberately not included -->
+<!--   L15     334B  tia-cli capability map -->
+<!--   L22     729B  Operating contract -->
+<!--   L34     565B  Project discovery and analysis -->
+<!--   L46     565B  PLC software and data -->
+<!--   L55     497B  Hardware, networks and drives -->
+<!--   L64     570B  HMI and WinCC Unified -->
+<!--   L73     642B  Safety, motion, libraries and collaboration -->
+<!--   L83     488B  Online and simulation boundary -->
+<!--   L93     658B  Validation snapshot -->
+<!--   L107    593B  What is deliberately not included -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # tia-cli capability map
 
-This document describes the public product surface of tia-cli v3.0.0. It is a capability overview,
-not an installable command reference: the current source, generated verb catalog and binaries are
-kept in the private product repository.
+This document describes the public product surface of the tia-cli v3 product line. It is a
+capability overview, not an installable command reference: the current source, generated verb
+catalog and binaries are kept in the private product repository. The exact supplied build is
+reported by `tia --version`.
 
 ## Operating contract
 
-- 347 verbs with JSON output and stable exit codes.
+- 346 unique verbs across 347 generated help signatures (`find` has two forms), with JSON output
+  and stable exit codes.
 - Windows x64; TIA Portal V19, V20 and V21 workers built against the locally installed PublicAPI.
 - Read and diagnostic commands do not mutate the open project.
 - Project writes are previews unless the command explicitly includes `--apply`.
@@ -87,6 +90,20 @@ An agent can start without dumping the whole project into its context:
 - `sim-run` is PLCSIM Advanced-only and refuses a real CPU. Simulation scenarios can write inputs,
   wait, read outputs and assert expected behavior.
 
+## Validation snapshot
+
+The generated coverage record dated 2026-10-19 reports:
+
+- 230 verbs with successful live V21 evidence; write verbs in this status were exercised with
+  `--apply`.
+- 100 write verbs exercised on V21 in preview only, without `--apply`.
+- 43 verbs with direct V19 evidence and 41 with direct V20 evidence; these overlap the V21 groups.
+- 16 verbs with no recorded live evidence. They may have offline tests, but are not presented as
+  proven in Portal until evidence is recorded.
+
+The snapshot is evidence of tested operations, not a promise that every Portal version, installed
+option, device or project exposes the same API surface.
+
 ## What is deliberately not included
 
 - No Siemens DLL, Portal installer, licence key or customer project data is distributed.
@@ -95,5 +112,5 @@ An agent can start without dumping the whole project into its context:
 - No claim is made that automation replaces engineering review, project backups, compile results,
   simulation or commissioning procedures.
 
-For an evaluation build, source access, a commercial licence or a demonstration, contact
-[contato@codyte.com](mailto:contato@codyte.com).
+For a 2–3 day assisted trial, see [TRIAL.md](TRIAL.md). For source access, a commercial licence or a
+demonstration, contact [contato@codyte.com](mailto:contato@codyte.com).

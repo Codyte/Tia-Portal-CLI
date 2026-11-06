@@ -7,12 +7,12 @@
 **A local, deterministic command line between an AI agent and TIA Portal Openness.**
 
 *Inspect, generate and change PLC, hardware, drive, HMI, Safety, Multiuser and online engineering
-objects through 347 JSON verbs. Nothing is sent to a cloud service, and project writes are previews
+objects through 346 unique JSON verbs. Nothing is sent to a cloud service, and project writes are previews
 until an explicit `--apply`.*
 
 <img src="docs/assets/demo.gif" width="820" alt="tia-cli installing a block library on an S7-1500 while TIA Portal updates live">
 
-![Version](https://img.shields.io/badge/version-v3.0.0-blue)
+![Product line](https://img.shields.io/badge/product-v3-blue)
 ![Source](https://img.shields.io/badge/source-private-lightgrey)
 [![License](https://img.shields.io/badge/license-AGPL--3.0%20%2F%20commercial-blue)](LICENSE)
 [![.NET Framework 4.8](https://img.shields.io/badge/.NET-Framework%204.8-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
@@ -26,8 +26,13 @@ English · **[Português (Brasil)](README.pt-BR.md)** · **[Deutsch](README.de.m
 
 **This repository is the public product showcase. The current source and binaries are private.**
 
-For source access, an evaluation build, a commercial licence or a live demo:
+For a 2–3 day assisted trial, source access, a commercial licence or a live demo:
 **[contato@codyte.com](mailto:contato@codyte.com)**
+
+[![REQUEST A 2–3 DAY TRIAL](https://img.shields.io/badge/REQUEST_A_2%E2%80%933_DAY_TRIAL-0A7F3F?style=for-the-badge)][trial-request]
+[![REQUEST VIA START WEBSITE](https://img.shields.io/badge/REQUEST_VIA_START_WEBSITE-145DA0?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+
+<sub>Use the green button for a pre-filled email, or the blue button for START Automação's contact page.</sub>
 
 </div>
 
@@ -74,8 +79,9 @@ is missing instead of hiding an incomplete result.</sub>
 
 ## What it covers
 
-The current v3 surface contains **347 command-line verbs**, all with structured JSON output and
-stable exit codes. Representative areas:
+The current v3 surface contains **346 unique command-line verbs** across **347 generated help
+signatures** (`find` has two forms), all with structured JSON output and stable exit codes.
+Representative areas:
 
 | Area | Examples |
 |---|---|
@@ -94,6 +100,10 @@ stable exit codes. Representative areas:
 
 See [the public capability map](docs/CAPABILITIES.md) for the operating model, safety boundaries and
 more representative commands.
+
+**Validation snapshot (2026-10-19):** 230 verbs have successful live V21 evidence, 100 write verbs
+have V21 dry-run evidence, 43 have direct V19 evidence and 41 have direct V20 evidence. Version
+counts overlap; 16 verbs still have no recorded live evidence and are not presented as proven.
 
 ## An AI agent wrote a PLC program from scratch
 
@@ -158,10 +168,24 @@ to Portal; engineering verbs serialize access to the single Openness session.
 
 Please report a suspected vulnerability privately as described in [SECURITY.md](SECURITY.md).
 
+## Trial available
+
+An assisted **2–3 day trial** is available for one engineering machine and a test-project copy.
+Before the licence clock starts, the installation check must pass and a small, concrete success
+criterion is agreed in writing. The project stays on the customer's machine; support asks for error
+text, not the project.
+
+See [how the trial works](docs/TRIAL.md) or contact
+**[contato@codyte.com](mailto:contato@codyte.com)**.
+
+[![REQUEST A 2–3 DAY TRIAL](https://img.shields.io/badge/REQUEST_A_2%E2%80%933_DAY_TRIAL-0A7F3F?style=for-the-badge)][trial-request]
+[![REQUEST VIA START WEBSITE](https://img.shields.io/badge/REQUEST_VIA_START_WEBSITE-145DA0?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+
 ## Access and licensing
 
-The current product is **v3.0.0**. Its source code and distributable builds are not published in
-this showcase repository.
+The current product line is **v3**. The exact evaluation or commercial build is identified by
+`tia --version`; its source code and distributable builds are not published in this showcase
+repository.
 
 Copyright (c) 2026 Codyte.
 
@@ -172,5 +196,7 @@ licence without copyleft obligations is available for organizations that need it
 Releases through **v2.0.0** were published under MIT and remain MIT; that historical grant is
 irrevocable. It does not make later private versions or their source part of this repository.
 
-For evaluation, licensing, source access, integration work or a live demonstration, contact
+For a trial, licensing, source access, integration work or a live demonstration, contact
 **[contato@codyte.com](mailto:contato@codyte.com)**.
+
+[trial-request]: mailto:contato@startautomation.com.br?subject=tia-cli%20assisted%20trial%20request&body=Hello%2C%0D%0A%0D%0AI%20would%20like%20to%20request%20the%202%E2%80%933%20day%20assisted%20tia-cli%20trial.%0D%0A%0D%0ASource%3A%20GitHub%20public%20showcase%0D%0AName%3A%20%0D%0ACompany%3A%20%0D%0AReply%20email%3A%20%0D%0ACountry%20and%20time%20zone%3A%20%0D%0ATIA%20Portal%20version%20%28V19%2FV20%2FV21%29%3A%20%0D%0AWindows%20version%3A%20%0D%0AAI%20agent%20%28Codex%2FClaude%20Code%2FCursor%2Fother%29%3A%20%0D%0ATest-project%20copy%20ready%20%28yes%2Fno%29%3A%20%0D%0ATask%20I%20want%20to%20evaluate%3A%20%0D%0A%0D%0AI%20will%20not%20send%20project%20files%20or%20credentials.

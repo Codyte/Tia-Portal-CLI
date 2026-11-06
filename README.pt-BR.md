@@ -1,14 +1,14 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L20     3.3K  ⚡ tia-cli — engenharia de CLP com IA para Siemens TIA Portal -->
-<!--   L74     1.0K  Veja funcionando -->
-<!--   L94     1.9K  O que ele cobre -->
-<!--   L123    747B  Um agente de IA escreveu um programa de CLP do zero -->
-<!--   L134    1.1K  Como um agente usa o produto -->
-<!--   L155    855B  Como funciona -->
-<!--   L171    994B  Limites de segurança -->
-<!--   L186    685B  Trial disponível -->
-<!--   L198    931B  Acesso e licenciamento -->
+<!--   L20     3.5K  ⚡ tia-cli — engenharia de CLP com IA para Siemens TIA Portal -->
+<!--   L77     1.0K  Veja funcionando -->
+<!--   L97     1.9K  O que ele cobre -->
+<!--   L126    747B  Um agente de IA escreveu um programa de CLP do zero -->
+<!--   L137    1.1K  Como um agente usa o produto -->
+<!--   L158    855B  Como funciona -->
+<!--   L174    994B  Limites de segurança -->
+<!--   L189    685B  Trial disponível -->
+<!--   L201    931B  Acesso e licenciamento -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 > Traduzido de [README.md](README.md). **O inglês é a referência** — em caso de divergência, vale a versão em inglês.
@@ -40,6 +40,9 @@ são apenas prévias até um `--apply` explícito.*
 <!-- /langs -->
 
 **Este repositório é a vitrine pública do produto. O código-fonte e os binários atuais são privados.**
+
+A vitrine pública é mantida sob Codyte. O pacote de avaliação comercial e a licença identificam
+**START Automação Industrial Ltda.** como fornecedora e licenciadora.
 
 Para um trial assistido de 2 a 3 dias, acesso ao código, licença comercial ou demonstração ao vivo:
 **[contato@codyte.com](mailto:contato@codyte.com)**

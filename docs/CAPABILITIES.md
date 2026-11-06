@@ -1,15 +1,15 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L15     334B  tia-cli capability map -->
-<!--   L22     729B  Operating contract -->
-<!--   L34     565B  Project discovery and analysis -->
-<!--   L46     565B  PLC software and data -->
-<!--   L55     497B  Hardware, networks and drives -->
-<!--   L64     570B  HMI and WinCC Unified -->
-<!--   L73     642B  Safety, motion, libraries and collaboration -->
-<!--   L83     488B  Online and simulation boundary -->
-<!--   L93     658B  Validation snapshot -->
-<!--   L107    593B  What is deliberately not included -->
+<!--   L15     507B  tia-cli capability map -->
+<!--   L25     729B  Operating contract -->
+<!--   L37     565B  Project discovery and analysis -->
+<!--   L49     565B  PLC software and data -->
+<!--   L58     497B  Hardware, networks and drives -->
+<!--   L67     570B  HMI and WinCC Unified -->
+<!--   L76     642B  Safety, motion, libraries and collaboration -->
+<!--   L86     488B  Online and simulation boundary -->
+<!--   L96     658B  Validation snapshot -->
+<!--   L110    635B  What is deliberately not included -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # tia-cli capability map
@@ -18,6 +18,9 @@ This document describes the public product surface of the tia-cli v3 product lin
 capability overview, not an installable command reference: the current source, generated verb
 catalog and binaries are kept in the private product repository. The exact supplied build is
 reported by `tia --version`.
+
+The public showcase is maintained under Codyte. The commercial evaluation package and licence
+identify **START Automação Industrial Ltda.** as the supplier and licensor.
 
 ## Operating contract
 
@@ -112,5 +115,5 @@ option, device or project exposes the same API surface.
 - No claim is made that automation replaces engineering review, project backups, compile results,
   simulation or commissioning procedures.
 
-For a 2–3 day assisted trial, see [TRIAL.md](TRIAL.md). For source access, a commercial licence or a
-demonstration, contact [contato@codyte.com](mailto:contato@codyte.com).
+For a 2–3 day assisted trial, source access, a commercial licence or a demonstration, see
+[TRIAL.md](TRIAL.md) and [request access through START Automação](https://startautomation.com.br/contato/?origem=tia-cli).

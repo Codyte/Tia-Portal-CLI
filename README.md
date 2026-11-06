@@ -26,6 +26,9 @@ English · **[Português (Brasil)](README.pt-BR.md)** · **[Deutsch](README.de.m
 
 **This repository is the public product showcase. The current source and binaries are private.**
 
+The public showcase is maintained under Codyte. The commercial evaluation package and licence
+identify **START Automação Industrial Ltda.** as the supplier and licensor.
+
 For a 2–3 day assisted trial, source access, a commercial licence or a live demo:
 **[contato@codyte.com](mailto:contato@codyte.com)**
 

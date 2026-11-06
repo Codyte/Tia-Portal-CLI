@@ -1,9 +1,9 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L9      904B  tia-cli assisted trial -->
-<!--   L24     584B  Before the licence is issued -->
-<!--   L37     656B  Process -->
-<!--   L49     757B  Safety and privacy -->
+<!--   L9      1.3K  tia-cli assisted trial -->
+<!--   L29     584B  Before the licence is issued -->
+<!--   L42     656B  Process -->
+<!--   L54     757B  Safety and privacy -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # tia-cli assisted trial
@@ -14,6 +14,11 @@ agreed task safely on a copy of the evaluator's real project?
 
 The public showcase is maintained under Codyte. The commercial evaluation package and licence
 identify **START Automação Industrial Ltda.** as the supplier and licensor.
+
+The evidenced v3 surface contains **346 unique command-line verbs** across **347 generated help
+signatures** (`find` has two forms). The validation snapshot dated 2026-10-19 records 230 verbs with
+successful live V21 evidence, 100 write verbs with V21 preview evidence, 43 with direct V19 evidence,
+41 with direct V20 evidence and 16 with no recorded live evidence; version counts overlap.
 
 [![REQUEST A 2–3 DAY TRIAL](https://img.shields.io/badge/REQUEST_A_2%E2%80%933_DAY_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
 

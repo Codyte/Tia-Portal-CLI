@@ -1,14 +1,14 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L20     3.5K  ⚡ tia-cli — KI-gestütztes PLC-Engineering für Siemens TIA Portal -->
-<!--   L76     1.0K  Dabei zusehen, wie es arbeitet -->
-<!--   L96     2.0K  Funktionsumfang -->
-<!--   L125    761B  Ein KI-Agent schrieb ein PLC-Programm von Grund auf -->
-<!--   L137    1.1K  Verwendung durch einen Agenten -->
-<!--   L159    867B  Funktionsweise -->
-<!--   L176    995B  Sicherheitsgrenzen -->
-<!--   L191    703B  Trial verfügbar -->
-<!--   L203    988B  Zugang und Lizenzierung -->
+<!--   L20     3.7K  ⚡ tia-cli — KI-gestütztes PLC-Engineering für Siemens TIA Portal -->
+<!--   L79     1.0K  Dabei zusehen, wie es arbeitet -->
+<!--   L99     2.0K  Funktionsumfang -->
+<!--   L128    761B  Ein KI-Agent schrieb ein PLC-Programm von Grund auf -->
+<!--   L140    1.1K  Verwendung durch einen Agenten -->
+<!--   L162    867B  Funktionsweise -->
+<!--   L179    995B  Sicherheitsgrenzen -->
+<!--   L194    703B  Trial verfügbar -->
+<!--   L206    988B  Zugang und Lizenzierung -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 > Übersetzt aus [README.md](README.md). **Die englische Fassung ist maßgeblich** — bei Widersprüchen gilt die englische Version.
@@ -40,6 +40,9 @@ Projektänderungen bleiben Vorschauen, bis `--apply` ausdrücklich angegeben wir
 <!-- /langs -->
 
 **Dieses Repository ist die öffentliche Produktvitrine. Aktueller Quellcode und Binärdateien sind privat.**
+
+Die öffentliche Produktvitrine wird unter Codyte gepflegt. Das kommerzielle Evaluierungspaket und
+die Lizenz nennen **START Automação Industrial Ltda.** als Anbieterin und Lizenzgeberin.
 
 Für einen begleiteten Trial von 2 bis 3 Tagen, Quellcodezugang, eine kommerzielle Lizenz oder eine Live-Demo:
 **[contato@codyte.com](mailto:contato@codyte.com)**

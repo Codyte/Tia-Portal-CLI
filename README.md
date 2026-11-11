@@ -174,8 +174,8 @@ Please report a suspected vulnerability privately as described in [SECURITY.md](
 
 A free, self-service **5-day trial** is available on the product page, for one engineering machine
 and a test-project copy. Enter a corporate email, confirm the 6-digit code and the page shows your
-licence and the download. The 5 days count from first use. The project stays on your machine; nothing
-is sent to a hosted service.
+licence and the download. The 5 days count from first use. The project stays on your machine; the CLI only confirms
+the licence with startautomation.com.br (machine id and serial), never project content.
 
 See [how the trial works](docs/TRIAL.md). The page also takes the purchase of the perpetual licence.
 

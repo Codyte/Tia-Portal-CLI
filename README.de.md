@@ -7,8 +7,8 @@
 <!--   L140    1.1K  Verwendung durch einen Agenten -->
 <!--   L162    867B  Funktionsweise -->
 <!--   L179    995B  Sicherheitsgrenzen -->
-<!--   L194    692B  Trial verfügbar -->
-<!--   L205    1.1K  Zugang und Lizenzierung -->
+<!--   L194    759B  Trial verfügbar -->
+<!--   L206    1.1K  Zugang und Lizenzierung -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 > Übersetzt aus [README.md](README.md). **Die englische Fassung ist maßgeblich** — bei Widersprüchen gilt die englische Version.
@@ -196,7 +196,8 @@ Melden Sie eine vermutete Schwachstelle bitte vertraulich gemäß [SECURITY.md](
 Ein kostenloser **Test von 5 Tagen** in Eigenregie ist auf der Produktseite verfügbar, für einen
 Engineering-Rechner und eine Kopie eines Testprojekts. Geben Sie eine Firmen-E-Mail an, bestätigen Sie
 den 6-stelligen Code, und die Seite zeigt Ihre Lizenz und den Download. Die 5 Tage zählen ab der ersten
-Nutzung. Das Projekt bleibt auf Ihrem Rechner; nichts wird an einen gehosteten Dienst gesendet.
+Nutzung. Das Projekt bleibt auf Ihrem Rechner; die CLI bestätigt nur die Lizenz bei
+startautomation.com.br (Rechner-ID und Seriennummer), niemals Projektinhalte.
 
 Siehe [Ablauf des Tests](docs/TRIAL.md). Die Seite nimmt auch den Kauf der unbefristeten Lizenz entgegen.
 

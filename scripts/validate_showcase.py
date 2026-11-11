@@ -24,7 +24,7 @@ PUBLIC_FILES = (
     "docs/CAPABILITIES.md",
     "docs/TRIAL.md",
 )
-CTA = "https://startautomation.com.br/contato/?origem=tia-cli"
+CTA = "https://startautomation.com.br/tia-portal-cli/"
 SUPPLIER = "START Automação Industrial Ltda."
 
 

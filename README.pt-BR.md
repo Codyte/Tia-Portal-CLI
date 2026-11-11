@@ -7,8 +7,8 @@
 <!--   L137    1.1K  Como um agente usa o produto -->
 <!--   L158    855B  Como funciona -->
 <!--   L174    994B  Limites de segurança -->
-<!--   L189    681B  Trial disponível -->
-<!--   L200    1.0K  Acesso e licenciamento -->
+<!--   L189    752B  Trial disponível -->
+<!--   L201    1.0K  Acesso e licenciamento -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 > Traduzido de [README.md](README.md). **O inglês é a referência** — em caso de divergência, vale a versão em inglês.
@@ -22,7 +22,7 @@
 **Uma linha de comando local e determinística entre um agente de IA e o TIA Portal Openness.**
 
 *Inspecione, gere e altere objetos de CLP, hardware, acionamentos, IHM, Safety, Multiuser e engenharia
-online por meio de 346 verbos JSON únicos. Nada é enviado para um serviço em nuvem, e escritas no projeto
+online por meio de 346 verbos JSON únicos. Nenhum conteúdo do projeto vai para a nuvem, e escritas no projeto
 são apenas prévias até um `--apply` explícito.*
 
 <img src="docs/assets/demo.gif" width="820" alt="tia-cli instalando uma biblioteca de blocos num S7-1500 enquanto o TIA Portal atualiza ao vivo">
@@ -191,7 +191,8 @@ Reporte uma possível vulnerabilidade em privado conforme [SECURITY.md](SECURITY
 Está disponível um **teste grátis de 5 dias**, por conta própria, na página do produto, para uma
 máquina de engenharia e uma cópia de projeto de teste. Informe um e-mail corporativo, confirme o código
 de 6 dígitos e a página mostra a sua licença e o download. Os 5 dias contam a partir do primeiro uso.
-O projeto permanece na sua máquina; nada é enviado a um serviço hospedado.
+O projeto permanece na sua máquina; o CLI só confirma a licença com startautomation.com.br
+(id da máquina e serial), nunca conteúdo do projeto.
 
 Veja [como funciona o teste](docs/TRIAL.md). A página também recebe a compra da licença perpétua.
 

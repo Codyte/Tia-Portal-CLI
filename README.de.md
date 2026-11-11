@@ -1,5 +1,5 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
-<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill: https://github.com/Codyte/navindex) -->
 <!--   L20     3.7K  ⚡ tia-cli — KI-gestütztes PLC-Engineering für Siemens TIA Portal -->
 <!--   L79     1.0K  Dabei zusehen, wie es arbeitet -->
 <!--   L99     2.0K  Funktionsumfang -->
@@ -7,8 +7,8 @@
 <!--   L140    1.1K  Verwendung durch einen Agenten -->
 <!--   L162    867B  Funktionsweise -->
 <!--   L179    995B  Sicherheitsgrenzen -->
-<!--   L194    703B  Trial verfügbar -->
-<!--   L206    988B  Zugang und Lizenzierung -->
+<!--   L194    692B  Trial verfügbar -->
+<!--   L205    1.1K  Zugang und Lizenzierung -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 > Übersetzt aus [README.md](README.md). **Die englische Fassung ist maßgeblich** — bei Widersprüchen gilt die englische Version.
@@ -44,12 +44,12 @@ Projektänderungen bleiben Vorschauen, bis `--apply` ausdrücklich angegeben wir
 Die öffentliche Produktvitrine wird unter Codyte gepflegt. Das kommerzielle Evaluierungspaket und
 die Lizenz nennen **START Automação Industrial Ltda.** als Anbieterin und Lizenzgeberin.
 
-Für einen begleiteten Trial von 2 bis 3 Tagen, Quellcodezugang, eine kommerzielle Lizenz oder eine Live-Demo:
-**[contato@codyte.com](mailto:contato@codyte.com)**
+Kostenlos 5 Tage testen, in Eigenregie, auf der Produktseite. Für Quellcodezugang, eine kommerzielle
+Lizenz, Integration oder eine Live-Demo schreiben Sie an **[contato@codyte.com](mailto:contato@codyte.com)**.
 
-[![2 BIS 3 TAGE TRIAL ANFRAGEN](https://img.shields.io/badge/2_BIS_3_TAGE_TRIAL_ANFRAGEN-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+[![5 TAGE KOSTENLOS TESTEN](https://img.shields.io/badge/5_TAGE_KOSTENLOS_TESTEN-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
-<sub>Öffnet die Kontaktseite von START Automação mit ausgewähltem Service und einer vorbereiteten Anfrage.</sub>
+<sub>Öffnet die Produktseite mit dem Testformular: Firmen-E-Mail, 6-stelliger Code, Lizenz und Download.</sub>
 
 </div>
 
@@ -193,15 +193,14 @@ Melden Sie eine vermutete Schwachstelle bitte vertraulich gemäß [SECURITY.md](
 
 ## Trial verfügbar
 
-Ein begleiteter **Trial von 2 bis 3 Tagen** ist für einen Engineering-Rechner und eine Kopie eines
-Testprojekts verfügbar. Bevor die Lizenzlaufzeit beginnt, muss die Installationsprüfung erfolgreich
-sein und ein kleines, konkretes Erfolgskriterium schriftlich vereinbart werden. Das Projekt bleibt
-auf dem Rechner des Kunden; der Support bittet um den Fehlertext, nicht um das Projekt.
+Ein kostenloser **Test von 5 Tagen** in Eigenregie ist auf der Produktseite verfügbar, für einen
+Engineering-Rechner und eine Kopie eines Testprojekts. Geben Sie eine Firmen-E-Mail an, bestätigen Sie
+den 6-stelligen Code, und die Seite zeigt Ihre Lizenz und den Download. Die 5 Tage zählen ab der ersten
+Nutzung. Das Projekt bleibt auf Ihrem Rechner; nichts wird an einen gehosteten Dienst gesendet.
 
-Siehe [Ablauf des Trials](docs/TRIAL.md) oder schreiben Sie an
-**[contato@codyte.com](mailto:contato@codyte.com)**.
+Siehe [Ablauf des Tests](docs/TRIAL.md). Die Seite nimmt auch den Kauf der unbefristeten Lizenz entgegen.
 
-[![2 BIS 3 TAGE TRIAL ANFRAGEN](https://img.shields.io/badge/2_BIS_3_TAGE_TRIAL_ANFRAGEN-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+[![5 TAGE KOSTENLOS TESTEN](https://img.shields.io/badge/5_TAGE_KOSTENLOS_TESTEN-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
 ## Zugang und Lizenzierung
 
@@ -220,5 +219,6 @@ Releases bis einschließlich **v2.0.0** wurden unter MIT veröffentlicht und ble
 historische Gewährung ist unwiderruflich. Spätere private Versionen oder ihr Quellcode werden dadurch
 nicht Teil dieses Repositorys.
 
-Für Trial, Lizenzierung, Quellcodezugang, Integration oder eine Live-Demo schreiben Sie an
+Test und Lizenz finden Sie auf der [Produktseite](https://startautomation.com.br/tia-portal-cli/). Für Quellcodezugang, eine kommerzielle
+Lizenz, Integration oder eine Live-Demo schreiben Sie an
 **[contato@codyte.com](mailto:contato@codyte.com)**.

@@ -1,5 +1,5 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
-<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill: https://github.com/Codyte/navindex) -->
 <!--   L15     507B  tia-cli capability map -->
 <!--   L25     729B  Operating contract -->
 <!--   L37     565B  Project discovery and analysis -->
@@ -9,7 +9,7 @@
 <!--   L76     642B  Safety, motion, libraries and collaboration -->
 <!--   L86     488B  Online and simulation boundary -->
 <!--   L96     658B  Validation snapshot -->
-<!--   L110    635B  What is deliberately not included -->
+<!--   L110    698B  What is deliberately not included -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 # tia-cli capability map
@@ -115,5 +115,6 @@ option, device or project exposes the same API surface.
 - No claim is made that automation replaces engineering review, project backups, compile results,
   simulation or commissioning procedures.
 
-For a 2–3 day assisted trial, source access, a commercial licence or a demonstration, see
-[TRIAL.md](TRIAL.md) and [request access through START Automação](https://startautomation.com.br/contato/?origem=tia-cli).
+For the free 5-day self-service trial see [TRIAL.md](TRIAL.md) and the
+[product page](https://startautomation.com.br/tia-portal-cli/). For source access, a commercial licence or a demonstration,
+[contact START Automação](https://startautomation.com.br/contato/?origem=tia-cli).

@@ -1,55 +1,56 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
-<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
-<!--   L9      1.3K  tia-cli assisted trial -->
-<!--   L29     584B  Before the licence is issued -->
-<!--   L42     656B  Process -->
-<!--   L54     757B  Safety and privacy -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill: https://github.com/Codyte/navindex) -->
+<!--   L9      1.1K  tia-cli 5-day free trial -->
+<!--   L28     464B  Before you start -->
+<!--   L39     1.2K  Process -->
+<!--   L55     765B  Safety and privacy -->
 <!-- ======================= END NAV INDEX ======================= -->
 
-# tia-cli assisted trial
+# tia-cli 5-day free trial
 
-The tia-cli v3 product line is available for an assisted **2–3 day evaluation** on one engineering
-machine. The trial is designed to answer one practical question: can the CLI complete a small,
-agreed task safely on a copy of the evaluator's real project?
+The tia-cli v3 product line has a free, self-service **5-day trial** on one engineering machine.
+The trial is designed to answer one practical question: can the CLI complete a small, concrete task
+safely on a copy of your real project?
 
-The public showcase is maintained under Codyte. The commercial evaluation package and licence
-identify **START Automação Industrial Ltda.** as the supplier and licensor.
+The public showcase is maintained under Codyte. The commercial package and licence identify
+**START Automação Industrial Ltda.** as the supplier and licensor.
 
 The evidenced v3 surface contains **346 unique command-line verbs** across **347 generated help
 signatures** (`find` has two forms). The validation snapshot dated 2026-10-19 records 230 verbs with
 successful live V21 evidence, 100 write verbs with V21 preview evidence, 43 with direct V19 evidence,
 41 with direct V20 evidence and 16 with no recorded live evidence; version counts overlap.
 
-[![REQUEST A 2–3 DAY TRIAL](https://img.shields.io/badge/REQUEST_A_2%E2%80%933_DAY_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+[![START A 5-DAY FREE TRIAL](https://img.shields.io/badge/START_A_5--DAY_FREE_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
-The button opens START Automação's contact page with the engineering-automation service selected and
-a ready-to-edit trial request. It does not read browser or machine data; the evaluator completes the
-requested fields before copying the message into their webmail.
+The button opens the product page with the trial form. Nothing is read from your browser or machine
+beyond what you type there.
 
-## Before the licence is issued
+## Before you start
 
-The evaluator needs:
+You need:
 
-- Windows x64 with a licensed TIA Portal V19, V20 or V21 installation and Openness enabled;
-- PowerShell 7, Python 3 and a local AI agent that can run shell commands;
-- a test project or a copy of a project — never the production copy;
-- a successful read-only `pwsh scripts/init.ps1 -Check -Json` report;
-- one small success criterion agreed in writing.
-
-The exact Portal version, installed options and proposed task are confirmed before issuance because
-Siemens exposes different optional APIs across products and versions.
+- Windows x64 with a licensed TIA Portal V19, V20 or V21 installation;
+- your Windows user in the local group **Siemens TIA Openness**;
+- PowerShell 7 and Python 3, and a local AI agent that can run shell commands;
+- a test project or a copy of a project, never the production copy;
+- a corporate email address (free and disposable providers are refused);
+- one small success criterion for yourself, written down before you start.
 
 ## Process
 
-1. Email [contato@startautomation.com.br](mailto:contato@startautomation.com.br) with the TIA Portal version and the task you
-   want to evaluate.
-2. Receive the evaluation package and run its read-only installation check.
-3. Send only the 16-character `license.machineId` reported by `tia --version` after the package is
-   installed. Do not send the project.
-4. Agree on the success criterion. The 2–3 day licence is issued only then, so setup time does not
-   consume the evaluation window.
-5. Work on the test-project copy. Support follows up during the evaluation and asks for error text
-   when troubleshooting, not for project files.
+1. **Request.** On https://startautomation.com.br/tia-portal-cli/ enter your corporate email and the 6-digit code sent to it (valid for
+   15 minutes). The page then shows your licence (`tia.lic`) and the zip download. One trial per
+   email; if you lose the tab, the same email gets the same licence back.
+2. **Install.** In PowerShell run `irm https://startautomation.com.br/tia-portal-cli/install.ps1 | iex`. It downloads the package, checks its
+   SHA-256, installs to `~/.agents/skills/tia-portal-cli` and runs `init` with one UAC prompt.
+   Alternatively extract the zip and double-click `install.cmd`. Both find a `tia.lic` saved in
+   your Downloads folder.
+3. **Run.** Work on the test-project copy. The 5 days count from first use, and the licence binds
+   to that one machine at first use, so install on the machine you will evaluate on. Check your
+   success criterion at the end.
+4. **Day 5 and after.** The trial licence expires. Nothing is deleted from your project. To continue, buy the perpetual licence on the same page;
+   online sales open soon, and until then [contato@startautomation.com.br](mailto:contato@startautomation.com.br)
+   sells it.
 
 ## Safety and privacy
 
@@ -57,10 +58,10 @@ Siemens exposes different optional APIs across products and versions.
 - Physical online writes require both `--apply` and the additional `--allow-physical` opt-in.
 - The CLI and project remain on the engineering machine; no project content or usage telemetry is
   sent to a hosted service.
-- The trial licence is tied to the agreed machine and expiration date.
+- The trial licence is tied to the machine of first use and to the 5-day window.
 - A successful trial does not replace engineering review, backups, compilation, simulation or
   commissioning procedures.
 
-The licence terms delivered with the evaluation package govern the supplied build. Product access,
-commercial licensing and live demonstrations are available through
+The licence terms delivered with the package govern the supplied build. For source access, a
+commercial licence, integration work or a live demonstration, write to
 [contato@startautomation.com.br](mailto:contato@startautomation.com.br).

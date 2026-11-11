@@ -1,5 +1,5 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
-<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill) -->
+<!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill: https://github.com/Codyte/navindex) -->
 <!--   L20     3.5K  ⚡ tia-cli — engenharia de CLP com IA para Siemens TIA Portal -->
 <!--   L77     1.0K  Veja funcionando -->
 <!--   L97     1.9K  O que ele cobre -->
@@ -7,8 +7,8 @@
 <!--   L137    1.1K  Como um agente usa o produto -->
 <!--   L158    855B  Como funciona -->
 <!--   L174    994B  Limites de segurança -->
-<!--   L189    685B  Trial disponível -->
-<!--   L201    931B  Acesso e licenciamento -->
+<!--   L189    681B  Trial disponível -->
+<!--   L200    1.0K  Acesso e licenciamento -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 > Traduzido de [README.md](README.md). **O inglês é a referência** — em caso de divergência, vale a versão em inglês.
@@ -44,12 +44,12 @@ são apenas prévias até um `--apply` explícito.*
 A vitrine pública é mantida sob Codyte. O pacote de avaliação comercial e a licença identificam
 **START Automação Industrial Ltda.** como fornecedora e licenciadora.
 
-Para um trial assistido de 2 a 3 dias, acesso ao código, licença comercial ou demonstração ao vivo:
-**[contato@codyte.com](mailto:contato@codyte.com)**
+Teste grátis por 5 dias, por conta própria, na página do produto. Para acesso ao código, licença
+comercial, integração ou demonstração ao vivo, escreva para **[contato@codyte.com](mailto:contato@codyte.com)**.
 
-[![SOLICITAR TRIAL DE 2 A 3 DIAS](https://img.shields.io/badge/SOLICITAR_TRIAL_DE_2_A_3_DIAS-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+[![TESTE GRÁTIS DE 5 DIAS](https://img.shields.io/badge/TESTE_GR%C3%81TIS_DE_5_DIAS-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
-<sub>Abre a página de contato da START Automação com o serviço marcado e uma solicitação pronta para editar.</sub>
+<sub>Abre a página do produto com o formulário do teste: e-mail corporativo, código de 6 dígitos, licença e download.</sub>
 
 </div>
 
@@ -188,15 +188,14 @@ Reporte uma possível vulnerabilidade em privado conforme [SECURITY.md](SECURITY
 
 ## Trial disponível
 
-Está disponível um **trial assistido de 2 a 3 dias** para uma máquina de engenharia e uma cópia de
-projeto de teste. Antes de iniciar o prazo da licença, o diagnóstico de instalação deve passar e um
-critério de sucesso pequeno e concreto é combinado por escrito. O projeto permanece na máquina do
-cliente; o suporte solicita o texto do erro, não o projeto.
+Está disponível um **teste grátis de 5 dias**, por conta própria, na página do produto, para uma
+máquina de engenharia e uma cópia de projeto de teste. Informe um e-mail corporativo, confirme o código
+de 6 dígitos e a página mostra a sua licença e o download. Os 5 dias contam a partir do primeiro uso.
+O projeto permanece na sua máquina; nada é enviado a um serviço hospedado.
 
-Veja [como funciona o trial](docs/TRIAL.md) ou escreva para
-**[contato@codyte.com](mailto:contato@codyte.com)**.
+Veja [como funciona o teste](docs/TRIAL.md). A página também recebe a compra da licença perpétua.
 
-[![SOLICITAR TRIAL DE 2 A 3 DIAS](https://img.shields.io/badge/SOLICITAR_TRIAL_DE_2_A_3_DIAS-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+[![TESTE GRÁTIS DE 5 DIAS](https://img.shields.io/badge/TESTE_GR%C3%81TIS_DE_5_DIAS-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
 ## Acesso e licenciamento
 
@@ -213,5 +212,6 @@ comercial sem obrigações de copyleft está disponível para organizações que
 As releases até a **v2.0.0** foram publicadas sob MIT e continuam MIT; essa concessão histórica é
 irrevogável. Ela não torna as versões privadas posteriores nem seu código parte deste repositório.
 
-Para trial, licenciamento, acesso ao código, integração ou demonstração ao vivo, escreva para
+O teste e a licença estão na [página do produto](https://startautomation.com.br/tia-portal-cli/). Para acesso ao código, licença
+comercial, integração ou demonstração ao vivo, escreva para
 **[contato@codyte.com](mailto:contato@codyte.com)**.

@@ -29,12 +29,12 @@ English · **[Português (Brasil)](README.pt-BR.md)** · **[Deutsch](README.de.m
 The public showcase is maintained under Codyte. The commercial evaluation package and licence
 identify **START Automação Industrial Ltda.** as the supplier and licensor.
 
-For a 2–3 day assisted trial, source access, a commercial licence or a live demo:
-**[contato@codyte.com](mailto:contato@codyte.com)**
+Try it free for 5 days, self-service, on the product page. For source access, a commercial licence,
+integration work or a live demo, write to **[contato@codyte.com](mailto:contato@codyte.com)**.
 
-[![REQUEST A 2–3 DAY TRIAL](https://img.shields.io/badge/REQUEST_A_2%E2%80%933_DAY_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+[![START A 5-DAY FREE TRIAL](https://img.shields.io/badge/START_A_5--DAY_FREE_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
-<sub>Opens START Automação's contact page with the trial service selected and a ready-to-edit request.</sub>
+<sub>Opens the product page with the trial form: corporate email, 6-digit code, licence and download.</sub>
 
 </div>
 
@@ -172,15 +172,14 @@ Please report a suspected vulnerability privately as described in [SECURITY.md](
 
 ## Trial available
 
-An assisted **2–3 day trial** is available for one engineering machine and a test-project copy.
-Before the licence clock starts, the installation check must pass and a small, concrete success
-criterion is agreed in writing. The project stays on the customer's machine; support asks for error
-text, not the project.
+A free, self-service **5-day trial** is available on the product page, for one engineering machine
+and a test-project copy. Enter a corporate email, confirm the 6-digit code and the page shows your
+licence and the download. The 5 days count from first use. The project stays on your machine; nothing
+is sent to a hosted service.
 
-See [how the trial works](docs/TRIAL.md) or contact
-**[contato@codyte.com](mailto:contato@codyte.com)**.
+See [how the trial works](docs/TRIAL.md). The page also takes the purchase of the perpetual licence.
 
-[![REQUEST A 2–3 DAY TRIAL](https://img.shields.io/badge/REQUEST_A_2%E2%80%933_DAY_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/contato/?origem=tia-cli)
+[![START A 5-DAY FREE TRIAL](https://img.shields.io/badge/START_A_5--DAY_FREE_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
 ## Access and licensing
 
@@ -197,5 +196,6 @@ licence without copyleft obligations is available for organizations that need it
 Releases through **v2.0.0** were published under MIT and remain MIT; that historical grant is
 irrevocable. It does not make later private versions or their source part of this repository.
 
-For a trial, licensing, source access, integration work or a live demonstration, contact
+The trial and the licence are on the [product page](https://startautomation.com.br/tia-portal-cli/). For source access, a commercial
+licence, integration work or a live demonstration, contact
 **[contato@codyte.com](mailto:contato@codyte.com)**.

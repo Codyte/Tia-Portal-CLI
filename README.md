@@ -101,7 +101,9 @@ Representative areas:
 | Batch and audit | checked step files, transactions, rehearsal/rollback, compile and acceptance audits |
 
 See [the public capability map](docs/CAPABILITIES.md) for the operating model, safety boundaries and
-more representative commands.
+more representative commands, and the
+**[verb reference](https://codyte.github.io/Tia-Portal-CLI/)** for every verb of every family with
+its signature and what it does.
 
 **Validation snapshot (2026-10-19):** 230 verbs have successful live V21 evidence, 100 write verbs
 have V21 dry-run evidence, 43 have direct V19 evidence and 41 have direct V20 evidence. Version

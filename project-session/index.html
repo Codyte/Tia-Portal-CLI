@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Open, create and archive a TIA Portal project from the command line | Tia-Portal-CLI</title>
+<meta name="description" content="Open, create, save, archive and close a Siemens TIA Portal project headlessly through Openness, including UMAC-protected projects and Portal settings.">
+<link rel="canonical" href="https://codyte.github.io/Tia-Portal-CLI/project-session/">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Open, create and archive a TIA Portal project from the command line">
+<meta property="og:description" content="Open, create, save, archive and close a Siemens TIA Portal project headlessly through Openness, including UMAC-protected projects and Portal settings.">
+<meta property="og:url" content="https://codyte.github.io/Tia-Portal-CLI/project-session/">
+<meta name="theme-color" content="#07131d">
+<style>*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#f5f8fa;color:#07131d;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:#0a6f94}
+.wrap{width:min(100% - 2rem,980px);margin-inline:auto}
+header.top{background:#07131d;color:#fff;padding:1rem 0}
+header.top .wrap{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between}
+header.top a{color:#d7e5ec;text-decoration:none;font-weight:650;font-size:.92rem}
+header.top .brand{color:#fff;font-weight:800;letter-spacing:.03em}
+header.top nav{display:flex;gap:1.2rem;flex-wrap:wrap}
+main{padding:2.5rem 0 3rem}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:0 0 1rem}
+.lead{font-size:1.08rem;color:#2d4453;margin:0 0 1.5rem}
+.count{display:inline-block;margin:0 0 2rem;padding:.3rem .7rem;border-radius:999px;background:#e3edf2;color:#2d4453;font-size:.85rem;font-weight:700}
+h2{margin:2.5rem 0 1rem;font-size:1.25rem}
+dl{margin:0}
+dt{margin:1.6rem 0 .4rem;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.95rem;font-weight:700;overflow-wrap:anywhere}
+dt code{background:#e8eff3;padding:.15rem .4rem;border-radius:4px}
+dd{margin:0;color:#3b5565}
+dd code{background:#e8eff3;padding:.05rem .3rem;border-radius:3px;font-size:.92em}
+.verb{scroll-margin-top:1.5rem}
+.cta{margin:3rem 0 0;padding:1.5rem;border:1px solid #cfdde5;border-left:4px solid #08a9df;border-radius:8px;background:#fff}
+.cta h2{margin:0 0 .5rem;font-size:1.1rem}
+.cta p{margin:0 0 1rem;color:#3b5565}
+.btn{display:inline-block;padding:.7rem 1.2rem;border-radius:6px;background:#0a7f3f;color:#fff;font-weight:800;text-decoration:none}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin:0;padding:0;list-style:none}
+.grid a{display:block;height:100%;padding:1.1rem;border:1px solid #d8e2e8;border-radius:8px;background:#fff;text-decoration:none;color:inherit}
+.grid a:hover{border-color:#08a9df}
+.grid strong{display:block;margin-bottom:.3rem}
+.grid span{color:#586b78;font-size:.88rem}
+footer{border-top:1px solid #d8e2e8;padding:2rem 0;color:#586b78;font-size:.9rem}
+footer a{color:#0a6f94}
+:focus-visible{outline:3px solid #36c4f0;outline-offset:3px}
+@media(prefers-color-scheme:dark){
+body{background:#0b1620;color:#e8f1f6}
+a{color:#5ac8ef}
+.lead{color:#a9c0cd}.count{background:#17293a;color:#a9c0cd}
+dt code,dd code{background:#17293a}
+dd{color:#b8ccd8}
+.cta,.grid a{background:#112432;border-color:#24404f}
+.grid span{color:#90a8b7}
+footer{border-color:#24404f;color:#90a8b7}
+}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Open, create and archive a TIA Portal project from the command line", "description": "Open, create, save, archive and close a Siemens TIA Portal project headlessly through Openness, including UMAC-protected projects and Portal settings.", "url": "https://codyte.github.io/Tia-Portal-CLI/project-session/", "inLanguage": "en", "dateModified": "2026-11-24", "about": {"@type": "SoftwareApplication", "name": "Tia-Portal-CLI", "url": "https://startautomation.com.br/tia-portal-cli/", "softwareVersion": "3.0.3", "sameAs": "https://github.com/Codyte/Tia-Portal-CLI"}, "publisher": {"@type": "Organization", "name": "START Automação Industrial Ltda.", "url": "https://startautomation.com.br/"}, "isPartOf": {"@type": "TechArticle", "name": "Tia-Portal-CLI verb reference", "url": "https://codyte.github.io/Tia-Portal-CLI/"}}</script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="https://codyte.github.io/Tia-Portal-CLI/">Tia-Portal-CLI</a>
+    <nav>
+      <a href="https://codyte.github.io/Tia-Portal-CLI/">Verb reference</a>
+      <a href="https://github.com/Codyte/Tia-Portal-CLI">Repository</a>
+      <a href="https://startautomation.com.br/tia-portal-cli/">Product &amp; free trial</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+<h1>Open, create and archive a TIA Portal project from the command line</h1>
+<p class="lead">Every other verb needs an open project. These verbs own the session: they start a TIA Portal, open or create the project, answer the UMAC prompt of a protected one, save it elsewhere, archive it, and read or set the Portal&#x27;s own settings.</p>
+<p class="count">10 verbs of 348 &middot; TIA Portal V19, V20 and V21</p>
+<dl>
+<dt class="verb" id="open-project"><code>tia open-project --file X.ap21 [--no-ui] [--user U [--kind project|global] --password-env VAR | --password P]</code></dt>
+<dd>--user answers the UMAC question of a protected project, and umac.asked says whether it was really asked</dd>
+<dt class="verb" id="create-project"><code>tia create-project --dir D --name N [--no-ui] [--major N]</code></dt>
+<dd>--major picks the installed worker of that Portal major and starts its Portal</dd>
+<dt class="verb" id="save-project"><code>tia save-project</code></dt>
+<dd>See the verb's own <code>--help</code>.</dd>
+<dt class="verb" id="close-project"><code>tia close-project [--save]</code></dt>
+<dd>See the verb's own <code>--help</code>.</dd>
+<dt class="verb" id="delete-project"><code>tia delete-project --dir D [--apply]</code></dt>
+<dd>removes a disposable ZZ_TESTE_* project in one call: closes it unsaved in any Portal that has it open, then deletes the folder D and its D.backup sibling</dd>
+<dt class="verb" id="save-project-as"><code>tia save-project-as --dir D [--apply]</code></dt>
+<dd>Save As of the open project</dd>
+<dt class="verb" id="save-library-as"><code>tia save-library-as --file LIB.al2x --dir D [--apply]</code></dt>
+<dd>Save As of a user global library</dd>
+<dt class="verb" id="archive-project"><code>tia archive-project --dir D [--name N] [--compressed] [--discard-restorable] [--apply]</code></dt>
+<dd>backup of the PROJECT as .zapXX</dd>
+<dt class="verb" id="list-portal-settings"><code>tia list-portal-settings [--like X]</code></dt>
+<dd>read-only: the TIA Portal&#x27;s own settings (Options &gt; Settings) as Folder/Name with value and type</dd>
+<dt class="verb" id="set-portal-setting"><code>tia set-portal-setting --name Folder/Setting --value V [--apply]</code></dt>
+<dd>one Portal setting</dd>
+</dl>
+<div class="cta">
+  <h2>Run these verbs on your own project</h2>
+  <p>Every verb above takes JSON on the way out and plain flags on the way in. Tia-Portal-CLI is local and on-premise: nothing is sent to a cloud service, and
+  every write is a preview until you pass <code>--apply</code>. Five-day free trial, e-mail only,
+  no card.</p>
+  <a class="btn" href="https://startautomation.com.br/tia-portal-cli/">Start a 5-day free trial</a>
+</div>
+<h2>Other verb families</h2>
+<ul class="grid">
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/read-project/"><strong>Read a Siemens TIA Portal project from the command line</strong><span>123 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/blocks-and-folders/"><strong>Create, move and delete TIA Portal blocks and folders</strong><span>12 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/plc-hardware/"><strong>Configure Siemens PLC hardware from the command line</strong><span>46 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/generate-blocks/"><strong>Generate and import TIA Portal blocks in SCL and ladder</strong><span>46 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/global-library/"><strong>Install and harmonise a TIA Portal global library by command</strong><span>24 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/wincc-unified/"><strong>WinCC Unified screens and tags from the command line</strong><span>26 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/siemens-safety/"><strong>Siemens Safety groups, signatures and printouts by command</strong><span>12 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/multiuser-server/"><strong>TIA Portal Multiuser server sessions from the command line</strong><span>12 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/plc-online/"><strong>Download, upload and compare a Siemens PLC online</strong><span>9 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/plcsim/"><strong>Run and inspect PLCSIM from the command line</strong><span>5 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/live-plc-values/"><strong>Read and write live PLC values over S7 runtime</strong><span>5 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/opc-ua-client/"><strong>Browse, read and write OPC UA from the command line</strong><span>4 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/certificates-and-security/"><strong>TIA Portal certificates, syslog and password policy by command</strong><span>5 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/environment-and-licences/"><strong>Check the TIA Portal environment, licences and knowledge base</strong><span>7 verbs</span></a></li>
+</ul>
+</main>
+<footer>
+  <div class="wrap">
+    <p>Tia-Portal-CLI 3.0.3 &middot; 348 verbs over the Siemens TIA Portal Openness API &middot;
+    supplied by <a href="https://startautomation.com.br/">START Automa&ccedil;&atilde;o Industrial Ltda.</a></p>
+    <p>This reference lists each verb's signature and a one-line summary. The full help, with the
+    version limits and the traps, ships with the product.
+    <a href="https://startautomation.com.br/tia-portal-cli/">Start a 5-day free trial</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

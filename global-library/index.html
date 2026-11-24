@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Install and harmonise a TIA Portal global library by command | Tia-Portal-CLI</title>
+<meta name="description" content="Create and read TIA Portal global libraries, install a library on a PLC, check and apply type updates, harmonise a project, and import master copies and library types.">
+<link rel="canonical" href="https://codyte.github.io/Tia-Portal-CLI/global-library/">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Install and harmonise a TIA Portal global library by command">
+<meta property="og:description" content="Create and read TIA Portal global libraries, install a library on a PLC, check and apply type updates, harmonise a project, and import master copies and library types.">
+<meta property="og:url" content="https://codyte.github.io/Tia-Portal-CLI/global-library/">
+<meta name="theme-color" content="#07131d">
+<style>*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#f5f8fa;color:#07131d;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:#0a6f94}
+.wrap{width:min(100% - 2rem,980px);margin-inline:auto}
+header.top{background:#07131d;color:#fff;padding:1rem 0}
+header.top .wrap{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between}
+header.top a{color:#d7e5ec;text-decoration:none;font-weight:650;font-size:.92rem}
+header.top .brand{color:#fff;font-weight:800;letter-spacing:.03em}
+header.top nav{display:flex;gap:1.2rem;flex-wrap:wrap}
+main{padding:2.5rem 0 3rem}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:0 0 1rem}
+.lead{font-size:1.08rem;color:#2d4453;margin:0 0 1.5rem}
+.count{display:inline-block;margin:0 0 2rem;padding:.3rem .7rem;border-radius:999px;background:#e3edf2;color:#2d4453;font-size:.85rem;font-weight:700}
+h2{margin:2.5rem 0 1rem;font-size:1.25rem}
+dl{margin:0}
+dt{margin:1.6rem 0 .4rem;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.95rem;font-weight:700;overflow-wrap:anywhere}
+dt code{background:#e8eff3;padding:.15rem .4rem;border-radius:4px}
+dd{margin:0;color:#3b5565}
+dd code{background:#e8eff3;padding:.05rem .3rem;border-radius:3px;font-size:.92em}
+.verb{scroll-margin-top:1.5rem}
+.cta{margin:3rem 0 0;padding:1.5rem;border:1px solid #cfdde5;border-left:4px solid #08a9df;border-radius:8px;background:#fff}
+.cta h2{margin:0 0 .5rem;font-size:1.1rem}
+.cta p{margin:0 0 1rem;color:#3b5565}
+.btn{display:inline-block;padding:.7rem 1.2rem;border-radius:6px;background:#0a7f3f;color:#fff;font-weight:800;text-decoration:none}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin:0;padding:0;list-style:none}
+.grid a{display:block;height:100%;padding:1.1rem;border:1px solid #d8e2e8;border-radius:8px;background:#fff;text-decoration:none;color:inherit}
+.grid a:hover{border-color:#08a9df}
+.grid strong{display:block;margin-bottom:.3rem}
+.grid span{color:#586b78;font-size:.88rem}
+footer{border-top:1px solid #d8e2e8;padding:2rem 0;color:#586b78;font-size:.9rem}
+footer a{color:#0a6f94}
+:focus-visible{outline:3px solid #36c4f0;outline-offset:3px}
+@media(prefers-color-scheme:dark){
+body{background:#0b1620;color:#e8f1f6}
+a{color:#5ac8ef}
+.lead{color:#a9c0cd}.count{background:#17293a;color:#a9c0cd}
+dt code,dd code{background:#17293a}
+dd{color:#b8ccd8}
+.cta,.grid a{background:#112432;border-color:#24404f}
+.grid span{color:#90a8b7}
+footer{border-color:#24404f;color:#90a8b7}
+}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Install and harmonise a TIA Portal global library by command", "description": "Create and read TIA Portal global libraries, install a library on a PLC, check and apply type updates, harmonise a project, and import master copies and library types.", "url": "https://codyte.github.io/Tia-Portal-CLI/global-library/", "inLanguage": "en", "dateModified": "2026-11-24", "about": {"@type": "SoftwareApplication", "name": "Tia-Portal-CLI", "url": "https://startautomation.com.br/tia-portal-cli/", "softwareVersion": "3.0.3", "sameAs": "https://github.com/Codyte/Tia-Portal-CLI"}, "publisher": {"@type": "Organization", "name": "START Automação Industrial Ltda.", "url": "https://startautomation.com.br/"}, "isPartOf": {"@type": "TechArticle", "name": "Tia-Portal-CLI verb reference", "url": "https://codyte.github.io/Tia-Portal-CLI/"}}</script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="https://codyte.github.io/Tia-Portal-CLI/">Tia-Portal-CLI</a>
+    <nav>
+      <a href="https://codyte.github.io/Tia-Portal-CLI/">Verb reference</a>
+      <a href="https://github.com/Codyte/Tia-Portal-CLI">Repository</a>
+      <a href="https://startautomation.com.br/tia-portal-cli/">Product &amp; free trial</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+<h1>Install and harmonise a TIA Portal global library by command</h1>
+<p class="lead">A library is how one engineered solution reaches many projects. These verbs create and read global libraries, install a whole library on a PLC, check which project types are behind their library version, and harmonise the project against it.</p>
+<p class="count">24 verbs of 348 &middot; TIA Portal V19, V20 and V21</p>
+<dl>
+<dt class="verb" id="list-library"><code>tia list-library --file X.al19</code></dt>
+<dd>master copies and types of a global library file, with their folder path</dd>
+<dt class="verb" id="retrieve-library"><code>tia retrieve-library --file X.zal19 [--dir D] [--upgrade] [--apply]</code></dt>
+<dd>unarchives .zal1x → .al2x</dd>
+<dt class="verb" id="create-library"><code>tia create-library --file X.al21 [--folder A/B]... [--apply]</code></dt>
+<dd>empty library</dd>
+<dt class="verb" id="lib-update-check"><code>tia lib-update-check --file X.al21 [--all]</code></dt>
+<dd>whether the instance in the project is behind the version in the library</dd>
+<dt class="verb" id="lib-update-project"><code>tia lib-update-project [--file X.al21] [--name T] [--plc P] [--apply]</code></dt>
+<dd>applies to the project the version in the library</dd>
+<dt class="verb" id="lib-harmonize-project"><code>tia lib-harmonize-project [--file X.al21] [--name T] [--plc P] [--mode names|paths|names,paths] [--apply]</code></dt>
+<dd>aligns the NAME and the FOLDER of the instances with those of the library</dd>
+<dt class="verb" id="import-master-copy"><code>tia import-master-copy --file X.al19 --name M [--folder A/B] [--apply] [--force]</code></dt>
+<dd>--force: deletes the one with the same name and recreates it</dd>
+<dt class="verb" id="import-library-type"><code>tia import-library-type --file X.al21 --name T [--folder A/B] [--unit U] [--apply]</code></dt>
+<dd>instantiates a library TYPE in the PLC</dd>
+<dt class="verb" id="add-master-copy"><code>tia add-master-copy [--file X.al21] (--name BLOCK | --folder A/B) [--lib-folder L] [--apply]</code></dt>
+<dd>PLC → library</dd>
+<dt class="verb" id="delete-master-copy"><code>tia delete-master-copy [--file X.al21] --name M [--apply]</code></dt>
+<dd>without --file the PROJECT library</dd>
+<dt class="verb" id="compare-library"><code>tia compare-library --file X.al21 [--all] [--max 200] [--detail]</code></dt>
+<dd>read-only: the PROJECT library against a global library file</dd>
+<dt class="verb" id="compare-type"><code>tia compare-type --file X.al21 --name T [--version V] [--all]</code></dt>
+<dd>read-only: ONE element of the project library against the one with the same name in the global library file</dd>
+<dt class="verb" id="list-project-library"><code>tia list-project-library</code></dt>
+<dd>the PROJECT library</dd>
+<dt class="verb" id="copy-project-type"><code>tia copy-project-type --file X.al21 --name T [--apply]</code></dt>
+<dd>copies a type from the global library into the project library</dd>
+<dt class="verb" id="import-project-type"><code>tia import-project-type --name T [--folder A/B] [--unit U] [--apply]</code></dt>
+<dd>instantiates in the PLC a type from the project library</dd>
+<dt class="verb" id="delete-project-type"><code>tia delete-project-type --name T [--apply]</code></dt>
+<dd>deletes the type and every version</dd>
+<dt class="verb" id="export-library-doc"><code>tia export-library-doc --name T --dir D [--file X.al21] [--doc N] [--version V] [--format F] [--info-file] [--apply]</code></dt>
+<dd>exports a library type version as document(s)</dd>
+<dt class="verb" id="create-library-doc"><code>tia create-library-doc --dir D --doc N [--file X.al21] [--name T] [--plc P] [--unit U] [--override] [--apply]</code></dt>
+<dd>the other side: builds a type from exported documents</dd>
+<dt class="verb" id="list-type-instances"><code>tia list-type-instances --name T [--plc P] [--file X.al21] [--version V]</code></dt>
+<dd>read-only: where the instances of a library type live inside a PLC (FindInstances), version by version</dd>
+<dt class="verb" id="edit-type-version"><code>tia edit-type-version --name T [--plc P] [--file X.al21] [--version V] [--apply]</code></dt>
+<dd>opens a new IN-WORK version out of a committed one (Edit)</dd>
+<dt class="verb" id="release-type-version"><code>tia release-type-version --name T [--file X.al21] [--version V] [--author A] [--comment C] [--no-deps] [--apply]</code></dt>
+<dd>commits the in-work version and write-protects it (Release)</dd>
+<dt class="verb" id="discard-type-version"><code>tia discard-type-version --name T [--file X.al21] [--version V] [--apply]</code></dt>
+<dd>throws the in-work version away (Discard) and every use falls back to the last released one</dd>
+<dt class="verb" id="set-default-type-version"><code>tia set-default-type-version --name T --version V [--file X.al21] [--apply]</code></dt>
+<dd>makes that version the default one (SetAsDefault), the version a new instance gets</dd>
+<dt class="verb" id="delete-type-version"><code>tia delete-type-version --name T --version V [--file X.al21] [--apply]</code></dt>
+<dd>deletes ONE version of the type, against delete-project-type which takes the type with all of them</dd>
+</dl>
+<div class="cta">
+  <h2>Run these verbs on your own project</h2>
+  <p>Every verb above takes JSON on the way out and plain flags on the way in. Tia-Portal-CLI is local and on-premise: nothing is sent to a cloud service, and
+  every write is a preview until you pass <code>--apply</code>. Five-day free trial, e-mail only,
+  no card.</p>
+  <a class="btn" href="https://startautomation.com.br/tia-portal-cli/">Start a 5-day free trial</a>
+</div>
+<h2>Other verb families</h2>
+<ul class="grid">
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/project-session/"><strong>Open, create and archive a TIA Portal project from the command line</strong><span>10 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/read-project/"><strong>Read a Siemens TIA Portal project from the command line</strong><span>123 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/blocks-and-folders/"><strong>Create, move and delete TIA Portal blocks and folders</strong><span>12 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/plc-hardware/"><strong>Configure Siemens PLC hardware from the command line</strong><span>46 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/generate-blocks/"><strong>Generate and import TIA Portal blocks in SCL and ladder</strong><span>46 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/wincc-unified/"><strong>WinCC Unified screens and tags from the command line</strong><span>26 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/siemens-safety/"><strong>Siemens Safety groups, signatures and printouts by command</strong><span>12 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/multiuser-server/"><strong>TIA Portal Multiuser server sessions from the command line</strong><span>12 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/plc-online/"><strong>Download, upload and compare a Siemens PLC online</strong><span>9 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/plcsim/"><strong>Run and inspect PLCSIM from the command line</strong><span>5 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/live-plc-values/"><strong>Read and write live PLC values over S7 runtime</strong><span>5 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/opc-ua-client/"><strong>Browse, read and write OPC UA from the command line</strong><span>4 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/certificates-and-security/"><strong>TIA Portal certificates, syslog and password policy by command</strong><span>5 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/environment-and-licences/"><strong>Check the TIA Portal environment, licences and knowledge base</strong><span>7 verbs</span></a></li>
+</ul>
+</main>
+<footer>
+  <div class="wrap">
+    <p>Tia-Portal-CLI 3.0.3 &middot; 348 verbs over the Siemens TIA Portal Openness API &middot;
+    supplied by <a href="https://startautomation.com.br/">START Automa&ccedil;&atilde;o Industrial Ltda.</a></p>
+    <p>This reference lists each verb's signature and a one-line summary. The full help, with the
+    version limits and the traps, ships with the product.
+    <a href="https://startautomation.com.br/tia-portal-cli/">Start a 5-day free trial</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

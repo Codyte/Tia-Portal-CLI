@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read a Siemens TIA Portal project from the command line | Tia-Portal-CLI</title>
+<meta name="description" content="Read a TIA Portal project headlessly: list blocks, tags, UDTs, devices and networks, export code as SCL or SimaticML, and print the whole project tree as JSON or Markdown.">
+<link rel="canonical" href="https://codyte.github.io/Tia-Portal-CLI/read-project/">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Read a Siemens TIA Portal project from the command line">
+<meta property="og:description" content="Read a TIA Portal project headlessly: list blocks, tags, UDTs, devices and networks, export code as SCL or SimaticML, and print the whole project tree as JSON or Markdown.">
+<meta property="og:url" content="https://codyte.github.io/Tia-Portal-CLI/read-project/">
+<meta name="theme-color" content="#07131d">
+<style>*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#f5f8fa;color:#07131d;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:#0a6f94}
+.wrap{width:min(100% - 2rem,980px);margin-inline:auto}
+header.top{background:#07131d;color:#fff;padding:1rem 0}
+header.top .wrap{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between}
+header.top a{color:#d7e5ec;text-decoration:none;font-weight:650;font-size:.92rem}
+header.top .brand{color:#fff;font-weight:800;letter-spacing:.03em}
+header.top nav{display:flex;gap:1.2rem;flex-wrap:wrap}
+main{padding:2.5rem 0 3rem}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:0 0 1rem}
+.lead{font-size:1.08rem;color:#2d4453;margin:0 0 1.5rem}
+.count{display:inline-block;margin:0 0 2rem;padding:.3rem .7rem;border-radius:999px;background:#e3edf2;color:#2d4453;font-size:.85rem;font-weight:700}
+h2{margin:2.5rem 0 1rem;font-size:1.25rem}
+dl{margin:0}
+dt{margin:1.6rem 0 .4rem;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.95rem;font-weight:700;overflow-wrap:anywhere}
+dt code{background:#e8eff3;padding:.15rem .4rem;border-radius:4px}
+dd{margin:0;color:#3b5565}
+dd code{background:#e8eff3;padding:.05rem .3rem;border-radius:3px;font-size:.92em}
+.verb{scroll-margin-top:1.5rem}
+.cta{margin:3rem 0 0;padding:1.5rem;border:1px solid #cfdde5;border-left:4px solid #08a9df;border-radius:8px;background:#fff}
+.cta h2{margin:0 0 .5rem;font-size:1.1rem}
+.cta p{margin:0 0 1rem;color:#3b5565}
+.btn{display:inline-block;padding:.7rem 1.2rem;border-radius:6px;background:#0a7f3f;color:#fff;font-weight:800;text-decoration:none}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin:0;padding:0;list-style:none}
+.grid a{display:block;height:100%;padding:1.1rem;border:1px solid #d8e2e8;border-radius:8px;background:#fff;text-decoration:none;color:inherit}
+.grid a:hover{border-color:#08a9df}
+.grid strong{display:block;margin-bottom:.3rem}
+.grid span{color:#586b78;font-size:.88rem}
+footer{border-top:1px solid #d8e2e8;padding:2rem 0;color:#586b78;font-size:.9rem}
+footer a{color:#0a6f94}
+:focus-visible{outline:3px solid #36c4f0;outline-offset:3px}
+@media(prefers-color-scheme:dark){
+body{background:#0b1620;color:#e8f1f6}
+a{color:#5ac8ef}
+.lead{color:#a9c0cd}.count{background:#17293a;color:#a9c0cd}
+dt code,dd code{background:#17293a}
+dd{color:#b8ccd8}
+.cta,.grid a{background:#112432;border-color:#24404f}
+.grid span{color:#90a8b7}
+footer{border-color:#24404f;color:#90a8b7}
+}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Read a Siemens TIA Portal project from the command line", "description": "Read a TIA Portal project headlessly: list blocks, tags, UDTs, devices and networks, export code as SCL or SimaticML, and print the whole project tree as JSON or Markdown.", "url": "https://codyte.github.io/Tia-Portal-CLI/read-project/", "inLanguage": "en", "dateModified": "2026-11-24", "about": {"@type": "SoftwareApplication", "name": "Tia-Portal-CLI", "url": "https://startautomation.com.br/tia-portal-cli/", "softwareVersion": "3.0.3", "sameAs": "https://github.com/Codyte/Tia-Portal-CLI"}, "publisher": {"@type": "Organization", "name": "START Automação Industrial Ltda.", "url": "https://startautomation.com.br/"}, "isPartOf": {"@type": "TechArticle", "name": "Tia-Portal-CLI verb reference", "url": "https://codyte.github.io/Tia-Portal-CLI/"}}</script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="https://codyte.github.io/Tia-Portal-CLI/">Tia-Portal-CLI</a>
+    <nav>
+      <a href="https://codyte.github.io/Tia-Portal-CLI/">Verb reference</a>
+      <a href="https://github.com/Codyte/Tia-Portal-CLI">Repository</a>
+      <a href="https://startautomation.com.br/tia-portal-cli/">Product &amp; free trial</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+<h1>Read a Siemens TIA Portal project from the command line</h1>
+<p class="lead">The largest family, and the one an AI agent calls first. Nothing here changes the project, so these verbs are safe to run against a live engineering project: they list and export blocks, tags, types, devices, networks and cross-references, and print the project tree in a form a model can read.</p>
+<p class="count">123 verbs of 348 &middot; TIA Portal V19, V20 and V21</p>
+<dl>
+<dt class="verb" id="info"><code>tia info [--history N]</code></dt>
+<dd>project identity: PLCs, devices, author, comment and copyright (the project description written in the GUI), lastModifiedBy, size, version, languages and usedProducts</dd>
+<dt class="verb" id="list-devices"><code>tia list-devices</code></dt>
+<dd>See the verb's own <code>--help</code>.</dd>
+<dt class="verb" id="list-blocks"><code>tia list-blocks [--folder A/B] [--type FB|FC|OB|GlobalDB|InstanceDB] [--count] [--comments]</code></dt>
+<dd>without a filter = ~500 blocks in a real project</dd>
+<dt class="verb" id="list-tags"><code>tia list-tags [--table &quot;Folder/Table&quot;]</code></dt>
+<dd>without --table: one line per table, plus one row with an empty <code>table</code> for each folder that has no table at all</dd>
+<dt class="verb" id="list-types"><code>tia list-types [--comments]</code></dt>
+<dd>--comments adds the UDT title and comment when the selected Openness API exposes them (V19 returns a typed capability error)</dd>
+<dt class="verb" id="list-system-blocks"><code>tia list-system-blocks [--like X]</code></dt>
+<dd>the SYSTEM blocks folder</dd>
+<dt class="verb" id="list-system-types"><code>tia list-system-types [--like X]</code></dt>
+<dd>the SYSTEM data types folder</dd>
+<dt class="verb" id="tree"><code>tia tree [--out DIR] [--depth N]  ← START HERE: outline of the whole PLC (blocks + tag tables + UDTs) in plc-navi.md, ~26 KB in a project with 476 blocks (the same in JSON: 117 KB); --depth N keeps the first N folder levels and folds deeper folders into their ancestor</code></dt>
+<dd>See the verb's own <code>--help</code>.</dd>
+<dt class="verb" id="find"><code>tia find --pattern P* [--kind block|table|tag|type|constant]</code></dt>
+<dd>constant = system and user constants</dd>
+<dt class="verb" id="xref"><code>tia xref --name X</code></dt>
+<dd>block, tag or UDT → what it uses</dd>
+<dt class="verb" id="reachable"><code>tia reachable [--from BLOCK] [--orphans]</code></dt>
+<dd>call tree from every OB, or from --from, built from the xref of each block: <code>calls</code> = block → blocks it uses, <code>orphans</code> = FB/FC/DB no root reaches</dd>
+<dt class="verb" id="unused"><code>tia unused</code></dt>
+<dd>read-only: what the program carries without using it, from one XML export of every block, tag table and UDT into --out/unused: <code>unreachableBlocks</code> = blocks no OB reaches (name, type, folder), <code>unusedTags</code> = PLC tags no block names, per…</dd>
+<dt class="verb" id="show-in-editor"><code>tia show-in-editor --name X</code></dt>
+<dd>opens block, UDT, tag table, watch/force table or device in the Portal editor</dd>
+<dt class="verb" id="trace"><code>tia trace --equipment AG-01</code></dt>
+<dd>symbols of the equipment + who references them</dd>
+<dt class="verb" id="list-hmi"><code>tia list-hmi [--device X]</code></dt>
+<dd>WinCC Classic and Unified: screens + tag tables</dd>
+<dt class="verb" id="export-hmi-tags"><code>tia export-hmi-tags --table &quot;Folder/Table&quot; [--device X]</code></dt>
+<dd>SimaticML of the HMI tag table</dd>
+<dt class="verb" id="import-hmi-tags"><code>tia import-hmi-tags --file F.xml [--device X] [--folder &quot;Folder/Sub&quot;] [--replace OLD=NEW ...] [--apply]</code></dt>
+<dd>pair of export-hmi-tags</dd>
+<dt class="verb" id="delete-hmi-tag-folder"><code>tia delete-hmi-tag-folder --path &quot;Folder/Sub&quot; [--device X] [--apply]</code></dt>
+<dd>opposite of the --folder of import-hmi-tags</dd>
+<dt class="verb" id="hmi-tree"><code>tia hmi-tree [--device X]</code></dt>
+<dd>outline of every HMI → hmi-navi.md, grouped by folder</dd>
+<dt class="verb" id="export-screen"><code>tia export-screen --screen &quot;Folder/Sub/Screen&quot; [--device X]</code></dt>
+<dd>SimaticML of the screen</dd>
+<dt class="verb" id="import-screen"><code>tia import-screen --file F.xml [--device X] [--folder &quot;Folder/Sub&quot;] [--replace OLD=NEW ...] [--apply]</code></dt>
+<dd>--folder is the full path from the screen root, same as import-block</dd>
+<dt class="verb" id="delete-screen"><code>tia delete-screen --screen &quot;Folder/Sub/Screen&quot; [--device X] [--apply]</code></dt>
+<dd>opposite of import-screen</dd>
+<dt class="verb" id="list-hmi-scripts"><code>tia list-hmi-scripts [--device X]</code></dt>
+<dd>every VBScript of the panel, by &quot;Folder/Sub/Name&quot;</dd>
+<dt class="verb" id="export-hmi-script"><code>tia export-hmi-script --script &quot;Folder/Sub/Name&quot; [--device X]</code></dt>
+<dd>SimaticML of the VBScript</dd>
+<dt class="verb" id="import-hmi-script"><code>tia import-hmi-script --file F.xml [--device X] [--folder &quot;Folder/Sub&quot;] [--replace OLD=NEW ...] [--apply]</code></dt>
+<dd>pair of export-hmi-script</dd>
+<dt class="verb" id="delete-hmi-script"><code>tia delete-hmi-script --script &quot;Folder/Sub/Name&quot; [--device X] [--apply]</code></dt>
+<dd>opposite of import-hmi-script</dd>
+<dt class="verb" id="list-screen-parts"><code>tia list-screen-parts [--device X]</code></dt>
+<dd>the screen objects that are not a screen: templates, pop-ups and the configured slide-ins</dd>
+<dt class="verb" id="export-screen-part"><code>tia export-screen-part --kind template|popup|slidein|overview|globals [--name X] [--device X]</code></dt>
+<dd>SimaticML of a screen part</dd>
+<dt class="verb" id="import-screen-part"><code>tia import-screen-part --kind template|popup|slidein --file F.xml [--device X] [--folder &quot;Folder/Sub&quot;] [--replace OLD=NEW ...] [--apply]</code></dt>
+<dd>overview and globals have no import</dd>
+<dt class="verb" id="delete-screen-part"><code>tia delete-screen-part --kind template|popup --name X [--device X] [--apply]</code></dt>
+<dd>only template and pop-up expose Delete</dd>
+<dt class="verb" id="export-hmi-object"><code>tia export-hmi-object --kind textlist|cycle|connection --name X [--device X]</code></dt>
+<dd>SimaticML of a classic HMI text list, cycle or connection</dd>
+<dt class="verb" id="import-hmi-object"><code>tia import-hmi-object --kind textlist|cycle|connection --file F.xml [--device X] [--replace OLD=NEW ...] [--apply]</code></dt>
+<dd>creates, or overrides the object with the same name</dd>
+<dt class="verb" id="delete-hmi-object"><code>tia delete-hmi-object --kind textlist|cycle|connection --name X [--device X] [--apply]</code></dt>
+<dd>opposite of import-hmi-object</dd>
+<dt class="verb" id="list-screen-items"><code>tia list-screen-items --screen &quot;Folder/Sub/Screen&quot; [--device X] [--like P] [--group]</code></dt>
+<dd>one object per line: name, type, x, y, w, h, tag</dd>
+<dt class="verb" id="audit-screen"><code>tia audit-screen [--screen &quot;Folder/Sub/Screen&quot;] [--device X] [--max N] [--file F.json] [--tags T.json]</code></dt>
+<dd>compares the tag of each screen object against the HMI&#x27;s own tags: tags that do not exist, and tags with no equipment code (the editor&#x27;s <code>tag1</code> placeholder)</dd>
+<dt class="verb" id="set-screen-items"><code>tia set-screen-items --screen &quot;Folder/Sub/Screen&quot; [--set &quot;Name:x=530,y=356&quot;] [--remove Name] [--rename Old=New] [--rename-from-tag] [--group NAME=x,y,w,h] [--device X] [--apply]</code></dt>
+<dd>all repeatable, one export and one import for N edits</dd>
+<dt class="verb" id="copy-screen-items"><code>tia copy-screen-items --from-screen &quot;&lt;template&gt;&quot; --region x,y,w,h --screen &quot;&lt;target&gt;&quot; --at x,y [--replace BF-01=BF-05] [--device X] [--apply]</code></dt>
+<dd>stamping: copies the objects FULLY contained in the region, offsets them, renumbers the IDs and de-duplicates ObjectName</dd>
+<dt class="verb" id="list-motion"><code>tia list-motion [--like X] [--params]</code></dt>
+<dd>technology objects: axis, cam, kinematics</dd>
+<dt class="verb" id="create-motion"><code>tia create-motion --name X --type PID_Compact [--version 3.0] [--folder A/B] [--apply]</code></dt>
+<dd>creates a technology object</dd>
+<dt class="verb" id="delete-motion"><code>tia delete-motion --name X [--apply] [--no-backup]</code></dt>
+<dd>deletes a technology object</dd>
+<dt class="verb" id="set-motion-param"><code>tia set-motion-param --name TO --param P --value V [--apply]</code></dt>
+<dd>writes a parameter of a technology object</dd>
+<dt class="verb" id="export-motion"><code>tia export-motion --name TO --file F [--readonly]</code></dt>
+<dd>the whole technology object to SimaticML</dd>
+<dt class="verb" id="import-motion"><code>tia import-motion --file F [--folder A/B] [--override] [--apply]</code></dt>
+<dd>SimaticML back into a technology object</dd>
+<dt class="verb" id="export-cam"><code>tia export-cam --name TO --file F [--format mcd|scout|pointlist|binary] [--separator tab|comma] [--points N]</code></dt>
+<dd>cam data of a TO_Cam* technology object to a file</dd>
+<dt class="verb" id="import-cam"><code>tia import-cam --name TO --file F [--format binary] [--separator tab|comma] [--apply]</code></dt>
+<dd>loads cam data from an MCD/SCOUT/PointList file into a TO_Cam* technology object</dd>
+<dt class="verb" id="export-interpreter"><code>tia export-interpreter --name TO --file F</code></dt>
+<dd>MCL program of a TO_InterpreterProgram technology object to a text file</dd>
+<dt class="verb" id="import-interpreter"><code>tia import-interpreter --name TO --file F [--apply]</code></dt>
+<dd>loads an MCL program from a text file into a TO_InterpreterProgram technology object, replacing the whole source</dd>
+<dt class="verb" id="map-interpreter"><code>tia map-interpreter --name TO [--alias A] [--to AXIS | --member PATH --type BOOL [--start-index N] [--readonly]] [--remove] [--apply]</code></dt>
+<dd>mapping of a TO_InterpreterMapping: without --alias it lists, with --alias it writes the alias the MCL program uses for an axis or a DB member</dd>
+<dt class="verb" id="list-watch-tables"><code>tia list-watch-tables [--like X]</code></dt>
+<dd>watch tables: folder, name, consistency and the lines</dd>
+<dt class="verb" id="set-watch-table"><code>tia set-watch-table --name T --entry &quot;SYMBOL[:format]&quot; [--entry ...] [--folder A/B] [--remove SYMBOL] [--clear] [--show] [--apply]</code></dt>
+<dd>builds the table and the human reads the value in the Portal</dd>
+<dt class="verb" id="list-force-tables"><code>tia list-force-tables [--like X]</code></dt>
+<dd>force tables: folder, name, consistency and the lines</dd>
+<dt class="verb" id="set-force-table"><code>tia set-force-table --name T --entry &quot;SYMBOL[:format]&quot; [--entry ...] [--folder A/B] [--remove SYMBOL] [--clear] [--show] [--apply]</code></dt>
+<dd>same mechanics as set-watch-table: PlcForceTableComposition has no Create, so the verb builds the whole table in SimaticML and imports it with Override</dd>
+<dt class="verb" id="list-alarm-textlists"><code>tia list-alarm-textlists [--like X]</code></dt>
+<dd>text lists of the PLC, user and system ones: name, ID, range and comment</dd>
+<dt class="verb" id="export-alarm-texts"><code>tia export-alarm-texts --file X.xlsx [--lang pt-BR ...]</code></dt>
+<dd>instance alarm text to a spreadsheet</dd>
+<dt class="verb" id="import-alarm-texts"><code>tia import-alarm-texts --file X.xlsx [--lang pt-BR ...] [--apply]</code></dt>
+<dd>puts the edited spreadsheet back into the project</dd>
+<dt class="verb" id="list-text-categories"><code>tia list-text-categories</code></dt>
+<dd>read-only: the text categories of the project</dd>
+<dt class="verb" id="export-project-texts"><code>tia export-project-texts --file X.xlsx [--source pt-BR] [--lang en-US ...] [--category C ...]</code></dt>
+<dd>every multilingual text of the WHOLE project</dd>
+<dt class="verb" id="import-project-texts"><code>tia import-project-texts --file X.xlsx [--update-source] [--apply]</code></dt>
+<dd>translated spreadsheet back into the project</dd>
+<dt class="verb" id="object-id"><code>tia object-id [--name X --kind block|type|device] [--identifier ID]</code></dt>
+<dd>read-only, both directions: --name gives the long-term stable identifier of the object, --identifier finds the object back</dd>
+<dt class="verb" id="export-textlists"><code>tia export-textlists --file X.xlsx [--name L ...] [--lang pt-BR ...]</code></dt>
+<dd>text lists to a spreadsheet</dd>
+<dt class="verb" id="import-textlists"><code>tia import-textlists --file X.xlsx [--override] [--apply]</code></dt>
+<dd>text-list spreadsheet back in</dd>
+<dt class="verb" id="export-alarm-classes"><code>tia export-alarm-classes --file X.dat</code></dt>
+<dd>alarm classes of the project</dd>
+<dt class="verb" id="import-alarm-classes"><code>tia import-alarm-classes --file X.dat [--apply]</code></dt>
+<dd>alarm classes back in</dd>
+<dt class="verb" id="export-doc"><code>tia export-doc --name X | --folder A/B [--dir D] [--unit U]</code></dt>
+<dd>block as text: .s7dcl declaration + .s7res texts, which is what gets versioned and diffed in Git</dd>
+<dt class="verb" id="import-doc"><code>tia import-doc --dir D --name X [--folder A/B] [--unit U] [--override] [--apply]</code></dt>
+<dd>writes the block back from the document pair</dd>
+<dt class="verb" id="gen-source"><code>tia gen-source --name X | --folder A/B --file out.scl</code></dt>
+<dd>block(s) → recompilable SCL/AWL source: the missing half of export-doc (the document is for reading/diffing, the source comes back through import-source)</dd>
+<dt class="verb" id="list-sources"><code>tia list-sources [--like X]</code></dt>
+<dd>external source node of the PLC: name (with extension) and folder</dd>
+<dt class="verb" id="list-opcua-access"><code>tia list-opcua-access</code></dt>
+<dd>read-only: OPC UA server access control</dd>
+<dt class="verb" id="list-supervisions"><code>tia list-supervisions [--like X]</code></dt>
+<dd>read-only: ProDiag supervisions declared in each FB</dd>
+<dt class="verb" id="export-supervisions"><code>tia export-supervisions [--kind supervisions|settings] [--file F] [--out DIR]</code></dt>
+<dd>global ProDiag supervisions → .xlsx, or the supervision settings → .dat with --kind settings</dd>
+<dt class="verb" id="list-opcua"><code>tia list-opcua [--kind server|simatic|reference] [--like X]</code></dt>
+<dd>OPC UA interfaces of the PLC server: server (by hand), simatic (from the program), reference (imported namespace</dd>
+<dt class="verb" id="export-opcua"><code>tia export-opcua --kind K --name X [--file F.xml] [--out DIR]</code></dt>
+<dd>OPC UA interface → XML</dd>
+<dt class="verb" id="list-protection"><code>tia list-protection [--like X]</code></dt>
+<dd>state of both locks of each block: know-how (hides the code) and write protection (blocks editing)</dd>
+<dt class="verb" id="list-connections"><code>tia list-connections [--device D]</code></dt>
+<dd>communication connections configured in the project</dd>
+<dt class="verb" id="list-project-users"><code>tia list-project-users</code></dt>
+<dd>read-only: UMAC users of the project</dd>
+<dt class="verb" id="list-project-roles"><code>tia list-project-roles</code></dt>
+<dd>read-only: the roles of the project, the fixed system ones and the custom ones, each with its assigned engineering rights, plus the full catalogue of rights available to assign</dd>
+<dt class="verb" id="list-device-rights"><code>tia list-device-rights [--device D]</code></dt>
+<dd>read-only: the device function rights of UMAC</dd>
+<dt class="verb" id="list-workspaces"><code>tia list-workspaces [--objects]</code></dt>
+<dd>read-only: the Version Control Interface workspaces</dd>
+<dt class="verb" id="add-workspace"><code>tia add-workspace --workspace N [--dir ROOT] [--lang xx-XX] [--apply]</code></dt>
+<dd>creates a VCI workspace</dd>
+<dt class="verb" id="delete-workspace"><code>tia delete-workspace --workspace N [--apply]</code></dt>
+<dd>removes the workspace from the project</dd>
+<dt class="verb" id="add-workspace-object"><code>tia add-workspace-object --workspace N --name BLOCK [--plc P] [--format F] [--apply]</code></dt>
+<dd>exports a block into the workspace root and maps it</dd>
+<dt class="verb" id="sync-workspace"><code>tia sync-workspace --workspace N --to workspace|project [--name BLOCK] [--apply]</code></dt>
+<dd>--to workspace writes the project into the files, --to project brings the files back</dd>
+<dt class="verb" id="checksum"><code>tia checksum</code></dt>
+<dd>checksum of the software and of the text lists of the PLC</dd>
+<dt class="verb" id="fingerprint"><code>tia fingerprint [--name X] [--like S] [--kind block|type]</code></dt>
+<dd>fingerprints of the blocks and UDTs: id/value pair per aspect (Code, Interface, Properties, Comments, ProgramCode...), so diffing two snapshots says WHAT changed</dd>
+<dt class="verb" id="delete-watch-table"><code>tia delete-watch-table --name T [--folder A/B] [--apply]</code></dt>
+<dd>removes a watch table</dd>
+<dt class="verb" id="list-webserver-users"><code>tia list-webserver-users</code></dt>
+<dd>webserver users of the CPU and the permission flags of each one</dd>
+<dt class="verb" id="set-webserver-user"><code>tia set-webserver-user --name U [--permissions A,B] [--password P] [--apply]</code></dt>
+<dd>creates or updates a webserver user</dd>
+<dt class="verb" id="delete-webserver-user"><code>tia delete-webserver-user --name U [--apply]</code></dt>
+<dd>See the verb's own <code>--help</code>.</dd>
+<dt class="verb" id="list-simple-webserver-users"><code>tia list-simple-webserver-users --device X [--item I]</code></dt>
+<dd>read-only: the users a SIWAREX module of the ET 200SP ships for its own web server (SimpleWebserverUserManagement, per device item)</dd>
+<dt class="verb" id="set-simple-webserver-user"><code>tia set-simple-webserver-user --device X [--item I] --name U [--active on|off] [--permissions None|ReadOnly|ReadWrite] [--password P] [--apply]</code></dt>
+<dd>changes a user the module already has</dd>
+<dt class="verb" id="list-webserver-tables"><code>tia list-webserver-tables [--kind watch|force]</code></dt>
+<dd>watch/force tables published on the web page, and the access of each rule</dd>
+<dt class="verb" id="set-webserver-table"><code>tia set-webserver-table --kind watch|force --table T [--access none|read|write] [--remove] [--apply]</code></dt>
+<dd>publishes a table on the web page with the given access, or changes the access of the rule that already exists</dd>
+<dt class="verb" id="list-channels"><code>tia list-channels [--device D] [--item I] [--tags]</code></dt>
+<dd>read-only: the I/O channels of the modules</dd>
+<dt class="verb" id="list-process-image"><code>tia list-process-image [--device D]</code></dt>
+<dd>read-only: which controller is registered on each address and on each HW identifier</dd>
+<dt class="verb" id="assign-process-image"><code>tia assign-process-image --device D --item I --ob O [--plc P] [--pip N] [--apply]</code></dt>
+<dd>assigns the partial process image of the module to an OB, so the image is updated in that OB&#x27;s cycle instead of OB1</dd>
+<dt class="verb" id="list-device-groups"><code>tia list-device-groups</code></dt>
+<dd>read-only: the device group tree of the project (path, device names), the devices at the project root (root: a station added without --group) and the system group of the ungrouped devices</dd>
+<dt class="verb" id="add-device-group"><code>tia add-device-group --name G | &quot;Parent/Child&quot; [--apply]</code></dt>
+<dd>creates the group and any missing parent on the path</dd>
+<dt class="verb" id="delete-device-group"><code>tia delete-device-group --name G | &quot;Parent/Child&quot; [--force] [--apply]</code></dt>
+<dd>a group holding devices or subgroups needs --force: the Openness Delete takes the content with it</dd>
+<dt class="verb" id="net-layout"><code>tia net-layout --dir D [--set layout.json] [--apply] [--no-backup]</code></dt>
+<dd>ring 0, no Portal needed: Devices &amp; networks canvas positions, which no Openness member reaches, read and written in the CLOSED project&#x27;s D/System/PEData.plf</dd>
+<dt class="verb" id="plc-compile-settings"><code>tia plc-compile-settings [--simulation on|off] [--virtual-plc on|off] [--apply]</code></dt>
+<dd>the two block-compilation switches PLCSIM needs</dd>
+<dt class="verb" id="find-module-types"><code>tia find-module-types --pattern X [--kind module|container]</code></dt>
+<dd>read-only: the module (or container) type identifiers that match the partial identifier</dd>
+<dt class="verb" id="normalize-module-type"><code>tia normalize-module-type --type X</code></dt>
+<dd>read-only: the normalized form of a type identifier</dd>
+<dt class="verb" id="export-card-config"><code>tia export-card-config --device D [--file F.psc] [--out DIR] [--password P]</code></dt>
+<dd>device configuration as the .psc file of the card reader</dd>
+<dt class="verb" id="export-sysdiag-settings"><code>tia export-sysdiag-settings [--file F.dat] [--out DIR]</code></dt>
+<dd>the system diagnostics settings of the project as one .dat file (the only suffix the provider takes</dd>
+<dt class="verb" id="import-sysdiag-settings"><code>tia import-sysdiag-settings --file F.dat [--apply]</code></dt>
+<dd>the file back into the system diagnostics settings</dd>
+<dt class="verb" id="generate-loadable"><code>tia generate-loadable [--plc N] --name B[,B2...] | --unit U [--target plc|plcsim] [--file F] [--out DIR]</code></dt>
+<dd>loadable file of compiled blocks outside software units, or of one unit, for the PLC Program Loader</dd>
+<dt class="verb" id="export-opcua-ml"><code>tia export-opcua-ml --device D --item I [--file F.xml] [--out DIR]</code></dt>
+<dd>Simatic ML of the OPC UA of a DeviceItem</dd>
+<dt class="verb" id="list-web-pages"><code>tia list-web-pages</code></dt>
+<dd>read-only: the system web pages flag of the CPU and the web applications configured on it (name, type, isDefault)</dd>
+<dt class="verb" id="set-system-web-pages"><code>tia set-system-web-pages --state on|off [--apply]</code></dt>
+<dd>turns the CPU system web pages on or off</dd>
+<dt class="verb" id="list-opcua-users"><code>tia list-opcua-users</code></dt>
+<dd>read-only: the OPC UA users of the CPU server</dd>
+<dt class="verb" id="set-opcua-user"><code>tia set-opcua-user --name U --password P [--apply]</code></dt>
+<dd>creates an OPC UA user or changes the password of an existing one</dd>
+<dt class="verb" id="delete-opcua-user"><code>tia delete-opcua-user --name U [--apply]</code></dt>
+<dd>See the verb's own <code>--help</code>.</dd>
+<dt class="verb" id="list-plc-access"><code>tia list-plc-access</code></dt>
+<dd>the four CPU protection services in one read: protection level, account locking at runtime, central user management (UMC) and master secret</dd>
+<dt class="verb" id="set-plc-access"><code>tia set-plc-access [--set Name=Value ...] [--secret on|off --password-env VAR] [--apply]</code></dt>
+<dd>writes a property of any of those four services</dd>
+<dt class="verb" id="export-resource-assignment"><code>tia export-resource-assignment --file X.json [--set PlcPriority=N] [--apply]</code></dt>
+<dd>resource assignment of a Software Controller</dd>
+<dt class="verb" id="update-module-description"><code>tia update-module-description [--device X] [--apply]</code></dt>
+<dd>updates the module description when a newer one is installed</dd>
+<dt class="verb" id="export-block"><code>tia export-block --name X [--out DIR]</code></dt>
+<dd>--out is a file-system path and takes any writable one, <code>..</code> and UNC included</dd>
+<dt class="verb" id="export-tags"><code>tia export-tags --table &quot;Folder/Table&quot; [--out DIR]</code></dt>
+<dd>See the verb's own <code>--help</code>.</dd>
+<dt class="verb" id="explain-block"><code>tia explain-block --name X | --file F.xml</code></dt>
+<dd>LAD/FBD → compact text</dd>
+<dt class="verb" id="list-interface"><code>tia list-interface [--folder A/B] [--name X] [--file F.xml] [--comments] [--out DIR]</code></dt>
+<dd>Input/Output/InOut signature of the FB/FC of the folder in a single call</dd>
+<dt class="verb" id="export-type"><code>tia export-type --name X [--out DIR]</code></dt>
+<dd>See the verb's own <code>--help</code>.</dd>
+<dt class="verb" id="free-memory"><code>tia free-memory [--bytes N] [--from B] [--count K]</code></dt>
+<dd>free gaps in %M memory</dd>
+<dt class="verb" id="list-db-members"><code>tia list-db-members --db X [--path A.B] [--depth N]</code></dt>
+<dd>members of a DB below --path, native structs and UDT instances expanded, <code>path : type = start</code></dd>
+</dl>
+<div class="cta">
+  <h2>Run these verbs on your own project</h2>
+  <p>Every verb above takes JSON on the way out and plain flags on the way in. Tia-Portal-CLI is local and on-premise: nothing is sent to a cloud service, and
+  every write is a preview until you pass <code>--apply</code>. Five-day free trial, e-mail only,
+  no card.</p>
+  <a class="btn" href="https://startautomation.com.br/tia-portal-cli/">Start a 5-day free trial</a>
+</div>
+<h2>Other verb families</h2>
+<ul class="grid">
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/project-session/"><strong>Open, create and archive a TIA Portal project from the command line</strong><span>10 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/blocks-and-folders/"><strong>Create, move and delete TIA Portal blocks and folders</strong><span>12 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/plc-hardware/"><strong>Configure Siemens PLC hardware from the command line</strong><span>46 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/generate-blocks/"><strong>Generate and import TIA Portal blocks in SCL and ladder</strong><span>46 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/global-library/"><strong>Install and harmonise a TIA Portal global library by command</strong><span>24 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/wincc-unified/"><strong>WinCC Unified screens and tags from the command line</strong><span>26 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/siemens-safety/"><strong>Siemens Safety groups, signatures and printouts by command</strong><span>12 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/multiuser-server/"><strong>TIA Portal Multiuser server sessions from the command line</strong><span>12 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/plc-online/"><strong>Download, upload and compare a Siemens PLC online</strong><span>9 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/plcsim/"><strong>Run and inspect PLCSIM from the command line</strong><span>5 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/live-plc-values/"><strong>Read and write live PLC values over S7 runtime</strong><span>5 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/opc-ua-client/"><strong>Browse, read and write OPC UA from the command line</strong><span>4 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/certificates-and-security/"><strong>TIA Portal certificates, syslog and password policy by command</strong><span>5 verbs</span></a></li>
+<li><a href="https://codyte.github.io/Tia-Portal-CLI/environment-and-licences/"><strong>Check the TIA Portal environment, licences and knowledge base</strong><span>7 verbs</span></a></li>
+</ul>
+</main>
+<footer>
+  <div class="wrap">
+    <p>Tia-Portal-CLI 3.0.3 &middot; 348 verbs over the Siemens TIA Portal Openness API &middot;
+    supplied by <a href="https://startautomation.com.br/">START Automa&ccedil;&atilde;o Industrial Ltda.</a></p>
+    <p>This reference lists each verb's signature and a one-line summary. The full help, with the
+    version limits and the traps, ships with the product.
+    <a href="https://startautomation.com.br/tia-portal-cli/">Start a 5-day free trial</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

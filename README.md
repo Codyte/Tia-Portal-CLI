@@ -102,7 +102,7 @@ Representative areas:
 
 See [the public capability map](docs/CAPABILITIES.md) for the operating model, safety boundaries and
 more representative commands, and the
-**[verb reference](https://codyte.github.io/Tia-Portal-CLI/)** for every verb of every family with
+**[verb reference](https://startautomation.com.br/tia-portal-cli/verbos/)** for every verb of every family with
 its signature and what it does.
 
 **Validation snapshot (2026-10-19):** 230 verbs have successful live V21 evidence, 100 write verbs

@@ -32,7 +32,7 @@ identify **START Automação Industrial Ltda.** as the supplier and licensor.
 Try it free for 5 days, self-service, on the product page. For source access, a commercial licence,
 integration work or a live demo, write to **[contato@codyte.com](mailto:contato@codyte.com)**.
 
-[![START A 5-DAY FREE TRIAL](https://img.shields.io/badge/START_A_5--DAY_FREE_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
+[![DOWNLOAD](https://img.shields.io/badge/START_A_5--DAY_FREE_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
 <sub>Opens the product page with the trial form: corporate email, 6-digit code, licence and download.</sub>
 
@@ -179,7 +179,7 @@ the licence with startautomation.com.br (machine id and serial), never project c
 
 See [how the trial works](docs/TRIAL.md). The page also takes the purchase of the perpetual licence.
 
-[![START A 5-DAY FREE TRIAL](https://img.shields.io/badge/START_A_5--DAY_FREE_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
+[![DOWNLOAD](https://img.shields.io/badge/START_A_5--DAY_FREE_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
 ## Access and licensing
 

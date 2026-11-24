@@ -181,11 +181,22 @@ See [how the trial works](docs/TRIAL.md). The page also takes the purchase of th
 
 [![DOWNLOAD](https://img.shields.io/badge/START_A_5--DAY_FREE_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
+## Releases
+
+The prebuilt package is attached to each [release](https://github.com/Codyte/Tia-Portal-CLI/releases),
+byte for byte the file the product page serves, with its SHA-256 in the release notes. It needs a
+`tia.lic` to do anything, and only the product page issues one, so downloading here replaces the
+download step and not the licence.
+
+The attached package is **not** AGPL: the `LICENSE.md` inside it governs it, and its section 2.1 says
+which of its files are also published here under the AGPL. The source in this repository stays
+AGPL-3.0.
+
 ## Access and licensing
 
 The current product line is **v3**. The exact evaluation or commercial build is identified by
-`tia --version`; its source code and distributable builds are not published in this showcase
-repository.
+`tia --version`. Its source code is not published in this showcase repository; the distributable
+package is attached to the releases above, under its own licence.
 
 Copyright (c) 2026 Codyte.
 

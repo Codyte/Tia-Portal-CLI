@@ -1,14 +1,15 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill: https://github.com/Codyte/navindex) -->
-<!--   L20     3.5K  ⚡ tia-cli — engenharia de CLP com IA para Siemens TIA Portal -->
-<!--   L77     1.0K  Veja funcionando -->
-<!--   L97     1.9K  O que ele cobre -->
-<!--   L126    747B  Um agente de IA escreveu um programa de CLP do zero -->
-<!--   L137    1.1K  Como um agente usa o produto -->
-<!--   L158    855B  Como funciona -->
-<!--   L174    994B  Limites de segurança -->
-<!--   L189    752B  Trial disponível -->
-<!--   L201    1.0K  Acesso e licenciamento -->
+<!--   L21     3.5K  ⚡ tia-cli — engenharia de CLP com IA para Siemens TIA Portal -->
+<!--   L78     1.0K  Veja funcionando -->
+<!--   L98     1.9K  O que ele cobre -->
+<!--   L127    747B  Um agente de IA escreveu um programa de CLP do zero -->
+<!--   L138    1.1K  Como um agente usa o produto -->
+<!--   L159    855B  Como funciona -->
+<!--   L175    994B  Limites de segurança -->
+<!--   L190    752B  Trial disponível -->
+<!--   L202    542B  Releases -->
+<!--   L212    1.1K  Acesso e licenciamento -->
 <!-- ======================= END NAV INDEX ======================= -->
 
 > Traduzido de [README.md](README.md). **O inglês é a referência** — em caso de divergência, vale a versão em inglês.
@@ -198,11 +199,21 @@ Veja [como funciona o teste](docs/TRIAL.md). A página também recebe a compra d
 
 [![TESTE GRÁTIS DE 5 DIAS](https://img.shields.io/badge/TESTE_GR%C3%81TIS_DE_5_DIAS-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
+## Releases
+
+O pacote pronto vai anexado a cada [release](https://github.com/Codyte/Tia-Portal-CLI/releases), byte
+a byte o mesmo arquivo que a página do produto serve, com o SHA-256 nas notas. Ele não faz nada sem um
+`tia.lic`, e só a página do produto emite um: baixar aqui substitui o download, nunca a licença.
+
+O pacote anexado **não** é AGPL: vale o `LICENSE.md` que vai dentro dele, e a seção 2.1 desse arquivo
+diz quais dos seus arquivos também são publicados aqui sob a AGPL. O código deste repositório segue
+AGPL-3.0.
+
 ## Acesso e licenciamento
 
 A linha atual do produto é a **v3**. O build exato de avaliação ou comercial é identificado por
-`tia --version`; seu código-fonte e builds distribuíveis não são publicados neste repositório de
-vitrine.
+`tia --version`. O código-fonte não é publicado neste repositório de vitrine; o pacote distribuível
+vai anexado aos releases acima, sob a licença dele.
 
 Copyright (c) 2026 Codyte.
 

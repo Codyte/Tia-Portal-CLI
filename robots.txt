@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://codyte.github.io/Tia-Portal-CLI/sitemap.xml
+Sitemap: https://startautomation.com.br/tia-portal-cli/verbos/sitemap.xml

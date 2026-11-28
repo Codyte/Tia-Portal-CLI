@@ -115,6 +115,6 @@ option, device or project exposes the same API surface.
 - No claim is made that automation replaces engineering review, project backups, compile results,
   simulation or commissioning procedures.
 
-For the free 5-day self-service trial see [TRIAL.md](TRIAL.md) and the
+For the free 14-day self-service trial see [TRIAL.md](TRIAL.md) and the
 [product page](https://startautomation.com.br/tia-portal-cli/). For source access, a commercial licence or a demonstration,
 [contact START Automação](https://startautomation.com.br/contato/?origem=tia-cli).

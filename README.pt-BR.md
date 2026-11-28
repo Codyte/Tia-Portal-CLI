@@ -45,10 +45,10 @@ são apenas prévias até um `--apply` explícito.*
 A vitrine pública é mantida sob Codyte. O pacote de avaliação comercial e a licença identificam
 **START Automação Industrial Ltda.** como fornecedora e licenciadora.
 
-Teste grátis por 5 dias, por conta própria, na página do produto. Para acesso ao código, licença
+Teste grátis por 14 dias, por conta própria, na página do produto. Para acesso ao código, licença
 comercial, integração ou demonstração ao vivo, escreva para **[contato@codyte.com](mailto:contato@codyte.com)**.
 
-[![TESTE GRÁTIS DE 5 DIAS](https://img.shields.io/badge/TESTE_GR%C3%81TIS_DE_5_DIAS-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
+[![TESTE GRÁTIS DE 14 DIAS](https://img.shields.io/badge/TESTE_GR%C3%81TIS_DE_14_DIAS-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
 <sub>Abre a página do produto com o formulário do teste: e-mail corporativo, código de 6 dígitos, licença e download.</sub>
 
@@ -189,15 +189,15 @@ Reporte uma possível vulnerabilidade em privado conforme [SECURITY.md](SECURITY
 
 ## Trial disponível
 
-Está disponível um **teste grátis de 5 dias**, por conta própria, na página do produto, para uma
+Está disponível um **teste grátis de 14 dias**, por conta própria, na página do produto, para uma
 máquina de engenharia e uma cópia de projeto de teste. Informe um e-mail corporativo, confirme o código
-de 6 dígitos e a página mostra a sua licença e o download. Os 5 dias contam a partir do primeiro uso.
+de 6 dígitos e a página mostra a sua licença e o download. Os 14 dias contam a partir do primeiro uso.
 O projeto permanece na sua máquina; o CLI só confirma a licença com startautomation.com.br
 (id da máquina e serial), nunca conteúdo do projeto.
 
 Veja [como funciona o teste](docs/TRIAL.md). A página também recebe a compra da licença perpétua.
 
-[![TESTE GRÁTIS DE 5 DIAS](https://img.shields.io/badge/TESTE_GR%C3%81TIS_DE_5_DIAS-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
+[![TESTE GRÁTIS DE 14 DIAS](https://img.shields.io/badge/TESTE_GR%C3%81TIS_DE_14_DIAS-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
 ## Releases
 

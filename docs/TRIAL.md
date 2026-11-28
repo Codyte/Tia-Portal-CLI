@@ -1,14 +1,14 @@
 <!-- ====================== BEGIN NAV INDEX ====================== -->
 <!-- NAV INDEX — auto-generated symbol map (refresh via the navindex skill: https://github.com/Codyte/navindex) -->
-<!--   L9      1.1K  tia-cli 5-day free trial -->
+<!--   L9      1.1K  tia-cli 14-day free trial -->
 <!--   L28     464B  Before you start -->
 <!--   L39     1.2K  Process -->
 <!--   L55     765B  Safety and privacy -->
 <!-- ======================= END NAV INDEX ======================= -->
 
-# tia-cli 5-day free trial
+# tia-cli 14-day free trial
 
-The tia-cli v3 product line has a free, self-service **5-day trial** on one engineering machine.
+The tia-cli v3 product line has a free, self-service **14-day trial** on one engineering machine.
 The trial is designed to answer one practical question: can the CLI complete a small, concrete task
 safely on a copy of your real project?
 
@@ -20,7 +20,7 @@ signatures** (`find` has two forms). The validation snapshot dated 2026-10-19 re
 successful live V21 evidence, 100 write verbs with V21 preview evidence, 43 with direct V19 evidence,
 41 with direct V20 evidence and 16 with no recorded live evidence; version counts overlap.
 
-[![START A 5-DAY FREE TRIAL](https://img.shields.io/badge/START_A_5--DAY_FREE_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
+[![START A 14-DAY FREE TRIAL](https://img.shields.io/badge/START_A_14--DAY_FREE_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
 The button opens the product page with the trial form. Nothing is read from your browser or machine
 beyond what you type there.
@@ -45,7 +45,7 @@ You need:
    SHA-256, installs to `~/.agents/skills/tia-portal-cli` and runs `init` with one UAC prompt.
    Alternatively extract the zip and double-click `install.cmd`. Both find a `tia.lic` saved in
    your Downloads folder.
-3. **Run.** Work on the test-project copy. The 5 days count from first use, and the licence binds
+3. **Run.** Work on the test-project copy. The 14 days count from first use, and the licence binds
    to that one machine at first use, so install on the machine you will evaluate on. Check your
    success criterion at the end.
 4. **Day 5 and after.** The trial licence expires. Nothing is deleted from your project. To continue, buy the perpetual licence on the same page;
@@ -58,7 +58,7 @@ You need:
 - Physical online writes require both `--apply` and the additional `--allow-physical` opt-in.
 - The CLI and project remain on the engineering machine; no project content or usage telemetry is
   sent to a hosted service.
-- The trial licence is tied to the machine of first use and to the 5-day window.
+- The trial licence is tied to the machine of first use and to the 14-day window.
 - A successful trial does not replace engineering review, backups, compilation, simulation or
   commissioning procedures.
 

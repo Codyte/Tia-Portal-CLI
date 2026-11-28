@@ -29,10 +29,10 @@ English · **[Português (Brasil)](README.pt-BR.md)** · **[Deutsch](README.de.m
 The public showcase is maintained under Codyte. The commercial evaluation package and licence
 identify **START Automação Industrial Ltda.** as the supplier and licensor.
 
-Try it free for 5 days, self-service, on the product page. For source access, a commercial licence,
+Try it free for 14 days, self-service, on the product page. For source access, a commercial licence,
 integration work or a live demo, write to **[contato@codyte.com](mailto:contato@codyte.com)**.
 
-[![DOWNLOAD](https://img.shields.io/badge/START_A_5--DAY_FREE_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
+[![DOWNLOAD](https://img.shields.io/badge/START_A_14--DAY_FREE_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
 <sub>Opens the product page with the trial form: corporate email, 6-digit code, licence and download.</sub>
 
@@ -174,14 +174,14 @@ Please report a suspected vulnerability privately as described in [SECURITY.md](
 
 ## Trial available
 
-A free, self-service **5-day trial** is available on the product page, for one engineering machine
+A free, self-service **14-day trial** is available on the product page, for one engineering machine
 and a test-project copy. Enter a corporate email, confirm the 6-digit code and the page shows your
-licence and the download. The 5 days count from first use. The project stays on your machine; the CLI only confirms
+licence and the download. The 14 days count from first use. The project stays on your machine; the CLI only confirms
 the licence with startautomation.com.br (machine id and serial), never project content.
 
 See [how the trial works](docs/TRIAL.md). The page also takes the purchase of the perpetual licence.
 
-[![DOWNLOAD](https://img.shields.io/badge/START_A_5--DAY_FREE_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
+[![DOWNLOAD](https://img.shields.io/badge/START_A_14--DAY_FREE_TRIAL-0A7F3F?style=for-the-badge)](https://startautomation.com.br/tia-portal-cli/)
 
 ## Releases
 
